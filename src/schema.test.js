@@ -1,16 +1,4 @@
-const Ajv = require('ajv');
-
-const ajv = new Ajv();
-
-const addSchema = (schema) => {
-  ajv.addSchema(schema, schema.id);
-}
-
-const validate = (document, schema) => {
-  return schema
-    ? ajv.validate(schema, document.data)
-    : ajv.validate(document.schema, document.data);
-}
+const {addSchema, validate} = require('./schema');
 
 const schemaV1 = {
   "$id": "http://example.com/schemaV1.json",
