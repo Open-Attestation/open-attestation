@@ -1,6 +1,9 @@
-
 describe('privacy', () => {
-  it('.getData needs to be implemented', () =>{
-    expect(true).to.equal(false);
+  it('returns salted content given data and, optionally, salt length', () =>{
+    assert(false, 'TODO');
+  })
+
+  it('returns original data given salted content and, optionally, salt length', () =>{
+    assert(false, 'TODO');
   })
 });
