@@ -1,3 +1,5 @@
+![Travis Build Status](https://travis-ci.org/GovTechSG/openAttestation.svg?branch=master)
+
 # Open Attestation
 
 ## Usage
