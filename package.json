@@ -1,6 +1,6 @@
 {
   "name": "@govtechsg/open-attestation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "## Usage",
   "main": "src/index.js",
   "scripts": {
