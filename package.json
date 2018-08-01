@@ -1,7 +1,7 @@
 {
-  "name": "open-attestation",
+  "name": "@govtechsg/open-attestation",
   "version": "1.0.0",
-  "description": "",
+  "description": "## Usage",
   "main": "src/index.js",
   "scripts": {
     "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js'",
@@ -32,6 +32,21 @@
     "djv": "^2.1.0",
     "ethereumjs-util": "^5.2.0",
     "flat": "^4.1.0",
+    "lerna": "^3.0.0-rc.0",
     "lodash": "^4.17.10"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GovTechSG/openAttestation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GovTechSG/openAttestation/issues"
+  },
+  "homepage": "https://github.com/GovTechSG/openAttestation#readme",
+  "publishConfig": {
+    "access": "public"
   }
 }
