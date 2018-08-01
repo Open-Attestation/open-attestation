@@ -19,6 +19,7 @@ const createDocument = (data, schema) => {
 const issueDocument = (data, schema) => {
   const document = createDocument(data, schema);
   const signedDocument = sign(document, [digestDocument(document)]);
+  console.log("Issued: ", signedDocument);
   return signedDocument;
 }
 
@@ -26,6 +27,7 @@ const issueDocuments = (dataArray, schema) => {
   const documents = dataArray.map((data) => createDocument(data, schema));
   const batchHashes = documents.map(digestDocument);
   const signedDocuments = documents.map((doc) => sign(doc, batchHashes));
+  console.log("Issued: ", signedDocuments);
   return signedDocuments;
 }
 
