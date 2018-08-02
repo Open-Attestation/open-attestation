@@ -1,7 +1,11 @@
 const {
-  addSchema,
+  getData,
   issueDocument,
   issueDocuments,
+  digestDocument,
+  obfuscateDocument,
+  addSchema,
+  sign,
   validateSchema,
   verifySignature,
 } = require('../src/index');
@@ -40,6 +44,7 @@ const expectedDocuments = [
     "data": {
       "key1": "test"
     },
+    "privacy": {},
     "signature": {
       "type": "SHA3MerkleProof",
       "targetHash": "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
@@ -56,6 +61,7 @@ const expectedDocuments = [
       "key1": "hello",
       "key2": "item2"
     },
+    "privacy": {},
     "signature": {
       "type": "SHA3MerkleProof",
       "targetHash": "f83ab45ee162d8745ceb260a05149abc33a52a8efae81ed4c66b766945aa80d9",
@@ -72,6 +78,7 @@ const expectedDocuments = [
       "key1": "item1",
       "key2": "item4"
     },
+    "privacy": {},
     "signature": {
       "type": "SHA3MerkleProof",
       "targetHash": "e20e8b2ae5874860486e06a8b7506a16e2ac3bef77457622731718715fe14f02",
@@ -87,6 +94,7 @@ const expectedDocuments = [
     "data": {
       "key1": "item2"
     },
+    "privacy": {},
     "signature": {
       "type": "SHA3MerkleProof",
       "targetHash": "5edbd8ef9008666f3f7dbb88c0ab8e16ceda3dfcfd3401c8a940ef1f75dcd5ab",
@@ -119,6 +127,7 @@ describe('E2E Test Scenarios', () => {
         "data": {
           "key1": "test"
         },
+        "privacy": {},
         "signature": {
           "type": "SHA3MerkleProof",
           "targetHash": "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
@@ -141,8 +150,9 @@ describe('E2E Test Scenarios', () => {
       expect(validatedSchema).to.be.true;
     });
 
-    xit('checks that data extracted are the same as input', () => {
-      assert(false, 'TODO: To add function to extract data without the salt');
+    it('checks that data extracted are the same as input', () => {
+      const data = getData(signedDocument);
+      expect(data).to.deep.equal(datum[0]);
     });
   });
 
@@ -182,8 +192,11 @@ describe('E2E Test Scenarios', () => {
       expect(validatedSchema).to.be.true;
     });
 
-    xit('checks that data extracted are the same as input', () => {
-      assert(false, 'TODO: To add function to extract data without the salt');
+    it('checks that data extracted are the same as input', () => {
+      signedDocuments.forEach((doc, i) => {
+        const data = getData(doc);
+        expect(data).to.deep.equal(datum[i]);
+      });
     });
   });
 })

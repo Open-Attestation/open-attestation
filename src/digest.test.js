@@ -141,7 +141,7 @@ describe('digest', () => {
           ]
         },
         privacy: {
-          filteredData: [
+          obfuscatedData: [
             '877b54b204a759620fd386e531d9a017655377f3645117665409da3c7ff5a61a',
             '433691731088b4455fb31dee9b75fed687fb3acf9886c1359e01d3df3d059990',
             'f290dec8eba6913285b09f712ea38e39da8ffdf1de9bf305b90d3b77ae77be96'
@@ -158,7 +158,7 @@ describe('digest', () => {
       const document = {
         data: {},
         privacy: {
-          filteredData: [
+          obfuscatedData: [
             '1549a7b5fac4126fa0fbdea8c156930790691317e30400feb76c0f5cec06b396',
             'bfde44f29cc03f4111c0e0dd5c9551705e9cfb03054e26e01f53c6dabff7aead',
             '877b54b204a759620fd386e531d9a017655377f3645117665409da3c7ff5a61a',

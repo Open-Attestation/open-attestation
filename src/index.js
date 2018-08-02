@@ -1,13 +1,14 @@
 const {digestDocument} = require('./digest');
 const {addSchema, validate} = require('./schema');
 const {sign,verify} = require('./signature');
+const {
+  getData,
+  setData,
+  obfuscateDocument,
+} = require('./privacy');
 
 const createDocument = (data, schema) => {
-  // TODO: Add privacy filter here
-  const document = {
-    schema: schema.$id,
-    data,
-  };
+  const document = setData({schema: schema.$id}, data);
   const valid = validate(document, schema);
   if(valid){
     return document;
@@ -30,9 +31,11 @@ const issueDocuments = (dataArray, schema) => {
 }
 
 module.exports = {
+  getData,
   issueDocument,
   issueDocuments,
   digestDocument,
+  obfuscateDocument,
   addSchema,
   sign,
   validateSchema: validate,

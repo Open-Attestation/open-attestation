@@ -17,7 +17,7 @@ const flattenHashArray = (data) => {
 
 const digestDocument = (document) => {
   // Prepare array of hashes from filtered data
-  const hashedDataArray = _.get(document, 'privacy.filteredData', []);
+  const hashedDataArray = _.get(document, 'privacy.obfuscatedData', []);
 
   // Prepare array of hashes from visible data
   const unhashedData = _.get(document, 'data');
