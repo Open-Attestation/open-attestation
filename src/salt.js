@@ -42,7 +42,7 @@ const recursivelyApply = (iteratee) => (value) => {
  */
 function uuidSalt(value) {
   const salt = uuid() 
-  return `${salt}: ${String(value)}`;
+  return `${salt}:${String(value)}`;
 }
 
 function startsWithUuidV4(value) {
@@ -76,8 +76,14 @@ function isNumber(value) {
     return !isNaN(Number(value)) && isFinite(Number(value))
 }
 
+// Use uuid salting method to recursively salt data
+const saltData = (data) => deepMap(data, uuidSalt);
+const unsaltData = (data) => deepMap(data, unsalt);
+
 module.exports = {
   deepMap,
   uuidSalt,
-  unsalt
+  unsalt,
+  saltData,
+  unsaltData,
 };

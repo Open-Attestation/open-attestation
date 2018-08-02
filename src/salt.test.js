@@ -33,7 +33,7 @@ describe("salting", () => {
   it("should salt", () => {
     const saltedString = uuidSalt("test string");
     const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/
-    expect(saltedString.length).to.equal(49)
+    expect(saltedString.length).to.equal(48)
     expect(saltedString.substring(36,37)).to.be.equal(":")
     expect(uuidRegex.test(saltedString.split(":")[0])).to.be.true;
   });

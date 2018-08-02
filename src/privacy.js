@@ -1,14 +1,13 @@
 const _ = require('lodash');
 const { flatten } = require("flat");
 const { toBuffer } = require("./utils");
+const { saltData, unsaltData } = require('./salt');
 
 const getData = (document) => {
-  // TODO: Add unsalt function here
-  return document.data;
+  return unsaltData(document.data);
 }
 
 const setData = (document, data, _obfuscatedData = []) => {
-  // TODO: Add salt function here
   const currentObfuscatedData = _.get(document, 'privacy.obfuscatedData', []);
   const obfuscatedData = currentObfuscatedData.concat(_obfuscatedData);
   const privacy = Object.assign(
@@ -18,7 +17,7 @@ const setData = (document, data, _obfuscatedData = []) => {
   );
   return {
     ...document,
-    data,
+    data: saltData(data),
     privacy,
   }
 }

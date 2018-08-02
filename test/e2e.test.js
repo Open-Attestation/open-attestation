@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {
   getData,
   issueDocument,
@@ -38,75 +39,6 @@ const datum = [{
   key1: 'item2',
 }];
 
-const expectedDocuments = [
-  {
-    "schema": "http://example.com/schema-v1.json",
-    "data": {
-      "key1": "test"
-    },
-    "privacy": {},
-    "signature": {
-      "type": "SHA3MerkleProof",
-      "targetHash": "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
-      "proof": [
-        "5edbd8ef9008666f3f7dbb88c0ab8e16ceda3dfcfd3401c8a940ef1f75dcd5ab",
-        "1939ed27bfb786079269f4215d4b34de07525a9105394cf3f1849f0949afa2c4"
-      ],
-      "merkleRoot": "d32eac5b9695e00917e86041f527cd394b99e6c73366762ce40814b25c3f2653"
-    }
-  },
-  {
-    "schema": "http://example.com/schema-v1.json",
-    "data": {
-      "key1": "hello",
-      "key2": "item2"
-    },
-    "privacy": {},
-    "signature": {
-      "type": "SHA3MerkleProof",
-      "targetHash": "f83ab45ee162d8745ceb260a05149abc33a52a8efae81ed4c66b766945aa80d9",
-      "proof": [
-        "e20e8b2ae5874860486e06a8b7506a16e2ac3bef77457622731718715fe14f02",
-        "2dd7ff47612ae3a8416030c5824ef11062ac6bcaecac813f2e30674907771f8a"
-      ],
-      "merkleRoot": "d32eac5b9695e00917e86041f527cd394b99e6c73366762ce40814b25c3f2653"
-    }
-  },
-  {
-    "schema": "http://example.com/schema-v1.json",
-    "data": {
-      "key1": "item1",
-      "key2": "item4"
-    },
-    "privacy": {},
-    "signature": {
-      "type": "SHA3MerkleProof",
-      "targetHash": "e20e8b2ae5874860486e06a8b7506a16e2ac3bef77457622731718715fe14f02",
-      "proof": [
-        "f83ab45ee162d8745ceb260a05149abc33a52a8efae81ed4c66b766945aa80d9",
-        "2dd7ff47612ae3a8416030c5824ef11062ac6bcaecac813f2e30674907771f8a"
-      ],
-      "merkleRoot": "d32eac5b9695e00917e86041f527cd394b99e6c73366762ce40814b25c3f2653"
-    }
-  },
-  {
-    "schema": "http://example.com/schema-v1.json",
-    "data": {
-      "key1": "item2"
-    },
-    "privacy": {},
-    "signature": {
-      "type": "SHA3MerkleProof",
-      "targetHash": "5edbd8ef9008666f3f7dbb88c0ab8e16ceda3dfcfd3401c8a940ef1f75dcd5ab",
-      "proof": [
-        "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
-        "1939ed27bfb786079269f4215d4b34de07525a9105394cf3f1849f0949afa2c4"
-      ],
-      "merkleRoot": "d32eac5b9695e00917e86041f527cd394b99e6c73366762ce40814b25c3f2653"
-    }
-  }
-];
-
 describe('E2E Test Scenarios', () => {
   describe('Issuing a single documents', () => {
     const document = datum[0];
@@ -122,21 +54,14 @@ describe('E2E Test Scenarios', () => {
     });
 
     it('creates a signed document', () => {
-      const expectedDocument = {
-        "schema": "http://example.com/schema-v1.json",
-        "data": {
-          "key1": "test"
-        },
-        "privacy": {},
-        "signature": {
-          "type": "SHA3MerkleProof",
-          "targetHash": "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
-          "proof": [],
-          "merkleRoot": "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54"
-        }
-      };
       signedDocument = issueDocument(document, schema);
-      expect(signedDocument).to.have.deep.keys(['a']);
+      expect(signedDocument.schema).to.be.equal('http://example.com/schema-v1.json');
+      expect(signedDocument.data.key1).to.contain('test');
+      expect(signedDocument.signature.type).to.equal('SHA3MerkleProof');
+      expect(signedDocument.signature.targetHash).to.exist;
+      expect(signedDocument.signature.merkleRoot).to.exist;
+      expect(signedDocument.signature.proof).to.deep.equal([]);
+      expect(signedDocument.signature.merkleRoot).to.equal(signedDocument.signature.targetHash);
     });
     
     it('checks that document is signed correctly', () => {
@@ -153,6 +78,12 @@ describe('E2E Test Scenarios', () => {
     it('checks that data extracted are the same as input', () => {
       const data = getData(signedDocument);
       expect(data).to.deep.equal(datum[0]);
+    });
+
+    it('does not allow for the same merkle root to be generated', () => {
+      const newDocument = issueDocument(document, schema);
+      expect(signedDocument.signature.merkleRoot)
+        .to.not.equal(newDocument.signature.merkleRoot);
     });
   });
 
@@ -172,7 +103,14 @@ describe('E2E Test Scenarios', () => {
 
     it('creates a batch of documents if all are in the right format', () => {
       signedDocuments = issueDocuments(datum, schema);
-      expect(signedDocuments).to.deep.equal(expectedDocuments);
+      signedDocuments.forEach((doc, i) => {
+        expect(doc.schema).to.be.equal('http://example.com/schema-v1.json');
+        expect(doc.signature.type).to.equal('SHA3MerkleProof');
+        expect(doc.data.key1).to.contain(datum[i].key1);
+        expect(doc.signature.targetHash).to.exist;
+        expect(doc.signature.merkleRoot).to.exist;
+        expect(doc.signature.proof.length).to.deep.equal(2);
+      });
     });
 
     it('checks that documents are signed correctly', () => {
@@ -197,6 +135,12 @@ describe('E2E Test Scenarios', () => {
         const data = getData(doc);
         expect(data).to.deep.equal(datum[i]);
       });
+    });
+
+    it('does not allow for same merkle root to be generated', () => {
+      const newSignedDocuments = issueDocuments(datum, schema);
+      expect(signedDocuments[0].signature.merkleRoot)
+      .to.not.equal(newSignedDocuments[0].signature.merkleRoot);
     });
   });
 })
