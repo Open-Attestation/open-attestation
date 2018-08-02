@@ -34,6 +34,7 @@
     "flat": "^4.1.0",
     "lerna": "^3.0.0-rc.0",
     "lodash": "^4.17.10"
+    "uuid": "^3.3.2"
   },
   "directories": {
     "test": "test"

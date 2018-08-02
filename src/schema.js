@@ -13,6 +13,7 @@ const addSchema = (schema) => {
 
 const validate = (document, schema) => {
   // TODO: Retrieve the data from the document without the salt first
+  // const unsaltedData = unsalted(data)
   return schema
     ? ajv.validate(schema, document.data)
     : ajv.validate(document.schema, document.data);

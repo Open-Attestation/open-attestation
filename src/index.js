@@ -1,6 +1,7 @@
 const {digestDocument} = require('./digest');
 const {addSchema, validate} = require('./schema');
 const {sign,verify} = require('./signature');
+const {deepMap, uuidSalt} = require('./salt')
 const {
   getData,
   setData,
@@ -9,6 +10,7 @@ const {
 
 const createDocument = (data, schema) => {
   const document = setData({schema: schema.$id}, data);
+  const saltedData = deepMap(data, uuidSalt)
   const valid = validate(document, schema);
   if(valid){
     return document;
