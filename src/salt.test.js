@@ -42,9 +42,7 @@ describe("salt", () => {
   });
 
   describe("salt object recursively", () => {
-    const fakeSalt = value => {
-      return "fakesalt: " + String(value);
-    };
+    const fakeSalt = value => `fakesalt: ${String(value)}`;
 
     const fakeSaltedObject = {
       keyA: "fakesalt: value 1",

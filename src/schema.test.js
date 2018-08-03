@@ -31,7 +31,7 @@ const schemaV2 = {
 
 describe("schema", () => {
   describe("addSchema", () => {
-    it('adds a schema', () => {
+    it("adds a schema", () => {
       const schemaV0 = {
         $id: "http://example.com/schemaV0.json",
         $schema: "http://json-schema.org/draft-07/schema#",
@@ -46,7 +46,7 @@ describe("schema", () => {
       };
       addSchema(schemaV0);
     });
-    it('does not throw when the same schema is added again', () => {
+    it("does not throw when the same schema is added again", () => {
       const schemaV0 = {
         $id: "http://example.com/schemaV0.json",
         $schema: "http://json-schema.org/draft-07/schema#",
