@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { includes, mapValues, map } = require("lodash");
 const uuid = require("uuid/v4");
 
