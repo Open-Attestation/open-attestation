@@ -3,8 +3,9 @@ node_js:
   - 8.11.3
 cache: yarn
 script: 
-  - printf -- "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
   - yarn install --frozen-lockfile
+  - yarn lint
+  - printf -- "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
   - npm config set '//registry.npmjs.org/:_authToken' "${CIVAR_NPM_TOKEN}";
   - if [ "${TRAVIS_BRANCH}" = "master" ] && ! [ `printf -- "${TRAVIS_COMMIT_MESSAGE}" | grep "Publish"` ]; then
       git checkout ${TRAVIS_BRANCH};
