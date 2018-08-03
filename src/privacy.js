@@ -7,9 +7,7 @@ const getData = (document) => {
   return unsaltData(document.data);
 }
 
-const setData = (document, data, _obfuscatedData = []) => {
-  const currentObfuscatedData = _.get(document, 'privacy.obfuscatedData', []);
-  const obfuscatedData = currentObfuscatedData.concat(_obfuscatedData);
+const setData = (document, data, obfuscatedData = []) => {
   const privacy = Object.assign(
     {},
     document.privacy,
@@ -48,7 +46,11 @@ const obfuscateData = (_data, fields) => {
 const obfuscateDocument = (_document, fields) => {
   const _data = getData(_document);
   const {data, obfuscatedData} = obfuscateData(_data, fields);
-  const document = setData(_document, data, obfuscatedData)
+
+  const currentObfuscatedData = _.get(_document, 'privacy.obfuscatedData', []);
+  const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
+  
+  const document = setData(_document, data, newObfuscatedData)
   return document;
 }
 

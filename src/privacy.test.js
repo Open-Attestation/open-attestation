@@ -214,14 +214,48 @@ describe('privacy', () => {
   });
 
   describe('getData', () => {
-    xit('returns original data given salted content and, optionally, salt length', () =>{
-      assert(false, 'TODO');
+    it('returns original data given salted content and, optionally, salt length', () =>{
+      const document = {
+        data: {
+          key1: 'f9ec69be-ab21-474d-b8d7-012424813dc3:value1',
+          key2: {
+            key21: '181e6794-45e4-4ecd-ac45-4c2aed0d757f:true'
+          }
+        }
+      };
+      const data = getData(document);
+      expect(data).to.deep.equal({
+        key1: 'value1',
+        key2: {
+          key21: true
+        }
+      })
     });
   });
   
   describe('setData', () => {
-    xit('returns salted content given data and, optionally, salt length', () =>{
-      assert(false, 'TODO');
+    it('sets data and obfuscated data of the document', () =>{
+      const data = {
+        key1: 'value1',
+        key2: {
+          key21: true
+        }
+      };
+      const obfuscatedData = [
+        '6f60bbe613a4a5b3d448b905f73f559f740131d5aa8d57b4b7ada9b78c72d81e',
+        '780f5fbb10e5a2c88c7254c196e20d8c8b74c5b5925be49e8281be5a6cb1a2e2',
+        '4d93dd9bbaa80d01010b3f7faaf48ed5da36f0b9408c751493f6cce24a9a0c89'
+      ];
+
+      const document = setData({}, data, obfuscatedData);
+      expect(document.data.key1).to.contain('value1');
+      expect(document.data.key2.key21).to.contain('true');
+
+      expect(document.privacy.obfuscatedData).to.deep.equal([
+        '6f60bbe613a4a5b3d448b905f73f559f740131d5aa8d57b4b7ada9b78c72d81e',
+        '780f5fbb10e5a2c88c7254c196e20d8c8b74c5b5925be49e8281be5a6cb1a2e2',
+        '4d93dd9bbaa80d01010b3f7faaf48ed5da36f0b9408c751493f6cce24a9a0c89'
+      ]);
     });
   });
 
