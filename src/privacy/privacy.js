@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { flatten } = require("flat");
-const { toBuffer } = require("./utils");
+const { toBuffer } = require("../utils");
 const { saltData, unsaltData } = require("./salt");
 
 const getData = document => unsaltData(document.data);

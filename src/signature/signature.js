@@ -1,8 +1,8 @@
 const _ = require("lodash");
 const { sha3 } = require("ethereumjs-util");
-const { digestDocument } = require("./digest");
+const { digestDocument } = require("../digest");
 const { MerkleTree } = require("./merkle");
-const { hashToBuffer, bufSortJoin } = require("./utils");
+const { hashToBuffer, bufSortJoin } = require("../utils");
 
 const sign = (document, batch) => {
   const digest = digestDocument(document);

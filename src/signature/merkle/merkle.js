@@ -1,5 +1,10 @@
 const { sha3 } = require("ethereumjs-util");
-const { hashArray, bufSortJoin, toBuffer, hashToBuffer } = require("./utils");
+const {
+  hashArray,
+  bufSortJoin,
+  toBuffer,
+  hashToBuffer
+} = require("../../utils");
 
 /**
  * Returns the keccak hash of two buffers after concatenating them and sorting them
