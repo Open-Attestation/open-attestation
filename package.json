@@ -23,13 +23,11 @@
     "eslint-plugin-mocha": "^5.1.0",
     "eslint-plugin-prettier": "^2.6.2",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.3",
     "nyc": "^12.0.2",
     "prettier": "^1.14.0"
   },
   "dependencies": {
     "ajv": "^6.5.2",
-    "djv": "^2.1.0",
     "ethereumjs-util": "^5.2.0",
     "flat": "^4.1.0",
     "lerna": "^3.0.0-rc.0",
