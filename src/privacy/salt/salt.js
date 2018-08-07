@@ -1,26 +1,13 @@
-/* eslint-disable */
 const { includes, mapValues, map } = require("lodash");
+const { isNumeric, isBoolean, isUUID } = require("validator");
 const uuid = require("uuid/v4");
+const { isHexString } = require("../../utils");
 
 const identityFn = val => val;
 
-/**
- * Applies `iteratee` to all fields in objects, goes into arrays as well.
- * Refer to test for example
- * @param {*} collection
- * @param {*} iteratee
- */
-function deepMap(collection, iteratee = identityFn) {
-  if (collection instanceof Array) {
-    return map(collection, recursivelyApply(iteratee));
-  }
-  if (typeof collection === "object") {
-    return mapValues(collection, recursivelyApply(iteratee));
-  }
-}
-
 const PRIMITIVE_TYPES = ["string", "number", "boolean"];
 
+/* eslint-disable no-use-before-define */
 /**
  * Curried function that takes (iteratee)(value),
  * if value is a collection then recurse into it
@@ -36,6 +23,24 @@ const recursivelyApply = iteratee => value => {
 };
 
 /**
+ * Applies `iteratee` to all fields in objects, goes into arrays as well.
+ * Refer to test for example
+ * @param {*} collection
+ * @param {*} iteratee
+ */
+function deepMap(collection, iteratee = identityFn) {
+  if (collection instanceof Array) {
+    return map(collection, recursivelyApply(iteratee));
+  }
+  if (typeof collection === "object") {
+    return mapValues(collection, recursivelyApply(iteratee));
+  }
+  return collection;
+}
+/* eslint-enable no-use-before-define */
+// disabling this because of mutual recursion
+
+/**
  * Returns the salted value,
  * salt is a hexadecimal string that is 2 * saltLength
  * @param {*} value
@@ -46,9 +51,16 @@ function uuidSalt(value) {
   return `${salt}:${String(value)}`;
 }
 
-function startsWithUuidV4(value) {
-  const UuidV4Regex = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}[:].*/;
-  return UuidV4Regex.test(value);
+const startsWithUuidV4 = inputString => {
+  const elements = inputString.split(":");
+  return isUUID(elements[0], 4);
+};
+
+function coerceStringToPrimitve(value) {
+  if (isHexString(value) || !(isBoolean(value) || isNumeric(value))) {
+    return value;
+  }
+  return JSON.parse(value);
 }
 
 /**
@@ -58,25 +70,10 @@ function startsWithUuidV4(value) {
  */
 function unsalt(value) {
   if (startsWithUuidV4(value)) {
-    untypedValue = value.substring(37).trim();
+    const untypedValue = value.substring(37).trim();
     return coerceStringToPrimitve(untypedValue);
   }
   return value;
-}
-
-function coerceStringToPrimitve(value) {
-  if (isBoolean(value) || isNumber(value)) {
-    return JSON.parse(value);
-  }
-  return value;
-}
-
-function isBoolean(value) {
-  return value === "true" || value === "false";
-}
-
-function isNumber(value) {
-  return !isNaN(Number(value)) && isFinite(Number(value));
 }
 
 // Use uuid salting method to recursively salt data

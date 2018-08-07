@@ -32,7 +32,9 @@
     "flat": "^4.1.0",
     "lerna": "^3.0.0-rc.0",
     "lodash": "^4.17.10",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "validator": "^10.5.0",
+    "verbal-expressions": "^0.3.0"
   },
   "directories": {
     "test": "test"

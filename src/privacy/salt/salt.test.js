@@ -8,7 +8,8 @@ const someObj = {
       {
         arrayObject1KeyA: "array object value 1",
         arrayObject1KeyB: 3,
-        arrayObject1KeyC: false
+        arrayObject1KeyC: false,
+        arrayObject1KeyD: "0x126bF276bA4C7111dbddbb542718CfF678C9b3Ce"
       },
       {
         arrayObject2KeyA: {
@@ -52,7 +53,9 @@ describe("salt", () => {
           {
             arrayObject1KeyA: "fakesalt: array object value 1",
             arrayObject1KeyB: "fakesalt: 3",
-            arrayObject1KeyC: "fakesalt: false"
+            arrayObject1KeyC: "fakesalt: false",
+            arrayObject1KeyD:
+              "fakesalt: 0x126bF276bA4C7111dbddbb542718CfF678C9b3Ce"
           },
           {
             arrayObject2KeyA: {
