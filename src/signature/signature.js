@@ -19,15 +19,14 @@ const sign = (document, batch) => {
     .getProof(hashToBuffer(digest))
     .map(buffer => buffer.toString("hex"));
 
-  return {
-    ...document,
+  return Object.assign({}, document, {
     signature: {
       type: "SHA3MerkleProof",
       targetHash: digest,
       proof: merkleProof,
       merkleRoot
     }
-  };
+  });
 };
 
 const verify = document => {

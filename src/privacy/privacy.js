@@ -11,11 +11,10 @@ const setData = (document, data, obfuscatedData = []) => {
     document.privacy,
     obfuscatedData && obfuscatedData.length > 0 ? { obfuscatedData } : {}
   );
-  return {
-    ...document,
+  return Object.assign({}, document, {
     data: saltData(data),
     privacy
-  };
+  });
 };
 
 const obfuscateData = (_data, fields) => {
