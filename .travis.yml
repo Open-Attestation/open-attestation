@@ -12,6 +12,7 @@ script:
       git reset --hard ${TRAVIS_COMMIT};
       git remote set-url origin ${CIVAR_GH_REPOSITORY_URL};
       npm config set '//registry.npmjs.org/:_authToken' "${CIVAR_NPM_TOKEN}";
+      npm run build;
       if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
         if [ -z "${TRAVIS_COMMIT_MESSAGE##*"[major release]"*}" ]; then
           LERNA_CD_VERSION='major';

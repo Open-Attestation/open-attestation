@@ -2,13 +2,17 @@
   "name": "@govtechsg/open-attestation",
   "version": "1.1.16",
   "description": "## Usage",
-  "main": "src/index.js",
+  "main": "dist/open-attestation.js",
   "scripts": {
+    "build": "microbundle -o dist/",
     "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js'",
     "test-watch": "mocha ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js' --watch --recursive",
     "lint": "eslint . --ext .js --max-warnings 0",
     "lint:fix": "eslint . --ext .js --fix"
   },
+  "files": [
+    "/dist"
+  ],
   "author": "Raymond Yeh <yehjxraymond@gmail.com> (http://geek.sg)",
   "license": "ISC",
   "devDependencies": {
@@ -22,6 +26,7 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-mocha": "^5.1.0",
     "eslint-plugin-prettier": "^2.6.2",
+    "microbundle": "^0.6.0",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
     "prettier": "^1.14.0"
