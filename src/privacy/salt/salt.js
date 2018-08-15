@@ -52,8 +52,11 @@ export function uuidSalt(value) {
 }
 
 const startsWithUuidV4 = inputString => {
-  const elements = inputString.split(":");
-  return isUUID(elements[0], 4);
+  if (inputString && typeof inputString === "string") {
+    const elements = inputString.split(":");
+    return isUUID(elements[0], 4);
+  }
+  return false;
 };
 
 function coerceStringToPrimitve(value) {

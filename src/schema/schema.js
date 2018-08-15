@@ -1,4 +1,5 @@
 import Ajv from "ajv";
+import { getData } from "../privacy";
 
 const ajv = new Ajv();
 
@@ -13,9 +14,11 @@ export const addSchema = schema => {
   }
 };
 
-export const validate = (document, schema) =>
-  // TODO: Retrieve the data from the document without the salt first
-  // const unsaltedData = unsalted(data)
-  schema
-    ? ajv.validate(schema, document.data)
-    : ajv.validate(document.schema, document.data);
+export const validate = (document, schema) => {
+  const result = schema
+    ? ajv.validate(schema, getData(document))
+    : ajv.validate(document.schema, getData(document));
+  // eslint-disable-next-line no-console
+  console.log(ajv.errors); // TODO: properly feedback error
+  return result;
+};
