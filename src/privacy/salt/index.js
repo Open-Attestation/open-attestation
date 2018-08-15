@@ -1,1 +1,1 @@
-module.exports = require("./salt");
+export * from "./salt";

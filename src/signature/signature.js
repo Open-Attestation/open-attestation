@@ -1,10 +1,10 @@
-const _ = require("lodash");
-const { sha3 } = require("ethereumjs-util");
-const { digestDocument } = require("../digest");
-const { MerkleTree } = require("./merkle");
-const { hashToBuffer, bufSortJoin } = require("../utils");
+import { get } from "lodash";
+import { sha3 } from "ethereumjs-util";
+import { digestDocument } from "../digest";
+import { MerkleTree } from "./merkle";
+import { hashToBuffer, bufSortJoin } from "../utils";
 
-const sign = (document, batch) => {
+export const sign = (document, batch) => {
   const digest = digestDocument(document);
 
   if (batch && !batch.includes(digest)) {
@@ -29,20 +29,20 @@ const sign = (document, batch) => {
   });
 };
 
-const verify = document => {
-  const signature = _.get(document, "signature");
+export const verify = document => {
+  const signature = get(document, "signature");
   if (!signature) {
     return false;
   }
 
   // Checks target hash
   const digest = digestDocument(document);
-  const targetHash = _.get(document, "signature.targetHash");
+  const targetHash = get(document, "signature.targetHash");
   if (digest !== targetHash) return false;
 
   // Calculates merkle root from target hash and proof, then compare to merkle root in document
-  const merkleRoot = _.get(document, "signature.merkleRoot");
-  const proof = _.get(document, "signature.proof", []);
+  const merkleRoot = get(document, "signature.merkleRoot");
+  const proof = get(document, "signature.proof", []);
   const calculatedMerkleRoot = proof.reduce((prev, current) => {
     const prevAsBuffer = hashToBuffer(prev);
     const currAsBuffer = hashToBuffer(current);
@@ -52,9 +52,4 @@ const verify = document => {
   }, digest);
 
   return calculatedMerkleRoot === merkleRoot;
-};
-
-module.exports = {
-  sign,
-  verify
 };

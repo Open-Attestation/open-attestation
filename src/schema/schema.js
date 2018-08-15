@@ -1,8 +1,8 @@
-const Ajv = require("ajv");
+import Ajv from "ajv";
 
 const ajv = new Ajv();
 
-const addSchema = schema => {
+export const addSchema = schema => {
   try {
     ajv.addSchema(schema, schema.id);
   } catch (e) {
@@ -13,14 +13,9 @@ const addSchema = schema => {
   }
 };
 
-const validate = (document, schema) =>
+export const validate = (document, schema) =>
   // TODO: Retrieve the data from the document without the salt first
   // const unsaltedData = unsalted(data)
   schema
     ? ajv.validate(schema, document.data)
     : ajv.validate(document.schema, document.data);
-
-module.exports = {
-  addSchema,
-  validate
-};

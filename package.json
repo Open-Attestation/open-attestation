@@ -3,8 +3,11 @@
   "version": "1.1.17",
   "description": "## Usage",
   "main": "dist/open-attestation.js",
+  "module": "dist/open-attestation.esm.js",
+  "browser": "dist/open-attestation.umd.js",
   "scripts": {
-    "build": "microbundle -o dist/",
+    "build": "rollup -c",
+    "clean": "rm -rf dist/",
     "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js'",
     "test-watch": "mocha ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js' --watch --recursive",
     "lint": "eslint . --ext .js --max-warnings 0",
@@ -16,6 +19,9 @@
   "author": "Raymond Yeh <yehjxraymond@gmail.com> (http://geek.sg)",
   "license": "ISC",
   "devDependencies": {
+    "@istanbuljs/nyc-config-babel": "^1.2.3",
+    "babel-plugin-istanbul": "^4.1.6",
+    "babel-preset-env": "^1.7.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "eslint": "^5.2.0",
@@ -29,7 +35,14 @@
     "microbundle": "^0.6.0",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
-    "prettier": "^1.14.0"
+    "prettier": "^1.14.0",
+    "rollup": "^0.64.1",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-commonjs": "^9.1.5",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "babel-core": "^6.26.3"
   },
   "dependencies": {
     "ajv": "^6.5.2",
@@ -46,12 +59,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GovTechSG/openAttestation.git"
+    "url": "git+https://github.com/GovTechSG/open-attestation.git"
   },
   "bugs": {
-    "url": "https://github.com/GovTechSG/openAttestation/issues"
+    "url": "https://github.com/GovTechSG/open-attestation/issues"
   },
-  "homepage": "https://github.com/GovTechSG/openAttestation#readme",
+  "homepage": "https://github.com/GovTechSG/open-attestation#readme",
   "publishConfig": {
     "access": "public"
   }

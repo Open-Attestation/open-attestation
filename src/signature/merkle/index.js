@@ -1,1 +1,1 @@
-module.exports = require("./merkle");
+export * from "./merkle";

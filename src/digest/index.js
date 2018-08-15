@@ -1,1 +1,1 @@
-module.exports = require("./digest");
+export * from "./digest";

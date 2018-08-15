@@ -1,7 +1,7 @@
-const { digestDocument } = require("./digest");
-const { addSchema, validate } = require("./schema");
-const { sign, verify } = require("./signature");
-const { getData, setData, obfuscateDocument } = require("./privacy");
+import { digestDocument } from "./digest";
+import { addSchema, validate } from "./schema";
+import { sign, verify } from "./signature";
+import { getData, setData, obfuscateDocument } from "./privacy";
 
 const createDocument = (data, schema) => {
   const document = setData({ schema: schema.$id }, data);

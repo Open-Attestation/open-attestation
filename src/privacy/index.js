@@ -1,1 +1,1 @@
-module.exports = require("./privacy");
+export * from "./privacy";

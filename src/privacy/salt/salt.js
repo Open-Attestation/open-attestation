@@ -1,7 +1,7 @@
-const { includes, mapValues, map } = require("lodash");
-const { isNumeric, isBoolean, isUUID } = require("validator");
-const uuid = require("uuid/v4");
-const { isHexString } = require("../../utils");
+import { includes, mapValues, map } from "lodash";
+import { isNumeric, isBoolean, isUUID } from "validator";
+import uuid from "uuid/v4";
+import { isHexString } from "../../utils";
 
 const identityFn = val => val;
 
@@ -28,7 +28,7 @@ const recursivelyApply = iteratee => value => {
  * @param {*} collection
  * @param {*} iteratee
  */
-function deepMap(collection, iteratee = identityFn) {
+export function deepMap(collection, iteratee = identityFn) {
   if (collection instanceof Array) {
     return map(collection, recursivelyApply(iteratee));
   }
@@ -46,7 +46,7 @@ function deepMap(collection, iteratee = identityFn) {
  * @param {*} value
  * @param {*} saltLength
  */
-function uuidSalt(value) {
+export function uuidSalt(value) {
   const salt = uuid();
   return `${salt}:${String(value)}`;
 }
@@ -68,7 +68,7 @@ function coerceStringToPrimitve(value) {
  * @param {*} value
  * @param {*} saltLength
  */
-function unsalt(value) {
+export function unsalt(value) {
   if (startsWithUuidV4(value)) {
     const untypedValue = value.substring(37).trim();
     return coerceStringToPrimitve(untypedValue);
@@ -77,13 +77,5 @@ function unsalt(value) {
 }
 
 // Use uuid salting method to recursively salt data
-const saltData = data => deepMap(data, uuidSalt);
-const unsaltData = data => deepMap(data, unsalt);
-
-module.exports = {
-  deepMap,
-  uuidSalt,
-  unsalt,
-  saltData,
-  unsaltData
-};
+export const saltData = data => deepMap(data, uuidSalt);
+export const unsaltData = data => deepMap(data, unsalt);

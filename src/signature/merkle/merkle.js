@@ -1,10 +1,5 @@
-const { sha3 } = require("ethereumjs-util");
-const {
-  hashArray,
-  bufSortJoin,
-  toBuffer,
-  hashToBuffer
-} = require("../../utils");
+import { sha3 } from "ethereumjs-util";
+import { hashArray, bufSortJoin, toBuffer, hashToBuffer } from "../../utils";
 
 /**
  * Returns the keccak hash of two buffers after concatenating them and sorting them
@@ -104,7 +99,7 @@ function getBufIndex(element, array) {
   return -1;
 }
 
-function MerkleTree(_elements) {
+export function MerkleTree(_elements) {
   const elements = hashArray(_elements);
 
   if (!(this instanceof MerkleTree)) {
@@ -141,7 +136,7 @@ MerkleTree.prototype.getProof = function _getProof(_element) {
  * @param {*} _root The merkle root
  * @param {*} _element The leaf node that is being verified
  */
-const checkProof = function(_proof, _root, _element) {
+export const checkProof = function(_proof, _root, _element) {
   const proof = _proof.map(step => hashToBuffer(step));
   const root = hashToBuffer(_root);
   const element = hashToBuffer(_element);
@@ -151,9 +146,4 @@ const checkProof = function(_proof, _root, _element) {
   );
 
   return root.equals(proofRoot);
-};
-
-module.exports = {
-  MerkleTree,
-  checkProof
 };

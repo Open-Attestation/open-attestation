@@ -1,1 +1,1 @@
-module.exports = require("./signature");
+export * from "./signature";

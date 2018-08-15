@@ -1,10 +1,9 @@
-const _ = require("lodash");
-const { flatten } = require("flat");
+import { get, omitBy, sortBy } from "lodash";
+import { flatten } from "flat";
+import { sha3 } from "ethereumjs-util";
 
-const { sha3 } = require("ethereumjs-util");
-
-const flattenHashArray = data => {
-  const flattenedData = _.omitBy(
+export const flattenHashArray = data => {
+  const flattenedData = omitBy(
     flatten(data),
     (value, key) => value === undefined || key === undefined
   );
@@ -15,24 +14,19 @@ const flattenHashArray = data => {
   });
 };
 
-const digestDocument = document => {
+export const digestDocument = document => {
   // Prepare array of hashes from filtered data
-  const hashedDataArray = _.get(document, "privacy.obfuscatedData", []);
+  const hashedDataArray = get(document, "privacy.obfuscatedData", []);
 
   // Prepare array of hashes from visible data
-  const unhashedData = _.get(document, "data");
+  const unhashedData = get(document, "data");
   const hashedUnhashedDataArray = flattenHashArray(unhashedData);
 
   // Combine both array and sort them to ensure determinism
   const combinedHashes = hashedDataArray.concat(hashedUnhashedDataArray);
-  const sortedHashes = _.sortBy(combinedHashes);
+  const sortedHashes = sortBy(combinedHashes);
 
   // Finally, return the digest of the entire set of data
   const digest = sha3(JSON.stringify(sortedHashes)).toString("hex");
   return digest;
-};
-
-module.exports = {
-  flattenHashArray,
-  digestDocument
 };

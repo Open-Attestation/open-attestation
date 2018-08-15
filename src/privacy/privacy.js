@@ -1,11 +1,11 @@
-const _ = require("lodash");
-const { flatten } = require("flat");
-const { toBuffer } = require("../utils");
-const { saltData, unsaltData } = require("./salt");
+import { cloneDeep, pick, unset, get } from "lodash";
+import { flatten } from "flat";
+import { toBuffer } from "../utils";
+import { saltData, unsaltData } from "./salt";
 
-const getData = document => unsaltData(document.data);
+export const getData = document => unsaltData(document.data);
 
-const setData = (document, data, obfuscatedData = []) => {
+export const setData = (document, data, obfuscatedData = []) => {
   const privacy = Object.assign(
     {},
     document.privacy,
@@ -17,12 +17,12 @@ const setData = (document, data, obfuscatedData = []) => {
   });
 };
 
-const obfuscateData = (_data, fields) => {
-  const data = _.cloneDeep(_data); // Prevents alteration of original data
+export const obfuscateData = (_data, fields) => {
+  const data = cloneDeep(_data); // Prevents alteration of original data
   const fieldsToRemove = fields instanceof Array ? fields : [fields];
 
   // Obfuscate data by hashing them with the key
-  const dataToObfuscate = flatten(_.pick(data, fieldsToRemove));
+  const dataToObfuscate = flatten(pick(data, fieldsToRemove));
   const obfuscatedData = Object.keys(dataToObfuscate).map(k => {
     const obj = {};
     obj[k] = dataToObfuscate[k];
@@ -31,7 +31,7 @@ const obfuscateData = (_data, fields) => {
 
   // Return remaining data
   fieldsToRemove.forEach(path => {
-    _.unset(data, path);
+    unset(data, path);
   });
 
   return {
@@ -40,20 +40,13 @@ const obfuscateData = (_data, fields) => {
   };
 };
 
-const obfuscateDocument = (_document, fields) => {
+export const obfuscateDocument = (_document, fields) => {
   const existingData = getData(_document);
   const { data, obfuscatedData } = obfuscateData(existingData, fields);
 
-  const currentObfuscatedData = _.get(_document, "privacy.obfuscatedData", []);
+  const currentObfuscatedData = get(_document, "privacy.obfuscatedData", []);
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
   const document = setData(_document, data, newObfuscatedData);
   return document;
-};
-
-module.exports = {
-  getData,
-  setData,
-  obfuscateData,
-  obfuscateDocument
 };
