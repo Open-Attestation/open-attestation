@@ -19,6 +19,6 @@ export const validate = (document, schema) => {
     ? ajv.validate(schema, getData(document))
     : ajv.validate(document.schema, getData(document));
   // eslint-disable-next-line no-console
-  console.log(ajv.errors); // TODO: properly feedback error
+  // console.log(ajv.errors); // TODO: properly feedback error
   return result;
 };
