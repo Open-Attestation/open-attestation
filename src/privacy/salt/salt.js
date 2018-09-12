@@ -1,11 +1,10 @@
 import { includes, mapValues, map } from "lodash";
-import { isNumeric, isBoolean, isUUID } from "validator";
+import { isUUID } from "validator";
 import uuid from "uuid/v4";
-import { isHexString } from "../../utils";
 
 const identityFn = val => val;
 
-const PRIMITIVE_TYPES = ["string", "number", "boolean"];
+const PRIMITIVE_TYPES = ["string", "number", "boolean", "undefined"];
 
 /* eslint-disable no-use-before-define */
 /**
@@ -16,7 +15,7 @@ const PRIMITIVE_TYPES = ["string", "number", "boolean"];
  * @param {*} value
  */
 const recursivelyApply = iteratee => value => {
-  if (includes(PRIMITIVE_TYPES, typeof value)) {
+  if (includes(PRIMITIVE_TYPES, typeof value) || value === null) {
     return iteratee(value);
   }
   return deepMap(value, iteratee);
@@ -40,17 +39,6 @@ export function deepMap(collection, iteratee = identityFn) {
 /* eslint-enable no-use-before-define */
 // disabling this because of mutual recursion
 
-/**
- * Returns the salted value,
- * salt is a hexadecimal string that is 2 * saltLength
- * @param {*} value
- * @param {*} saltLength
- */
-export function uuidSalt(value) {
-  const salt = uuid();
-  return `${salt}:${String(value)}`;
-}
-
 const startsWithUuidV4 = inputString => {
   if (inputString && typeof inputString === "string") {
     const elements = inputString.split(":");
@@ -59,11 +47,47 @@ const startsWithUuidV4 = inputString => {
   return false;
 };
 
-function coerceStringToPrimitve(value) {
-  if (isHexString(value) || !(isBoolean(value) || isNumeric(value))) {
-    return value;
+export function primitiveToTypedString(value) {
+  switch (typeof value) {
+    case "number":
+      return `number:${String(value)}`;
+    case "string":
+      return `string:${String(value)}`;
+    case "boolean":
+      return `boolean:${String(value)}`;
+    default:
+      return value === null ? "null:null" : "undefined:undefined";
   }
-  return JSON.parse(value);
+}
+
+export function typedStringToPrimitive(str) {
+  const firstColonIndex = str.indexOf(":");
+  const type = str.substring(0, firstColonIndex);
+  const value = str.substring(firstColonIndex + 1);
+
+  switch (type) {
+    case "number":
+      return Number(value);
+    case "string":
+      return value;
+    case "boolean":
+      return value === "true";
+    case "null":
+      return null;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Returns the salted value,
+ * salt is a hexadecimal string that is 2 * saltLength
+ * @param {*} value
+ * @param {*} saltLength
+ */
+export function uuidSalt(value) {
+  const salt = uuid();
+  return `${salt}:${primitiveToTypedString(value)}`;
 }
 
 /**
@@ -74,7 +98,7 @@ function coerceStringToPrimitve(value) {
 export function unsalt(value) {
   if (startsWithUuidV4(value)) {
     const untypedValue = value.substring(37).trim();
-    return coerceStringToPrimitve(untypedValue);
+    return typedStringToPrimitive(untypedValue);
   }
   return value;
 }

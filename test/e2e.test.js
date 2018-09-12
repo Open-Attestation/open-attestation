@@ -20,6 +20,12 @@ const schema = {
     },
     key2: {
       type: "string"
+    },
+    key3: {
+      type: "number"
+    },
+    key4: {
+      type: "boolean"
     }
   },
   required: ["key1"],
@@ -36,7 +42,9 @@ const datum = [
   },
   {
     key1: "item1",
-    key2: "item4"
+    key2: "true",
+    key3: 3.14159,
+    key4: false
   },
   {
     key1: "item2"

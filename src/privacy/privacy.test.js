@@ -227,9 +227,9 @@ describe("privacy", () => {
     it("returns original data given salted content and, optionally, salt length", () => {
       const document = {
         data: {
-          key1: "f9ec69be-ab21-474d-b8d7-012424813dc3:value1",
+          key1: "f9ec69be-ab21-474d-b8d7-012424813dc3:string:value1",
           key2: {
-            key21: "181e6794-45e4-4ecd-ac45-4c2aed0d757f:true"
+            key21: "181e6794-45e4-4ecd-ac45-4c2aed0d757f:boolean:true"
           }
         }
       };
