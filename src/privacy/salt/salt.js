@@ -2,6 +2,7 @@ import { includes, mapValues, map } from "lodash";
 import { isUUID } from "validator";
 import uuid from "uuid/v4";
 
+const UUIDV4_LENGTH = 37;
 const identityFn = val => val;
 
 const PRIMITIVE_TYPES = ["string", "number", "boolean", "undefined"];
@@ -47,43 +48,57 @@ const startsWithUuidV4 = inputString => {
   return false;
 };
 
+/**
+ * Detects the type of a value and returns a string with type annotation
+ * @param {*} value A value with one of the Javascript primitive types, 'string' 'number' 'boolean' 'undefined'
+ */
 export function primitiveToTypedString(value) {
   switch (typeof value) {
     case "number":
-      return `number:${String(value)}`;
     case "string":
-      return `string:${String(value)}`;
     case "boolean":
-      return `boolean:${String(value)}`;
+    case "undefined":
+      return `${typeof value}:${String(value)}`;
     default:
-      return value === null ? "null:null" : "undefined:undefined";
+      if (value === null) {
+        // typeof null is 'object' so we have to check for it
+        return "null:null";
+      }
+      throw new Error(
+        `Parsing error, value is not of primitive type: ${value}`
+      );
   }
 }
 
-export function typedStringToPrimitive(str) {
-  const firstColonIndex = str.indexOf(":");
-  const type = str.substring(0, firstColonIndex);
-  const value = str.substring(firstColonIndex + 1);
+/**
+ * Returns an appropriately typed value given a string with type annotations
+ * @param {*} inputString A string with type annotations, e.g: "number:5"
+ */
+export function typedStringToPrimitive(inputString) {
+  const [type, ...valueArray] = inputString.split(":");
+  const value = valueArray.join(":"); // just in case there are colons in the value
 
   switch (type) {
     case "number":
       return Number(value);
     case "string":
-      return value;
+      return String(value);
     case "boolean":
       return value === "true";
     case "null":
       return null;
-    default:
+    case "undefined":
       return undefined;
+    default:
+      throw new Error(
+        `Parsing error, type annotation not found in string: ${inputString}`
+      );
   }
 }
 
 /**
- * Returns the salted value,
- * salt is a hexadecimal string that is 2 * saltLength
+ * Returns a salted value using a randomly generated uuidv4 string for salt
  * @param {*} value
- * @param {*} saltLength
  */
 export function uuidSalt(value) {
   const salt = uuid();
@@ -91,13 +106,12 @@ export function uuidSalt(value) {
 }
 
 /**
- * Removes salt from the given string and applies JSON.parse() to it
- * @param {*} value
- * @param {*} saltLength
+ * Returns an appropriately typed value when given a salted string with type annotation
+ * @param {*} value salted string in the format "salt:type:value", example: "ee7f3323-1634-4dea-8c12-f0bb83aff874:number:5"
  */
 export function unsalt(value) {
   if (startsWithUuidV4(value)) {
-    const untypedValue = value.substring(37).trim();
+    const untypedValue = value.substring(UUIDV4_LENGTH).trim();
     return typedStringToPrimitive(untypedValue);
   }
   return value;
