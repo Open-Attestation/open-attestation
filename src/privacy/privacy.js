@@ -1,7 +1,7 @@
 import { cloneDeep, pick, unset, get } from "lodash";
 import { flatten } from "flat";
 import { toBuffer } from "../utils";
-import { saltData, unsaltData } from "./salt";
+import { unsaltData } from "./salt";
 
 export const getData = document => unsaltData(document.data);
 
@@ -12,7 +12,7 @@ export const setData = (document, data, obfuscatedData = []) => {
     obfuscatedData && obfuscatedData.length > 0 ? { obfuscatedData } : {}
   );
   return Object.assign({}, document, {
-    data: saltData(data),
+    data,
     privacy
   });
 };
@@ -41,7 +41,7 @@ export const obfuscateData = (_data, fields) => {
 };
 
 export const obfuscateDocument = (_document, fields) => {
-  const existingData = getData(_document);
+  const existingData = _document.data;
   const { data, obfuscatedData } = obfuscateData(existingData, fields);
 
   const currentObfuscatedData = get(_document, "privacy.obfuscatedData", []);

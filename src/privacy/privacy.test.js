@@ -259,7 +259,7 @@ describe("privacy", () => {
 
       const document = setData({}, data, obfuscatedData);
       expect(document.data.key1).to.contain("value1");
-      expect(document.data.key2.key21).to.contain("true");
+      expect(document.data.key2.key21).to.be.true;
 
       expect(document.privacy.obfuscatedData).to.deep.equal([
         "6f60bbe613a4a5b3d448b905f73f559f740131d5aa8d57b4b7ada9b78c72d81e",
