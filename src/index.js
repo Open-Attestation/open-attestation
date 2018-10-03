@@ -2,9 +2,10 @@ import { digestDocument } from "./digest";
 import { addSchema, validate } from "./schema";
 import { sign, verify } from "./signature";
 import { getData, setData, obfuscateDocument } from "./privacy";
+import { saltData } from "./privacy/salt";
 
 const createDocument = (data, schema) => {
-  const document = setData({ schema: schema.$id }, data);
+  const document = setData({ schema: schema.$id }, saltData(data));
   const valid = validate(document, schema);
   if (valid) {
     return document;

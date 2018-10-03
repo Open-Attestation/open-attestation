@@ -3,7 +3,7 @@ const {
   issueDocument,
   issueDocuments,
   // digestDocument,
-  // obfuscateDocument,
+  obfuscateDocument,
   addSchema,
   // sign,
   validateSchema,
@@ -101,6 +101,32 @@ describe("E2E Test Scenarios", () => {
       expect(signedDocument.signature.merkleRoot).to.not.equal(
         newDocument.signature.merkleRoot
       );
+    });
+
+    it("obfuscate data correctly", () => {
+      const newDocument = issueDocument(datum[2], schema);
+      const obfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
+
+      const verified = verifySignature(obfuscatedDocument);
+      expect(verified).to.be.true;
+
+      const validatedSchema = validateSchema(obfuscatedDocument);
+      expect(validatedSchema).to.be.true;
+    });
+
+    it("obfuscate data transistively", () => {
+      const newDocument = issueDocument(datum[2], schema);
+      const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
+      const obfuscatedDocument = obfuscateDocument(intermediateDocument, [
+        "key3"
+      ]);
+
+      const comparison = obfuscateDocument(intermediateDocument, [
+        "key2",
+        "key3"
+      ]);
+
+      expect(comparison).to.deep.equal(obfuscatedDocument);
     });
   });
 
