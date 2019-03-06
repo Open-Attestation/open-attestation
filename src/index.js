@@ -1,6 +1,6 @@
 import { digestDocument } from "./digest";
 import { addSchema, validate } from "./schema";
-import { sign, verify } from "./signature";
+import { sign, verify, MerkleTree, checkProof } from "./signature";
 import { getData, setData, obfuscateDocument } from "./privacy";
 import { saltData } from "./privacy/salt";
 
@@ -35,5 +35,7 @@ module.exports = {
   addSchema,
   sign,
   validateSchema: validate,
-  verifySignature: verify
+  verifySignature: verify,
+  MerkleTree,
+  checkProof
 };
