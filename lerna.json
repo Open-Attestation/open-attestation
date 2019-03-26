@@ -3,6 +3,6 @@
   "packages": [
     "."
   ],
-  "registry": "//registry.npmjs.org/",
+  "registry": "https://registry.npmjs.org/",
   "version": "independent"
 }
