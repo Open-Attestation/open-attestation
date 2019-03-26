@@ -46,9 +46,15 @@ describe("merkle", () => {
       const layer1 = evenTree.layers[1];
       const layer2 = evenTree.layers[2];
 
-      expect(keccak256(Buffer.concat([layer0[0], layer0[1]]))).to.eql(layer1[0]);
-      expect(keccak256(Buffer.concat([layer0[2], layer0[3]]))).to.eql(layer1[1]);
-      expect(keccak256(Buffer.concat([layer1[0], layer1[1]]))).to.eql(layer2[0]);
+      expect(keccak256(Buffer.concat([layer0[0], layer0[1]]))).to.eql(
+        layer1[0]
+      );
+      expect(keccak256(Buffer.concat([layer0[2], layer0[3]]))).to.eql(
+        layer1[1]
+      );
+      expect(keccak256(Buffer.concat([layer1[0], layer1[1]]))).to.eql(
+        layer2[0]
+      );
     });
 
     it("creates the tree properly if there is an odd number of elements", () => {
