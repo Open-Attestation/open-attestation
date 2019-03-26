@@ -3,7 +3,7 @@ import { addSchema, validate } from "./schema";
 import { sign, verify, MerkleTree, checkProof } from "./signature";
 import { getData, setData, obfuscateDocument } from "./privacy";
 import { saltData } from "./privacy/salt";
-import utils from "./utils";
+import * as utils from "./utils";
 
 const createDocument = (data, schema) => {
   const document = setData({ schema: schema.$id }, saltData(data));
