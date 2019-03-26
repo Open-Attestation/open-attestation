@@ -1,4 +1,4 @@
-const { sha3 } = require("ethereumjs-util");
+const { keccak256 } = require("ethereumjs-util");
 const { MerkleTree, checkProof } = require("./merkle");
 const { toBuffer, hashArray } = require("../../utils");
 
@@ -27,7 +27,7 @@ describe("merkle", () => {
 
     it("check if proof is valid for all items", () => {
       arr.forEach(i => {
-        const hash = sha3(JSON.stringify(i));
+        const hash = keccak256(JSON.stringify(i));
         const proof = tree.getProof(i);
         const checkResults = checkProof(proof, tree.getRoot(), hash);
         expect(checkResults).to.be.true;
@@ -46,9 +46,15 @@ describe("merkle", () => {
       const layer1 = evenTree.layers[1];
       const layer2 = evenTree.layers[2];
 
-      expect(sha3(Buffer.concat([layer0[0], layer0[1]]))).to.eql(layer1[0]);
-      expect(sha3(Buffer.concat([layer0[2], layer0[3]]))).to.eql(layer1[1]);
-      expect(sha3(Buffer.concat([layer1[0], layer1[1]]))).to.eql(layer2[0]);
+      expect(keccak256(Buffer.concat([layer0[0], layer0[1]]))).to.eql(
+        layer1[0]
+      );
+      expect(keccak256(Buffer.concat([layer0[2], layer0[3]]))).to.eql(
+        layer1[1]
+      );
+      expect(keccak256(Buffer.concat([layer1[0], layer1[1]]))).to.eql(
+        layer2[0]
+      );
     });
 
     it("creates the tree properly if there is an odd number of elements", () => {
@@ -67,7 +73,7 @@ describe("merkle", () => {
       // which is out of order and should be swapped before hashing
 
       const secondLayer = outOfOrderTree.layers[1];
-      const hash = sha3(Buffer.concat([secondLayer[1], secondLayer[0]]));
+      const hash = keccak256(Buffer.concat([secondLayer[1], secondLayer[0]]));
 
       expect(hash).to.eql(outOfOrderTree.layers[2][0]);
     });

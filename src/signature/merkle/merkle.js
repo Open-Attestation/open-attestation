@@ -1,4 +1,4 @@
-import { sha3 } from "ethereumjs-util";
+import { keccak256 } from "ethereumjs-util";
 import { hashArray, bufSortJoin, toBuffer, hashToBuffer } from "../../utils";
 
 /**
@@ -14,7 +14,7 @@ function combinedHash(first, second) {
   if (!first) {
     return second;
   }
-  return sha3(bufSortJoin(first, second));
+  return keccak256(bufSortJoin(first, second));
 }
 
 function getNextLayer(elements) {
