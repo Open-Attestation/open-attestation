@@ -1,4 +1,4 @@
-![Travis Build Status](https://travis-ci.org/GovTechSG/open-attestation.svg?branch=master)
+![Travis Build Status](https://travis-ci.org/OpenCerts/open-attestation.svg?branch=master)
 
 # Open Attestation
 
