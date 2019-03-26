@@ -1,4 +1,4 @@
-import { sha3 } from "ethereumjs-util";
+import { keccak256 } from "ethereumjs-util";
 import crypto from "crypto";
 
 /**
@@ -13,7 +13,7 @@ export function bufSortJoin(...args) {
 export function toBuffer(element) {
   return Buffer.isBuffer(element) && element.length === 32
     ? element
-    : sha3(JSON.stringify(element));
+    : keccak256(JSON.stringify(element));
 }
 
 // If hash is not a buffer, convert it to buffer (without hashing it)

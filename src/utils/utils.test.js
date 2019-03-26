@@ -1,4 +1,4 @@
-const { sha3 } = require("ethereumjs-util");
+const { keccak256 } = require("ethereumjs-util");
 const utils = require("./utils");
 
 describe("Util Functions", () => {
@@ -50,7 +50,7 @@ describe("Util Functions", () => {
     });
 
     it("should do nothing if the input is a hash", () => {
-      const originalBuffer = sha3(Buffer.from("foo", "utf8"));
+      const originalBuffer = keccak256(Buffer.from("foo", "utf8"));
       expect(utils.toBuffer(originalBuffer)).to.deep.equal(originalBuffer);
     });
   });

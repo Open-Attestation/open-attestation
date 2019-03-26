@@ -3,6 +3,7 @@ import { addSchema, validate } from "./schema";
 import { sign, verify, MerkleTree, checkProof } from "./signature";
 import { getData, setData, obfuscateDocument } from "./privacy";
 import { saltData } from "./privacy/salt";
+import utils from "./utils";
 
 const createDocument = (data, schema) => {
   const document = setData({ schema: schema.$id }, saltData(data));
@@ -37,5 +38,6 @@ module.exports = {
   validateSchema: validate,
   verifySignature: verify,
   MerkleTree,
-  checkProof
+  checkProof,
+  utils
 };

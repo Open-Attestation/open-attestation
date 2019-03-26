@@ -1,6 +1,6 @@
 import { get, omitBy, sortBy } from "lodash";
 import { flatten } from "flat";
-import { sha3 } from "ethereumjs-util";
+import { keccak256 } from "ethereumjs-util";
 
 export const flattenHashArray = data => {
   const flattenedData = omitBy(
@@ -10,7 +10,7 @@ export const flattenHashArray = data => {
   return Object.keys(flattenedData).map(k => {
     const obj = {};
     obj[k] = flattenedData[k];
-    return sha3(JSON.stringify(obj)).toString("hex");
+    return keccak256(JSON.stringify(obj)).toString("hex");
   });
 };
 
@@ -27,6 +27,6 @@ export const digestDocument = document => {
   const sortedHashes = sortBy(combinedHashes);
 
   // Finally, return the digest of the entire set of data
-  const digest = sha3(JSON.stringify(sortedHashes)).toString("hex");
+  const digest = keccak256(JSON.stringify(sortedHashes)).toString("hex");
   return digest;
 };
