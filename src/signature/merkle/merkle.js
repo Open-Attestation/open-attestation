@@ -1,27 +1,15 @@
-import { keccak256 } from "ethereumjs-util";
-import { hashArray, bufSortJoin, toBuffer, hashToBuffer } from "../../utils";
-
-/**
- * Returns the keccak hash of two buffers after concatenating them and sorting them
- * If either hash is not given, the input is returned
- * @param {Buffer} first A buffer to be hashed
- * @param {Buffer} second A buffer to be hashed
- */
-function combinedHash(first, second) {
-  if (!second) {
-    return first;
-  }
-  if (!first) {
-    return second;
-  }
-  return keccak256(bufSortJoin(first, second));
-}
+import {
+  hashArray,
+  toBuffer,
+  hashToBuffer,
+  combineHashBuffers
+} from "../../utils";
 
 function getNextLayer(elements) {
   return elements.reduce((layer, element, index, arr) => {
     if (index % 2 === 0) {
       // only calculate hash for even indexes
-      layer.push(combinedHash(element, arr[index + 1]));
+      layer.push(combineHashBuffers(element, arr[index + 1]));
     }
     return layer;
   }, []);
@@ -141,7 +129,7 @@ export const checkProof = function(_proof, _root, _element) {
   const root = hashToBuffer(_root);
   const element = hashToBuffer(_element);
   const proofRoot = proof.reduce(
-    (hash, pair) => combinedHash(hash, pair),
+    (hash, pair) => combineHashBuffers(hash, pair),
     element
   );
 

@@ -82,4 +82,80 @@ describe("Util Functions", () => {
       expect(utils.randomSalt()).to.not.equal(utils.randomSalt());
     });
   });
+
+  describe("combineHashBuffers", () => {
+    it("should combine two hashes (in buffer format) and return result as a string", () => {
+      expect(
+        utils
+          .combineHashBuffers(
+            utils.hashToBuffer(
+              "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+            ),
+            utils.hashToBuffer(
+              "9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2"
+            )
+          )
+          .toString("hex")
+      ).to.equal(
+        "6a4fe9cb57c9f79964c0408f25d70a73b3448bc6e975d0a905f0f8694764954b"
+      );
+    });
+
+    it("should return original hash if only one is given", () => {
+      expect(
+        utils
+          .combineHashBuffers(
+            utils.hashToBuffer(
+              "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+            )
+          )
+          .toString("hex")
+      ).to.equal(
+        "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+      );
+      expect(
+        utils
+          .combineHashBuffers(
+            null,
+            utils.hashToBuffer(
+              "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+            )
+          )
+          .toString("hex")
+      ).to.equal(
+        "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+      );
+    });
+  });
+
+  describe("combineHashString", () => {
+    it("should combine two hashes (in string format) and return result as a string", () => {
+      expect(
+        utils.combineHashString(
+          "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc",
+          "9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2"
+        )
+      ).to.equal(
+        "6a4fe9cb57c9f79964c0408f25d70a73b3448bc6e975d0a905f0f8694764954b"
+      );
+    });
+
+    it("should return original hash if only one is given", () => {
+      expect(
+        utils.combineHashString(
+          "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+        )
+      ).to.equal(
+        "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+      );
+      expect(
+        utils.combineHashString(
+          null,
+          "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+        )
+      ).to.equal(
+        "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+      );
+    });
+  });
 });
