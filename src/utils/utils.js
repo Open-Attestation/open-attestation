@@ -41,3 +41,34 @@ export function sha256(content, salt = "") {
 
   return `sha256$${hash.digest("hex")}`;
 }
+
+/**
+ * Returns the keccak hash of two buffers after concatenating them and sorting them
+ * If either hash is not given, the input is returned
+ * @param {Buffer} first A buffer to be hashed
+ * @param {Buffer} second A buffer to be hashed
+ */
+export function combineHashBuffers(first, second) {
+  if (!second) {
+    return first;
+  }
+  if (!first) {
+    return second;
+  }
+  return keccak256(bufSortJoin(first, second));
+}
+
+/**
+ * Returns the keccak hash of two string after concatenating them and sorting them
+ * If either hash is not given, the input is returned
+ * @param {string} first A string to be hashed (without 0x)
+ * @param {string} second A string to be hashed (without 0x)
+ * @returns {string} Resulting string after the hash is combined (without 0x)
+ */
+export function combineHashString(first, second) {
+  return first && second
+    ? combineHashBuffers(hashToBuffer(first), hashToBuffer(second)).toString(
+        "hex"
+      )
+    : first || second;
+}
