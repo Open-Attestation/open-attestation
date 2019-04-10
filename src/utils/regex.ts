@@ -1,4 +1,4 @@
-import VerEx from "verbal-expressions";
+import * as VerEx from "verbal-expressions";
 
 const hexDigits = VerEx().range("0", "9", "a", "f", "A", "F");
 
@@ -7,11 +7,11 @@ const hexString = VerEx()
   .then(hexDigits)
   .oneOrMore();
 
-export const isHexString = inputString => {
+export const isHexString = (input: string) => {
   const testRegex = VerEx()
     .startOfLine()
     .then(hexString)
     .endOfLine();
 
-  return testRegex.test(inputString);
+  return testRegex.test(input);
 };

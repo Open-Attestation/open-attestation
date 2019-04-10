@@ -1,20 +1,18 @@
 import { get, omitBy, sortBy } from "lodash";
+import { flatten } from "flat";
 import { keccak256 } from "ethereumjs-util";
-import { flatten } from "../serialize/flatten";
+import { Document } from "../privacy";
 
-const isKeyOrValueUndefined = (value, key) =>
-  value === undefined || key === undefined;
-
-export const flattenHashArray = data => {
-  const flattenedData = omitBy(flatten(data), isKeyOrValueUndefined); // flattens data and remove undefineds
+export const flattenHashArray = (data: any) => {
+  const flattenedData = omitBy(flatten(data), (value, key) => value === undefined || key === undefined);
   return Object.keys(flattenedData).map(k => {
-    const obj = {};
+    const obj: any = {};
     obj[k] = flattenedData[k];
     return keccak256(JSON.stringify(obj)).toString("hex");
   });
 };
 
-export const digestDocument = document => {
+export const digestDocument = (document: Document) => {
   // Prepare array of hashes from filtered data
   const hashedDataArray = get(document, "privacy.obfuscatedData", []);
 

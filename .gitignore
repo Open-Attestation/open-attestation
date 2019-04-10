@@ -2,4 +2,7 @@ node_modules
 coverage
 .nyc_output
 yarn-error.log
+yarn.lock
 dist/
+.idea
+*.iml

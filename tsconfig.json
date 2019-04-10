@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["es2016"],
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true
+  },
+  "include": ["./src/**/*"]
+}

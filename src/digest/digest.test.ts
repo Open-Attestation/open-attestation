@@ -1,8 +1,8 @@
-const { flattenHashArray, digestDocument } = require("./digest");
+import { digestDocument, flattenHashArray } from "./digest";
 
 describe("digest", () => {
   describe("flattenHashArray", () => {
-    it("flattens objects and hash them individually", () => {
+    test("flattens objects and hash them individually", () => {
       const testData = {
         key1: "value1",
         key2: {
@@ -25,10 +25,10 @@ describe("digest", () => {
       ];
 
       const targetHash = flattenHashArray(testData);
-      expect(targetHash).to.deep.equal(expectedOutput);
+      expect(targetHash).toEqual(expectedOutput);
     });
 
-    it("maintains integrity of other values after some values were replaced with undefined", () => {
+    test("maintains integrity of other values after some values were replaced with undefined", () => {
       const testData = {
         key1: "value1",
         key2: {
@@ -49,10 +49,10 @@ describe("digest", () => {
       ];
 
       const targetHash = flattenHashArray(testData);
-      expect(targetHash).to.deep.equal(expectedOutput);
+      expect(targetHash).toEqual(expectedOutput);
     });
 
-    it("maintains integrity of other values after some values were removed", () => {
+    test("maintains integrity of other values after some values were removed", () => {
       const testData = {
         key1: "value1",
         key2: {
@@ -75,12 +75,12 @@ describe("digest", () => {
       ];
 
       const targetHash = flattenHashArray(testData);
-      expect(targetHash).to.deep.equal(expectedOutput);
+      expect(targetHash).toEqual(expectedOutput);
     });
   });
 
   describe("digestDocument", () => {
-    it("digests a document with all visible content correctly", () => {
+    test("digests a document with all visible content correctly", () => {
       const document = {
         data: {
           key1: "value1",
@@ -92,33 +92,12 @@ describe("digest", () => {
           key3: ["value3-1", "value3-2"]
         }
       };
-      const expectedDigest =
-        "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
+      const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
       const digest = digestDocument(document);
-      expect(digest).to.equal(expectedDigest);
+      expect(digest).toBe(expectedDigest);
     });
 
-    it("handles shadowed keys correctly", () => {
-      const document = {
-        data: {
-          foo: {
-            bar: "qux"
-          }
-        }
-      };
-      const documentWithShadowedKey = {
-        data: {
-          ...document.data,
-          "foo.bar": "asd"
-        }
-      };
-
-      const digestFn = () => digestDocument(documentWithShadowedKey);
-
-      expect(digestFn).to.throw();
-    });
-
-    it("digests a document with some visible content correctly", () => {
+    test("digests a document with some visible content correctly", () => {
       const document = {
         data: {
           key1: "value1",
@@ -137,13 +116,12 @@ describe("digest", () => {
         }
       };
 
-      const expectedDigest =
-        "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
+      const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
       const digest = digestDocument(document);
-      expect(digest).to.equal(expectedDigest);
+      expect(digest).toBe(expectedDigest);
     });
 
-    it("digests a document with no visible content correctly", () => {
+    test("digests a document with no visible content correctly", () => {
       const document = {
         data: {},
         privacy: {
@@ -160,10 +138,9 @@ describe("digest", () => {
         }
       };
 
-      const expectedDigest =
-        "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
+      const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
       const digest = digestDocument(document);
-      expect(digest).to.equal(expectedDigest);
+      expect(digest).toBe(expectedDigest);
     });
   });
 });

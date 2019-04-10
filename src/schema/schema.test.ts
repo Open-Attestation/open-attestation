@@ -1,4 +1,5 @@
-const { addSchema, validate } = require("./schema");
+import { addSchema, Schema, validate } from "./schema";
+import { Document } from "../privacy";
 
 const schemaV1 = {
   $id: "http://example.com/schemaV1.json",
@@ -31,8 +32,8 @@ const schemaV2 = {
 
 describe("schema", () => {
   describe("addSchema", () => {
-    it("adds a schema", () => {
-      const schemaV0 = {
+    test("adds a schema", () => {
+      const schemaV0: Schema = {
         $id: "http://example.com/schemaV0.json",
         $schema: "http://json-schema.org/draft-07/schema#",
         type: "object",
@@ -46,8 +47,8 @@ describe("schema", () => {
       };
       addSchema(schemaV0);
     });
-    it("does not throw when the same schema is added again", () => {
-      const schemaV0 = {
+    test("does not throw when the same schema is added again", () => {
+      const schemaV0: Schema = {
         $id: "http://example.com/schemaV0.json",
         $schema: "http://json-schema.org/draft-07/schema#",
         type: "object",
@@ -65,105 +66,105 @@ describe("schema", () => {
     });
   });
   describe("validate", () => {
-    it("throws when the schema cannot be found/has not been added", () => {
-      const document = {
+    test("throws when the schema cannot be found/has not been added", () => {
+      const document: Document = {
         schema: "http://example.com/schemaV1.json",
         data: {
           key1: 2
         }
       };
       const valid = () => validate(document);
-      expect(valid).to.throw("no schema");
+      expect(valid).toThrow("no schema");
     });
 
     describe("after adding schema", () => {
-      before(() => {
+      beforeAll(() => {
         addSchema(schemaV1);
       });
-      it("returns true for passing documents", () => {
-        const document = {
+      test("returns true for passing documents", () => {
+        const document: Document = {
           schema: "http://example.com/schemaV1.json",
           data: {
             key1: 2
           }
         };
-        expect(validate(document)).to.be.true;
+        expect(validate(document)).toBe(true);
       });
 
-      it("returns false for failing documents", () => {
-        const document = {
+      test("returns false for failing documents", () => {
+        const document: Document = {
           schema: "http://example.com/schemaV1.json",
           data: {
             key: 2
           }
         };
-        expect(validate(document)).to.be.false;
+        expect(validate(document)).toBe(false);
       });
     });
 
     describe("after adding multiple schemas", () => {
-      before(() => {
+      beforeAll(() => {
         addSchema(schemaV2);
       });
-      it("returns true for passing documents", () => {
-        const document = {
+      test("returns true for passing documents", () => {
+        const document: Document = {
           schema: "http://example.com/schemaV1.json",
           data: {
             key1: 2
           }
         };
-        const document2 = {
+        const document2: Document = {
           schema: "http://example.com/schemaV2.json",
           data: {
             key1: 2,
             key2: 3
           }
         };
-        expect(validate(document)).to.be.true;
-        expect(validate(document2)).to.be.true;
+        expect(validate(document)).toBe(true);
+        expect(validate(document2)).toBe(true);
       });
 
-      it("returns false for failing documents", () => {
-        const document = {
+      test("returns false for failing documents", () => {
+        const document: Document = {
           schema: "http://example.com/schemaV1.json",
           data: {
             key: 2
           }
         };
-        const document2 = {
+        const document2: Document = {
           schema: "http://example.com/schemaV1.json",
           data: {
             key2: 2
           }
         };
-        expect(validate(document)).to.be.false;
-        expect(validate(document2)).to.be.false;
+        expect(validate(document)).toBe(false);
+        expect(validate(document2)).toBe(false);
       });
     });
 
     describe("document with schema object", () => {
-      it("returns true for valid document", () => {
-        const document = {
+      test("returns true for valid document", () => {
+        const document: Document = {
           data: {
             key1: 2
           }
         };
-        expect(validate(document, schemaV1)).to.be.true;
+        expect(validate(document, schemaV1)).toBe(true);
       });
 
-      it("returns false for invalid documents", () => {
-        const document = {
+      test("returns false for invalid documents", () => {
+        const document: Document = {
           data: {}
         };
-        const document2 = {
+        const document2: Document = {
           data: {
             key1: 2,
             key2: 4
           }
         };
 
-        expect(validate(document, schemaV1)).to.be.false;
-        expect(validate(document2, schemaV1)).to.be.false;
+        expect(validate(document, schemaV1)).toBe(false);
+        expect(validate(document2, schemaV1)).toBe(false);
       });
     });
   });

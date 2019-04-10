@@ -1,10 +1,8 @@
-import { includes, mapValues, map } from "lodash";
+import { includes, mapValues, map, identity } from "lodash";
 import { isUUID } from "validator";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 
 const UUIDV4_LENGTH = 37;
-const identityFn = val => val;
-
 const PRIMITIVE_TYPES = ["string", "number", "boolean", "undefined"];
 
 /* eslint-disable no-use-before-define */
@@ -12,23 +10,19 @@ const PRIMITIVE_TYPES = ["string", "number", "boolean", "undefined"];
  * Curried function that takes (iteratee)(value),
  * if value is a collection then recurse into it
  * otherwise apply `iteratee` on the primitive value
- * @param {Function} iteratee
- * @param {*} value
  */
-const recursivelyApply = iteratee => value => {
+const recursivelyApply = (iteratee: (arg: any) => any) => (value: any) => {
   if (includes(PRIMITIVE_TYPES, typeof value) || value === null) {
     return iteratee(value);
   }
-  return deepMap(value, iteratee);
+  return deepMap(value, iteratee); // eslint-disable-line @typescript-eslint/no-use-before-define
 };
 
 /**
  * Applies `iteratee` to all fields in objects, goes into arrays as well.
  * Refer to test for example
- * @param {*} collection
- * @param {*} iteratee
  */
-export function deepMap(collection, iteratee = identityFn) {
+export const deepMap = (collection: any, iteratee: (arg: any) => any = identity): any => {
   if (collection instanceof Array) {
     return map(collection, recursivelyApply(iteratee));
   }
@@ -36,13 +30,13 @@ export function deepMap(collection, iteratee = identityFn) {
     return mapValues(collection, recursivelyApply(iteratee));
   }
   return collection;
-}
+};
 /* eslint-enable no-use-before-define */
 // disabling this because of mutual recursion
 
-const startsWithUuidV4 = inputString => {
-  if (inputString && typeof inputString === "string") {
-    const elements = inputString.split(":");
+const startsWithUuidV4 = (input: any) => {
+  if (input && typeof input === "string") {
+    const elements = input.split(":");
     return isUUID(elements[0], 4);
   }
   return false;
@@ -50,9 +44,8 @@ const startsWithUuidV4 = inputString => {
 
 /**
  * Detects the type of a value and returns a string with type annotation
- * @param {*} value A value with one of the Javascript primitive types, 'string' 'number' 'boolean' 'undefined'
  */
-export function primitiveToTypedString(value) {
+export function primitiveToTypedString(value: any) {
   switch (typeof value) {
     case "number":
     case "string":
@@ -64,18 +57,15 @@ export function primitiveToTypedString(value) {
         // typeof null is 'object' so we have to check for it
         return "null:null";
       }
-      throw new Error(
-        `Parsing error, value is not of primitive type: ${value}`
-      );
+      throw new Error(`Parsing error, value is not of primitive type: ${value}`);
   }
 }
 
 /**
- * Returns an appropriately typed value given a string with type annotations
- * @param {*} inputString A string with type annotations, e.g: "number:5"
+ * Returns an appropriately typed value given a string with type annotations, e.g: "number:5"
  */
-export function typedStringToPrimitive(inputString) {
-  const [type, ...valueArray] = inputString.split(":");
+export function typedStringToPrimitive(input: string) {
+  const [type, ...valueArray] = input.split(":");
   const value = valueArray.join(":"); // just in case there are colons in the value
 
   switch (type) {
@@ -90,26 +80,23 @@ export function typedStringToPrimitive(inputString) {
     case "undefined":
       return undefined;
     default:
-      throw new Error(
-        `Parsing error, type annotation not found in string: ${inputString}`
-      );
+      throw new Error(`Parsing error, type annotation not found in string: ${input}`);
   }
 }
 
 /**
  * Returns a salted value using a randomly generated uuidv4 string for salt
- * @param {*} value
  */
-export function uuidSalt(value) {
+export function uuidSalt(value: string) {
   const salt = uuid();
   return `${salt}:${primitiveToTypedString(value)}`;
 }
 
 /**
+ * Value salted string in the format "salt:type:value", example: "ee7f3323-1634-4dea-8c12-f0bb83aff874:number:5"
  * Returns an appropriately typed value when given a salted string with type annotation
- * @param {*} value salted string in the format "salt:type:value", example: "ee7f3323-1634-4dea-8c12-f0bb83aff874:number:5"
  */
-export function unsalt(value) {
+export function unsalt(value: string) {
   if (startsWithUuidV4(value)) {
     const untypedValue = value.substring(UUIDV4_LENGTH).trim();
     return typedStringToPrimitive(untypedValue);
@@ -118,5 +105,5 @@ export function unsalt(value) {
 }
 
 // Use uuid salting method to recursively salt data
-export const saltData = data => deepMap(data, uuidSalt);
-export const unsaltData = data => deepMap(data, unsalt);
+export const saltData = (data: any) => deepMap(data, uuidSalt);
+export const unsaltData = (data: any) => deepMap(data, unsalt);
