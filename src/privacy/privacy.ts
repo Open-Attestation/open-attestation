@@ -1,32 +1,47 @@
-import { cloneDeep, get, pick, unset } from "lodash";
+import { get, cloneDeep, pick, unset } from "lodash";
 import { flatten } from "flat";
 import { toBuffer } from "../utils";
 import { unsaltData } from "./salt";
 
-export interface Document {
-  data?: any;
-  privacy?: any;
-  schema?: string;
-  signature?: any;
+export interface SignedDocument {
+  data: any;
+  privacy: {
+    obfuscatedData?: string[];
+  };
+  schema: string;
+  signature: {
+    type: string;
+    targetHash: string;
+    merkleRoot: string;
+    proof: string[];
+  };
 }
 
-export const getData = (document: Document) => unsaltData(document.data);
+export interface UnsignedDocument {
+  data: any;
+}
 
-export const setData = (document: Document, data: any, obfuscatedData: string[] = []) => {
-  const privacy = Object.assign(
-    {},
-    document.privacy,
-    obfuscatedData && obfuscatedData.length > 0 ? { obfuscatedData } : {}
-  );
-  return Object.assign({}, document, {
+export const getData = (document: SignedDocument) => unsaltData(document.data);
+
+export const setData = (
+  document: SignedDocument,
+  data: UnsignedDocument,
+  obfuscatedData: string[] = []
+): SignedDocument => {
+  const privacy = {
+    ...document.privacy,
+    obfuscatedData: obfuscatedData && obfuscatedData.length > 0 ? obfuscatedData : []
+  };
+  return {
+    ...document,
     data,
     privacy
-  });
+  };
 };
 
-export const obfuscateData = (_data: any, fields: any) => {
+export const obfuscateData = (_data: any, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
-  const fieldsToRemove = fields instanceof Array ? fields : [fields];
+  const fieldsToRemove = Array.isArray(fields) ? fields : [fields];
 
   // Obfuscate data by hashing them with the key
   const dataToObfuscate: any = flatten(pick(data, fieldsToRemove));
@@ -47,12 +62,13 @@ export const obfuscateData = (_data: any, fields: any) => {
   };
 };
 
-export const obfuscateDocument = (_document: Document, fields: any) => {
-  const existingData = _document.data;
+export const obfuscateDocument = (document: SignedDocument, fields: any): SignedDocument => {
+  const existingData = document.data;
   const { data, obfuscatedData } = obfuscateData(existingData, fields);
 
-  const currentObfuscatedData = get(_document, "privacy.obfuscatedData", []);
+  // we use lodash.get because document might not have the correct fields when coming from external input
+  const currentObfuscatedData = get(document, "privacy.obfuscatedData", []);
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
-  return setData(_document, data, newObfuscatedData);
+  return setData(document, data, newObfuscatedData);
 };

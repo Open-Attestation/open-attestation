@@ -1,5 +1,5 @@
 import * as Ajv from "ajv";
-import { getData, Document } from "../privacy";
+import { getData, SignedDocument } from "../privacy";
 
 const ajv = new Ajv();
 
@@ -24,7 +24,7 @@ export const addSchema = (schema: Schema) => {
   }
 };
 
-export const validate = (document: Document, schema?: Schema) => {
+export const validate = (document: SignedDocument, schema?: Schema) => {
   // TODO document.schema is set as mandatory here because for the moment it can't be made required in the interface
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const result = schema ? ajv.validate(schema, getData(document)) : ajv.validate(document.schema!, getData(document));

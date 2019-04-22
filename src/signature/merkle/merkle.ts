@@ -1,4 +1,4 @@
-import { hashArray, toBuffer, hashToBuffer, combineHashBuffers } from "../../utils";
+import { Hash, hashArray, toBuffer, hashToBuffer, combineHashBuffers } from "../../utils";
 
 function getNextLayer(elements: Buffer[]) {
   return elements.reduce((layer: Buffer[], element, index, arr) => {
@@ -41,7 +41,7 @@ function getLayers(elements: Buffer[]): Buffer[][] {
  * if index = 5, then return null
  * if index = 4, then return C
  */
-function getPair(index: number, layer: any[]) {
+function getPair(index: number, layer: Buffer[]) {
   const pairIndex = index % 2 ? index - 1 : index + 1; // if odd return the index before it, else if even return the index after it
   if (pairIndex < layer.length) {
     return layer[pairIndex];
@@ -52,7 +52,7 @@ function getPair(index: number, layer: any[]) {
 /**
  * Finds all the "uncle" nodes required to prove a given element in the merkle tree
  */
-function getProof(index: number, layers: any[]) {
+function getProof(index: number, layers: Buffer[][]): Buffer[] {
   let i = index;
   const proof = layers.reduce((current, layer) => {
     const pair = getPair(i, layer);
@@ -85,7 +85,7 @@ export class MerkleTree {
     return this.layers[this.layers.length - 1][0];
   }
 
-  public getProof(_element: any) {
+  public getProof(_element: any): Buffer[] {
     const element = toBuffer(_element);
 
     const index = this.elements.findIndex(e => e.equals(element)); // searches for given element in the merkle tree and returns the index
@@ -102,7 +102,7 @@ export class MerkleTree {
  * @param _root The merkle root
  * @param _element The leaf node that is being verified
  */
-export const checkProof = function(_proof: any[], _root: any, _element: any) {
+export const checkProof = function(_proof: Hash[], _root: Hash, _element: Hash) {
   const proof = _proof.map(step => hashToBuffer(step));
   const root = hashToBuffer(_root);
   const element = hashToBuffer(_element);

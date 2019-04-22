@@ -3,9 +3,9 @@ import { keccak256 } from "ethereumjs-util";
 import { digestDocument } from "../digest";
 import { MerkleTree } from "./merkle";
 import { hashToBuffer, bufSortJoin } from "../utils";
-import { Document } from "../privacy";
+import { SignedDocument } from "../privacy";
 
-export const sign = (document: Document, batch?: string[]) => {
+export const sign = (document: SignedDocument, batch: string[]) => {
   const digest = digestDocument(document);
 
   if (batch && !batch.includes(digest)) {
@@ -28,7 +28,7 @@ export const sign = (document: Document, batch?: string[]) => {
   });
 };
 
-export const verify = (document: Document) => {
+export const verify = (document:any): document is SignedDocument => {
   const signature = get(document, "signature");
   if (!signature) {
     return false;
@@ -36,12 +36,12 @@ export const verify = (document: Document) => {
 
   // Checks target hash
   const digest = digestDocument(document);
-  const targetHash = get(document, "signature.targetHash");
+  const targetHash: string = get(document, "signature.targetHash");
   if (digest !== targetHash) return false;
 
   // Calculates merkle root from target hash and proof, then compare to merkle root in document
   const merkleRoot = get(document, "signature.merkleRoot");
-  const proof: any[] = get(document, "signature.proof", []);
+  const proof: string[] = get(document, "signature.proof", []);
   const calculatedMerkleRoot = proof.reduce((prev, current) => {
     const prevAsBuffer = hashToBuffer(prev);
     const currAsBuffer = hashToBuffer(current);

@@ -37,7 +37,9 @@ const someObj = {
     nestedKeyC: {
       doubleNestedKeyA: "value 5"
     }
-  }
+  },
+  keyWithNumberArray: [123, 321],
+  keyWithStringArray: ["foo", "bar"]
 };
 
 describe("salt", () => {
@@ -82,7 +84,9 @@ describe("salt", () => {
           }
         ],
         nestedKeyC: { doubleNestedKeyA: "fakesalt: value 5" }
-      }
+      },
+      keyWithNumberArray: ["fakesalt: 123", "fakesalt: 321"],
+      keyWithStringArray: ["fakesalt: foo", "fakesalt: bar"]
     };
 
     test("traverses copys if no function is supplied", () => {

@@ -1,20 +1,23 @@
 import { keccak256 } from "ethereumjs-util";
 import * as crypto from "crypto";
 
+export type Hash = string|Buffer;
+
 /**
  * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
  */
-export function bufSortJoin(...args: Buffer[]) {
+export function bufSortJoin(...args: Buffer[]): Buffer {
   return Buffer.concat([...args].sort(Buffer.compare));
 }
 
 // If element is not a buffer, stringify it and then hash it to be a buffer
-export function toBuffer(element: any) {
+export function toBuffer(element: any): Buffer {
   return Buffer.isBuffer(element) && element.length === 32 ? element : keccak256(JSON.stringify(element));
 }
 
 // If hash is not a buffer, convert it to buffer (without hashing it)
-export function hashToBuffer(hash: any) {
+export function hashToBuffer(hash: Hash): Buffer {
+  // @ts-ignore https://github.com/Microsoft/TypeScript/issues/23155
   return Buffer.isBuffer(hash) && hash.length === 32 ? hash : Buffer.from(hash, "hex");
 }
 

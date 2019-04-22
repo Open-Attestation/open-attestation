@@ -1,4 +1,4 @@
-import { Document, getData, obfuscateData, obfuscateDocument, setData } from "./privacy";
+import { SignedDocument, getData, obfuscateData, obfuscateDocument, setData } from "./privacy";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
@@ -123,11 +123,12 @@ describe("privacy", () => {
 
   describe("obfuscateDocument", () => {
     test("is a pure function", () => {
-      const document: Document = {
+      const document: SignedDocument = {
         schema: "http://example.com/schema-v1.json",
         data: {
           key1: "test"
         },
+        privacy: {},
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
@@ -135,11 +136,12 @@ describe("privacy", () => {
           merkleRoot: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54"
         }
       };
-      const document2: Document = {
+      const document2: SignedDocument = {
         schema: "http://example.com/schema-v1.json",
         data: {
           key1: "test"
         },
+        privacy: {},
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
@@ -151,13 +153,14 @@ describe("privacy", () => {
       expect(document).toEqual(document2);
     });
 
-    test("is transistive", () => {
+    test("is transitive", () => {
       const document = {
         schema: "http://example.com/schema-v1.json",
         data: {
           key1: "item1",
           key2: "item4"
         },
+        privacy: {},
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "e20e8b2ae5874860486e06a8b7506a16e2ac3bef77457622731718715fe14f02",
@@ -180,6 +183,7 @@ describe("privacy", () => {
         data: {
           key1: "test"
         },
+        privacy: {},
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
@@ -206,7 +210,17 @@ describe("privacy", () => {
 
   describe("getData", () => {
     test("returns original data given salted content and, optionally, salt length", () => {
-      const document: Document = {
+      const document: SignedDocument = {
+        schema: "http://example.com/schema-v1.json",
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
+          proof: [],
+          merkleRoot: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54"
+        },
+        privacy: {
+          obfuscatedData: ["674afcc934fede83cbfef6361de969d520ec3f8aebacbc984b8d39b11dbdcd38"]
+        },
         data: {
           key1: "f9ec69be-ab21-474d-b8d7-012424813dc3:string:value1",
           key2: {
@@ -238,6 +252,7 @@ describe("privacy", () => {
         "4d93dd9bbaa80d01010b3f7faaf48ed5da36f0b9408c751493f6cce24a9a0c89"
       ];
 
+      // @ts-ignore intentionally ignoring this as it's supposed to work with malformed data
       const document = setData({}, data, obfuscatedData);
       expect(document.data.key1).toEqual(expect.stringContaining("value1"));
       expect(document.data.key2.key21).toBe(true);
