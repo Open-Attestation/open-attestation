@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "ajv": "^6.10.0",
+    "esm": "^3.2.22",
     "ethereumjs-util": "^6.1.0",
     "flat": "^4.1.0",
     "lodash": "^4.17.11",
