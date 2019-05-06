@@ -1,7 +1,7 @@
 const { flatten } = require("flatley");
 const { cloneDeep } = require("lodash");
 
-const hasPeriodInKey = (key) => {
+const hasPeriodInKey = key => {
   if (key.indexOf(".") >= 0) {
     throw new Error("Key names must not have . in them");
   }
