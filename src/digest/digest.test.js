@@ -98,6 +98,26 @@ describe("digest", () => {
       expect(digest).to.equal(expectedDigest);
     });
 
+    it("handles shadowed keys correctly", () => {
+      const document = {
+        data: {
+          foo: {
+            bar: "qux"
+          }
+        }
+      };
+      const documentWithShadowedKey = {
+        data: {
+          ...document.data,
+          "foo.bar": "asd"
+        }
+      };
+
+      const digestFn = () => digestDocument(documentWithShadowedKey);
+
+      expect(digestFn).to.throw();
+    });
+
     it("digests a document with some visible content correctly", () => {
       const document = {
         data: {

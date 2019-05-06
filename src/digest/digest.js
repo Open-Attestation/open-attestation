@@ -1,12 +1,12 @@
 import { get, omitBy, sortBy } from "lodash";
-import { flatten } from "flat";
 import { keccak256 } from "ethereumjs-util";
+import { flatten } from "../serialize/flatten";
+
+const isKeyOrValueUndefined = (value, key) =>
+  value === undefined || key === undefined;
 
 export const flattenHashArray = data => {
-  const flattenedData = omitBy(
-    flatten(data),
-    (value, key) => value === undefined || key === undefined
-  );
+  const flattenedData = omitBy(flatten(data), isKeyOrValueUndefined); // flattens data and remove undefineds
   return Object.keys(flattenedData).map(k => {
     const obj = {};
     obj[k] = flattenedData[k];
