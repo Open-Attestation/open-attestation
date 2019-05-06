@@ -1,6 +1,6 @@
 {
   "name": "@govtechsg/open-attestation",
-  "version": "1.1.30",
+  "version": "1.1.31",
   "description": "## Usage",
   "main": "dist/open-attestation.js",
   "module": "dist/open-attestation.esm.js",
