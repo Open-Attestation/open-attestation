@@ -12,8 +12,8 @@ const filters = [{ test: hasPeriodInKey }];
 
 /**
  * Calls external flatten library but ensures that global filters are always applied
- * @param {*} data 
- * @param {*} options 
+ * @param {*} data
+ * @param {*} options
  */
 const flattenWithGlobalFilters = (data, options) => {
   const newOptions = cloneDeep(options) || {};
