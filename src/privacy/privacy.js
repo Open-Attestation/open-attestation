@@ -1,5 +1,5 @@
 import { cloneDeep, pick, unset, get } from "lodash";
-import { flatten } from "flat";
+import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
 import { unsaltData } from "./salt";
 

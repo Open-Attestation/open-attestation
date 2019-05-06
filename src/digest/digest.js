@@ -1,14 +1,11 @@
 import { get, omitBy, sortBy } from "lodash";
-import { flatten } from "flat";
 import { keccak256 } from "ethereumjs-util";
+import { flatten } from "../serialize/flatten";
 
 const isKeyOrValueUndefined = (value, key) =>
   value === undefined || key === undefined;
 
-const hasPeriodInKey = (_, key) => key.indexOf(".") >= 0;
-
 export const flattenHashArray = data => {
-  //TODO: recursively search through all object keys with hasPeriodInKey
   const flattenedData = omitBy(flatten(data), isKeyOrValueUndefined); // flattens data and remove undefineds
   return Object.keys(flattenedData).map(k => {
     const obj = {};

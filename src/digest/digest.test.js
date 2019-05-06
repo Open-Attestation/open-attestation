@@ -98,7 +98,7 @@ describe("digest", () => {
       expect(digest).to.equal(expectedDigest);
     });
 
-    it.only("handles shadowed keys correctly", () => {
+    it("handles shadowed keys correctly", () => {
       const document = {
         data: {
           foo: {
@@ -106,23 +106,16 @@ describe("digest", () => {
           }
         }
       };
-      const documentNotShadowedKey = {
-        data: {
-          "foo.bar": "asd",
-          ...document.data
-        }
-      };
-      const documentShadowedKey = {
+      const documentWithShadowedKey = {
         data: {
           ...document.data,
           "foo.bar": "asd"
         }
       };
-      const digest1 = digestDocument(document);
-      const digest2 = digestDocument(documentNotShadowedKey);
-      const digest3 = digestDocument(documentShadowedKey);
 
-      console.log(digest1, digest2, digest3);
+      const digestFn = () => digestDocument(documentWithShadowedKey);
+
+      expect(digestFn).to.throw();
     });
 
     it("digests a document with some visible content correctly", () => {
