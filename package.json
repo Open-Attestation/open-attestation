@@ -17,7 +17,10 @@
     "/dist"
   ],
   "author": "Raymond Yeh <yehjxraymond@gmail.com> (http://geek.sg)",
-  "license": "ISC",
+  "contributors": [
+    "RJ Chow <me@rjchow.com> (https://about.rjchow.com)"
+  ],
+  "license": "Apache-2.0",
   "devDependencies": {
     "@istanbuljs/nyc-config-babel": "^1.2.3",
     "babel-core": "^6.26.3",
@@ -60,12 +63,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GovTechSG/open-attestation.git"
+    "url": "git+https://github.com/OpenCerts/open-attestation.git"
   },
   "bugs": {
-    "url": "https://github.com/GovTechSG/open-attestation/issues"
+    "url": "https://github.com/OpenCerts/open-attestation/issues"
   },
-  "homepage": "https://github.com/GovTechSG/open-attestation#readme",
+  "homepage": "https://github.com/OpenCerts/open-attestation#readme",
   "publishConfig": {
     "access": "public"
   }

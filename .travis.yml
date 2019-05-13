@@ -1,9 +1,11 @@
 language: node_js
 node_js:
-  - 8.11.3
+  - lts/*
 cache: npm install
 script: 
   - npm run lint
+  - npm ci
+  - npm run build
   - printf -- "//registry.npmjs.org/:_authToken=\${CIVAR_NPM_TOKEN}" > .npmrc
   - npm config set '//registry.npmjs.org/:_authToken' "${CIVAR_NPM_TOKEN}";
   - if [ "${TRAVIS_BRANCH}" = "master" ] && ! [ `printf -- "${TRAVIS_COMMIT_MESSAGE}" | grep "Publish"` ]; then
@@ -11,7 +13,6 @@ script:
       git reset --hard ${TRAVIS_COMMIT};
       git remote set-url origin ${CIVAR_GH_REPOSITORY_URL};
       npm config set '//registry.npmjs.org/:_authToken' "${CIVAR_NPM_TOKEN}";
-      npm run build;
       if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
         if [ -z "${TRAVIS_COMMIT_MESSAGE##*"[major release]"*}" ]; then
           LERNA_CD_VERSION='major';
