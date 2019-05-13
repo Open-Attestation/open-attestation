@@ -1,5 +1,5 @@
-const { flatten } = require("flatley");
-const { cloneDeep } = require("lodash");
+import { flatten as flatley } from "flatley";
+import { cloneDeep } from "lodash";
 
 const hasPeriodInKey = key => {
   if (key.indexOf(".") >= 0) {
@@ -22,9 +22,7 @@ const flattenWithGlobalFilters = (data, options) => {
   } else {
     newOptions.coercion = filters;
   }
-  return flatten(data, newOptions);
+  return flatley(data, newOptions);
 };
 
-module.exports = {
-  flatten: flattenWithGlobalFilters
-};
+export const flatten = flattenWithGlobalFilters;

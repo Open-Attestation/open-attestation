@@ -6,6 +6,7 @@ script:
   - npm run lint
   - npm ci
   - npm run build
+  - npm run test
   - printf -- "//registry.npmjs.org/:_authToken=\${CIVAR_NPM_TOKEN}" > .npmrc
   - npm config set '//registry.npmjs.org/:_authToken' "${CIVAR_NPM_TOKEN}";
   - if [ "${TRAVIS_BRANCH}" = "master" ] && ! [ `printf -- "${TRAVIS_COMMIT_MESSAGE}" | grep "Publish"` ]; then
