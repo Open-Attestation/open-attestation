@@ -6,7 +6,8 @@ const {
   addSchema,
   validateSchema,
   verifySignature
-} = require("../dist/open-attestation");
+} = require("../dist/open-attestation"); // eslint-disable-line import/no-unresolved
+// Disable import/no-unresolved for this because it usually doesn't exist until build runs
 
 const schema = {
   $id: "http://example.com/schema-v1.json",
