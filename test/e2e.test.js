@@ -2,13 +2,11 @@ const {
   getData,
   issueDocument,
   issueDocuments,
-  // digestDocument,
   obfuscateDocument,
   addSchema,
-  // sign,
   validateSchema,
   verifySignature
-} = require("../src/index");
+} = require("../dist/open-attestation");
 
 const schema = {
   $id: "http://example.com/schema-v1.json",
