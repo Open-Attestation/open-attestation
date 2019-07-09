@@ -3,9 +3,9 @@ import { keccak256 } from "ethereumjs-util";
 import { digestDocument } from "../digest";
 import { MerkleTree } from "./merkle";
 import { hashToBuffer, bufSortJoin } from "../utils";
-import { SignedDocument } from "../privacy";
+import { SignedDocument, UnsignedDocument } from "../privacy";
 
-export const sign = (document: SignedDocument, batch: string[]) => {
+export const sign = (document: UnsignedDocument, batch?: string[]) => {
   const digest = digestDocument(document);
 
   if (batch && !batch.includes(digest)) {
@@ -28,7 +28,7 @@ export const sign = (document: SignedDocument, batch: string[]) => {
   });
 };
 
-export const verify = (document:any): document is SignedDocument => {
+export const verify = (document: any): document is SignedDocument => {
   const signature = get(document, "signature");
   if (!signature) {
     return false;

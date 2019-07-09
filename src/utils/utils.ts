@@ -1,7 +1,7 @@
 import { keccak256 } from "ethereumjs-util";
 import * as crypto from "crypto";
 
-export type Hash = string|Buffer;
+export type Hash = string | Buffer;
 
 /**
  * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
