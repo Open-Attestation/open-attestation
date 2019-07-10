@@ -2,16 +2,20 @@
   "name": "@govtechsg/open-attestation",
   "version": "1.1.35",
   "description": "## Usage",
-  "main": "dist/open-attestation.js",
-  "module": "dist/open-attestation.esm.js",
-  "browser": "dist/open-attestation.umd.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "browser": "dist/umd/index.js",
   "scripts": {
-    "build": "npm run clean && rollup -c",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs --skipLibCheck",
+    "build:esm": "tsc --module es2015 --outDir dist/esm --moduleResolution node --skipLibCheck",
+    "build:umd": "tsc --module umd --outDir dist/umd --moduleResolution node --skipLibCheck",
     "clean": "rm -rf dist/",
-    "test": "npm run build && nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js'",
-    "test-watch": "mocha --compilers js:babel-core/register ./test/helpers.js './test/**/*.test.js' './src/**/*.test.js' --watch --recursive",
-    "lint": "eslint . --ext .js --max-warnings 0",
-    "lint:fix": "eslint . --ext .js --fix"
+    "test": "npm run build && jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --ext .ts --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix"
   },
   "files": [
     "/dist"
@@ -22,30 +26,24 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@istanbuljs/nyc-config-babel": "^1.2.3",
-    "babel-core": "^6.26.3",
-    "babel-plugin-istanbul": "^4.1.6",
-    "babel-preset-env": "^1.7.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
+    "@types/jest": "24.0.11",
+    "@types/lodash": "4.14.123",
+    "@types/uuid": "3.4.4",
+    "@types/validator": "10.11.0",
+    "@typescript-eslint/eslint-plugin": "1.6.0",
+    "@typescript-eslint/parser": "1.6.0",
     "eslint": "^5.15.3",
     "eslint-config-airbnb-base": "^13.0.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-chai-expect": "^1.2.0",
-    "eslint-plugin-chai-friendly": "^0.4.1",
+    "eslint-config-prettier": "4.1.0",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-mocha": "^5.3.0",
+    "eslint-plugin-jest": "22.4.1",
     "eslint-plugin-prettier": "^2.7.0",
-    "lerna": "^3.13.4",
-    "mocha": "^5.2.0",
-    "nyc": "^14.1.0",
+    "jest": "24.7.1",
+    "lerna": "^3.13.1",
     "prettier": "^1.16.4",
-    "rollup": "^0.64.1",
-    "rollup-plugin-auto-external": "^2.0.0",
-    "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.2.2",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^3.4.0"
+    "ts-jest": "24.0.2",
+    "ts-node": "8.0.3",
+    "typescript": "3.4.2"
   },
   "dependencies": {
     "ajv": "^6.10.0",
@@ -54,7 +52,7 @@
     "lodash": "^4.17.11",
     "uuid": "^3.3.2",
     "validator": "^10.11.0",
-    "verbal-expressions": "^0.3.0"
+    "verbal-expressions": "^1.0.0"
   },
   "directories": {
     "test": "test"
