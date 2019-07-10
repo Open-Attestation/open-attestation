@@ -40,7 +40,7 @@
     "mocha": "^5.2.0",
     "nyc": "^14.1.0",
     "prettier": "^1.16.4",
-    "rollup": "^0.64.1",
+    "rollup": "^1.16.7",
     "rollup-plugin-auto-external": "^2.0.0",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.2.2",
