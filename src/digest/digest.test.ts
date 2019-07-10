@@ -1,6 +1,5 @@
 import { digestDocument, flattenHashArray } from "./digest";
-import { SignedDocument, Document, SchematisedDocument } from "../privacy";
-import { Schema } from "../schema";
+import { SchematisedDocument } from "../privacy";
 
 describe("digest", () => {
   describe("flattenHashArray", () => {
@@ -99,6 +98,24 @@ describe("digest", () => {
       const digest = digestDocument(document);
       expect(digest).toBe(expectedDigest);
     });
+
+
+    it("handles shadowed keys correctly", () => {
+      const documentWithShadowedKey: SchematisedDocument = {
+        schema: "foo",
+        data: {
+          foo: {
+            bar: "qux"
+          },
+          "foo.bar": "asd"
+        }
+      };
+
+      const digestFn = () => digestDocument(documentWithShadowedKey);
+
+      expect(digestFn).toThrow("Key names must not have . in them");
+    });
+
 
     test("digests a document with some visible content correctly", () => {
       const document: SchematisedDocument = {

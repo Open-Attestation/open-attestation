@@ -3,12 +3,6 @@ import { getData, Document, SchematisedDocument } from "../privacy";
 
 // We need to do this horrible thing because the return type of validate makes no sense
 // https://github.com/epoberezkin/ajv/issues/911
-declare module AjvOverride {
-  interface Ajv {
-    addSchema(schema: Array<object> | object, key?: string): Ajv;
-    validate(schemaKeyRef: object | string | boolean, data: any): boolean;
-  }
-}
 const ajv = new Ajv() as AjvOverride.Ajv;
 
 export interface Schema {

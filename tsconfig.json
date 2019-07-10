@@ -4,7 +4,9 @@
     "lib": ["es2016"],
     "target": "es5",
     "module": "commonjs",
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "typeRoots": ["./src/@types", "./node_modules/@types" ]
   },
   "include": ["./src/**/*"]
 }

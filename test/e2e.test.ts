@@ -7,7 +7,6 @@ import {
   validateSchema,
   verifySignature
 } from "../src/index";
-import { Document, SignedDocument } from "../src/privacy";
 
 const schema = {
   $id: "http://example.com/schema-v1.json",

@@ -33,8 +33,8 @@ export const sign = (document: SchematisedDocument, batch?: string[]): SignedDoc
     proof: merkleProof,
     merkleRoot
   };
-  
-  return {...document, signature};
+
+  return { ...document, signature };
 };
 
 export const verify = (document: any): document is Document => {

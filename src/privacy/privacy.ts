@@ -1,15 +1,14 @@
 import { get, cloneDeep, pick, unset } from "lodash";
-import { flatten } from "flat";
+import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
 import { unsaltData } from "./salt";
 import { Signature } from "../signature";
-import { Schema } from "../schema";
 
 export interface SignedDocument extends SchematisedDocument {
   signature: Signature;
 }
 
-export interface obfuscationMetadata {
+export interface ObfuscationMetadata {
   obfuscatedData?: string[];
 }
 
@@ -19,8 +18,8 @@ export interface SchematisedDocument extends Document {
 
 export interface Document {
   data: any;
-  privacy?: obfuscationMetadata
-  schema?: string
+  privacy?: ObfuscationMetadata;
+  schema?: string;
 }
 
 export type OpenAttestationData = any; // input data can take any format
@@ -28,13 +27,13 @@ export type OpenAttestationData = any; // input data can take any format
 export const getData = (document: Document) => unsaltData(document.data);
 
 /**
- * Takes a partial originating document, possibly only with a schema.id and returns a document with the given data and obfuscated data 
+ * Takes a partial originating document, possibly only with a schema.id and returns a document with the given data and obfuscated data
  * @param document the metadata container
  * @param data the data
  * @param obfuscatedData hashes of replaced data to put into the privacy field
  */
 
- // TODO: split into two separate functions for the two different use cases
+// TODO: split into two separate functions for the two different use cases
 export const setData = <T extends SchematisedDocument | SignedDocument>(
   document: T,
   data: OpenAttestationData,

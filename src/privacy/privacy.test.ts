@@ -1,4 +1,4 @@
-import { Document, getData, obfuscateData, obfuscateDocument, setData, SignedDocument } from "./privacy";
+import { getData, obfuscateData, obfuscateDocument, setData, SignedDocument } from "./privacy";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
