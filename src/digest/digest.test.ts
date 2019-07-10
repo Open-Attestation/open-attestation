@@ -99,7 +99,6 @@ describe("digest", () => {
       expect(digest).toBe(expectedDigest);
     });
 
-
     it("handles shadowed keys correctly", () => {
       const documentWithShadowedKey: SchematisedDocument = {
         schema: "foo",
@@ -115,7 +114,6 @@ describe("digest", () => {
 
       expect(digestFn).toThrow("Key names must not have . in them");
     });
-
 
     test("digests a document with some visible content correctly", () => {
       const document: SchematisedDocument = {

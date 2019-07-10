@@ -6,11 +6,11 @@ import {
   obfuscateDocument,
   validateSchema,
   verifySignature
-  // @ts-ignore 
-} from "../dist/cjs/index"; 
+  // @ts-ignore
+} from "../dist/cjs/index";
 // Disable tslint import/no-unresolved for this because it usually doesn't exist until build runs
 
-type IssueDocumentReturnType = ReturnType<typeof issueDocument>
+type IssueDocumentReturnType = ReturnType<typeof issueDocument>;
 
 const schema = {
   $id: "http://example.com/schema-v1.json",
@@ -160,7 +160,10 @@ describe("E2E Test Scenarios", () => {
 
     test("checks that documents conforms to the schema", () => {
       addSchema(schema);
-      const validatedSchema = signedDocuments.reduce((prev: boolean, curr: boolean) => validateSchema(curr) && prev, true);
+      const validatedSchema = signedDocuments.reduce(
+        (prev: boolean, curr: boolean) => validateSchema(curr) && prev,
+        true
+      );
       expect(validatedSchema).toBe(true);
     });
 

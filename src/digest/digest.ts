@@ -1,6 +1,6 @@
 import { get, omitBy, sortBy } from "lodash";
-import { flatten } from "../serialize/flatten";
 import { keccak256 } from "ethereumjs-util";
+import { flatten } from "../serialize/flatten";
 import { SchematisedDocument } from "../privacy";
 
 const isKeyOrValueUndefined = (value: any, key: any) => value === undefined || key === undefined;
