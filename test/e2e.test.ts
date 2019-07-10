@@ -6,7 +6,11 @@ import {
   obfuscateDocument,
   validateSchema,
   verifySignature
-} from "../src/index";
+  // @ts-ignore 
+} from "../dist/cjs/index"; 
+// Disable tslint import/no-unresolved for this because it usually doesn't exist until build runs
+
+type IssueDocumentReturnType = ReturnType<typeof issueDocument>
 
 const schema = {
   $id: "http://example.com/schema-v1.json",
@@ -52,7 +56,7 @@ const datum = [
 describe("E2E Test Scenarios", () => {
   describe("Issuing a single documents", () => {
     const document = datum[0];
-    let signedDocument: ReturnType<typeof issueDocument>;
+    let signedDocument: IssueDocumentReturnType;
 
     test("fails for malformed data", () => {
       const malformedData = {
@@ -121,7 +125,7 @@ describe("E2E Test Scenarios", () => {
   });
 
   describe("Issuing a batch of documents", () => {
-    let signedDocuments: ReturnType<typeof issueDocuments>;
+    let signedDocuments: IssueDocumentReturnType;
 
     beforeAll(() => {
       signedDocuments = issueDocuments(datum, schema);
@@ -139,7 +143,7 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("creates a batch of documents if all are in the right format", () => {
-      signedDocuments.forEach((doc, i) => {
+      signedDocuments.forEach((doc: IssueDocumentReturnType, i: number) => {
         expect(doc.schema).toBe("http://example.com/schema-v1.json");
         expect(doc.signature.type).toBe("SHA3MerkleProof");
         expect(doc.data.key1).toEqual(expect.stringContaining(datum[i].key1));
@@ -150,18 +154,18 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("checks that documents are signed correctly", () => {
-      const verified = signedDocuments.reduce((prev, curr) => verifySignature(curr) && prev, true);
+      const verified = signedDocuments.reduce((prev: boolean, curr: boolean) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
     });
 
     test("checks that documents conforms to the schema", () => {
       addSchema(schema);
-      const validatedSchema = signedDocuments.reduce((prev, curr) => validateSchema(curr) && prev, true);
+      const validatedSchema = signedDocuments.reduce((prev: boolean, curr: boolean) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
     });
 
     test("checks that data extracted are the same as input", () => {
-      signedDocuments.forEach((doc, i) => {
+      signedDocuments.forEach((doc: IssueDocumentReturnType, i: number) => {
         const data = getData(doc);
         expect(data).toEqual(datum[i]);
       });
