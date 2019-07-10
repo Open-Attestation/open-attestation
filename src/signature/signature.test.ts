@@ -1,6 +1,8 @@
 import { sign, verify } from "./signature";
+import { SchematisedDocument } from "../privacy";
 
-const unsignedDocument = {
+const unsignedDocument: SchematisedDocument = {
+  schema: "foo",
   data: {
     key1: "value1",
     key2: {

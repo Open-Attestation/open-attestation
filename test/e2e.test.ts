@@ -7,7 +7,7 @@ import {
   validateSchema,
   verifySignature
 } from "../src/index";
-import { Document } from "../src/privacy";
+import { Document, SignedDocument } from "../src/privacy";
 
 const schema = {
   $id: "http://example.com/schema-v1.json",
@@ -53,7 +53,7 @@ const datum = [
 describe("E2E Test Scenarios", () => {
   describe("Issuing a single documents", () => {
     const document = datum[0];
-    let signedDocument: Document;
+    let signedDocument: ReturnType<typeof issueDocument>;
 
     test("fails for malformed data", () => {
       const malformedData = {
@@ -64,8 +64,11 @@ describe("E2E Test Scenarios", () => {
       expect(action).toThrow("Invalid document");
     });
 
-    test("creates a signed document", () => {
+    beforeAll(() => {
       signedDocument = issueDocument(document, schema);
+    });
+
+    test("creates a signed document", () => {
       expect(signedDocument.schema).toBe("http://example.com/schema-v1.json");
       expect(signedDocument.data.key1).toEqual(expect.stringContaining("test"));
       expect(signedDocument.signature.type).toBe("SHA3MerkleProof");
@@ -119,7 +122,11 @@ describe("E2E Test Scenarios", () => {
   });
 
   describe("Issuing a batch of documents", () => {
-    let signedDocuments: Document[];
+    let signedDocuments: ReturnType<typeof issueDocuments>;
+
+    beforeAll(() => {
+      signedDocuments = issueDocuments(datum, schema);
+    });
 
     test("fails if there is a malformed document", () => {
       const malformedDatum = [
@@ -133,7 +140,6 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("creates a batch of documents if all are in the right format", () => {
-      signedDocuments = issueDocuments(datum, schema);
       signedDocuments.forEach((doc, i) => {
         expect(doc.schema).toBe("http://example.com/schema-v1.json");
         expect(doc.signature.type).toBe("SHA3MerkleProof");

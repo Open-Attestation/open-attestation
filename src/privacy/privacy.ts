@@ -2,32 +2,44 @@ import { get, cloneDeep, pick, unset } from "lodash";
 import { flatten } from "flat";
 import { toBuffer } from "../utils";
 import { unsaltData } from "./salt";
+import { Signature } from "../signature";
+import { Schema } from "../schema";
 
-export interface SignedDocument {
-  data: any;
-  privacy: {
-    obfuscatedData?: string[];
-  };
+export interface SignedDocument extends SchematisedDocument {
+  signature: Signature;
+}
+
+export interface obfuscationMetadata {
+  obfuscatedData?: string[];
+}
+
+export interface SchematisedDocument extends Document {
   schema: string;
-  signature: {
-    type: string;
-    targetHash: string;
-    merkleRoot: string;
-    proof: string[];
-  };
 }
 
-export interface UnsignedDocument {
+export interface Document {
   data: any;
+  privacy?: obfuscationMetadata
+  schema?: string
 }
 
-export const getData = (document: SignedDocument) => unsaltData(document.data);
+export type OpenAttestationData = any; // input data can take any format
 
-export const setData = (
-  document: SignedDocument,
-  data: UnsignedDocument,
+export const getData = (document: Document) => unsaltData(document.data);
+
+/**
+ * Takes a partial originating document, possibly only with a schema.id and returns a document with the given data and obfuscated data 
+ * @param document the metadata container
+ * @param data the data
+ * @param obfuscatedData hashes of replaced data to put into the privacy field
+ */
+
+ // TODO: split into two separate functions for the two different use cases
+export const setData = <T extends SchematisedDocument | SignedDocument>(
+  document: T,
+  data: OpenAttestationData,
   obfuscatedData: string[] = []
-): SignedDocument => {
+): T => {
   const privacy = {
     ...document.privacy,
     obfuscatedData: obfuscatedData && obfuscatedData.length > 0 ? obfuscatedData : []

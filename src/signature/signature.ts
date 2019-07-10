@@ -3,9 +3,18 @@ import { keccak256 } from "ethereumjs-util";
 import { digestDocument } from "../digest";
 import { MerkleTree } from "./merkle";
 import { hashToBuffer, bufSortJoin } from "../utils";
-import { SignedDocument, UnsignedDocument } from "../privacy";
+import { Document, SchematisedDocument, SignedDocument } from "../privacy";
 
-export const sign = (document: UnsignedDocument, batch?: string[]) => {
+export type SignatureProofAlgorithm = "SHA3MerkleProof";
+
+export interface Signature {
+  type: SignatureProofAlgorithm;
+  targetHash: string;
+  proof: string[];
+  merkleRoot: string;
+}
+
+export const sign = (document: SchematisedDocument, batch?: string[]): SignedDocument => {
   const digest = digestDocument(document);
 
   if (batch && !batch.includes(digest)) {
@@ -18,17 +27,17 @@ export const sign = (document: UnsignedDocument, batch?: string[]) => {
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
-  return Object.assign({}, document, {
-    signature: {
-      type: "SHA3MerkleProof",
-      targetHash: digest,
-      proof: merkleProof,
-      merkleRoot
-    }
-  });
+  const signature: Signature = {
+    type: "SHA3MerkleProof",
+    targetHash: digest,
+    proof: merkleProof,
+    merkleRoot
+  };
+  
+  return {...document, signature};
 };
 
-export const verify = (document: any): document is SignedDocument => {
+export const verify = (document: any): document is Document => {
   const signature = get(document, "signature");
   if (!signature) {
     return false;

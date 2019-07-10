@@ -6,7 +6,7 @@ import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
 
 const createDocument = (data: any, schema: Schema) => {
-  const document = setData({ schema: schema.$id }, saltData(data));
+  const document = setData({ schema: schema.$id, data: null }, saltData(data));
   const valid = validate(document, schema);
   if (valid) {
     return document;

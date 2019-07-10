@@ -1,11 +1,19 @@
 import * as Ajv from "ajv";
-import { getData, SignedDocument } from "../privacy";
+import { getData, Document, SchematisedDocument } from "../privacy";
 
-const ajv = new Ajv();
+// We need to do this horrible thing because the return type of validate makes no sense
+// https://github.com/epoberezkin/ajv/issues/911
+declare module AjvOverride {
+  interface Ajv {
+    addSchema(schema: Array<object> | object, key?: string): Ajv;
+    validate(schemaKeyRef: object | string | boolean, data: any): boolean;
+  }
+}
+const ajv = new Ajv() as AjvOverride.Ajv;
 
 export interface Schema {
   id?: string;
-  $id?: string;
+  $id: string;
   $schema?: string;
   type?: string;
   properties?: any;
@@ -24,7 +32,7 @@ export const addSchema = (schema: Schema) => {
   }
 };
 
-export const validate = (document: SignedDocument, schema?: Schema) => {
+export const validate = (document: Document, schema?: Schema): document is SchematisedDocument => {
   // TODO document.schema is set as mandatory here because for the moment it can't be made required in the interface
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const result = schema ? ajv.validate(schema, getData(document)) : ajv.validate(document.schema!, getData(document));

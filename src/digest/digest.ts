@@ -1,7 +1,7 @@
 import { get, omitBy, sortBy } from "lodash";
 import { flatten } from "flat";
 import { keccak256 } from "ethereumjs-util";
-import { UnsignedDocument } from "../privacy";
+import { SchematisedDocument } from "../privacy";
 
 const isKeyOrValueUndefined = (value: any, key: any) => value === undefined || key === undefined
 
@@ -15,7 +15,7 @@ export const flattenHashArray = (data: any) => {
   });
 };
 
-export const digestDocument = (document: UnsignedDocument) => {
+export const digestDocument = (document: SchematisedDocument) => {
   // Prepare array of hashes from filtered data
   const hashedDataArray = get(document, "privacy.obfuscatedData", []);
 

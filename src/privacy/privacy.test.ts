@@ -1,4 +1,4 @@
-import { SignedDocument, getData, obfuscateData, obfuscateDocument, setData } from "./privacy";
+import { Document, getData, obfuscateData, obfuscateDocument, setData, SignedDocument } from "./privacy";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
@@ -154,7 +154,7 @@ describe("privacy", () => {
     });
 
     test("is transitive", () => {
-      const document = {
+      const document: SignedDocument = {
         schema: "http://example.com/schema-v1.json",
         data: {
           key1: "item1",
@@ -178,7 +178,7 @@ describe("privacy", () => {
     });
 
     test("returns new document with obfuscated data", () => {
-      const document = {
+      const document: SignedDocument = {
         schema: "http://example.com/schema-v1.json",
         data: {
           key1: "test"

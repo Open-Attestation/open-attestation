@@ -1,4 +1,6 @@
 import { digestDocument, flattenHashArray } from "./digest";
+import { SignedDocument, Document, SchematisedDocument } from "../privacy";
+import { Schema } from "../schema";
 
 describe("digest", () => {
   describe("flattenHashArray", () => {
@@ -81,7 +83,8 @@ describe("digest", () => {
 
   describe("digestDocument", () => {
     test("digests a document with all visible content correctly", () => {
-      const document = {
+      const document: SchematisedDocument = {
+        schema: "foo",
         data: {
           key1: "value1",
           key2: {
@@ -98,7 +101,8 @@ describe("digest", () => {
     });
 
     test("digests a document with some visible content correctly", () => {
-      const document = {
+      const document: SchematisedDocument = {
+        schema: "foo",
         data: {
           key1: "value1",
           key2: {
@@ -122,7 +126,8 @@ describe("digest", () => {
     });
 
     test("digests a document with no visible content correctly", () => {
-      const document = {
+      const document: SchematisedDocument = {
+        schema: "foo",
         data: {},
         privacy: {
           obfuscatedData: [
