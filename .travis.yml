@@ -4,6 +4,7 @@ node_js:
 cache: npm install
 script: 
   - npm run lint
+  - npm run build
   - npm run test
   - printf -- "//registry.npmjs.org/:_authToken=\${CIVAR_NPM_TOKEN}" > .npmrc
   - npm config set '//registry.npmjs.org/:_authToken' "${CIVAR_NPM_TOKEN}";
