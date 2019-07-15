@@ -3,7 +3,7 @@
     "allowJs": true,
     "lib": ["es2016"],
     "target": "es5",
-    "module": "commonjs",
+    "module": "es2015",
     "strict": true,
     "baseUrl": ".",
     "typeRoots": ["./src/@types", "./node_modules/@types" ]
