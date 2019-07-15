@@ -1,5 +1,5 @@
-import { keccak256 } from "ethereumjs-util";
-import { hashArray, toBuffer } from "../../utils";
+import { keccak256 } from "js-sha3";
+import { hashArray, hashToBuffer, toBuffer } from "../../utils";
 import { checkProof, MerkleTree } from "./merkle";
 
 describe("merkle", () => {
@@ -46,9 +46,9 @@ describe("merkle", () => {
       const layer1 = evenTree.layers[1];
       const layer2 = evenTree.layers[2];
 
-      expect(keccak256(Buffer.concat([layer0[0], layer0[1]]))).toEqual(layer1[0]);
-      expect(keccak256(Buffer.concat([layer0[2], layer0[3]]))).toEqual(layer1[1]);
-      expect(keccak256(Buffer.concat([layer1[0], layer1[1]]))).toEqual(layer2[0]);
+      expect(hashToBuffer(keccak256(Buffer.concat([layer0[0], layer0[1]])))).toEqual(layer1[0]);
+      expect(hashToBuffer(keccak256(Buffer.concat([layer0[2], layer0[3]])))).toEqual(layer1[1]);
+      expect(hashToBuffer(keccak256(Buffer.concat([layer1[0], layer1[1]])))).toEqual(layer2[0]);
     });
 
     test("creates the tree properly if there is an odd number of elements", () => {
@@ -67,7 +67,7 @@ describe("merkle", () => {
       // which is out of order and should be swapped before hashing
 
       const secondLayer = outOfOrderTree.layers[1];
-      const hash = keccak256(Buffer.concat([secondLayer[1], secondLayer[0]]));
+      const hash = hashToBuffer(keccak256(Buffer.concat([secondLayer[1], secondLayer[0]])));
 
       expect(hash).toEqual(outOfOrderTree.layers[2][0]);
     });

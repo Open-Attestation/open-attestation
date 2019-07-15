@@ -1,5 +1,5 @@
 import { get } from "lodash";
-import { keccak256 } from "ethereumjs-util";
+import { keccak256 } from "js-sha3";
 import { digestDocument } from "../digest";
 import { MerkleTree } from "./merkle";
 import { hashToBuffer, bufSortJoin } from "../utils";
@@ -55,8 +55,7 @@ export const verify = (document: any): document is Document => {
     const prevAsBuffer = hashToBuffer(prev);
     const currAsBuffer = hashToBuffer(current);
     const combineAsBuffer = bufSortJoin(prevAsBuffer, currAsBuffer);
-    const newBuffer = keccak256(combineAsBuffer);
-    return newBuffer.toString("hex");
+    return keccak256(combineAsBuffer);
   }, digest);
 
   return calculatedMerkleRoot === merkleRoot;

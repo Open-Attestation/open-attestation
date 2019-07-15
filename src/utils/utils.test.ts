@@ -1,4 +1,3 @@
-import { keccak256 } from "ethereumjs-util";
 import * as utils from "./utils";
 
 describe("Util Functions", () => {
@@ -44,36 +43,8 @@ describe("Util Functions", () => {
     });
 
     test("should do nothing if the input is a hash", () => {
-      const originalBuffer = keccak256(Buffer.from("foo", "utf8"));
+      const originalBuffer = utils.toBuffer("foo");
       expect(utils.toBuffer(originalBuffer)).toEqual(originalBuffer);
-    });
-  });
-
-  describe("sha256", () => {
-    test("should hash content without salt", () => {
-      expect(utils.sha256("password123")).toEqual(
-        "sha256$ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
-      );
-    });
-
-    test("should hash content with salt", () => {
-      expect(utils.sha256("password", "123")).toEqual(
-        "sha256$ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
-      );
-    });
-  });
-
-  describe("randomSalt", () => {
-    test("should generate default salt", () => {
-      expect(utils.randomSalt().length).toBe(20);
-    });
-
-    test("should generate salt with given entropy (in bytes)", () => {
-      expect(utils.randomSalt(256).length).toBe(512);
-    });
-
-    test("should not collide LOL", () => {
-      expect(utils.randomSalt()).not.toBe(utils.randomSalt());
     });
   });
 

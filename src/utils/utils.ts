@@ -1,5 +1,4 @@
-import { keccak256 } from "ethereumjs-util";
-import * as crypto from "crypto";
+import { keccak256 } from "js-sha3";
 
 export type Hash = string | Buffer;
 
@@ -10,33 +9,21 @@ export function bufSortJoin(...args: Buffer[]): Buffer {
   return Buffer.concat([...args].sort(Buffer.compare));
 }
 
-// If element is not a buffer, stringify it and then hash it to be a buffer
-export function toBuffer(element: any): Buffer {
-  return Buffer.isBuffer(element) && element.length === 32 ? element : keccak256(JSON.stringify(element));
-}
-
 // If hash is not a buffer, convert it to buffer (without hashing it)
 export function hashToBuffer(hash: Hash): Buffer {
   // @ts-ignore https://github.com/Microsoft/TypeScript/issues/23155
   return Buffer.isBuffer(hash) && hash.length === 32 ? hash : Buffer.from(hash, "hex");
 }
 
+// If element is not a buffer, stringify it and then hash it to be a buffer
+export function toBuffer(element: any): Buffer {
+  return Buffer.isBuffer(element) && element.length === 32 ? element : hashToBuffer(keccak256(JSON.stringify(element)));
+}
 /**
  * Turns array of data into sorted array of hashes
  */
 export function hashArray(arr: any[]) {
   return arr.map(i => toBuffer(i)).sort(Buffer.compare);
-}
-
-export function randomSalt(saltLength = 10) {
-  return crypto.randomBytes(saltLength).toString("hex");
-}
-
-export function sha256(content: string, salt = "") {
-  const hash = crypto.createHash("sha256");
-  hash.update(content + salt);
-
-  return `sha256$${hash.digest("hex")}`;
 }
 
 /**
@@ -51,7 +38,7 @@ export function combineHashBuffers(first?: Buffer, second?: Buffer): Buffer {
   if (!first) {
     return second;
   }
-  return keccak256(bufSortJoin(first, second));
+  return hashToBuffer(keccak256(bufSortJoin(first, second)));
 }
 
 /**
