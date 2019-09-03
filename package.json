@@ -1,6 +1,6 @@
 {
   "name": "@govtechsg/open-attestation",
-  "version": "1.1.39",
+  "version": "0.0.0-development",
   "description": "## Usage",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -24,7 +24,7 @@
   "contributors": [
     "RJ Chow <me@rjchow.com> (https://about.rjchow.com)"
   ],
-  "license": "Apache-2.0",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@types/jest": "24.0.11",
     "@types/lodash": "4.14.123",
@@ -39,10 +39,10 @@
     "eslint-plugin-jest": "22.4.1",
     "eslint-plugin-prettier": "^2.7.0",
     "jest": "24.7.1",
-    "lerna": "^3.13.1",
     "prettier": "^1.16.4",
     "rollup": "1.16.7",
     "rollup-plugin-commonjs": "10.0.1",
+    "semantic-release": "^15.13.24",
     "ts-jest": "24.0.2",
     "ts-node": "8.0.3",
     "typescript": "3.4.2"
@@ -61,12 +61,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OpenCerts/open-attestation.git"
+    "url": "https://github.com/Open-Attestation/open-attestation.git"
   },
   "bugs": {
-    "url": "https://github.com/OpenCerts/open-attestation/issues"
+    "url": "https://github.com/Open-Attestation/open-attestation/issues"
   },
-  "homepage": "https://github.com/OpenCerts/open-attestation#readme",
+  "homepage": "https://github.com/Open-Attestation/open-attestation#readme",
   "publishConfig": {
     "access": "public"
   }

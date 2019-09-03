@@ -1,4 +1,4 @@
-![Travis Build Status](https://travis-ci.org/OpenCerts/open-attestation.svg?branch=master)
+[![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
 
 # Open Attestation
 
