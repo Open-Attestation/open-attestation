@@ -11,6 +11,8 @@
     "build:esm": "tsc --module es2015 --outDir dist/esm --moduleResolution node --skipLibCheck --project ./tsconfig.prod.json",
     "build:umd": "rollup -c",
     "clean": "rm -rf dist/",
+    "commit": "git-cz",
+    "commit:retry": "npm run commit -- --retry",
     "test": "npm run build && jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -26,18 +28,24 @@
   ],
   "license": "GPL-3.0",
   "devDependencies": {
+    "@commitlint/cli": "8.2.0",
+    "@commitlint/config-conventional": "8.2.0",
+    "@commitlint/prompt": "8.2.0",
+    "@ls-age/commitlint-circle": "1.0.0",
     "@types/jest": "24.0.11",
     "@types/lodash": "4.14.123",
     "@types/uuid": "3.4.4",
     "@types/validator": "10.11.0",
     "@typescript-eslint/eslint-plugin": "1.6.0",
     "@typescript-eslint/parser": "1.6.0",
+    "commitizen": "4.0.3",
     "eslint": "^5.15.3",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jest": "22.4.1",
     "eslint-plugin-prettier": "^2.7.0",
+    "git-cz": "3.2.1",
     "jest": "24.7.1",
     "prettier": "^1.16.4",
     "rollup": "1.16.7",
@@ -69,5 +77,10 @@
   "homepage": "https://github.com/Open-Attestation/open-attestation#readme",
   "publishConfig": {
     "access": "public"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/@commitlint/prompt"
+    }
   }
 }
