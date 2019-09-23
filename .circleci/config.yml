@@ -9,6 +9,9 @@ jobs:
           name: install
           command: npm install
       - run:
+          name: commitlint
+          command: npx --no-install commitlint-circle
+      - run:
           name: lint
           command: npm run lint
       - run:
@@ -19,4 +22,4 @@ jobs:
           command: npm run test
       - run:
           name: release
-          command: npx semantic-release
+          command: npx --no-install semantic-release
