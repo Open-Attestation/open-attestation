@@ -26,7 +26,7 @@ export const issueDocuments = (dataArray: any[], schema: Schema) => {
 };
 
 export { digestDocument } from "./digest";
-export { getData, obfuscateDocument } from "./privacy";
+export { getData, obfuscateDocument, Document, SchematisedDocument, SignedDocument } from "./privacy";
 export { addSchema, validate as validateSchema } from "./schema";
 export { checkProof, MerkleTree, sign, verify as verifySignature } from "./signature";
 export { utils };
