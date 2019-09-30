@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "lib": ["es2016"],
     "target": "es5",
     "module": "es2015",
+    "moduleResolution": "node",
     "strict": true,
     "baseUrl": ".",
-    "typeRoots": ["./src/@types", "./node_modules/@types" ]
+    "typeRoots": ["./src/@types", "./node_modules/@types" ],
+    "skipLibCheck": true
   },
   "include": ["./src/**/*"]
 }
