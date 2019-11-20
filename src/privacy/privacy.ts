@@ -73,7 +73,7 @@ export const obfuscateData = (_data: any, fields: string[] | string) => {
   };
 };
 
-export const obfuscateDocument = (document: SignedDocument, fields: any): SignedDocument => {
+export const obfuscateDocument = (document: SignedDocument, fields: string[] | string): SignedDocument => {
   const existingData = document.data;
   const { data, obfuscatedData } = obfuscateData(existingData, fields);
 
