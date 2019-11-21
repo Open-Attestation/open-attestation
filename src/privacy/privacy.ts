@@ -1,30 +1,13 @@
-import { get, cloneDeep, pick, unset } from "lodash";
+import { cloneDeep, pick, unset } from "lodash";
 import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
 import { unsaltData } from "./salt";
-import { Signature } from "../signature";
+import { SchematisedDocument, WrappedDocument } from "../@types/document";
 
-export interface SignedDocument extends SchematisedDocument {
-  signature: Signature;
-}
-
-export interface ObfuscationMetadata {
-  obfuscatedData?: string[];
-}
-
-export interface SchematisedDocument extends Document {
-  schema: string;
-}
-
-export interface Document {
-  data: any;
-  privacy?: ObfuscationMetadata;
-  schema?: string;
-}
-
-export type OpenAttestationData = any; // input data can take any format
-
-export const getData = (document: Document) => unsaltData(document.data);
+type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
+export const getData = <T extends { data: any }>(document: T): Extract<T> => {
+  return unsaltData(document.data);
+};
 
 /**
  * Takes a partial originating document, possibly only with a schema.id and returns a document with the given data and obfuscated data
@@ -34,11 +17,11 @@ export const getData = (document: Document) => unsaltData(document.data);
  */
 
 // TODO: split into two separate functions for the two different use cases
-export const setData = <T extends SchematisedDocument | SignedDocument>(
+export const setData = <T extends SchematisedDocument<U> | WrappedDocument<U>, U = any>(
   document: T,
-  data: OpenAttestationData,
+  data: U,
   obfuscatedData: string[] = []
-): T => {
+) => {
   const privacy = {
     ...document.privacy,
     obfuscatedData: obfuscatedData && obfuscatedData.length > 0 ? obfuscatedData : []
@@ -73,12 +56,15 @@ export const obfuscateData = (_data: any, fields: string[] | string) => {
   };
 };
 
-export const obfuscateDocument = (document: SignedDocument, fields: string[] | string): SignedDocument => {
+// TODO to improve user experience and provide better feedback on what's wrong for non typescript user we might consider performing validation on the object provided
+export const obfuscateDocument = <T = any>(
+  document: WrappedDocument<T>,
+  fields: string[] | string
+): WrappedDocument<T> => {
   const existingData = document.data;
   const { data, obfuscatedData } = obfuscateData(existingData, fields);
 
-  // we use lodash.get because document might not have the correct fields when coming from external input
-  const currentObfuscatedData = get(document, "privacy.obfuscatedData", []);
+  const currentObfuscatedData = document?.privacy?.obfuscatedData ?? [];
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
   return setData(document, data, newObfuscatedData);

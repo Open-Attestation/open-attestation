@@ -1,4 +1,4 @@
-import * as VerEx from "verbal-expressions";
+import VerEx from "verbal-expressions";
 
 const hexDigits = VerEx().range("0", "9", "a", "f", "A", "F");
 

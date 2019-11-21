@@ -1,0 +1,29 @@
+{
+  "id": "SERIAL_NUMBER_123",
+  "$template": {
+    "name": "CUSTOM_TEMPLATE",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://localhost:3000/renderer"
+  },
+  "issuers": [
+    {
+      "name": "DEMO STORE",
+      "documentStore": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+      "identityProof": {
+        "type": "DNS-TXT",
+        "location": "tradetrust.io"
+      }
+    }
+  ],
+  "recipient": {
+    "name": "Recipient Name"
+  },
+  "unknownKey": "unknownValue",
+  "attachments": [
+    {
+      "filename": "sample.pdf",
+      "type": "application/pdf",
+      "data": "BASE64_ENCODED_FILE"
+    }
+  ]
+}

@@ -1,32 +1,76 @@
+import Ajv from "ajv";
 import { digestDocument } from "./digest";
-import { Schema, validate } from "./schema";
-import { sign } from "./signature";
-import { setData } from "./privacy";
+import { getSchema, validateSchema as validate } from "./schema";
+import { wrap } from "./signature";
+import { SchematisedDocument, WrappedDocument } from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
+import openAttestationSchema from "./schema/3.0/schema.json";
+import { setData } from "./privacy";
+import * as v2 from "./__generated__/schemaV2";
+import * as v3 from "./__generated__/schemaV3";
 
-const createDocument = (data: any, schema: Schema) => {
-  const document = setData({ schema: schema.$id, data: null }, saltData(data));
-  const valid = validate(document, schema);
-  if (valid) {
-    return document;
+const createDocument = (data: any, schemaId?: string) => {
+  const documentSchema: SchematisedDocument = {
+    // throw error
+    version: openAttestationSchema.$id,
+    data: null
+  };
+  if (schemaId) {
+    documentSchema.schema = schemaId;
   }
-  throw new Error(`Invalid document:${JSON.stringify(data, null, 2)}`);
+  return setData(documentSchema, saltData(data));
 };
 
-export const issueDocument = (data: any, schema: Schema) => {
-  const document = createDocument(data, schema);
-  return sign(document, [digestDocument(document)]);
+class SchemaValidationError extends Error {
+  constructor(message: string, public validationErrors: Ajv.ErrorObject[], public document: any) {
+    super(message);
+  }
+}
+const isSchemaValidationError = (error: any): error is SchemaValidationError => {
+  return !!error.validationErrors;
 };
 
-export const issueDocuments = (dataArray: any[], schema: Schema) => {
-  const documents = dataArray.map(data => createDocument(data, schema));
+interface IssueDocumentOption {
+  externalSchemaId?: string;
+}
+export const issueDocument = (
+  data: unknown,
+  options?: IssueDocumentOption
+): WrappedDocument<v3.OpenAttestationDocument> => {
+  const document: SchematisedDocument = createDocument(data, options?.externalSchemaId);
+  const errors = validate(document, getSchema("open-attestation/3.0"));
+  if (errors.length > 0) {
+    throw new SchemaValidationError("Invalid document", errors, document);
+  }
+  return wrap(document, [digestDocument(document)]);
+};
+
+export const issueDocuments = (
+  dataArray: unknown[],
+  options?: IssueDocumentOption
+): WrappedDocument<v3.OpenAttestationDocument>[] => {
+  const documents = dataArray.map(data => createDocument(data, options?.externalSchemaId));
+  documents.forEach(document => {
+    const errors = validate(document, getSchema("open-attestation/3.0"));
+    if (errors.length > 0) {
+      throw new SchemaValidationError("Invalid document", errors, document);
+    }
+  });
+
   const batchHashes = documents.map(digestDocument);
-  return documents.map(doc => sign(doc, batchHashes));
+  return documents.map(doc => wrap(doc, batchHashes));
+};
+
+export const validateSchema = (document: WrappedDocument): boolean => {
+  return validate(document, getSchema(`${document?.version || "open-attestation/2.0"}`)).length === 0;
 };
 
 export { digestDocument } from "./digest";
-export { getData, obfuscateDocument, Document, SchematisedDocument, SignedDocument } from "./privacy";
-export { addSchema, validate as validateSchema } from "./schema";
-export { checkProof, MerkleTree, sign, verify as verifySignature } from "./signature";
-export { utils };
+export { getData, obfuscateDocument } from "./privacy";
+export { checkProof, MerkleTree, wrap, verify as verifySignature } from "./signature";
+export { utils, isSchemaValidationError };
+export * from "./@types/document";
+export * from "./schema/3.0/w3c";
+export { v2 };
+export { v3 };

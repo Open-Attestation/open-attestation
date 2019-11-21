@@ -1,28 +1,13 @@
-import { addSchema, Schema, validate } from "./schema";
-import { Document } from "../privacy";
+import Ajv from "ajv";
+import { validateSchema } from "./schema";
+import { SchematisedDocument } from "../@types/document";
 
-const schemaV1 = {
-  $id: "http://example.com/schemaV1.json",
+const schema = {
+  $id: "http://example.com/schema.json",
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   properties: {
     key1: {
-      type: "number"
-    }
-  },
-  required: ["key1"],
-  additionalProperties: false
-};
-
-const schemaV2 = {
-  $id: "http://example.com/schemaV2.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  type: "object",
-  properties: {
-    key1: {
-      type: "number"
-    },
-    key2: {
       type: "number"
     }
   },
@@ -31,140 +16,64 @@ const schemaV2 = {
 };
 
 describe("schema", () => {
-  describe("addSchema", () => {
-    test("adds a schema", () => {
-      const schemaV0: Schema = {
-        $id: "http://example.com/schemaV0.json",
-        $schema: "http://json-schema.org/draft-07/schema#",
-        type: "object",
-        properties: {
-          key1: {
-            type: "number"
-          }
-        },
-        required: ["key1"],
-        additionalProperties: false
-      };
-      addSchema(schemaV0);
-    });
-    test("does not throw when the same schema is added again", () => {
-      const schemaV0: Schema = {
-        $id: "http://example.com/schemaV0.json",
-        $schema: "http://json-schema.org/draft-07/schema#",
-        type: "object",
-        properties: {
-          key1: {
-            type: "number"
-          }
-        },
-        required: ["key1"],
-        additionalProperties: false
-      };
-      addSchema(schemaV0);
-      addSchema(schemaV0);
-      addSchema(schemaV0);
-    });
-  });
-  describe("validate", () => {
+  describe("validateSchema", () => {
     test("throws when the schema cannot be found/has not been added", () => {
-      const document: Document = {
-        schema: "http://example.com/schemaV1.json",
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore ignore typescript for this test
+      const document: SchematisedDocument = {
+        schema: "http://example.com/schema.json",
         data: {
           key1: 2
         }
       };
-      const valid = () => validate(document);
-      expect(valid).toThrow("no schema");
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore ignore typescript for this test
+      const valid = () => validateSchema(document);
+      expect(valid).toThrow("No schema validator provided");
     });
 
-    describe("after adding schema", () => {
-      beforeAll(() => {
-        addSchema(schemaV1);
-      });
-      test("returns true for passing documents", () => {
-        const document: Document = {
-          schema: "http://example.com/schemaV1.json",
+    describe("with one schema", () => {
+      test("returns empty array for passing documents", () => {
+        const ajv = new Ajv({ allErrors: true });
+        const document: SchematisedDocument = {
+          version: "open-attestation/3.0",
+          schema: "http://example.com/schema.json",
           data: {
             key1: 2
           }
         };
-        expect(validate(document)).toBe(true);
+        expect(validateSchema(document, ajv.compile(schema))).toStrictEqual([]);
       });
 
-      test("returns false for failing documents", () => {
-        const document: Document = {
-          schema: "http://example.com/schemaV1.json",
+      test("returns array with errors for failing documents", () => {
+        const ajv = new Ajv({ allErrors: true });
+        const document: SchematisedDocument = {
+          version: "open-attestation/3.0",
+          schema: "http://example.com/schema.json",
           data: {
             key: 2
           }
         };
-        expect(validate(document)).toBe(false);
-      });
-    });
-
-    describe("after adding multiple schemas", () => {
-      beforeAll(() => {
-        addSchema(schemaV2);
-      });
-      test("returns true for passing documents", () => {
-        const document: Document = {
-          schema: "http://example.com/schemaV1.json",
-          data: {
-            key1: 2
+        expect(validateSchema(document, ajv.compile(schema))).toStrictEqual([
+          {
+            dataPath: "",
+            keyword: "additionalProperties",
+            message: "should NOT have additional properties",
+            params: {
+              additionalProperty: "key"
+            },
+            schemaPath: "#/additionalProperties"
+          },
+          {
+            dataPath: "",
+            keyword: "required",
+            message: "should have required property 'key1'",
+            params: {
+              missingProperty: "key1"
+            },
+            schemaPath: "#/required"
           }
-        };
-        const document2: Document = {
-          schema: "http://example.com/schemaV2.json",
-          data: {
-            key1: 2,
-            key2: 3
-          }
-        };
-        expect(validate(document)).toBe(true);
-        expect(validate(document2)).toBe(true);
-      });
-
-      test("returns false for failing documents", () => {
-        const document: Document = {
-          schema: "http://example.com/schemaV1.json",
-          data: {
-            key: 2
-          }
-        };
-        const document2: Document = {
-          schema: "http://example.com/schemaV1.json",
-          data: {
-            key2: 2
-          }
-        };
-        expect(validate(document)).toBe(false);
-        expect(validate(document2)).toBe(false);
-      });
-    });
-
-    describe("document with schema object", () => {
-      test("returns true for valid document", () => {
-        const document: Document = {
-          data: {
-            key1: 2
-          }
-        };
-        expect(validate(document, schemaV1)).toBe(true);
-      });
-
-      test("returns false for invalid documents", () => {
-        const document: Document = {
-          data: {}
-        };
-        const document2: Document = {
-          data: {
-            key1: 2,
-            key2: 4
-          }
-        };
-
-        expect(validate(document, schemaV1)).toBe(false);
-        expect(validate(document2, schemaV1)).toBe(false);
+        ]);
       });
     });
   });
