@@ -1,4 +1,5 @@
-import { getData, obfuscateData, obfuscateDocument, setData, SignedDocument } from "./privacy";
+import { getData, obfuscateData, obfuscateDocument, setData } from "./privacy";
+import { WrappedDocument } from "../@types/document";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
@@ -123,8 +124,9 @@ describe("privacy", () => {
 
   describe("obfuscateDocument", () => {
     test("is a pure function", () => {
-      const document: SignedDocument = {
-        schema: "http://example.com/schema-v1.json",
+      const document: WrappedDocument = {
+        version: "1.0",
+        schema: "http://example.com/schema.json",
         data: {
           key1: "test"
         },
@@ -136,8 +138,9 @@ describe("privacy", () => {
           merkleRoot: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54"
         }
       };
-      const document2: SignedDocument = {
-        schema: "http://example.com/schema-v1.json",
+      const document2: WrappedDocument = {
+        version: "1.0",
+        schema: "http://example.com/schema.json",
         data: {
           key1: "test"
         },
@@ -154,8 +157,9 @@ describe("privacy", () => {
     });
 
     test("is transitive", () => {
-      const document: SignedDocument = {
-        schema: "http://example.com/schema-v1.json",
+      const document: WrappedDocument = {
+        version: "1.0",
+        schema: "http://example.com/schema.json",
         data: {
           key1: "item1",
           key2: "item4"
@@ -178,8 +182,9 @@ describe("privacy", () => {
     });
 
     test("returns new document with obfuscated data", () => {
-      const document: SignedDocument = {
-        schema: "http://example.com/schema-v1.json",
+      const document: WrappedDocument = {
+        version: "1.0",
+        schema: "http://example.com/schema.json",
         data: {
           key1: "test"
         },
@@ -193,7 +198,8 @@ describe("privacy", () => {
       };
       const newDoc = obfuscateDocument(document, "key1");
       expect(newDoc).toEqual({
-        schema: "http://example.com/schema-v1.json",
+        version: "1.0",
+        schema: "http://example.com/schema.json",
         data: {},
         signature: {
           type: "SHA3MerkleProof",
@@ -210,8 +216,9 @@ describe("privacy", () => {
 
   describe("getData", () => {
     test("returns original data given salted content and, optionally, salt length", () => {
-      const document: SignedDocument = {
-        schema: "http://example.com/schema-v1.json",
+      const document: WrappedDocument = {
+        version: "1.0",
+        schema: "http://example.com/schema.json",
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
@@ -252,6 +259,7 @@ describe("privacy", () => {
         "4d93dd9bbaa80d01010b3f7faaf48ed5da36f0b9408c751493f6cce24a9a0c89"
       ];
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore intentionally ignoring this as it's supposed to work with malformed data
       const document = setData({}, data, obfuscatedData);
       expect(document.data.key1).toEqual(expect.stringContaining("value1"));

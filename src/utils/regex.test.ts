@@ -10,6 +10,7 @@ describe("utils/regex", () => {
       expect(isHexString("0xAAAcc")).toBe(true);
     });
     test("should return false when the hex string is a number", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore make it fail
       expect(isHexString(0x123)).toBe(false);
     });

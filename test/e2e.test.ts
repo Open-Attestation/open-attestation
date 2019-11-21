@@ -1,55 +1,67 @@
 import {
-  addSchema,
   getData,
   issueDocument,
   issueDocuments,
   obfuscateDocument,
-  validateSchema,
-  verifySignature
+  verifySignature,
+  validateSchema
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
 } from "../dist/cjs/index";
+import {
+  IdentityProofType,
+  Method,
+  OpenAttestationDocument,
+  ProofType,
+  TemplateType
+} from "../src/__generated__/schemaV3";
 // Disable tslint import/no-unresolved for this because it usually doesn't exist until build runs
-
 type IssueDocumentReturnType = ReturnType<typeof issueDocument>;
 
-const schema = {
-  $id: "http://example.com/schema-v1.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  type: "object",
-  properties: {
-    key1: {
-      type: "string"
-    },
-    key2: {
-      type: "string"
-    },
-    key3: {
-      type: "number"
-    },
-    key4: {
-      type: "boolean"
+const openAttestationData: OpenAttestationDocument = {
+  reference: "document identifier",
+  validFrom: "2010-01-01T19:23:24Z",
+  name: "document owner name",
+  template: {
+    name: "any",
+    type: TemplateType.EmbeddedRenderer,
+    url: "http://some.example.com"
+  },
+  issuer: {
+    id: "http://some.example.com",
+    name: "DEMO STORE",
+    identityProof: {
+      type: IdentityProofType.DNSTxt,
+      location: "tradetrust.io"
     }
   },
-  required: ["key1"],
-  additionalProperties: false
+  proof: {
+    type: ProofType.OpenAttestationSignature2018,
+    value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+    method: Method.TokenRegistry
+  }
 };
 
 const datum = [
   {
-    key1: "test"
+    key1: "test",
+    ...openAttestationData
   },
   {
     key1: "hello",
-    key2: "item2"
+    key2: "item2",
+    ...openAttestationData
   },
   {
     key1: "item1",
     key2: "true",
     key3: 3.14159,
-    key4: false
+    key4: false,
+    ...openAttestationData
   },
   {
-    key1: "item2"
+    key1: "item2",
+    ...openAttestationData
   }
 ];
 
@@ -61,18 +73,18 @@ describe("E2E Test Scenarios", () => {
     test("fails for malformed data", () => {
       const malformedData = {
         ...document,
-        key3: "moooo"
+        issuer: undefined
       };
-      const action = () => issueDocument(malformedData, schema);
+      const action = () => issueDocument(malformedData);
       expect(action).toThrow("Invalid document");
     });
 
     beforeAll(() => {
-      signedDocument = issueDocument(document, schema);
+      signedDocument = issueDocument(document, { externalSchemaId: "http://example.com/schema.json" });
     });
 
     test("creates a signed document", () => {
-      expect(signedDocument.schema).toBe("http://example.com/schema-v1.json");
+      expect(signedDocument.schema).toBe("http://example.com/schema.json");
       expect(signedDocument.data.key1).toEqual(expect.stringContaining("test"));
       expect(signedDocument.signature.type).toBe("SHA3MerkleProof");
       expect(signedDocument.signature.targetHash).toBeDefined();
@@ -85,11 +97,8 @@ describe("E2E Test Scenarios", () => {
       const verified = verifySignature(signedDocument);
       expect(verified).toBe(true);
     });
-
     test("checks that document conforms to the schema", () => {
-      addSchema(schema);
-      const validatedSchema = validateSchema(signedDocument);
-      expect(validatedSchema).toBe(true);
+      expect(validateSchema(signedDocument)).toBe(true);
     });
 
     test("checks that data extracted are the same as input", () => {
@@ -98,23 +107,21 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("does not allow for the same merkle root to be generated", () => {
-      const newDocument = issueDocument(document, schema);
+      const newDocument = issueDocument(document);
       expect(signedDocument.signature.merkleRoot).not.toBe(newDocument.signature.merkleRoot);
     });
 
-    test("obfuscate data correctly", () => {
-      const newDocument = issueDocument(datum[2], schema);
+    test("obfuscate data correctly", async () => {
+      const newDocument = issueDocument(datum[2]);
       const obfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
 
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
-
-      const validatedSchema = validateSchema(obfuscatedDocument);
-      expect(validatedSchema).toBe(true);
+      expect(validateSchema(obfuscatedDocument)).toBe(true);
     });
 
     test("obfuscate data transistively", () => {
-      const newDocument = issueDocument(datum[2], schema);
+      const newDocument = issueDocument(datum[2]);
       const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
       const obfuscatedDocument = obfuscateDocument(intermediateDocument, ["key3"]);
 
@@ -128,7 +135,7 @@ describe("E2E Test Scenarios", () => {
     let signedDocuments: IssueDocumentReturnType;
 
     beforeAll(() => {
-      signedDocuments = issueDocuments(datum, schema);
+      signedDocuments = issueDocuments(datum, { externalSchemaId: "http://example.com/schema.json" });
     });
 
     test("fails if there is a malformed document", () => {
@@ -138,13 +145,13 @@ describe("E2E Test Scenarios", () => {
           cow: "moo"
         }
       ];
-      const action = () => issueDocument(malformedDatum, schema);
+      const action = () => issueDocument(malformedDatum);
       expect(action).toThrow("Invalid document");
     });
 
     test("creates a batch of documents if all are in the right format", () => {
       signedDocuments.forEach((doc: IssueDocumentReturnType, i: number) => {
-        expect(doc.schema).toBe("http://example.com/schema-v1.json");
+        expect(doc.schema).toBe("http://example.com/schema.json");
         expect(doc.signature.type).toBe("SHA3MerkleProof");
         expect(doc.data.key1).toEqual(expect.stringContaining(datum[i].key1));
         expect(doc.signature.targetHash).toBeDefined();
@@ -157,13 +164,8 @@ describe("E2E Test Scenarios", () => {
       const verified = signedDocuments.reduce((prev: boolean, curr: boolean) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
     });
-
     test("checks that documents conforms to the schema", () => {
-      addSchema(schema);
-      const validatedSchema = signedDocuments.reduce(
-        (prev: boolean, curr: boolean) => validateSchema(curr) && prev,
-        true
-      );
+      const validatedSchema = signedDocuments.reduce((prev: boolean, curr: any) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
     });
 
@@ -175,8 +177,78 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("does not allow for same merkle root to be generated", () => {
-      const newSignedDocuments = issueDocuments(datum, schema);
+      const newSignedDocuments = issueDocuments(datum);
       expect(signedDocuments[0].signature.merkleRoot).not.toBe(newSignedDocuments[0].signature.merkleRoot);
+    });
+  });
+
+  describe("validate", () => {
+    test("should throw an error if document id is not a valid open attestation schema version", () => {
+      const action = () =>
+        validateSchema({
+          version: "abababa",
+          schema: "http://example.com/schemaV3.json",
+          data: {
+            key: 2
+          }
+        });
+      expect(action).toThrow("No schema validator provided");
+    });
+    test("should return false if document is not valid", () => {
+      expect(
+        validateSchema({
+          version: "open-attestation/3.0",
+          schema: "http://example.com/schemaV3.json",
+          data: {
+            key: 2
+          }
+        })
+      ).toStrictEqual(false);
+    });
+    test("should return true when document is valid and version is 3.0", () => {
+      expect(
+        validateSchema({
+          version: "open-attestation/3.0",
+          schema: "http://example.com/schemaV3.json",
+          data: {
+            reference: "reference",
+            name: "name",
+            validFrom: "2010-01-01T19:23:24Z",
+            issuer: {
+              id: "https://example.com",
+              name: "issuer.name",
+              identityProof: {
+                type: "DNS-TXT",
+                location: "issuer.identityProof.location"
+              }
+            },
+            template: {
+              name: "template.name",
+              type: "EMBEDDED_RENDERER",
+              url: "https://example.com"
+            },
+            proof: {
+              type: "OpenAttestationSignature2018",
+              method: "TOKEN_REGISTRY",
+              value: "proof.value"
+            }
+          }
+        })
+      ).toStrictEqual(true);
+    });
+    test("should return true when document is valid and version is not provided", () => {
+      expect(
+        validateSchema({
+          data: {
+            issuers: [
+              {
+                name: "issuer.name",
+                certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
+              }
+            ]
+          }
+        })
+      ).toStrictEqual(true);
     });
   });
 });

@@ -1,6 +1,5 @@
 {
   "extends": [
-    "airbnb-base",
     "plugin:@typescript-eslint/recommended",
     "prettier",
     "prettier/@typescript-eslint",
@@ -22,7 +21,9 @@
     "prettier/prettier": "error",
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
-    "@typescript-eslint/explicit-function-return-type":"off",
-    "@typescript-eslint/no-explicit-any":"off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-unused-expressions": "off",
+    "@typescript-eslint/no-unused-expressions": ["error"]
   }
 }

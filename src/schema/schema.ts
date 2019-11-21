@@ -1,36 +1,26 @@
-import * as Ajv from "ajv";
-import { getData, Document, SchematisedDocument } from "../privacy";
+import Ajv from "ajv";
+import { getData } from "../privacy";
+import { getLogger } from "../logger";
+import openAttestationSchemav2 from "./2.0/schema.json";
+import openAttestationSchemav3 from "./3.0/schema.json";
 
-// We need to do this horrible thing because the return type of validate makes no sense
-// https://github.com/epoberezkin/ajv/issues/911
-const ajv = new Ajv() as AjvOverride.Ajv;
+const logger = getLogger("validate");
 
-export interface Schema {
-  id?: string;
-  $id: string;
-  $schema?: string;
-  type?: string;
-  properties?: any;
-  required?: string[];
-  additionalProperties?: boolean;
-}
-
-export const addSchema = (schema: Schema) => {
-  try {
-    ajv.addSchema(schema, schema.id);
-  } catch (e) {
-    // Ignore error if schema already exist
-    if (!e.message.includes("already exists")) {
-      throw e;
-    }
+export const validateSchema = (document: any, validator: Ajv.ValidateFunction): Ajv.ErrorObject[] => {
+  if (!validator) {
+    throw new Error("No schema validator provided");
   }
+  const valid = validator(getData(document));
+  if (!valid) {
+    logger.debug("There are errors in the document");
+    logger.debug(validator.errors);
+    return validator.errors ?? [];
+  }
+  logger.debug(`Document is a valid open attestation document v${document.version}`);
+  return [];
 };
 
-export const validate = (document: Document, schema?: Schema): document is SchematisedDocument => {
-  // TODO document.schema is set as mandatory here because for the moment it can't be made required in the interface
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const result = schema ? ajv.validate(schema, getData(document)) : ajv.validate(document.schema!, getData(document));
-  // eslint-disable-next-line no-console
-  // console.log(ajv.errors); // TODO: properly feedback error
-  return result;
-};
+const ajv = new Ajv({ allErrors: true });
+ajv.compile(openAttestationSchemav2);
+ajv.compile(openAttestationSchemav3);
+export const getSchema = (key: string) => ajv.getSchema(key);

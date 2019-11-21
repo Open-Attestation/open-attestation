@@ -16,10 +16,10 @@ jobs:
           command: npm run lint
       - run:
           name: test
-          command: npm run build
+          command: npm run test
       - run:
           name: build
-          command: npm run test
+          command: npm run build
       - run:
           name: release
           command: npx --no-install semantic-release

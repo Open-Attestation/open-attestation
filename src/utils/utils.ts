@@ -11,6 +11,7 @@ export function bufSortJoin(...args: Buffer[]): Buffer {
 
 // If hash is not a buffer, convert it to buffer (without hashing it)
 export function hashToBuffer(hash: Hash): Buffer {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore https://github.com/Microsoft/TypeScript/issues/23155
   return Buffer.isBuffer(hash) && hash.length === 32 ? hash : Buffer.from(hash, "hex");
 }
@@ -54,3 +55,6 @@ export function combineHashString(first?: string, second?: string): string {
     : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       (first || second)!; // this should always return a value right ? :)
 }
+
+// make it available for consumers
+export { keccak256 } from "js-sha3";

@@ -1,7 +1,8 @@
-import { sign, verify } from "./signature";
-import { SchematisedDocument } from "../privacy";
+import { wrap, verify } from "./signature";
+import { SchematisedDocument } from "../@types/document";
 
 const unsignedDocument: SchematisedDocument = {
+  version: "1.0",
   schema: "foo",
   data: {
     key1: "value1",
@@ -117,7 +118,7 @@ describe("signature", () => {
 
   describe("sign", () => {
     test("throws when the document is not in the batch", () => {
-      const emptySign = () => sign(unsignedDocument, []);
+      const emptySign = () => wrap(unsignedDocument, []);
       expect(emptySign).toThrow("Document is not in batch");
     });
 
@@ -132,7 +133,7 @@ describe("signature", () => {
         }
       };
 
-      const signedDocument = sign(unsignedDocument);
+      const signedDocument = wrap(unsignedDocument);
       expect(signedDocument).toEqual(expectedSignedDocument);
     });
 
@@ -156,7 +157,7 @@ describe("signature", () => {
         }
       };
 
-      const signedDocument = sign(unsignedDocument, batch);
+      const signedDocument = wrap(unsignedDocument, batch);
       expect(signedDocument).toEqual(expectedSignedDocument);
     });
 
@@ -174,7 +175,7 @@ describe("signature", () => {
         "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c"
       ];
 
-      expect(sign(unsignedDocument, batch1)).toEqual(sign(unsignedDocument, batch2));
+      expect(wrap(unsignedDocument, batch1)).toEqual(wrap(unsignedDocument, batch2));
     });
   });
 });
