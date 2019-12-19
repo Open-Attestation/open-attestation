@@ -23,7 +23,8 @@
     "postinstall": "./scripts/postinstall.sh"
   },
   "files": [
-    "/dist"
+    "/dist",
+    "/scripts"
   ],
   "author": "Raymond Yeh <yehjxraymond@gmail.com> (http://geek.sg)",
   "contributors": [
