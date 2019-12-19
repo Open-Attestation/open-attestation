@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: install
-          command: npm install
+          command: npm ci
       - run:
           name: commitlint
           command: npx --no-install commitlint-circle

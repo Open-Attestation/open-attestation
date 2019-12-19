@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "postinstall": "quicktype -s schema -o src/__generated__/schemaV3.ts -t OpenAttestationDocument --just-types src/schema/3.0/schema.json --no-date-times && quicktype -s schema -o src/__generated__/schemaV2.ts -t OpenAttestationDocument --just-types src/schema/2.0/schema.json --no-date-times"
+    "postinstall": "./scripts/postinstall.sh"
   },
   "files": [
     "/dist"
