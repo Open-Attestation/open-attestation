@@ -77,23 +77,30 @@
       "description": "Internal reference, usually serial number, of this document"
     },
     "$template": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Template name to be use by template renderer to determine the template to use"
+      "oneOf": [
+        {
+          "type": "string"
         },
-        "type": {
-          "type": "string",
-          "description": "Type of renderer template",
-          "enum": ["EMBEDDED_RENDERER"]
-        },
-        "url": {
-          "type": "string",
-          "description": "URL of a decentralised renderer to render this document"
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Template name to be use by template renderer to determine the template to use"
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of renderer template",
+              "enum": ["EMBEDDED_RENDERER"]
+            },
+            "url": {
+              "type": "string",
+              "description": "URL of a decentralised renderer to render this document"
+            }
+          },
+          "required": ["name", "type"]
         }
-      },
-      "required": ["name", "type"]
+      ]
     },
     "documentUrl": {
       "type": "string",
