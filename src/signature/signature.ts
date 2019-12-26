@@ -6,10 +6,10 @@ import { hashToBuffer, bufSortJoin } from "../utils";
 import { SchematisedDocument, Signature, WrappedDocument } from "../@types/document";
 import { OpenAttestationDocument } from "../__generated__/schemaV3";
 
-export const wrap = (
-  document: SchematisedDocument<OpenAttestationDocument>,
+export const wrap = <T = OpenAttestationDocument>(
+  document: SchematisedDocument<T>,
   batch?: string[]
-): WrappedDocument<OpenAttestationDocument> => {
+): WrappedDocument<T> => {
   const digest = digestDocument(document);
 
   if (batch && !batch.includes(digest)) {

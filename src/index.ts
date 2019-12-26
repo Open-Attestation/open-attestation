@@ -5,19 +5,25 @@ import { wrap } from "./signature";
 import { SchematisedDocument, WrappedDocument } from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
-import openAttestationSchema from "./schema/3.0/schema.json";
 import { setData } from "./privacy";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
 
-const createDocument = (data: any, schemaId?: string) => {
+interface IssueDocumentOption {
+  externalSchemaId?: string;
+  version?: "open-attestation/2.0" | "open-attestation/3.0";
+}
+const defaultVersion = "open-attestation/2.0";
+
+const createDocument = (data: any, option?: IssueDocumentOption) => {
   const documentSchema: SchematisedDocument = {
-    // throw error
-    version: openAttestationSchema.$id,
+    version: option?.version ?? defaultVersion,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore SchematisedDocument is not completely correct and causes typescript to complain here ... we need to have a better look on what's really SchematisedDocument is.
     data: null
   };
-  if (schemaId) {
-    documentSchema.schema = schemaId;
+  if (option?.externalSchemaId) {
+    documentSchema.schema = option.externalSchemaId;
   }
   return setData(documentSchema, saltData(data));
 };
@@ -31,28 +37,19 @@ const isSchemaValidationError = (error: any): error is SchemaValidationError => 
   return !!error.validationErrors;
 };
 
-interface IssueDocumentOption {
-  externalSchemaId?: string;
-}
-export const issueDocument = (
-  data: unknown,
-  options?: IssueDocumentOption
-): WrappedDocument<v3.OpenAttestationDocument> => {
-  const document: SchematisedDocument = createDocument(data, options?.externalSchemaId);
-  const errors = validate(document, getSchema("open-attestation/3.0"));
+export const issueDocument = <T = unknown>(data: T, options?: IssueDocumentOption): WrappedDocument<T> => {
+  const document: SchematisedDocument = createDocument(data, options);
+  const errors = validate(document, getSchema(options?.version ?? defaultVersion));
   if (errors.length > 0) {
     throw new SchemaValidationError("Invalid document", errors, document);
   }
   return wrap(document, [digestDocument(document)]);
 };
 
-export const issueDocuments = (
-  dataArray: unknown[],
-  options?: IssueDocumentOption
-): WrappedDocument<v3.OpenAttestationDocument>[] => {
-  const documents = dataArray.map(data => createDocument(data, options?.externalSchemaId));
+export const issueDocuments = <T = unknown>(dataArray: T[], options?: IssueDocumentOption): WrappedDocument<T>[] => {
+  const documents = dataArray.map(data => createDocument(data, options));
   documents.forEach(document => {
-    const errors = validate(document, getSchema("open-attestation/3.0"));
+    const errors = validate(document, getSchema(options?.version ?? defaultVersion));
     if (errors.length > 0) {
       throw new SchemaValidationError("Invalid document", errors, document);
     }
