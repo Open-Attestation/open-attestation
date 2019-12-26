@@ -2,7 +2,7 @@ import { cloneDeep, pick, unset } from "lodash";
 import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
 import { unsaltData } from "./salt";
-import { SchematisedDocument, WrappedDocument } from "../@types/document";
+import { DeepStringify, SchematisedDocument, WrappedDocument } from "../@types/document";
 
 type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
 export const getData = <T extends { data: any }>(document: T): Extract<T> => {
@@ -19,7 +19,7 @@ export const getData = <T extends { data: any }>(document: T): Extract<T> => {
 // TODO: split into two separate functions for the two different use cases
 export const setData = <T extends SchematisedDocument<U> | WrappedDocument<U>, U = any>(
   document: T,
-  data: U,
+  data: DeepStringify<U>,
   obfuscatedData: string[] = []
 ) => {
   const privacy = {

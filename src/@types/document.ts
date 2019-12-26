@@ -13,7 +13,7 @@ export interface ObfuscationMetadata {
 
 export interface SchematisedDocument<T = any> {
   version: string;
-  data: T;
+  data: DeepStringify<T>;
   schema?: string;
   privacy?: ObfuscationMetadata;
 }
@@ -28,7 +28,7 @@ export interface WrappedDocument<T = any> {
 
 // feel free to improve, as long as this project compile without changes :)
 // once salted, every property is turned into a string
-type DeepStringify<T> = {
+export type DeepStringify<T> = {
   [P in keyof T]: T[P] extends Array<number> // if it's a []number
     ? Array<string> // return []string
     : T[P] extends Array<string> // if it's []string

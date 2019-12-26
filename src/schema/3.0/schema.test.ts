@@ -6,23 +6,29 @@ import sampleDoc from "./sample-document.json";
 
 describe("open-attestation/3.0", () => {
   it("should be valid with sample document", () => {
-    const issuedDocument = issueDocument(sampleDoc, { externalSchemaId: $id });
+    const issuedDocument = issueDocument(sampleDoc, { externalSchemaId: $id, version: "open-attestation/3.0" });
     expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
   });
   it("should be valid when adding any additional data", () => {
-    const issuedDocument = issueDocument({ ...sampleDoc, key1: "some" }, { externalSchemaId: $id });
+    const issuedDocument = issueDocument(
+      { ...sampleDoc, key1: "some" },
+      { externalSchemaId: $id, version: "open-attestation/3.0" }
+    );
     expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
   });
 
   describe("@context", () => {
     it("should be valid when @context is missing", () => {
-      const issuedDocument = issueDocument({ ...sampleDoc, "@context": undefined }, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(
+        { ...sampleDoc, "@context": undefined },
+        { externalSchemaId: $id, version: "open-attestation/3.0" }
+      );
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when @context contains valid uri", () => {
       const issuedDocument = issueDocument(
         { ...sampleDoc, "@context": ["https://example.com"] },
-        { externalSchemaId: $id }
+        { externalSchemaId: $id, version: "open-attestation/3.0" }
       );
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
@@ -31,7 +37,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, "@context": ["any"] };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -49,11 +55,17 @@ describe("open-attestation/3.0", () => {
 
   describe("id", () => {
     it("should be valid when id is missing", () => {
-      const issuedDocument = issueDocument({ ...sampleDoc, id: undefined }, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(
+        { ...sampleDoc, id: undefined },
+        { externalSchemaId: $id, version: "open-attestation/3.0" }
+      );
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when @id contains valid uri", () => {
-      const issuedDocument = issueDocument({ ...sampleDoc, id: "https://example.com" }, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(
+        { ...sampleDoc, id: "https://example.com" },
+        { externalSchemaId: $id, version: "open-attestation/3.0" }
+      );
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
   });
@@ -64,7 +76,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc };
       delete document.reference;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -82,7 +94,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, reference: undefined };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -100,7 +112,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, reference: null };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -122,7 +134,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc };
       delete document.name;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -140,7 +152,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, name: undefined };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -158,7 +170,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, name: null };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -176,7 +188,10 @@ describe("open-attestation/3.0", () => {
 
   describe("type", () => {
     it("should be valid when type is missing", () => {
-      const issuedDocument = issueDocument({ ...sampleDoc, type: undefined }, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(
+        { ...sampleDoc, type: undefined },
+        { externalSchemaId: $id, version: "open-attestation/3.0" }
+      );
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
   });
@@ -187,7 +202,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc };
       delete document.validFrom;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -205,7 +220,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, validFrom: undefined };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -223,7 +238,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, validFrom: null };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -242,7 +257,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, validFrom: "some" };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -260,14 +275,17 @@ describe("open-attestation/3.0", () => {
 
   describe("validUntil", () => {
     it("should be valid when validUntil is missing", () => {
-      const issuedDocument = issueDocument({ ...sampleDoc, validUntil: undefined }, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(
+        { ...sampleDoc, validUntil: undefined },
+        { externalSchemaId: $id, version: "open-attestation/3.0" }
+      );
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be invalid if validUntil is not a correct date", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, validUntil: "some" };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -286,17 +304,17 @@ describe("open-attestation/3.0", () => {
   describe("template", () => {
     it("should be valid when type is EMBEDDED_RENDERER", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template, type: "EMBEDDED_RENDERER" } };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when url starts with http", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template, url: "http://some.example.com" } };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when url starts with https", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template, url: "https://some.example.com" } };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
 
@@ -304,7 +322,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, template: { ...sampleDoc.template, key: "any" } };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -324,7 +342,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc };
       delete document.template;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -343,7 +361,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template } };
       delete document.template.name;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -362,7 +380,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template } };
       delete document.template.type;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -381,7 +399,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template } };
       document.template.type = "SOMETHING";
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -400,7 +418,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template } };
       delete document.template.url;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -419,7 +437,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, template: { ...sampleDoc.template } };
       document.template.url = "ftp://some";
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -441,7 +459,7 @@ describe("open-attestation/3.0", () => {
         ...sampleDoc,
         issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "DNS-TXT" } }
       };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when id is an URI", () => {
@@ -449,14 +467,14 @@ describe("open-attestation/3.0", () => {
         ...sampleDoc,
         issuer: { ...sampleDoc.issuer, id: "http://example.com" }
       };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be invalid when adding additional data", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer, key: "any" } };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -477,7 +495,7 @@ describe("open-attestation/3.0", () => {
         issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, key1: "any" } }
       };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -496,7 +514,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer, id: "" } };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -516,7 +534,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc };
       delete document.issuer;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -535,7 +553,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer } };
       delete document.issuer.name;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -554,7 +572,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer } };
       delete document.issuer.id;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -573,7 +591,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer } };
       delete document.issuer.identityProof;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -595,7 +613,7 @@ describe("open-attestation/3.0", () => {
       };
       delete document.issuer.identityProof.type;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -617,7 +635,7 @@ describe("open-attestation/3.0", () => {
       };
       document.issuer.identityProof.type = "OTHER";
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -639,7 +657,7 @@ describe("open-attestation/3.0", () => {
       };
       delete document.issuer.identityProof.location;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -658,17 +676,17 @@ describe("open-attestation/3.0", () => {
   describe("proof", () => {
     it("should be valid when type is OpenAttestationSignature2018", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof, type: "OpenAttestationSignature2018" } };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when method is TOKEN_REGISTRY", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: "TOKEN_REGISTRY" } };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when method is DOCUMENT_STORE", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: "DOCUMENT_STORE" } };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
 
@@ -676,7 +694,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof, key: "any" } };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -695,7 +713,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc };
       delete document.proof;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -714,7 +732,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
       delete document.proof.type;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -733,7 +751,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
       document.proof.type = "Something";
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -752,7 +770,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
       delete document.proof.method;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -771,7 +789,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
       document.proof.method = "Something";
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -790,7 +808,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
       delete document.proof.value;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -809,17 +827,17 @@ describe("open-attestation/3.0", () => {
   describe("attachments", () => {
     it("should be valid when mimeType is application/pdf", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }] };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when mimeType is image/png", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }] };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
     it("should be valid when mimeType is image/jpeg", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }] };
-      const issuedDocument = issueDocument(document, { externalSchemaId: $id });
+      const issuedDocument = issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(issuedDocument.version).toStrictEqual("open-attestation/3.0");
     });
 
@@ -827,7 +845,7 @@ describe("open-attestation/3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], key: "any" }] };
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -846,7 +864,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
       delete document.attachments[0].filename;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -865,7 +883,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
       delete document.attachments[0].mimeType;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -884,7 +902,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
       document.attachments[0].mimeType = "Something";
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -903,7 +921,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
       delete document.attachments[0].data;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -922,7 +940,7 @@ describe("open-attestation/3.0", () => {
       const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
       delete document.attachments[0].type;
       try {
-        issueDocument(document, { externalSchemaId: $id });
+        issueDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
