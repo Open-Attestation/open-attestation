@@ -6,102 +6,53 @@ Attestation and notary framework for any document types on the blockchain.
 
 OpenAttestation allows any entity to proof the existence of a document or a batch of documents. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
 
-This repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature and schema of the document issued using the OpenAttestation framework.
-
-Simply define your document schema to start using OpenAttestation!
-
-## JSON Schema
-
-[JSON Schema](http://json-schema.org/) is used to define the shape of the document. OpenAttestation provides its own schema and makes sure every document is valid against it.
-
-## Reference Implementation
-
-[OpenCerts](https://github.com/GovTechSG/open-certificate)
-
-Check out OpenCerts' implementation to understand how OpenAttestation can be used.
-
-## Usage
-
-Sample implementation of OpenAttestation:
-
-```js
-const {
-  getData,
-  issueDocument,
-  issueDocuments,
-  verifySignature,
-  obfuscateDocument,
-  validateSchema
-} = require("@govtechsg/open-attestation");
-
-const schema = {
-  $id: "http://example.com/schema.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  type: "object",
-  properties: {
-    key1: {
-      type: "string"
-    },
-    key2: {
-      type: "string"
-    }
-  },
-  required: ["key1"],
-  additionalProperties: false
-};
-
-const issuedDocument = data => issueDocument(data, schema);
-const isValid = validateSchema(issuedDocument);
-
-const issueDocuments = dataArray => issueDocuments(dataArray, schema);
-
-const obfuscateFields = (document, fields) => obfuscateDocument(document, fields);
-
-const documentData = document => getData(document);
-```
+This repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature of the document wrapped using the OpenAttestation framework.
 
 ## API References
 
-### Signing documents
+### Wrapping documents
 
-`issueDocuments` takes in an array of document and returns the batched documents. It computes the merkle root of the batch and appends the signature to each document. This merkle root can be published on the blockchain and queried against to prove the provenance of the document issued this way.
+`wrapDocuments` takes in an array of document and returns the batched documents. Each document must be valid regarding the version of the schema used (see below) It computes the merkle root of the batch and appends the signature to each document. This merkle root can be published on the blockchain and queried against to prove the provenance of the document issued this way.
+
+This function accept a second optional parameter to specify the version of open-attestation you want to use. By default, open-attestation will use schema v2.
+
+The `wrapDocument` function is identical but accept only one document.
 
 ```js
-const schema = {
-  $id: "http://example.com/schema.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  type: "object",
-  properties: {
-    key1: {
-      type: "string"
-    },
-    key2: {
-      type: "string"
-    }
+const document = {
+  id: "SERIAL_NUMBER_123",
+  $template: {
+    name: "CUSTOM_TEMPLATE",
+    type: "EMBEDDED_RENDERER",
+    url: "https://localhost:3000/renderer"
   },
-  required: ["key1"],
-  additionalProperties: false
+  issuers: [
+    {
+      name: "DEMO STORE",
+      tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+      identityProof: {
+        type: "DNS-TXT",
+        location: "tradetrust.io"
+      }
+    }
+  ],
+  recipient: {
+    name: "Recipient Name"
+  },
+  unknownKey: "unknownValue",
+  attachments: [
+    {
+      filename: "sample.pdf",
+      type: "application/pdf",
+      data: "BASE64_ENCODED_FILE"
+    }
+  ]
 };
 
-const datum = [
-  {
-    key1: "test"
-  },
-  {
-    key1: "hello",
-    key2: "item2"
-  },
-  {
-    key1: "item1",
-    key2: "item4"
-  },
-  {
-    key1: "item2"
-  }
-];
-
-signedDocuments = issueDocuments(datum, schema);
-console.log(signedDocuments);
+wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]); // will ensure document is valid regarding open-attestation v2 schema
+console.log(wrappedDocuments);
+wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }], { version: 'open-attestation/3.0' }); // will ensure document is valid regarding open-attestation v3 schema
+console.log(wrappedDocuments);
 ```
 
 ### Validate schema of document
@@ -109,18 +60,18 @@ console.log(signedDocuments);
 `validateSchema` checks that the document conforms to open attestation data structure.
 
 ```js
-const validatedSchema = validateSchema(signedDocument);
+const validatedSchema = validateSchema(wrappedDocument);
 console.log(validatedSchema);
 ```
 
 ### Verify signature of document
 
-`verifysignature` checks that the signature of the document corresponds to the actual content in the document. In addition, it checks that the target hash (hash of the document content), is part of the set of documents issued in the batch using the proofs.
+`verifysignature` checks that the signature of the document corresponds to the actual content in the document. In addition, it checks that the target hash (hash of the document content), is part of the set of documents wrapped in the batch using the proofs.
 
 Note that this method does not check against the blockchain or any registry if this document has been published. The merkle root of this document need to be checked against a publicly accessible document store (can be a smart contract on the blockchain).
 
 ```js
-const verified = verifySignature(signedDocument);
+const verified = verifySignature(wrappedDocument);
 console.log(verified);
 ```
 
@@ -129,7 +80,7 @@ console.log(verified);
 `getData` returns the original data stored in the document, in a readable format.
 
 ```js
-const data = getData(signedDocument);
+const data = getData(wrappedDocument);
 console.log(data);
 ```
 
@@ -138,7 +89,7 @@ console.log(data);
 `obfuscateFields` removes a key-value pair from the document's data section, without causing the file hash to change. This can be used to generate a new document containing a subset of the original data, yet allow the recipient to proof the provenance of the document.
 
 ```js
-const newData = obfuscateFields(signedDocument, "key1");
+const newData = obfuscateFields(wrappedDocument, "key1");
 console.log(newData);
 ```
 

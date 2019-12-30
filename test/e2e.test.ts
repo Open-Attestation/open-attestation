@@ -1,7 +1,7 @@
 import {
   getData,
-  issueDocument,
-  issueDocuments,
+  wrapDocument,
+  wrapDocuments,
   obfuscateDocument,
   verifySignature,
   validateSchema
@@ -17,7 +17,7 @@ import {
 } from "../src/__generated__/schemaV3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../src/__generated__/schemaV2";
 // Disable tslint import/no-unresolved for this because it usually doesn't exist until build runs
-type IssueDocumentReturnType = ReturnType<typeof issueDocument>;
+type WrappedDocumentReturnType = ReturnType<typeof wrapDocument>;
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
   issuers: [
     {
@@ -81,8 +81,8 @@ const datum = [
 
 describe("E2E Test Scenarios", () => {
   describe("v2", () => {
-    test("creates a signed document", () => {
-      const wrappedDocument = issueDocument(openAttestationDatav2);
+    test("creates a wrapped document", () => {
+      const wrappedDocument = wrapDocument(openAttestationDatav2);
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
       expect(wrappedDocument.signature.targetHash).toBeDefined();
@@ -93,25 +93,25 @@ describe("E2E Test Scenarios", () => {
   });
   describe("Issuing a single documents", () => {
     const document = datum[0];
-    let wrappedDocument: IssueDocumentReturnType;
+    let wrappedDocument: WrappedDocumentReturnType;
 
     test("fails for malformed data", () => {
       const malformedData = {
         ...document,
         issuer: undefined
       };
-      const action = () => issueDocument(malformedData);
+      const action = () => wrapDocument(malformedData);
       expect(action).toThrow("Invalid document");
     });
 
     beforeAll(() => {
-      wrappedDocument = issueDocument(document, {
+      wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: "open-attestation/3.0"
       });
     });
 
-    test("creates a signed document", () => {
+    test("creates a wrapped document", () => {
       expect(wrappedDocument.schema).toBe("http://example.com/schema.json");
       expect(wrappedDocument.data.key1).toEqual(expect.stringContaining("test"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
@@ -121,7 +121,7 @@ describe("E2E Test Scenarios", () => {
       expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
     });
 
-    test("checks that document is signed correctly", () => {
+    test("checks that document is wrapped correctly", () => {
       const verified = verifySignature(wrappedDocument);
       expect(verified).toBe(true);
     });
@@ -135,12 +135,12 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("does not allow for the same merkle root to be generated", () => {
-      const newDocument = issueDocument(document, { version: "open-attestation/3.0" });
+      const newDocument = wrapDocument(document, { version: "open-attestation/3.0" });
       expect(wrappedDocument.signature.merkleRoot).not.toBe(newDocument.signature.merkleRoot);
     });
 
     test("obfuscate data correctly", async () => {
-      const newDocument = issueDocument(datum[2], { version: "open-attestation/3.0" });
+      const newDocument = wrapDocument(datum[2], { version: "open-attestation/3.0" });
       const obfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
 
       const verified = verifySignature(obfuscatedDocument);
@@ -149,7 +149,7 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("obfuscate data transistively", () => {
-      const newDocument = issueDocument(datum[2], { version: "open-attestation/3.0" });
+      const newDocument = wrapDocument(datum[2], { version: "open-attestation/3.0" });
       const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
       const obfuscatedDocument = obfuscateDocument(intermediateDocument, ["key3"]);
 
@@ -160,10 +160,10 @@ describe("E2E Test Scenarios", () => {
   });
 
   describe("Issuing a batch of documents", () => {
-    let signedDocuments: IssueDocumentReturnType;
+    let signedDocuments: WrappedDocumentReturnType;
 
     beforeAll(() => {
-      signedDocuments = issueDocuments(datum, {
+      signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: "open-attestation/3.0"
       });
@@ -176,12 +176,12 @@ describe("E2E Test Scenarios", () => {
           cow: "moo"
         }
       ];
-      const action = () => issueDocument(malformedDatum);
+      const action = () => wrapDocument(malformedDatum);
       expect(action).toThrow("Invalid document");
     });
 
     test("creates a batch of documents if all are in the right format", () => {
-      signedDocuments.forEach((doc: IssueDocumentReturnType, i: number) => {
+      signedDocuments.forEach((doc: WrappedDocumentReturnType, i: number) => {
         expect(doc.schema).toBe("http://example.com/schema.json");
         expect(doc.signature.type).toBe("SHA3MerkleProof");
         expect(doc.data.key1).toEqual(expect.stringContaining(datum[i].key1));
@@ -191,7 +191,7 @@ describe("E2E Test Scenarios", () => {
       });
     });
 
-    test("checks that documents are signed correctly", () => {
+    test("checks that documents are wrapped correctly", () => {
       const verified = signedDocuments.reduce((prev: boolean, curr: boolean) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
     });
@@ -201,14 +201,14 @@ describe("E2E Test Scenarios", () => {
     });
 
     test("checks that data extracted are the same as input", () => {
-      signedDocuments.forEach((doc: IssueDocumentReturnType, i: number) => {
+      signedDocuments.forEach((doc: WrappedDocumentReturnType, i: number) => {
         const data = getData(doc);
         expect(data).toEqual(datum[i]);
       });
     });
 
     test("does not allow for same merkle root to be generated", () => {
-      const newSignedDocuments = issueDocuments(datum, { version: "open-attestation/3.0" });
+      const newSignedDocuments = wrapDocuments(datum, { version: "open-attestation/3.0" });
       expect(signedDocuments[0].signature.merkleRoot).not.toBe(newSignedDocuments[0].signature.merkleRoot);
     });
   });

@@ -9,13 +9,13 @@ import { setData } from "./privacy";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
 
-interface IssueDocumentOption {
+interface WrapDocumentOption {
   externalSchemaId?: string;
   version?: "open-attestation/2.0" | "open-attestation/3.0";
 }
 const defaultVersion = "open-attestation/2.0";
 
-const createDocument = (data: any, option?: IssueDocumentOption) => {
+const createDocument = (data: any, option?: WrapDocumentOption) => {
   const documentSchema: SchematisedDocument = {
     version: option?.version ?? defaultVersion,
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -37,7 +37,7 @@ const isSchemaValidationError = (error: any): error is SchemaValidationError => 
   return !!error.validationErrors;
 };
 
-export const issueDocument = <T = unknown>(data: T, options?: IssueDocumentOption): WrappedDocument<T> => {
+export const wrapDocument = <T = unknown>(data: T, options?: WrapDocumentOption): WrappedDocument<T> => {
   const document: SchematisedDocument = createDocument(data, options);
   const errors = validate(document, getSchema(options?.version ?? defaultVersion));
   if (errors.length > 0) {
@@ -46,7 +46,7 @@ export const issueDocument = <T = unknown>(data: T, options?: IssueDocumentOptio
   return wrap(document, [digestDocument(document)]);
 };
 
-export const issueDocuments = <T = unknown>(dataArray: T[], options?: IssueDocumentOption): WrappedDocument<T>[] => {
+export const wrapDocuments = <T = unknown>(dataArray: T[], options?: WrapDocumentOption): WrappedDocument<T>[] => {
   const documents = dataArray.map(data => createDocument(data, options));
   documents.forEach(document => {
     const errors = validate(document, getSchema(options?.version ?? defaultVersion));
