@@ -1,7 +1,7 @@
 import { wrap, verify } from "./signature";
 import { SchematisedDocument } from "../@types/document";
 
-const unsignedDocument: SchematisedDocument = {
+const unwrappedDocument: SchematisedDocument = {
   version: "1.0",
   schema: "foo",
   data: {
@@ -18,12 +18,12 @@ const unsignedDocument: SchematisedDocument = {
 describe("signature", () => {
   describe("verify", () => {
     test("returns false for documents without signature", () => {
-      const verified = verify(unsignedDocument);
+      const verified = verify(unwrappedDocument);
       expect(verified).toBe(false);
     });
 
     test("returns false for documents with altered data", () => {
-      const signedDocument = {
+      const wrappedDocument = {
         data: {
           key1: "value2", // Was 'value1'
           key2: {
@@ -43,13 +43,13 @@ describe("signature", () => {
           merkleRoot: "c16a56c5f0bf0e985f731816635fa772ca921a68848090a49cbe10c7a55d521b"
         }
       };
-      const verified = verify(signedDocument);
+      const verified = verify(wrappedDocument);
       expect(verified).toBe(false);
     });
 
     test("returns false for documents with altered targetHash", () => {
-      const signedDocument = {
-        ...unsignedDocument,
+      const wrappedDocument = {
+        ...unwrappedDocument,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518d",
@@ -60,13 +60,13 @@ describe("signature", () => {
           merkleRoot: "c16a56c5f0bf0e985f731816635fa772ca921a68848090a49cbe10c7a55d521b"
         }
       };
-      const verified = verify(signedDocument);
+      const verified = verify(wrappedDocument);
       expect(verified).toBe(false);
     });
 
     test("returns false for documents with altered proofs", () => {
-      const signedDocument = {
-        ...unsignedDocument,
+      const wrappedDocument = {
+        ...unwrappedDocument,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
@@ -77,13 +77,13 @@ describe("signature", () => {
           merkleRoot: "c16a56c5f0bf0e985f731816635fa772ca921a68848090a49cbe10c7a55d521b"
         }
       };
-      const verified = verify(signedDocument);
+      const verified = verify(wrappedDocument);
       expect(verified).toBe(false);
     });
 
     test("returns false for documents with altered merkleRoot", () => {
-      const signedDocument = {
-        ...unsignedDocument,
+      const wrappedDocument = {
+        ...unwrappedDocument,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
@@ -94,13 +94,13 @@ describe("signature", () => {
           merkleRoot: "c16a56c5f0bf0e985f731816635fa772ca921a68848090a49cbe10c7a55d521a"
         }
       };
-      const verified = verify(signedDocument);
+      const verified = verify(wrappedDocument);
       expect(verified).toBe(false);
     });
 
-    test("returns true for correctly signed document", () => {
-      const signedDocument = {
-        ...unsignedDocument,
+    test("returns true for correctly wrapped document", () => {
+      const wrappedDocument = {
+        ...unwrappedDocument,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
@@ -111,20 +111,20 @@ describe("signature", () => {
           merkleRoot: "c16a56c5f0bf0e985f731816635fa772ca921a68848090a49cbe10c7a55d521b"
         }
       };
-      const verified = verify(signedDocument);
+      const verified = verify(wrappedDocument);
       expect(verified).toBe(true);
     });
   });
 
   describe("sign", () => {
     test("throws when the document is not in the batch", () => {
-      const emptySign = () => wrap(unsignedDocument, []);
+      const emptySign = () => wrap(unwrappedDocument, []);
       expect(emptySign).toThrow("Document is not in batch");
     });
 
     test("signs correctly for single document", () => {
-      const expectedSignedDocument = {
-        ...unsignedDocument,
+      const expectedWrappedDocument = {
+        ...unwrappedDocument,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
@@ -133,8 +133,8 @@ describe("signature", () => {
         }
       };
 
-      const signedDocument = wrap(unsignedDocument);
-      expect(signedDocument).toEqual(expectedSignedDocument);
+      const wrappedDocument = wrap(unwrappedDocument);
+      expect(wrappedDocument).toEqual(expectedWrappedDocument);
     });
 
     test("signs correctly for document in a batch", () => {
@@ -144,8 +144,8 @@ describe("signature", () => {
         "7ba10b40626cd6e57c9f9b6264996932259ad79053e8d1225b0336ed06e83bf0",
         "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c"
       ];
-      const expectedSignedDocument = {
-        ...unsignedDocument,
+      const expectedWrappedDocument = {
+        ...unwrappedDocument,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
@@ -157,8 +157,8 @@ describe("signature", () => {
         }
       };
 
-      const signedDocument = wrap(unsignedDocument, batch);
-      expect(signedDocument).toEqual(expectedSignedDocument);
+      const wrappedDocument = wrap(unwrappedDocument, batch);
+      expect(wrappedDocument).toEqual(expectedWrappedDocument);
     });
 
     test("signs correctly regardless of batch ordering", () => {
@@ -175,7 +175,7 @@ describe("signature", () => {
         "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c"
       ];
 
-      expect(wrap(unsignedDocument, batch1)).toEqual(wrap(unsignedDocument, batch2));
+      expect(wrap(unwrappedDocument, batch1)).toEqual(wrap(unwrappedDocument, batch2));
     });
   });
 });

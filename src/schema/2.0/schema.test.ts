@@ -14,8 +14,8 @@ const createDocument = (data: any) => {
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", () => {
-    const issuedDocument = createDocument(sampleDoc);
-    const valid = validateSchema(issuedDocument);
+    const wrappedDocument = createDocument(sampleDoc);
+    const valid = validateSchema(wrappedDocument);
 
     expect(valid).toBe(true);
   });
@@ -45,8 +45,8 @@ describe("schema/v2.0", () => {
         }
       ]
     });
-    const issuedDocument = createDocument(document);
-    expect(validateSchema(issuedDocument)).toBe(true);
+    const wrappedDocument = createDocument(document);
+    expect(validateSchema(wrappedDocument)).toBe(true);
   });
 
   it("should not be valid without identityProof", () => {
@@ -56,8 +56,8 @@ describe("schema/v2.0", () => {
   });
 
   it("should be valid with sample token", () => {
-    const issuedToken = createDocument(sampleToken);
-    const valid = validateSchema(issuedToken);
+    const wrappedToken = createDocument(sampleToken);
+    const valid = validateSchema(wrappedToken);
 
     expect(valid).toBe(true);
   });
@@ -126,24 +126,24 @@ describe("schema/v2.0", () => {
   });
 
   it("should be valid with additonal key:value", () => {
-    const issuedDocument = createDocument({ ...sampleDoc, foo: "bar" });
-    const valid = validateSchema(issuedDocument);
+    const wrappedDocument = createDocument({ ...sampleDoc, foo: "bar" });
+    const valid = validateSchema(wrappedDocument);
 
     expect(valid).toBe(true);
   });
 
   it("should be valid without $template (will use default view)", () => {
     const document = omit(sampleDoc, "$template");
-    const issuedDocument = createDocument(document);
-    const valid = validateSchema(issuedDocument);
+    const wrappedDocument = createDocument(document);
+    const valid = validateSchema(wrappedDocument);
 
     expect(valid).toBe(true);
   });
 
   it("should be valid without attachments", () => {
     const document = omit(sampleDoc, "attachments");
-    const issuedDocument = createDocument(document);
-    const valid = validateSchema(issuedDocument);
+    const wrappedDocument = createDocument(document);
+    const valid = validateSchema(wrappedDocument);
 
     expect(valid).toBe(true);
   });
