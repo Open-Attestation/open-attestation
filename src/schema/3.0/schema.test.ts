@@ -462,6 +462,29 @@ describe("open-attestation/3.0", () => {
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
       expect(wrappedDocument.version).toStrictEqual("open-attestation/3.0");
     });
+    it("should be valid when identityProof type is W3C-DID", () => {
+      const document = {
+        ...sampleDoc,
+        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "W3C-DID" } }
+      };
+      const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
+      expect(wrappedDocument.version).toStrictEqual("open-attestation/3.0");
+    });
+    it("should be valid when type is W3C-DID and location is a valid DID", () => {
+      const document = {
+        ...sampleDoc,
+        issuer: { 
+          ...sampleDoc.issuer, 
+          identityProof: { 
+            ...sampleDoc.issuer.identityProof, 
+            type: "W3C-DID", 
+            location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a" 
+          } 
+        }
+      };
+      const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
+      expect(wrappedDocument.version).toStrictEqual("open-attestation/3.0");
+    });
     it("should be valid when id is an URI", () => {
       const document = {
         ...sampleDoc,
@@ -627,7 +650,7 @@ describe("open-attestation/3.0", () => {
         ]);
       }
     });
-    it("should be invalid if identityProof type is not DNS-TXT", () => {
+    it("should be invalid if identityProof type is not valid", () => {
       expect.assertions(2);
       const document = {
         ...sampleDoc,
@@ -643,7 +666,7 @@ describe("open-attestation/3.0", () => {
             keyword: "enum",
             dataPath: ".issuer.identityProof.type",
             schemaPath: "#/definitions/issuer/properties/identityProof/properties/type/enum",
-            params: { allowedValues: ["DNS-TXT"] },
+            params: { allowedValues: ["DNS-TXT", "W3C-DID"] },
             message: "should be equal to one of the allowed values"
           }
         ]);
