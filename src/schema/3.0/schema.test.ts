@@ -473,13 +473,13 @@ describe("open-attestation/3.0", () => {
     it("should be valid when type is W3C-DID and location is a valid DID", () => {
       const document = {
         ...sampleDoc,
-        issuer: { 
-          ...sampleDoc.issuer, 
-          identityProof: { 
-            ...sampleDoc.issuer.identityProof, 
-            type: "W3C-DID", 
-            location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a" 
-          } 
+        issuer: {
+          ...sampleDoc.issuer,
+          identityProof: {
+            ...sampleDoc.issuer.identityProof,
+            type: "W3C-DID",
+            location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
+          }
         }
       };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: "open-attestation/3.0" });
