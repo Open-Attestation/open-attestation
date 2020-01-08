@@ -16,6 +16,7 @@ import {
   TemplateType
 } from "../src/__generated__/schemaV3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../src/__generated__/schemaV2";
+import { IdentityProofType as v2IdentityProofType } from "../src/__generated__/schemaV2";
 // Disable tslint import/no-unresolved for this because it usually doesn't exist until build runs
 type WrappedDocumentReturnType = ReturnType<typeof wrapDocument>;
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
@@ -23,7 +24,7 @@ const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
     {
       name: "John",
       identityProof: {
-        type: IdentityProofType.DNSTxt,
+        type: v2IdentityProofType.DNSTxt,
         location: "tradetrust.io"
       },
       documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
@@ -53,6 +54,18 @@ const openAttestationData: OpenAttestationDocument = {
     type: ProofType.OpenAttestationSignature2018,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
     method: Method.TokenRegistry
+  }
+};
+
+const openAttestationDataWithW3CDID = {
+  ...openAttestationData,
+  issuer: {
+    ...openAttestationData.issuer,
+    identityProof: {
+      ...openAttestationData.issuer.identityProof,
+      type: IdentityProofType.W3CDid,
+      location: "did:ethr:0x0xE6Fe788d8ca214A080b0f6aC7F48480b2AEfa9a6"
+    }
   }
 };
 
@@ -120,7 +133,20 @@ describe("E2E Test Scenarios", () => {
       expect(wrappedDocument.signature.proof).toEqual([]);
       expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
     });
-
+    test("creates a wrapped document with W3C-DID IdentityProof", () => {
+      const wrappedDocumentWithW3CDID = wrapDocument(openAttestationDataWithW3CDID, {
+        externalSchemaId: "http://example.com/schema.json",
+        version: "open-attestation/3.0"
+      });
+      expect(wrappedDocumentWithW3CDID.schema).toBe("http://example.com/schema.json");
+      expect(wrappedDocumentWithW3CDID.signature.type).toBe("SHA3MerkleProof");
+      expect(wrappedDocumentWithW3CDID.signature.targetHash).toBeDefined();
+      expect(wrappedDocumentWithW3CDID.signature.merkleRoot).toBeDefined();
+      expect(wrappedDocumentWithW3CDID.signature.proof).toEqual([]);
+      expect(wrappedDocumentWithW3CDID.signature.merkleRoot).toBe(wrappedDocumentWithW3CDID.signature.targetHash);
+      expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.type).toContain(IdentityProofType.W3CDid);
+      expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.location).toContain(openAttestationDataWithW3CDID.issuer.identityProof.location);
+    });
     test("checks that document is wrapped correctly", () => {
       const verified = verifySignature(wrappedDocument);
       expect(verified).toBe(true);
@@ -251,6 +277,37 @@ describe("E2E Test Scenarios", () => {
               identityProof: {
                 type: "DNS-TXT",
                 location: "issuer.identityProof.location"
+              }
+            },
+            template: {
+              name: "template.name",
+              type: "EMBEDDED_RENDERER",
+              url: "https://example.com"
+            },
+            proof: {
+              type: "OpenAttestationSignature2018",
+              method: "TOKEN_REGISTRY",
+              value: "proof.value"
+            }
+          }
+        })
+      ).toStrictEqual(true);
+    });
+    test("should return true when document is valid and version is 3.0 and identityProof is W3C-DID", () => {
+      expect(
+        validateSchema({
+          version: "open-attestation/3.0",
+          schema: "http://example.com/schemaV3.json",
+          data: {
+            reference: "reference",
+            name: "name",
+            validFrom: "2010-01-01T19:23:24Z",
+            issuer: {
+              id: "https://example.com",
+              name: "issuer.name",
+              identityProof: {
+                type: IdentityProofType.W3CDid,
+                location: openAttestationDataWithW3CDID.issuer.identityProof.location
               }
             },
             template: {
