@@ -145,7 +145,9 @@ describe("E2E Test Scenarios", () => {
       expect(wrappedDocumentWithW3CDID.signature.proof).toEqual([]);
       expect(wrappedDocumentWithW3CDID.signature.merkleRoot).toBe(wrappedDocumentWithW3CDID.signature.targetHash);
       expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.type).toContain(IdentityProofType.W3CDid);
-      expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.location).toContain(openAttestationDataWithW3CDID.issuer.identityProof.location);
+      expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.location).toContain(
+        openAttestationDataWithW3CDID.issuer.identityProof.location
+      );
     });
     test("checks that document is wrapped correctly", () => {
       const verified = verifySignature(wrappedDocument);
@@ -337,7 +339,7 @@ describe("E2E Test Scenarios", () => {
               id: "https://example.com",
               name: "issuer.name",
               identityProof: {
-                type: IdentityProofType.W3CDid,
+                type: IdentityProofType.W3CDid
               }
             },
             template: {
