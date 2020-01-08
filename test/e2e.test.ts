@@ -324,6 +324,36 @@ describe("E2E Test Scenarios", () => {
         })
       ).toStrictEqual(true);
     });
+    test("should return false when document is invalid due to no W3D-DID location", () => {
+      expect(
+        validateSchema({
+          version: "open-attestation/3.0",
+          schema: "http://example.com/schemaV3.json",
+          data: {
+            reference: "reference",
+            name: "name",
+            validFrom: "2010-01-01T19:23:24Z",
+            issuer: {
+              id: "https://example.com",
+              name: "issuer.name",
+              identityProof: {
+                type: IdentityProofType.W3CDid,
+              }
+            },
+            template: {
+              name: "template.name",
+              type: "EMBEDDED_RENDERER",
+              url: "https://example.com"
+            },
+            proof: {
+              type: "OpenAttestationSignature2018",
+              method: "TOKEN_REGISTRY",
+              value: "proof.value"
+            }
+          }
+        })
+      ).toStrictEqual(false);
+    });
     test("should return true when document is valid and version is not provided", () => {
       expect(
         validateSchema({
