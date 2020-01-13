@@ -33,7 +33,17 @@
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
       "required": ["name", "documentStore", "identityProof"],
-      "additionalProperties": false
+      "not": {
+        "anyOf": [
+          {
+            "required": ["certificateStore"]
+          },
+          {
+            "required": ["tokenRegistry"]
+          }
+        ]
+      },
+      "additionalProperties": true
     },
     "certificateStore": {
       "type": "object",
@@ -50,7 +60,17 @@
         }
       },
       "required": ["name", "certificateStore"],
-      "additionalProperties": false
+      "not": {
+        "anyOf": [
+          {
+            "required": ["documentStore"]
+          },
+          {
+            "required": ["tokenRegistry"]
+          }
+        ]
+      },
+      "additionalProperties": true
     },
     "tokenRegistry": {
       "type": "object",
@@ -67,7 +87,17 @@
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
       "required": ["name", "tokenRegistry", "identityProof"],
-      "additionalProperties": false
+      "not": {
+        "anyOf": [
+          {
+            "required": ["documentStore"]
+          },
+          {
+            "required": ["certificateStore"]
+          }
+        ]
+      },
+      "additionalProperties": true
     }
   },
   "type": "object",
