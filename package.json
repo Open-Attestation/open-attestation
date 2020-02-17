@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "postinstall": "./scripts/postinstall.sh"
+    "postinstall": "node scripts/postInstall"
   },
   "files": [
     "/dist",
