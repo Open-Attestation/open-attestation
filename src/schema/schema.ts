@@ -1,8 +1,8 @@
 import Ajv from "ajv";
-import { getData } from "../privacy";
 import { getLogger } from "../logger";
 import openAttestationSchemav2 from "./2.0/schema.json";
 import openAttestationSchemav3 from "./3.0/schema.json";
+import { getData } from "../utils";
 
 const logger = getLogger("validate");
 

@@ -1,13 +1,7 @@
 import { cloneDeep, pick, unset } from "lodash";
 import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
-import { unsaltData } from "./salt";
 import { DeepStringify, SchematisedDocument, WrappedDocument } from "../@types/document";
-
-type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
-export const getData = <T extends { data: any }>(document: T): Extract<T> => {
-  return unsaltData(document.data);
-};
 
 /**
  * Takes a partial originating document, possibly only with a schema.id and returns a document with the given data and obfuscated data

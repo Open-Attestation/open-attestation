@@ -1,6 +1,14 @@
 import { keccak256 } from "js-sha3";
+import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
+import { OpenAttestationDocument as v3OpenAttestationDocument } from "../__generated__/schemaV3";
+import { WrappedDocument } from "../@types/document";
+import { unsaltData } from "../privacy/salt";
 
 export type Hash = string | Buffer;
+type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
+export const getData = <T extends { data: any }>(document: T): Extract<T> => {
+  return unsaltData(document.data);
+};
 
 /**
  * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
@@ -54,6 +62,26 @@ export function combineHashString(first?: string, second?: string): string {
     ? combineHashBuffers(hashToBuffer(first), hashToBuffer(second)).toString("hex")
     : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       (first || second)!; // this should always return a value right ? :)
+}
+
+export const isWrappedV3Document = (document: any): document is WrappedDocument<v3OpenAttestationDocument> => {
+  return document && document.version === "open-attestation/3.0";
+};
+export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
+  return !isWrappedV3Document(document);
+};
+
+export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
+export function getIssuerAddress(param: WrappedDocument<v3OpenAttestationDocument>): string;
+export function getIssuerAddress(document: any): any {
+  if (isWrappedV2Document(document)) {
+    const data = getData(document);
+    return data.issuers.map(issuer => issuer.certificateStore || issuer.documentStore || issuer.tokenRegistry);
+  } else if (isWrappedV3Document(document)) {
+    const data = getData(document);
+    return data.proof.value;
+  }
+  throw new Error("");
 }
 
 // make it available for consumers

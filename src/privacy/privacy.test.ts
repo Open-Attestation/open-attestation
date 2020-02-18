@@ -1,5 +1,6 @@
-import { getData, obfuscateData, obfuscateDocument, setData } from "./privacy";
+import { obfuscateData, obfuscateDocument, setData } from "./privacy";
 import { WrappedDocument } from "../@types/document";
+import { getData } from "../utils";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
