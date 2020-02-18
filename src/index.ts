@@ -64,10 +64,11 @@ export const validateSchema = (document: WrappedDocument): boolean => {
 };
 
 export { digestDocument } from "./digest";
-export { getData, obfuscateDocument } from "./privacy";
+export { obfuscateDocument } from "./privacy";
 export { checkProof, MerkleTree, wrap, verify as verifySignature } from "./signature";
 export { utils, isSchemaValidationError };
 export * from "./@types/document";
 export * from "./schema/3.0/w3c";
+export { getData } from "./utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
