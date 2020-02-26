@@ -1,5 +1,5 @@
 import { digestDocument, flattenHashArray } from "./digest";
-import { SchematisedDocument } from "../@types/document";
+import { SchematisedDocument, SchemaId } from "../@types/document";
 
 describe("digest", () => {
   describe("flattenHashArray", () => {
@@ -83,7 +83,7 @@ describe("digest", () => {
   describe("digestDocument", () => {
     test("digests a document with all visible content correctly", () => {
       const document: SchematisedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "foo",
         data: {
           key1: "value1",
@@ -102,7 +102,7 @@ describe("digest", () => {
 
     it("handles shadowed keys correctly", () => {
       const documentWithShadowedKey: SchematisedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "foo",
         data: {
           foo: {
@@ -119,7 +119,7 @@ describe("digest", () => {
 
     test("digests a document with some visible content correctly", () => {
       const document: SchematisedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "foo",
         data: {
           key1: "value1",
@@ -145,7 +145,7 @@ describe("digest", () => {
 
     test("digests a document with no visible content correctly", () => {
       const document: SchematisedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "foo",
         data: {},
         privacy: {

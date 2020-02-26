@@ -1,8 +1,8 @@
 import { wrap, verify } from "./signature";
-import { SchematisedDocument } from "../@types/document";
+import { SchematisedDocument, SchemaId } from "../@types/document";
 
 const unwrappedDocument: SchematisedDocument = {
-  version: "1.0",
+  version: SchemaId.v2,
   schema: "foo",
   data: {
     key1: "value1",
