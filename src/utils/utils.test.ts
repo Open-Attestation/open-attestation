@@ -1,4 +1,14 @@
 import * as utils from "./utils";
+import { wrapDocument } from "..";
+import { WrappedDocument } from "../@types/document";
+import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
+import {
+  IdentityProofType,
+  Method,
+  OpenAttestationDocument as v3OpenAttestationDocument,
+  ProofType,
+  TemplateType
+} from "../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -94,6 +104,108 @@ describe("Util Functions", () => {
       expect(
         utils.combineHashString(undefined, "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
+    });
+  });
+
+  describe("getIssuerAddress", () => {
+    test("should return all issuers address for v2 document using certificate store", () => {
+      const document: WrappedDocument<v2OpenAttestationDocument> = wrapDocument({
+        issuers: [
+          {
+            certificateStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+            name: "nameA"
+          },
+          {
+            certificateStore: "0x1234123412341234123412341234123412341234",
+            name: "nameA"
+          }
+        ]
+      });
+      expect(utils.getIssuerAddress(document)).toStrictEqual([
+        "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+        "0x1234123412341234123412341234123412341234"
+      ]);
+    });
+    test("should return all issuers address for v2 document using document store", () => {
+      const document: WrappedDocument<v2OpenAttestationDocument> = wrapDocument({
+        issuers: [
+          {
+            documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+            identityProof: {
+              type: IdentityProofType.DNSTxt,
+              location: ""
+            },
+            name: "nameA"
+          },
+          {
+            documentStore: "0x1234123412341234123412341234123412341234",
+            identityProof: {
+              type: IdentityProofType.DNSTxt,
+              location: ""
+            },
+            name: "nameA"
+          }
+        ]
+      });
+      expect(utils.getIssuerAddress(document)).toStrictEqual([
+        "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+        "0x1234123412341234123412341234123412341234"
+      ]);
+    });
+    test("should return all issuers address for v2 document using token registry", () => {
+      const document: WrappedDocument<v2OpenAttestationDocument> = wrapDocument({
+        issuers: [
+          {
+            tokenRegistry: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+            identityProof: {
+              type: IdentityProofType.DNSTxt,
+              location: ""
+            },
+            name: "nameA"
+          },
+          {
+            tokenRegistry: "0x1234123412341234123412341234123412341234",
+            identityProof: {
+              type: IdentityProofType.DNSTxt,
+              location: ""
+            },
+            name: "nameA"
+          }
+        ]
+      });
+      expect(utils.getIssuerAddress(document)).toStrictEqual([
+        "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+        "0x1234123412341234123412341234123412341234"
+      ]);
+    });
+    test("should return all issuers address for v3 document", () => {
+      const document: WrappedDocument<v3OpenAttestationDocument> = wrapDocument(
+        {
+          issuer: {
+            name: "name",
+            identityProof: {
+              location: "whatever",
+              type: IdentityProofType.DNSTxt
+            },
+            id: "https://example.com"
+          },
+          proof: {
+            value: "0xabcf",
+            type: ProofType.OpenAttestationSignature2018,
+            method: Method.DocumentStore
+          },
+          name: "",
+          reference: "",
+          template: {
+            url: "https://",
+            name: "",
+            type: TemplateType.EmbeddedRenderer
+          },
+          validFrom: "2010-01-01T19:23:24Z"
+        },
+        { version: "open-attestation/3.0" }
+      );
+      expect(utils.getIssuerAddress(document)).toStrictEqual("0xabcf");
     });
   });
 });

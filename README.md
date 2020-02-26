@@ -86,10 +86,10 @@ console.log(data);
 
 ### Obfuscating data
 
-`obfuscateFields` removes a key-value pair from the document's data section, without causing the file hash to change. This can be used to generate a new document containing a subset of the original data, yet allow the recipient to proof the provenance of the document.
+`obfuscateDocument` removes a key-value pair from the document's data section, without causing the file hash to change. This can be used to generate a new document containing a subset of the original data, yet allow the recipient to proof the provenance of the document.
 
 ```js
-const newData = obfuscateFields(wrappedDocument, "key1");
+const newData = obfuscateDocument(wrappedDocument, "key1");
 console.log(newData);
 ```
 

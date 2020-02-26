@@ -1,5 +1,5 @@
 import { WrappedDocument } from "../../@types/document";
-import { getData } from "../../privacy/privacy";
+import { getData } from "../../utils";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 
 interface Salt {
