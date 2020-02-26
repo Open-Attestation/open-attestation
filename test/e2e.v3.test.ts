@@ -232,7 +232,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("should throw an error if document id is not a valid open attestation schema version", () => {
       const action = () =>
         validateSchema({
-          version: "abababa",
+          version: "abababa" as SchemaId,
           schema: "http://example.com/schemaV3.json",
           data: {
             key: 2

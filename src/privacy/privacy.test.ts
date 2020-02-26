@@ -1,5 +1,5 @@
 import { obfuscateData, obfuscateDocument, setData } from "./privacy";
-import { WrappedDocument } from "../@types/document";
+import { WrappedDocument, SchemaId } from "../@types/document";
 import { getData } from "../utils";
 
 describe("privacy", () => {
@@ -126,7 +126,7 @@ describe("privacy", () => {
   describe("obfuscateDocument", () => {
     test("is a pure function", () => {
       const document: WrappedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
           key1: "test"
@@ -140,7 +140,7 @@ describe("privacy", () => {
         }
       };
       const document2: WrappedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
           key1: "test"
@@ -159,7 +159,7 @@ describe("privacy", () => {
 
     test("is transitive", () => {
       const document: WrappedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
           key1: "item1",
@@ -184,7 +184,7 @@ describe("privacy", () => {
 
     test("returns new document with obfuscated data", () => {
       const document: WrappedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
           key1: "test"
@@ -199,7 +199,7 @@ describe("privacy", () => {
       };
       const newDoc = obfuscateDocument(document, "key1");
       expect(newDoc).toEqual({
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {},
         signature: {
@@ -218,7 +218,7 @@ describe("privacy", () => {
   describe("getData", () => {
     test("returns original data given salted content and, optionally, salt length", () => {
       const document: WrappedDocument = {
-        version: "1.0",
+        version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         signature: {
           type: "SHA3MerkleProof",
