@@ -17,7 +17,7 @@ export interface ObfuscationMetadata {
 }
 
 export interface SchematisedDocument<T = any> {
-  version: string;
+  version: SchemaId;
   data: DeepStringify<T>;
   schema?: string;
   privacy?: ObfuscationMetadata;

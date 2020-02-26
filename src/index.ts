@@ -72,3 +72,4 @@ export * from "./schema/3.0/w3c";
 export { getData } from "./utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
+export { SchemaId };
