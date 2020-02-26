@@ -221,7 +221,9 @@ describe("v3 E2E Test Scenarios", () => {
         externalSchemaId: "http://example.com/schema.json",
         version: "https://schema.openattestation.com/3.0/schema.json"
       });
-      const newSignedDocuments = wrapDocuments(datum, { version: "https://schema.openattestation.com/3.0/schema.json" });
+      const newSignedDocuments = wrapDocuments(datum, {
+        version: "https://schema.openattestation.com/3.0/schema.json"
+      });
       expect(signedDocuments[0].signature.merkleRoot).not.toBe(newSignedDocuments[0].signature.merkleRoot);
     });
   });
