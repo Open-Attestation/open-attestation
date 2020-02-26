@@ -6,7 +6,7 @@ import {
   ProofType,
   TemplateType
 } from "../src/__generated__/schemaV3";
-import {SchemaId} from "../src/@types/document"
+import { SchemaId } from "../src/@types/document";
 
 const openAttestationData: OpenAttestationDocument = {
   reference: "document identifier",
