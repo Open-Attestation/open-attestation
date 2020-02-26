@@ -24,7 +24,7 @@ export interface SchematisedDocument<T = any> {
 }
 
 export interface WrappedDocument<T = any> {
-  version: string;
+  version: SchemaId;
   signature: Signature;
   data: DeepStringify<T>;
   schema?: string;
