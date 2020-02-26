@@ -1,7 +1,7 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
 import { OpenAttestationDocument as v3OpenAttestationDocument } from "../__generated__/schemaV3";
-import { WrappedDocument } from "../@types/document";
+import { WrappedDocument, SchemaId } from "../@types/document";
 import { unsaltData } from "../privacy/salt";
 
 export type Hash = string | Buffer;
@@ -65,7 +65,7 @@ export function combineHashString(first?: string, second?: string): string {
 }
 
 export const isWrappedV3Document = (document: any): document is WrappedDocument<v3OpenAttestationDocument> => {
-  return document && document.version === "open-attestation/3.0";
+  return document && document.version === SchemaId.v3;
 };
 export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
   return !isWrappedV3Document(document);

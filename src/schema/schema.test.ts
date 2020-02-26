@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import { validateSchema } from "./schema";
-import { SchematisedDocument } from "../@types/document";
+import { SchematisedDocument, SchemaId } from "../@types/document";
 
 const schema = {
   $id: "http://example.com/schema.json",
@@ -36,7 +36,7 @@ describe("schema", () => {
       test("returns empty array for passing documents", () => {
         const ajv = new Ajv({ allErrors: true });
         const document: SchematisedDocument = {
-          version: "open-attestation/3.0",
+          version: SchemaId.v3,
           schema: "http://example.com/schema.json",
           data: {
             key1: 2
@@ -48,7 +48,7 @@ describe("schema", () => {
       test("returns array with errors for failing documents", () => {
         const ajv = new Ajv({ allErrors: true });
         const document: SchematisedDocument = {
-          version: "open-attestation/3.0",
+          version: SchemaId.v3,
           schema: "http://example.com/schema.json",
           data: {
             key: 2

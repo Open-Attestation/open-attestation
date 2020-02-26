@@ -1,6 +1,6 @@
 {
   "title": "Open Attestation Schema v2",
-  "$id": "open-attestation/2.0",
+  "$id": "https://schema.openattestation.com/2.0/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "identityProof": {

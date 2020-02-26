@@ -1,6 +1,6 @@
 import * as utils from "./utils";
 import { wrapDocument } from "..";
-import { WrappedDocument } from "../@types/document";
+import { WrappedDocument, SchemaId } from "../@types/document";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
 import {
   IdentityProofType,
@@ -203,7 +203,7 @@ describe("Util Functions", () => {
           },
           validFrom: "2010-01-01T19:23:24Z"
         },
-        { version: "open-attestation/3.0" }
+        { version: SchemaId.v3 }
       );
       expect(utils.getIssuerAddress(document)).toStrictEqual("0xabcf");
     });

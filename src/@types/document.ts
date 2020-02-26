@@ -1,5 +1,10 @@
 export type SignatureProofAlgorithm = "SHA3MerkleProof";
 
+export enum SchemaId {
+  v2 = "https://schema.openattestation.com/2.0/schema.json",
+  v3 = "https://schema.openattestation.com/3.0/schema.json"
+}
+
 export interface Signature {
   type: SignatureProofAlgorithm;
   targetHash: string;

@@ -2,7 +2,7 @@ import Ajv from "ajv";
 import { digestDocument } from "./digest";
 import { getSchema, validateSchema as validate } from "./schema";
 import { wrap } from "./signature";
-import { SchematisedDocument, WrappedDocument } from "./@types/document";
+import { SchematisedDocument, WrappedDocument, SchemaId } from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
 import { setData } from "./privacy";
@@ -11,9 +11,9 @@ import * as v3 from "./__generated__/schemaV3";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
-  version?: "open-attestation/2.0" | "open-attestation/3.0";
+  version?: SchemaId;
 }
-const defaultVersion = "open-attestation/2.0";
+const defaultVersion = SchemaId.v2;
 
 const createDocument = (data: any, option?: WrapDocumentOption) => {
   const documentSchema: SchematisedDocument = {
@@ -60,7 +60,7 @@ export const wrapDocuments = <T = unknown>(dataArray: T[], options?: WrapDocumen
 };
 
 export const validateSchema = (document: WrappedDocument): boolean => {
-  return validate(document, getSchema(`${document?.version || "open-attestation/2.0"}`)).length === 0;
+  return validate(document, getSchema(`${document?.version || SchemaId.v2}`)).length === 0;
 };
 
 export { digestDocument } from "./digest";

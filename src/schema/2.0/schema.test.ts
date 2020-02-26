@@ -5,11 +5,12 @@ import { cloneDeep, merge, omit } from "lodash";
 import sampleToken from "./sample-token.json";
 import sampleDoc from "./sample-document.json";
 import { wrapDocument } from "../../index";
+import { SchemaId } from "../../@types/document";
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", () => {
     const wrappedDocument = wrapDocument(sampleDoc);
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should be invalid if identity type is other than DNS-TXT", () => {
@@ -60,7 +61,7 @@ describe("schema/v2.0", () => {
       ]
     });
     const wrappedDocument = wrapDocument(document);
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
   it("should be valid then issuer has extra properties", () => {
     const document = merge(sampleDoc, {
@@ -76,7 +77,7 @@ describe("schema/v2.0", () => {
       ]
     });
     const wrappedDocument = wrapDocument(document);
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should not be valid without identityProof", () => {
@@ -107,7 +108,7 @@ describe("schema/v2.0", () => {
 
   it("should be valid with sample token", () => {
     const wrappedDocument = wrapDocument(sampleToken);
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should not be valid with document with both documentStore and tokenRegistry", () => {
@@ -220,17 +221,17 @@ describe("schema/v2.0", () => {
 
   it("should be valid with additonal key:value", () => {
     const wrappedDocument = wrapDocument({ ...sampleDoc, foo: "bar" });
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should be valid without $template (will use default view)", () => {
     const wrappedDocument = wrapDocument(omit(cloneDeep(sampleDoc), "$template"));
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should be valid without attachments", () => {
     const wrappedDocument = wrapDocument(omit(cloneDeep(sampleDoc), "attachments"));
-    expect(wrappedDocument.version).toBe("open-attestation/2.0");
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should be invalid if $template does not have name", () => {

@@ -1,5 +1,5 @@
 {
-  "version": "open-attestation/3.0",
+  "version": "https://schema.openattestation.com/3.0/schema.json",
   "data": {
     "reference": "50152a6f-5a64-4b19-9857-ad45bd2be60f:string:SERIAL_NUMBER_123",
     "name": "e4aed1f1-928d-4664-a926-088ff975349f:string:Singapore Driving Licence",
