@@ -6,6 +6,7 @@ import {
   ProofType,
   TemplateType
 } from "../src/__generated__/schemaV3";
+import {SchemaId} from "../src/@types/document"
 
 const openAttestationData: OpenAttestationDocument = {
   reference: "document identifier",
@@ -82,7 +83,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("creates a wrapped document", () => {
       const wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       expect(wrappedDocument.schema).toBe("http://example.com/schema.json");
       expect(wrappedDocument.data.key1).toEqual(expect.stringContaining("test"));
@@ -95,7 +96,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("creates a wrapped document with W3C-DID IdentityProof", () => {
       const wrappedDocumentWithW3CDID = wrapDocument(openAttestationDataWithW3CDID, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       expect(wrappedDocumentWithW3CDID.schema).toBe("http://example.com/schema.json");
       expect(wrappedDocumentWithW3CDID.signature.type).toBe("SHA3MerkleProof");
@@ -111,7 +112,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("checks that document is wrapped correctly", () => {
       const wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       const verified = verifySignature(wrappedDocument);
       expect(verified).toBe(true);
@@ -119,7 +120,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("checks that document conforms to the schema", () => {
       const wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       expect(validateSchema(wrappedDocument)).toBe(true);
     });
@@ -127,7 +128,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("checks that data extracted are the same as input", () => {
       const wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       const data = getData(wrappedDocument);
       expect(data).toEqual(datum[0]);
@@ -136,14 +137,14 @@ describe("v3 E2E Test Scenarios", () => {
     test("does not allow for the same merkle root to be generated", () => {
       const wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
-      const newDocument = wrapDocument(document, { version: "https://schema.openattestation.com/3.0/schema.json" });
+      const newDocument = wrapDocument(document, { version: SchemaId.v3 });
       expect(wrappedDocument.signature.merkleRoot).not.toBe(newDocument.signature.merkleRoot);
     });
 
     test("obfuscate data correctly", async () => {
-      const newDocument = wrapDocument(datum[2], { version: "https://schema.openattestation.com/3.0/schema.json" });
+      const newDocument = wrapDocument(datum[2], { version: SchemaId.v3 });
       const obfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
 
       const verified = verifySignature(obfuscatedDocument);
@@ -152,7 +153,7 @@ describe("v3 E2E Test Scenarios", () => {
     });
 
     test("obfuscate data transistively", () => {
-      const newDocument = wrapDocument(datum[2], { version: "https://schema.openattestation.com/3.0/schema.json" });
+      const newDocument = wrapDocument(datum[2], { version: SchemaId.v3 });
       const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
       const obfuscatedDocument = obfuscateDocument(intermediateDocument, ["key3"]);
 
@@ -176,7 +177,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("creates a batch of documents if all are in the right format", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       signedDocuments.forEach((doc, i: number) => {
         expect(doc.schema).toBe("http://example.com/schema.json");
@@ -191,7 +192,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("checks that documents are wrapped correctly", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       const verified = signedDocuments.reduce((prev, curr) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
@@ -199,7 +200,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("checks that documents conforms to the schema", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       const validatedSchema = signedDocuments.reduce((prev: boolean, curr: any) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
@@ -208,7 +209,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("checks that data extracted are the same as input", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       signedDocuments.forEach((doc, i: number) => {
         const data = getData(doc);
@@ -219,10 +220,10 @@ describe("v3 E2E Test Scenarios", () => {
     test("does not allow for same merkle root to be generated", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       const newSignedDocuments = wrapDocuments(datum, {
-        version: "https://schema.openattestation.com/3.0/schema.json"
+        version: SchemaId.v3
       });
       expect(signedDocuments[0].signature.merkleRoot).not.toBe(newSignedDocuments[0].signature.merkleRoot);
     });
@@ -248,7 +249,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("should return false if document is not valid", () => {
       expect(
         validateSchema({
-          version: "https://schema.openattestation.com/3.0/schema.json",
+          version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
           data: {
             key: 2
@@ -265,7 +266,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("should return true when document is valid and version is 3.0", () => {
       expect(
         validateSchema({
-          version: "https://schema.openattestation.com/3.0/schema.json",
+          version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
           data: {
             reference: "reference",
@@ -302,7 +303,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("should return true when document is valid and version is 3.0 and identityProof is W3C-DID", () => {
       expect(
         validateSchema({
-          version: "https://schema.openattestation.com/3.0/schema.json",
+          version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
           data: {
             reference: "reference",
@@ -339,7 +340,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("should return false when document is invalid due to no W3D-DID location", () => {
       expect(
         validateSchema({
-          version: "https://schema.openattestation.com/3.0/schema.json",
+          version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
           data: {
             reference: "reference",
