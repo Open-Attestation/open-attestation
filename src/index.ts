@@ -5,7 +5,6 @@ import { wrap } from "./signature";
 import { SchematisedDocument, WrappedDocument, SchemaId } from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
-import { setData } from "./privacy";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
 
@@ -18,14 +17,12 @@ const defaultVersion = SchemaId.v2;
 const createDocument = (data: any, option?: WrapDocumentOption) => {
   const documentSchema: SchematisedDocument = {
     version: option?.version ?? defaultVersion,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore SchematisedDocument is not completely correct and causes typescript to complain here ... we need to have a better look on what's really SchematisedDocument is.
-    data: null
+    data: saltData(data)
   };
   if (option?.externalSchemaId) {
     documentSchema.schema = option.externalSchemaId;
   }
-  return setData(documentSchema, saltData(data));
+  return documentSchema;
 };
 
 class SchemaValidationError extends Error {

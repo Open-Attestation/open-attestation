@@ -1,4 +1,4 @@
-import { obfuscateData, obfuscateDocument, setData } from "./privacy";
+import { obfuscateData, obfuscateDocument } from "./privacy";
 import { WrappedDocument, SchemaId } from "../@types/document";
 import { getData } from "../utils";
 
@@ -243,34 +243,6 @@ describe("privacy", () => {
           key21: true
         }
       });
-    });
-  });
-
-  describe("setData", () => {
-    test("sets data and obfuscated data of the document", () => {
-      const data = {
-        key1: "value1",
-        key2: {
-          key21: true
-        }
-      };
-      const obfuscatedData = [
-        "6f60bbe613a4a5b3d448b905f73f559f740131d5aa8d57b4b7ada9b78c72d81e",
-        "780f5fbb10e5a2c88c7254c196e20d8c8b74c5b5925be49e8281be5a6cb1a2e2",
-        "4d93dd9bbaa80d01010b3f7faaf48ed5da36f0b9408c751493f6cce24a9a0c89"
-      ];
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore intentionally ignoring this as it's supposed to work with malformed data
-      const document = setData({}, data, obfuscatedData);
-      expect(document.data.key1).toEqual(expect.stringContaining("value1"));
-      expect(document.data.key2.key21).toBe(true);
-
-      expect(document.privacy.obfuscatedData).toEqual([
-        "6f60bbe613a4a5b3d448b905f73f559f740131d5aa8d57b4b7ada9b78c72d81e",
-        "780f5fbb10e5a2c88c7254c196e20d8c8b74c5b5925be49e8281be5a6cb1a2e2",
-        "4d93dd9bbaa80d01010b3f7faaf48ed5da36f0b9408c751493f6cce24a9a0c89"
-      ]);
     });
   });
 });
