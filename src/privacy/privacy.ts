@@ -1,31 +1,7 @@
 import { cloneDeep, pick, unset } from "lodash";
 import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
-import { DeepStringify, SchematisedDocument, WrappedDocument } from "../@types/document";
-
-/**
- * Takes a partial originating document, possibly only with a schema.id and returns a document with the given data and obfuscated data
- * @param document the metadata container
- * @param data the data
- * @param obfuscatedData hashes of replaced data to put into the privacy field
- */
-
-// TODO: split into two separate functions for the two different use cases
-export const setData = <T extends SchematisedDocument<U> | WrappedDocument<U>, U = any>(
-  document: T,
-  data: DeepStringify<U>,
-  obfuscatedData: string[] = []
-) => {
-  const privacy = {
-    ...document.privacy,
-    obfuscatedData: obfuscatedData && obfuscatedData.length > 0 ? obfuscatedData : []
-  };
-  return {
-    ...document,
-    data,
-    privacy
-  };
-};
+import { WrappedDocument } from "../@types/document";
 
 export const obfuscateData = (_data: any, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -60,6 +36,12 @@ export const obfuscateDocument = <T = any>(
 
   const currentObfuscatedData = document?.privacy?.obfuscatedData ?? [];
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
-
-  return setData(document, data, newObfuscatedData);
+  return {
+    ...document,
+    data,
+    privacy: {
+      ...document.privacy,
+      obfuscatedData: newObfuscatedData
+    }
+  };
 };
