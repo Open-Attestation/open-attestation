@@ -14,7 +14,7 @@ This repository allows you to batch the documents to obtain the merkle root of t
 
 `wrapDocuments` takes in an array of document and returns the batched documents. Each document must be valid regarding the version of the schema used (see below) It computes the merkle root of the batch and appends the signature to each document. This merkle root can be published on the blockchain and queried against to prove the provenance of the document issued this way.
 
-This function accept a second optional parameter to specify the version of open-attestation you want to use. By default, open-attestation will use schema v2.
+This function accept a second optional parameter to specify the version of open-attestation you want to use. By default, open-attestation will use schema 2.0.
 
 The `wrapDocument` function is identical but accept only one document.
 
@@ -49,9 +49,9 @@ const document = {
   ]
 };
 
-wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]); // will ensure document is valid regarding open-attestation v2 schema
+wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]); // will ensure document is valid regarding open-attestation 2.0 schema
 console.log(wrappedDocuments);
-wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }], { version: 'open-attestation/3.0' }); // will ensure document is valid regarding open-attestation v3 schema
+wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }], { version: 'open-attestation/3.0' }); // will ensure document is valid regarding open-attestation 3.0 schema
 console.log(wrappedDocuments);
 ```
 
