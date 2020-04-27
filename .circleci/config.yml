@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: install
-          command: npm ci
+          command: npm ci && npm run postinstall #https://discuss.circleci.com/t/build-fail-with-circleci-node-latest/37885
       - run:
           name: commitlint
           command: npx --no-install commitlint-circle
