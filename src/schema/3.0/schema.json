@@ -16,24 +16,9 @@
         "name": {
           "type": "string",
           "description": "Issuer's name"
-        },
-        "identityProof": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["DNS-TXT", "W3C-DID"]
-            },
-            "location": {
-              "type": "string",
-              "description": "Url of the website referencing to document store OR valid DID as defined by W3C: https://www.w3.org/TR/did-core/"
-            }
-          },
-          "additionalProperties": false,
-          "required": ["type", "location"]
         }
       },
-      "required": ["id", "name", "identityProof"],
+      "required": ["id", "name"],
       "additionalProperties": false
     }
   },
@@ -77,7 +62,14 @@
       "format": "date-time",
       "description": "Date and time when a credential becomes valid."
     },
-    "issuer": { "$ref": "#/definitions/issuer" },
+    "issuer": {
+      "oneOf": [
+        { "$ref": "#/definitions/issuer" },
+        {
+          "type": "string"
+        }
+      ]
+    },
 
     "template": {
       "type": "object",
@@ -116,10 +108,25 @@
         "value": {
           "description": "Proof value for issuer(s)",
           "type": "string"
+        },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DNS-TXT", "W3C-DID"]
+            },
+            "location": {
+              "type": "string",
+              "description": "Url of the website referencing to document store OR valid DID as defined by W3C: https://www.w3.org/TR/did-core/"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["type", "location"]
         }
       },
-      "required": ["type", "method", "value"],
-      "additionalProperties": false
+      "required": ["type", "method", "value", "identity"],
+      "additionalProperties": true
     },
     "recipient": {
       "type": "object",
@@ -131,11 +138,16 @@
       },
       "additionalProperties": true
     },
-    "attachments": {
+    "evidence": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "The id property is optional, but if present, SHOULD contain a URL that points to where more information about this instance of evidence can be found."
+          },
           "filename": {
             "type": "string",
             "description": "Name of attachment, with appropriate extensions"
@@ -160,6 +172,6 @@
     }
   },
 
-  "required": ["reference", "issuer", "template", "proof", "name", "validFrom"],
+  "required": ["issuer", "template", "proof"],
   "additionalProperties": true
 }

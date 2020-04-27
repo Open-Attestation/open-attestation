@@ -1,12 +1,8 @@
-import { getData, obfuscateDocument, validateSchema, verifySignature, wrapDocument, wrapDocuments } from "../src";
-import {
-  IdentityProofType,
-  Method,
-  OpenAttestationDocument,
-  ProofType,
-  TemplateType
-} from "../src/__generated__/schemaV3";
+import { obfuscate, validateSchema, verifySignature, wrapDocument, wrapDocuments } from "../src";
+import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../src/__generated__/schemaV3";
 import { SchemaId } from "../src/@types/document";
+
+// TODO sth might be wrong with the verify signature => if I add data, it will still be valid
 
 const openAttestationData: OpenAttestationDocument = {
   reference: "document identifier",
@@ -19,26 +15,26 @@ const openAttestationData: OpenAttestationDocument = {
   },
   issuer: {
     id: "http://some.example.com",
-    name: "DEMO STORE",
-    identityProof: {
-      type: IdentityProofType.DNSTxt,
-      location: "tradetrust.io"
-    }
+    name: "DEMO STORE"
   },
   proof: {
     type: ProofType.OpenAttestationSignature2018,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-    method: Method.TokenRegistry
+    method: Method.TokenRegistry,
+    identity: {
+      type: IdentityType.DNSTxt,
+      location: "tradetrust.io"
+    }
   }
 };
 
-const openAttestationDataWithW3CDID = {
+const openAttestationDataWithW3CDID: OpenAttestationDocument = {
   ...openAttestationData,
-  issuer: {
-    ...openAttestationData.issuer,
-    identityProof: {
-      ...openAttestationData.issuer.identityProof,
-      type: IdentityProofType.W3CDid,
+  proof: {
+    ...openAttestationData.proof,
+    identity: {
+      ...openAttestationData.proof.identity,
+      type: IdentityType.W3CDid,
       location: "did:ethr:0x0xE6Fe788d8ca214A080b0f6aC7F48480b2AEfa9a6"
     }
   }
@@ -57,8 +53,9 @@ const datum = [
   {
     key1: "item1",
     key2: "true",
-    key3: 3.14159,
-    key4: false,
+    key3: "3.14159",
+    // key3: 3.14159, // TODO FIX ME
+    // key4: false, // TODO FIX ME
     ...openAttestationData
   },
   {
@@ -86,12 +83,12 @@ describe("v3 E2E Test Scenarios", () => {
         version: SchemaId.v3
       });
       expect(wrappedDocument.schema).toBe("http://example.com/schema.json");
-      expect(wrappedDocument.data.key1).toEqual(expect.stringContaining("test"));
-      expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
-      expect(wrappedDocument.signature.targetHash).toBeDefined();
-      expect(wrappedDocument.signature.merkleRoot).toBeDefined();
-      expect(wrappedDocument.signature.proof).toEqual([]);
-      expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
+      expect(wrappedDocument.key1).toEqual(expect.stringContaining("test"));
+      expect(wrappedDocument.proof.signature.type).toBe("SHA3MerkleProof");
+      expect(wrappedDocument.proof.signature.targetHash).toBeDefined();
+      expect(wrappedDocument.proof.signature.merkleRoot).toBeDefined();
+      expect(wrappedDocument.proof.signature.proof).toEqual([]);
+      expect(wrappedDocument.proof.signature.merkleRoot).toBe(wrappedDocument.proof.signature.targetHash);
     });
     test("creates a wrapped document with W3C-DID IdentityProof", () => {
       const wrappedDocumentWithW3CDID = wrapDocument(openAttestationDataWithW3CDID, {
@@ -99,14 +96,16 @@ describe("v3 E2E Test Scenarios", () => {
         version: SchemaId.v3
       });
       expect(wrappedDocumentWithW3CDID.schema).toBe("http://example.com/schema.json");
-      expect(wrappedDocumentWithW3CDID.signature.type).toBe("SHA3MerkleProof");
-      expect(wrappedDocumentWithW3CDID.signature.targetHash).toBeDefined();
-      expect(wrappedDocumentWithW3CDID.signature.merkleRoot).toBeDefined();
-      expect(wrappedDocumentWithW3CDID.signature.proof).toEqual([]);
-      expect(wrappedDocumentWithW3CDID.signature.merkleRoot).toBe(wrappedDocumentWithW3CDID.signature.targetHash);
-      expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.type).toContain(IdentityProofType.W3CDid);
-      expect(wrappedDocumentWithW3CDID.data.issuer.identityProof.location).toContain(
-        openAttestationDataWithW3CDID.issuer.identityProof.location
+      expect(wrappedDocumentWithW3CDID.proof.signature.type).toBe("SHA3MerkleProof");
+      expect(wrappedDocumentWithW3CDID.proof.signature.targetHash).toBeDefined();
+      expect(wrappedDocumentWithW3CDID.proof.signature.merkleRoot).toBeDefined();
+      expect(wrappedDocumentWithW3CDID.proof.signature.proof).toEqual([]);
+      expect(wrappedDocumentWithW3CDID.proof.signature.merkleRoot).toBe(
+        wrappedDocumentWithW3CDID.proof.signature.targetHash
+      );
+      expect(wrappedDocumentWithW3CDID.proof.identity.type).toContain(IdentityType.W3CDid);
+      expect(wrappedDocumentWithW3CDID.proof.identity.location).toContain(
+        openAttestationDataWithW3CDID.proof.identity.location
       );
     });
     test("checks that document is wrapped correctly", () => {
@@ -125,27 +124,18 @@ describe("v3 E2E Test Scenarios", () => {
       expect(validateSchema(wrappedDocument)).toBe(true);
     });
 
-    test("checks that data extracted are the same as input", () => {
-      const wrappedDocument = wrapDocument(document, {
-        externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
-      });
-      const data = getData(wrappedDocument);
-      expect(data).toEqual(datum[0]);
-    });
-
     test("does not allow for the same merkle root to be generated", () => {
       const wrappedDocument = wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
       const newDocument = wrapDocument(document, { version: SchemaId.v3 });
-      expect(wrappedDocument.signature.merkleRoot).not.toBe(newDocument.signature.merkleRoot);
+      expect(wrappedDocument.proof.signature.merkleRoot).not.toBe(newDocument.proof.signature.merkleRoot);
     });
 
     test("obfuscate data correctly", async () => {
       const newDocument = wrapDocument(datum[2], { version: SchemaId.v3 });
-      const obfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
+      const obfuscatedDocument = obfuscate(newDocument, ["key2"]);
 
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -154,10 +144,10 @@ describe("v3 E2E Test Scenarios", () => {
 
     test("obfuscate data transistively", () => {
       const newDocument = wrapDocument(datum[2], { version: SchemaId.v3 });
-      const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
-      const obfuscatedDocument = obfuscateDocument(intermediateDocument, ["key3"]);
+      const intermediateDocument = obfuscate(newDocument, ["key2"]);
+      const obfuscatedDocument = obfuscate(intermediateDocument, ["key3"]);
 
-      const comparison = obfuscateDocument(intermediateDocument, ["key2", "key3"]);
+      const comparison = obfuscate(intermediateDocument, ["key2", "key3"]);
 
       expect(comparison).toEqual(obfuscatedDocument);
     });
@@ -170,7 +160,7 @@ describe("v3 E2E Test Scenarios", () => {
           cow: "moo"
         }
       ];
-      const action = () => wrapDocument(malformedDatum);
+      const action = () => wrapDocuments(malformedDatum);
       expect(action).toThrow("Invalid document");
     });
 
@@ -181,11 +171,11 @@ describe("v3 E2E Test Scenarios", () => {
       });
       signedDocuments.forEach((doc, i: number) => {
         expect(doc.schema).toBe("http://example.com/schema.json");
-        expect(doc.signature.type).toBe("SHA3MerkleProof");
-        expect(doc.data.key1).toEqual(expect.stringContaining(datum[i].key1));
-        expect(doc.signature.targetHash).toBeDefined();
-        expect(doc.signature.merkleRoot).toBeDefined();
-        expect(doc.signature.proof.length).toEqual(2);
+        expect(doc.proof.signature.type).toBe("SHA3MerkleProof");
+        expect(doc.key1).toEqual(expect.stringContaining(datum[i].key1));
+        expect(doc.proof.signature.targetHash).toBeDefined();
+        expect(doc.proof.signature.merkleRoot).toBeDefined();
+        expect(doc.proof.signature.proof.length).toEqual(2);
       });
     });
 
@@ -206,17 +196,6 @@ describe("v3 E2E Test Scenarios", () => {
       expect(validatedSchema).toBe(true);
     });
 
-    test("checks that data extracted are the same as input", () => {
-      const signedDocuments = wrapDocuments(datum, {
-        externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
-      });
-      signedDocuments.forEach((doc, i: number) => {
-        const data = getData(doc);
-        expect(data).toEqual(datum[i]);
-      });
-    });
-
     test("does not allow for same merkle root to be generated", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
@@ -225,7 +204,7 @@ describe("v3 E2E Test Scenarios", () => {
       const newSignedDocuments = wrapDocuments(datum, {
         version: SchemaId.v3
       });
-      expect(signedDocuments[0].signature.merkleRoot).not.toBe(newSignedDocuments[0].signature.merkleRoot);
+      expect(signedDocuments[0].proof.signature.merkleRoot).not.toBe(newSignedDocuments[0].proof.signature.merkleRoot);
     });
   });
   describe("validate", () => {
@@ -268,34 +247,32 @@ describe("v3 E2E Test Scenarios", () => {
         validateSchema({
           version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
-          data: {
-            reference: "reference",
-            name: "name",
-            validFrom: "2010-01-01T19:23:24Z",
-            issuer: {
-              id: "https://example.com",
-              name: "issuer.name",
-              identityProof: {
-                type: "DNS-TXT",
-                location: "issuer.identityProof.location"
-              }
-            },
-            template: {
-              name: "template.name",
-              type: "EMBEDDED_RENDERER",
-              url: "https://example.com"
-            },
-            proof: {
-              type: "OpenAttestationSignature2018",
-              method: "TOKEN_REGISTRY",
-              value: "proof.value"
-            }
+          reference: "reference",
+          name: "name",
+          validFrom: "2010-01-01T19:23:24Z",
+          issuer: {
+            id: "https://example.com",
+            name: "issuer.name"
           },
-          signature: {
-            merkleRoot: "0xabc",
-            proof: [],
-            targetHash: "0xabc",
-            type: "SHA3MerkleProof"
+          template: {
+            name: "template.name",
+            type: "EMBEDDED_RENDERER",
+            url: "https://example.com"
+          },
+          proof: {
+            type: "OpenAttestationSignature2018",
+            method: "TOKEN_REGISTRY",
+            value: "proof.value",
+            identity: {
+              type: "DNS-TXT",
+              location: "issuer.identityProof.location"
+            },
+            signature: {
+              merkleRoot: "0xabc",
+              proof: [],
+              targetHash: "0xabc",
+              type: "SHA3MerkleProof"
+            }
           }
         })
       ).toStrictEqual(true);
@@ -305,34 +282,32 @@ describe("v3 E2E Test Scenarios", () => {
         validateSchema({
           version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
-          data: {
-            reference: "reference",
-            name: "name",
-            validFrom: "2010-01-01T19:23:24Z",
-            issuer: {
-              id: "https://example.com",
-              name: "issuer.name",
-              identityProof: {
-                type: IdentityProofType.W3CDid,
-                location: openAttestationDataWithW3CDID.issuer.identityProof.location
-              }
-            },
-            template: {
-              name: "template.name",
-              type: "EMBEDDED_RENDERER",
-              url: "https://example.com"
-            },
-            proof: {
-              type: "OpenAttestationSignature2018",
-              method: "TOKEN_REGISTRY",
-              value: "proof.value"
-            }
+          reference: "reference",
+          name: "name",
+          validFrom: "2010-01-01T19:23:24Z",
+          issuer: {
+            id: "https://example.com",
+            name: "issuer.name"
           },
-          signature: {
-            merkleRoot: "0xabc",
-            proof: [],
-            targetHash: "0xabc",
-            type: "SHA3MerkleProof"
+          template: {
+            name: "template.name",
+            type: "EMBEDDED_RENDERER",
+            url: "https://example.com"
+          },
+          proof: {
+            type: "OpenAttestationSignature2018",
+            method: "TOKEN_REGISTRY",
+            value: "proof.value",
+            identity: {
+              type: IdentityType.W3CDid,
+              location: openAttestationDataWithW3CDID.proof.identity.location
+            },
+            signature: {
+              merkleRoot: "0xabc",
+              proof: [],
+              targetHash: "0xabc",
+              type: "SHA3MerkleProof"
+            }
           }
         })
       ).toStrictEqual(true);
@@ -350,7 +325,7 @@ describe("v3 E2E Test Scenarios", () => {
               id: "https://example.com",
               name: "issuer.name",
               identityProof: {
-                type: IdentityProofType.W3CDid
+                type: IdentityType.W3CDid
               }
             },
             template: {

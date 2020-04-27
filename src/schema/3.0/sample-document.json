@@ -9,16 +9,16 @@
   },
   "issuer": {
     "id": "https://example.com",
-    "name": "DEMO STORE",
-    "identityProof": {
-      "type": "DNS-TXT",
-      "location": "tradetrust.io"
-    }
+    "name": "DEMO STORE"
   },
   "proof": {
     "type": "OpenAttestationSignature2018",
     "method": "DOCUMENT_STORE",
-    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
+    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+    "identity": {
+      "type": "DNS-TXT",
+      "location": "tradetrust.io"
+    }
   },
   "recipient": {
     "name": "Recipient Name"

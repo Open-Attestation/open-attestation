@@ -1,14 +1,8 @@
 import * as utils from "./utils";
-import { wrapDocument } from "..";
-import { WrappedDocument, SchemaId } from "../@types/document";
-import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
-import {
-  IdentityProofType,
-  Method,
-  OpenAttestationDocument as v3OpenAttestationDocument,
-  ProofType,
-  TemplateType
-} from "../__generated__/schemaV3";
+import { VerifiableCredential, wrapDocument } from "..";
+import { SchemaId, WrappedDocument } from "../@types/document";
+import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
+import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -179,17 +173,17 @@ describe("Util Functions", () => {
       ]);
     });
     test("should return all issuers address for v3 document", () => {
-      const document: WrappedDocument<v3OpenAttestationDocument> = wrapDocument(
+      const document: VerifiableCredential<OpenAttestationDocument> = wrapDocument(
         {
           issuer: {
             name: "name",
-            identityProof: {
-              location: "whatever",
-              type: IdentityProofType.DNSTxt
-            },
             id: "https://example.com"
           },
           proof: {
+            identity: {
+              location: "whatever",
+              type: IdentityType.DNSTxt
+            },
             value: "0xabcf",
             type: ProofType.OpenAttestationSignature2018,
             method: Method.DocumentStore
