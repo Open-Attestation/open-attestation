@@ -32,23 +32,20 @@ const getSalts = (document: WrappedDocument<OpenAttestationDocument>): Salt[] =>
 // make it obvious that this function is not production ready
 // eslint-disable-next-line @typescript-eslint/camelcase
 export const __unsafe__mapToW3cVc = (document: WrappedDocument<OpenAttestationDocument>): any => {
-  const { proof, issuer, attachments, type, validFrom, validUntil, "@context": context, ...rest } = getData(document);
+  const { proof, issuer, evidence, type, validFrom, validUntil, "@context": context, ...rest } = getData(document);
   const salts = getSalts(document);
   return {
-    "@context": ["https://www.w3.org/2018/credentials/v1", ...(context ?? [])],
+    "@context": [...(context ?? [])],
     type: ["VerifiableCredential", ...(type ?? [])].filter(Boolean),
-    issuer: {
-      id: issuer.id,
-      name: issuer.name
-    },
+    issuer,
     validFrom,
     validUntil,
     credentialSubject: { ...rest },
-    evidence: attachments,
+    evidence,
+    issuanceDate: new Date().toISOString(),
     proof: {
       ...proof,
       salts,
-      identityProof: issuer.identityProof,
       signature: document.signature
     }
   };

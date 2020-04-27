@@ -12,7 +12,7 @@ const schema = {
     }
   },
   required: ["key1"],
-  additionalProperties: false
+  additionalProperties: true
 };
 
 describe("schema", () => {
@@ -35,43 +35,30 @@ describe("schema", () => {
     describe("with one schema", () => {
       test("returns empty array for passing documents", () => {
         const ajv = new Ajv({ allErrors: true });
-        const document: SchematisedDocument = {
+        const document = {
           version: SchemaId.v3,
           schema: "http://example.com/schema.json",
-          data: {
-            key1: 2
-          }
+          key1: 2
         };
         expect(validateSchema(document, ajv.compile(schema))).toStrictEqual([]);
       });
 
       test("returns array with errors for failing documents", () => {
         const ajv = new Ajv({ allErrors: true });
-        const document: SchematisedDocument = {
+        const document = {
           version: SchemaId.v3,
           schema: "http://example.com/schema.json",
-          data: {
-            key: 2
-          }
+          key1: "2"
         };
         expect(validateSchema(document, ajv.compile(schema))).toStrictEqual([
           {
-            dataPath: "",
-            keyword: "additionalProperties",
-            message: "should NOT have additional properties",
+            dataPath: ".key1",
+            keyword: "type",
+            message: "should be number",
             params: {
-              additionalProperty: "key"
+              type: "number"
             },
-            schemaPath: "#/additionalProperties"
-          },
-          {
-            dataPath: "",
-            keyword: "required",
-            message: "should have required property 'key1'",
-            params: {
-              missingProperty: "key1"
-            },
-            schemaPath: "#/required"
+            schemaPath: "#/properties/key1/type"
           }
         ]);
       });

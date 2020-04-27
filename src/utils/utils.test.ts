@@ -1,14 +1,8 @@
 import * as utils from "./utils";
-import { wrapDocument } from "..";
-import { WrappedDocument, SchemaId } from "../@types/document";
-import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
-import {
-  IdentityProofType,
-  Method,
-  OpenAttestationDocument as v3OpenAttestationDocument,
-  ProofType,
-  TemplateType
-} from "../__generated__/schemaV3";
+import { VerifiableCredential, wrapDocument } from "..";
+import { SchemaId, WrappedDocument } from "../@types/document";
+import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
+import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -108,8 +102,8 @@ describe("Util Functions", () => {
   });
 
   describe("getIssuerAddress", () => {
-    test("should return all issuers address for v2 document using certificate store", () => {
-      const document: WrappedDocument<v2OpenAttestationDocument> = wrapDocument({
+    test("should return all issuers address for v2 document using certificate store", async () => {
+      const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
             certificateStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
@@ -126,8 +120,8 @@ describe("Util Functions", () => {
         "0x1234123412341234123412341234123412341234"
       ]);
     });
-    test("should return all issuers address for v2 document using document store", () => {
-      const document: WrappedDocument<v2OpenAttestationDocument> = wrapDocument({
+    test("should return all issuers address for v2 document using document store", async () => {
+      const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
             documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
@@ -152,8 +146,8 @@ describe("Util Functions", () => {
         "0x1234123412341234123412341234123412341234"
       ]);
     });
-    test("should return all issuers address for v2 document using token registry", () => {
-      const document: WrappedDocument<v2OpenAttestationDocument> = wrapDocument({
+    test("should return all issuers address for v2 document using token registry", async () => {
+      const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
             tokenRegistry: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
@@ -178,18 +172,26 @@ describe("Util Functions", () => {
         "0x1234123412341234123412341234123412341234"
       ]);
     });
-    test("should return all issuers address for v3 document", () => {
-      const document: WrappedDocument<v3OpenAttestationDocument> = wrapDocument(
+    test("should return all issuers address for v3 document", async () => {
+      const document: VerifiableCredential<OpenAttestationDocument> = await wrapDocument(
         {
           issuer: {
             name: "name",
-            identityProof: {
-              location: "whatever",
-              type: IdentityProofType.DNSTxt
-            },
             id: "https://example.com"
           },
+          issuanceDate: "2010-01-01T19:23:24Z",
+          credentialSubject: {
+            id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+            degree: {
+              type: "BachelorDegree",
+              name: "Bachelor of Science and Arts"
+            }
+          },
           proof: {
+            identity: {
+              location: "whatever",
+              type: IdentityType.DNSTxt
+            },
             value: "0xabcf",
             type: ProofType.OpenAttestationSignature2018,
             method: Method.DocumentStore

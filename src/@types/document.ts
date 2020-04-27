@@ -1,3 +1,5 @@
+import { OpenAttestationDocument, Proof as ProofV3 } from "../__generated__/schemaV3";
+
 export type SignatureProofAlgorithm = "SHA3MerkleProof";
 
 export enum SchemaId {
@@ -54,6 +56,27 @@ export interface SignedWrappedDocument<T = any> extends WrappedDocument<T> {
   proof: Proof;
 }
 
+export interface SignatureV3 {
+  type: SignatureProofAlgorithm;
+  targetHash: string;
+  proof: string[];
+  merkleRoot: string;
+  salts: Salt[];
+  privacy: { obfuscatedData: string[] };
+}
+export interface Salt {
+  value: string;
+  path: string;
+}
+export interface VerifiableCredentialProof extends ProofV3 {
+  signature: SignatureV3;
+}
+export type VerifiableCredential<T extends OpenAttestationDocument> = T & {
+  version: SchemaId.v3;
+  schema?: string;
+  proof: VerifiableCredentialProof;
+};
+
 // feel free to improve, as long as this project compile without changes :)
 // once salted, every property is turned into a string
 export type DeepStringify<T> = {
@@ -69,5 +92,7 @@ export type DeepStringify<T> = {
     ? string // make it a string
     : undefined extends T[P] // if it's an optional field
     ? DeepStringify<T[P]> // stringify the type
-    : string; // default to string
+    : T[P] extends string // if it's a string
+    ? string // make it a string
+    : DeepStringify<T[P]>; // unknown case => apply stringify, known use case: union (Issuer | string)
 };

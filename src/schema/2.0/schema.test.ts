@@ -8,8 +8,8 @@ import { wrapDocument } from "../../index";
 import { SchemaId } from "../../@types/document";
 
 describe("schema/v2.0", () => {
-  it("should be valid with sample document", () => {
-    const wrappedDocument = wrapDocument(sampleDoc);
+  it("should be valid with sample document", async () => {
+    const wrappedDocument = await wrapDocument(sampleDoc);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
@@ -47,7 +47,7 @@ describe("schema/v2.0", () => {
       );
     }
   });
-  it("should be valid if identity type is DNS-TXT", () => {
+  it("should be valid if identity type is DNS-TXT", async () => {
     const document = merge(sampleDoc, {
       issuers: [
         {
@@ -59,10 +59,10 @@ describe("schema/v2.0", () => {
         }
       ]
     });
-    const wrappedDocument = wrapDocument(document);
+    const wrappedDocument = await wrapDocument(document);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
-  it("should be valid when issuer has extra properties", () => {
+  it("should be valid when issuer has extra properties", async () => {
     const document = merge(sampleDoc, {
       issuers: [
         {
@@ -75,11 +75,11 @@ describe("schema/v2.0", () => {
         }
       ]
     });
-    const wrappedDocument = wrapDocument(document);
+    const wrappedDocument = await wrapDocument(document);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
-  it("should be valid with sample token", () => {
-    const wrappedDocument = wrapDocument(sampleToken);
+  it("should be valid with sample token", async () => {
+    const wrappedDocument = await wrapDocument(sampleToken);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
@@ -290,26 +290,25 @@ describe("schema/v2.0", () => {
         ]);
       }
     });
-    it("should be valid when issuer has no documentStore, certificateStore and tokenRegistry", () => {
-      expect(
-        wrapDocument({
-          ...sampleDoc,
-          issuers: [
-            {
-              name: "ABC",
-              identityProof: {
-                type: "DNS-TXT",
-                location: "abc.com"
-              }
+    it("should be valid when issuer has no documentStore, certificateStore and tokenRegistry", async () => {
+      const wrappedDocument = await wrapDocument({
+        ...sampleDoc,
+        issuers: [
+          {
+            name: "ABC",
+            identityProof: {
+              type: "DNS-TXT",
+              location: "abc.com"
             }
-          ]
-        }).version
-      ).toBe(SchemaId.v2);
+          }
+        ]
+      });
+      expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
   });
   describe("template", () => {
-    it("should be valid without $template (will use default view)", () => {
-      const wrappedDocument = wrapDocument(omit(cloneDeep(sampleDoc), "$template"));
+    it("should be valid without $template (will use default view)", async () => {
+      const wrappedDocument = await wrapDocument(omit(cloneDeep(sampleDoc), "$template"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
     it("should not be valid if $template does not have name", () => {
@@ -393,8 +392,8 @@ describe("schema/v2.0", () => {
     });
   });
   describe("attachments", () => {
-    it("should be valid without attachments", () => {
-      const wrappedDocument = wrapDocument(omit(cloneDeep(sampleDoc), "attachments"));
+    it("should be valid without attachments", async () => {
+      const wrappedDocument = await wrapDocument(omit(cloneDeep(sampleDoc), "attachments"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
     it("should not be valid with invalid file type", () => {
@@ -491,8 +490,8 @@ describe("schema/v2.0", () => {
       }
     });
   });
-  it("should be valid with additonal key:value", () => {
-    const wrappedDocument = wrapDocument({ ...sampleDoc, foo: "bar" });
+  it("should be valid with additonal key:value", async () => {
+    const wrappedDocument = await wrapDocument({ ...sampleDoc, foo: "bar" });
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 });

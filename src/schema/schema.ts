@@ -3,6 +3,7 @@ import { getLogger } from "../logger";
 import openAttestationSchemav2 from "./2.0/schema.json";
 import openAttestationSchemav3 from "./3.0/schema.json";
 import { getData } from "../utils";
+import { SchemaId } from "../@types/document";
 
 const logger = getLogger("validate");
 
@@ -10,7 +11,7 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
   if (!validator) {
     throw new Error("No schema validator provided");
   }
-  const valid = validator(getData(document));
+  const valid = validator(document.version === SchemaId.v3 ? document : getData(document));
   if (!valid) {
     logger.debug("There are errors in the document");
     logger.debug(validator.errors);

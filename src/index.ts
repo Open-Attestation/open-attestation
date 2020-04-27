@@ -1,12 +1,15 @@
 import Ajv from "ajv";
 import { digestDocument } from "./digest";
 import { getSchema, validateSchema as validate } from "./schema";
-import { wrap } from "./signature";
-import { SchematisedDocument, WrappedDocument, SchemaId } from "./@types/document";
+import { verify, wrap } from "./signature";
+import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
+import { OpenAttestationDocument } from "./__generated__/schemaV3";
+import { obfuscateV3, validateV3, verifyV3, wrapsV3, wrapV3 } from "./signature/signature.v3";
+import { obfuscateDocument } from "./privacy";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
@@ -34,16 +37,62 @@ const isSchemaValidationError = (error: any): error is SchemaValidationError => 
   return !!error.validationErrors;
 };
 
-export const wrapDocument = <T = unknown>(data: T, options?: WrapDocumentOption): WrappedDocument<T> => {
+interface WrapDocumentOptionV2 {
+  externalSchemaId?: string;
+  version?: SchemaId.v2;
+}
+interface WrapDocumentOptionV3 {
+  externalSchemaId?: string;
+  version?: SchemaId.v3;
+}
+
+export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentOptionV2): Promise<WrappedDocument<T>>;
+export async function wrapDocument<T extends OpenAttestationDocument>(
+  data: T,
+  options?: WrapDocumentOptionV3
+): Promise<VerifiableCredential<T>>;
+export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentOption): Promise<any> {
+  if (options?.version === SchemaId.v3) {
+    const wrappedDocument = options.externalSchemaId
+      ? wrapV3({ schema: options.externalSchemaId, version: SchemaId.v3, ...data })
+      : wrapV3({ version: SchemaId.v3, ...data });
+    const errors = validate(wrappedDocument, getSchema(SchemaId.v3));
+    if (errors.length > 0) {
+      console.log(errors);
+      throw new SchemaValidationError("Invalid document", errors, wrappedDocument);
+    }
+    await validateV3(wrappedDocument);
+    return wrappedDocument;
+  }
   const document: SchematisedDocument = createDocument(data, options);
   const errors = validate(document, getSchema(options?.version ?? defaultVersion));
   if (errors.length > 0) {
     throw new SchemaValidationError("Invalid document", errors, document);
   }
   return wrap(document, [digestDocument(document)]);
-};
+}
 
-export const wrapDocuments = <T = unknown>(dataArray: T[], options?: WrapDocumentOption): WrappedDocument<T>[] => {
+export function wrapDocuments<T = unknown>(dataArray: T[], options?: WrapDocumentOptionV2): WrappedDocument<T>[];
+export function wrapDocuments<T extends OpenAttestationDocument>(
+  dataArray: T[],
+  options?: WrapDocumentOptionV3
+): VerifiableCredential<T>[];
+export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): any {
+  if (options?.version === SchemaId.v3) {
+    const documents = dataArray.map(data => {
+      return options.externalSchemaId
+        ? { schema: options.externalSchemaId, version: SchemaId.v3, ...data }
+        : { version: SchemaId.v3, ...data };
+    });
+    const wrappedDocument = wrapsV3(documents);
+    wrappedDocument.forEach(document => {
+      const errors = validate(document, getSchema(options?.version ?? defaultVersion));
+      if (errors.length > 0) {
+        throw new SchemaValidationError("Invalid document", errors, document);
+      }
+    });
+    return wrappedDocument;
+  }
   const documents = dataArray.map(data => createDocument(data, options));
   documents.forEach(document => {
     const errors = validate(document, getSchema(options?.version ?? defaultVersion));
@@ -54,16 +103,33 @@ export const wrapDocuments = <T = unknown>(dataArray: T[], options?: WrapDocumen
 
   const batchHashes = documents.map(digestDocument);
   return documents.map(doc => wrap(doc, batchHashes));
-};
+}
 
-export const validateSchema = (document: WrappedDocument): boolean => {
+export const validateSchema = (document: WrappedDocument | VerifiableCredential<any>): boolean => {
   return validate(document, getSchema(`${document?.version || SchemaId.v2}`)).length === 0;
 };
 
+export function verifySignature<T = any>(document: any): document is WrappedDocument<T>;
+export function verifySignature<T extends VerifiableCredential<OpenAttestationDocument>>(
+  document: T
+): document is VerifiableCredential<T>;
+export function verifySignature(document: any) {
+  return document.version === SchemaId.v3 ? verifyV3(document) : verify(document);
+}
+
+export function obfuscate<T = any>(document: WrappedDocument<T>, fields: string[] | string): WrappedDocument<T>;
+export function obfuscate<T extends VerifiableCredential<OpenAttestationDocument>>(
+  document: T,
+  fields: string[] | string
+): T;
+export function obfuscate(document: any, fields: string[] | string) {
+  return document.version === SchemaId.v3 ? obfuscateV3(document, fields) : obfuscateDocument(document, fields);
+}
+
 export { digestDocument } from "./digest";
+export { checkProof, MerkleTree } from "./signature";
 export { obfuscateDocument } from "./privacy";
 export { sign } from "./sign";
-export { checkProof, MerkleTree, wrap, verify as verifySignature } from "./signature";
 export { utils, isSchemaValidationError };
 export * from "./@types/document";
 export * from "./schema/3.0/w3c";

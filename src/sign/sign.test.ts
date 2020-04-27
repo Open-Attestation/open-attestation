@@ -2,11 +2,11 @@ import { sign as EcdsaSecp256k1Signature2019 } from "./ecdsa-secp256k1-signature
 import { ethers } from "ethers";
 import sampleDoc from "../schema/2.0/sample-document.json";
 import { ProofType, wrapDocument } from "../index";
-const wrappedDocument = wrapDocument(sampleDoc);
 
 describe("proofs", () => {
   describe("EcdsaSecp256k1Signature2019", () => {
     test("adds a signed proof block to the document", async () => {
+      const wrappedDocument = await wrapDocument(sampleDoc);
       const options = {
         privateKey: "0x0123456789012345678901234567890123456789012345678901234567890123",
         verificationMethod: "0x14791697260E4c9A71f18484C9f997B308e59325",
