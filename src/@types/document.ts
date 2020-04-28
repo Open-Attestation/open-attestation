@@ -12,6 +12,13 @@ export interface Signature {
   merkleRoot: string;
 }
 
+export interface ProofSigningOptions {
+  privateKey: string;
+  verificationMethod: string;
+  type: string;
+  proofPurpose?: string;
+}
+
 export interface ObfuscationMetadata {
   obfuscatedData?: string[];
 }
@@ -23,12 +30,21 @@ export interface SchematisedDocument<T = any> {
   privacy?: ObfuscationMetadata;
 }
 
+export interface Proof {
+  type: string;
+  created: string;
+  proofPurpose: string;
+  verificationMethod: string;
+  signature: string;
+}
+
 export interface WrappedDocument<T = any> {
   version: SchemaId;
   signature: Signature;
   data: DeepStringify<T>;
   schema?: string;
   privacy?: ObfuscationMetadata;
+  proof?: Proof;
 }
 
 // feel free to improve, as long as this project compile without changes :)
