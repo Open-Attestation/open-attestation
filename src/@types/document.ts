@@ -31,6 +31,23 @@ export interface WrappedDocument<T = any> {
   privacy?: ObfuscationMetadata;
 }
 
+export enum ProofType {
+  EcdsaSecp256k1Signature2019 = "EcdsaSecp256k1Signature2019"
+}
+export enum ProofPurpose {
+  AssertionMethod = "assertionMethod"
+}
+export interface Proof {
+  type: ProofType;
+  created: string;
+  proofPurpose: ProofPurpose;
+  publicKey: string;
+  signature: string;
+}
+export interface SignedWrappedDocument<T = any> extends WrappedDocument<T> {
+  proof: Proof;
+}
+
 // feel free to improve, as long as this project compile without changes :)
 // once salted, every property is turned into a string
 export type DeepStringify<T> = {

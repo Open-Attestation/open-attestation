@@ -32,17 +32,7 @@
         },
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
-      "required": ["name", "documentStore", "identityProof"],
-      "not": {
-        "anyOf": [
-          {
-            "required": ["certificateStore"]
-          },
-          {
-            "required": ["tokenRegistry"]
-          }
-        ]
-      },
+      "required": ["documentStore", "identityProof"],
       "additionalProperties": true
     },
     "certificateStore": {
@@ -60,25 +50,11 @@
         }
       },
       "required": ["name", "certificateStore"],
-      "not": {
-        "anyOf": [
-          {
-            "required": ["documentStore"]
-          },
-          {
-            "required": ["tokenRegistry"]
-          }
-        ]
-      },
       "additionalProperties": true
     },
     "tokenRegistry": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string",
-          "description": "Issuer's name"
-        },
         "tokenRegistry": {
           "type": "string",
           "pattern": "^0x[a-fA-F0-9]{40}$",
@@ -86,17 +62,7 @@
         },
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
-      "required": ["name", "tokenRegistry", "identityProof"],
-      "not": {
-        "anyOf": [
-          {
-            "required": ["documentStore"]
-          },
-          {
-            "required": ["certificateStore"]
-          }
-        ]
-      },
+      "required": ["tokenRegistry", "identityProof"],
       "additionalProperties": true
     }
   },
@@ -150,6 +116,29 @@
           },
           {
             "$ref": "#/definitions/certificateStore"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Issuer's name"
+              }
+            },
+            "required": ["name"],
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["certificateStore"]
+                },
+                {
+                  "required": ["tokenRegistry"]
+                },
+                {
+                  "required": ["documentStore"]
+                }
+              ]
+            }
           }
         ]
       },

@@ -2,7 +2,14 @@ import Ajv from "ajv";
 import { digestDocument } from "./digest";
 import { getSchema, validateSchema as validate } from "./schema";
 import { wrap } from "./signature";
-import { SchematisedDocument, WrappedDocument, SchemaId } from "./@types/document";
+import {
+  ProofPurpose,
+  ProofType,
+  SchemaId,
+  SchematisedDocument,
+  SignedWrappedDocument,
+  WrappedDocument
+} from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
 import * as v2 from "./__generated__/schemaV2";
@@ -59,6 +66,31 @@ export const wrapDocuments = <T = unknown>(dataArray: T[], options?: WrapDocumen
 export const validateSchema = (document: WrappedDocument): boolean => {
   return validate(document, getSchema(`${document?.version || SchemaId.v2}`)).length === 0;
 };
+
+interface SignOptions {
+  disableLint: boolean;
+}
+
+export function sign<T = v2.OpenAttestationDocument>(
+  document: WrappedDocument<T>,
+  options: SignOptions
+): SignedWrappedDocument<T> {
+  if (!options.disableLint) {
+    throw new Error("BOOOM");
+  }
+  // TODO
+  return {
+    ...document,
+    proof: {
+      type: ProofType.EcdsaSecp256k1Signature2019,
+      created: new Date().toISOString(),
+      proofPurpose: ProofPurpose.AssertionMethod,
+      publicKey: "0x44E682d207bcDDDAD0Bb3a650cCb9de0911B9D3A#owner",
+      signature:
+        "0x49898c7ded0bef0e3fb96b3f69b097dda45a474c62142d72a0834d814c092cbe458a16f44efe136614e74ffd69b8273688af347826b9efaccd6a12f200185eef1c"
+    }
+  };
+}
 
 export { digestDocument } from "./digest";
 export { obfuscateDocument } from "./privacy";
