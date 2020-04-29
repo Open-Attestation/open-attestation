@@ -2,7 +2,7 @@ import {
   IdentityProofType as v2IdentityProofType,
   OpenAttestationDocument as v2OpenAttestationDocument
 } from "../src/__generated__/schemaV2";
-import { wrapDocument, sign } from "../src";
+import { wrapDocument, sign, ProofType } from "../src";
 import { ethers } from "ethers";
 
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
@@ -35,7 +35,7 @@ describe("v2 E2E Test Scenarios", () => {
       const options = {
         privateKey: "0x0123456789012345678901234567890123456789012345678901234567890123",
         verificationMethod: "0x14791697260E4c9A71f18484C9f997B308e59325",
-        type: "EcdsaSecp256k1Signature2019"
+        type: ProofType.EcdsaSecp256k1Signature2019
       };
       const signed = await sign(wrappedDocument, options);
       const { proof } = signed;
@@ -43,16 +43,6 @@ describe("v2 E2E Test Scenarios", () => {
       const msg = wrappedDocument.signature.targetHash;
       const recoverAddress = ethers.utils.verifyMessage(msg, proof.signature);
       expect(recoverAddress.toLowerCase()).toStrictEqual(options.verificationMethod.toLowerCase());
-    });
-    test("throws that the proof type is not supported", async () => {
-      const wrappedDocument = wrapDocument(openAttestationDatav2);
-      const options = {
-        privateKey: "0x0123456789012345678901234567890123456789012345678901234567890123",
-        verificationMethod: "0x14791697260E4c9A71f18484C9f997B308e59325",
-        type: "NotSupportType"
-      };
-      const signed = async () => await sign(wrappedDocument, options);
-      await expect(signed()).rejects.toEqual(new Error(`Proof type: ${options.type} does not exist.`));
     });
     test("should create a wrapped v2 document when issuer contains additional data", () => {
       const wrappedDocument = wrapDocument({

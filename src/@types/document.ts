@@ -15,8 +15,8 @@ export interface Signature {
 export interface ProofSigningOptions {
   privateKey: string;
   verificationMethod: string;
-  type: string;
-  proofPurpose?: string;
+  type: ProofType;
+  proofPurpose?: ProofPurpose;
 }
 
 export interface ObfuscationMetadata {
@@ -30,21 +30,28 @@ export interface SchematisedDocument<T = any> {
   privacy?: ObfuscationMetadata;
 }
 
-export interface Proof {
-  type: string;
-  created: string;
-  proofPurpose: string;
-  verificationMethod: string;
-  signature: string;
-}
-
 export interface WrappedDocument<T = any> {
   version: SchemaId;
   signature: Signature;
   data: DeepStringify<T>;
   schema?: string;
   privacy?: ObfuscationMetadata;
-  proof?: Proof;
+}
+export enum ProofType {
+  EcdsaSecp256k1Signature2019 = "EcdsaSecp256k1Signature2019"
+}
+export enum ProofPurpose {
+  AssertionMethod = "assertionMethod"
+}
+export interface Proof {
+  type: ProofType;
+  created: string;
+  proofPurpose: ProofPurpose;
+  verificationMethod: string;
+  signature: string;
+}
+export interface SignedWrappedDocument<T = any> extends WrappedDocument<T> {
+  proof: Proof;
 }
 
 // feel free to improve, as long as this project compile without changes :)
