@@ -1,5 +1,5 @@
-import { WrappedDocument, ProofSigningOptions } from "../@types/document";
-import { sign as EcdsaSecp256k1Signature2019 } from "./EcdsaSecp256k1Signature2019";
+import { WrappedDocument, ProofSigningOptions } from "./@types/document";
+import { sign as EcdsaSecp256k1Signature2019 } from "./sign/ecdsa-secp256k1-signature-2019";
 
 export const sign = async (document: WrappedDocument, options: ProofSigningOptions): Promise<WrappedDocument> => {
   switch (options.type) {

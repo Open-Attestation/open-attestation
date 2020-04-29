@@ -1,9 +1,9 @@
-import { WrappedDocument, ProofSigningOptions } from "../../@types/document";
+import { WrappedDocument, ProofSigningOptions } from "../@types/document";
 import { ethers } from "ethers";
 const type = "EcdsaSecp256k1Signature2019";
 
 /**
- * The document must alredy be wrapped including a signature block and a targetHash.
+ * The document must already be wrapped including a signature block and a targetHash.
  * It is the targetHash that will be signed.
  * @param document
  * @param options
