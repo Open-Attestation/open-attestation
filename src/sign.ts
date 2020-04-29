@@ -5,6 +5,7 @@ export async function sign<T = any>(
   document: WrappedDocument<T>,
   options: ProofSigningOptions
 ): Promise<SignedWrappedDocument<T>> {
+  if (!document.signature.targetHash) throw new Error("Document does not contain signature.targetHash.");
   switch (options.type) {
     case "EcdsaSecp256k1Signature2019": {
       return await EcdsaSecp256k1Signature2019(document, options);
