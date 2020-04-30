@@ -18,32 +18,33 @@
       "required": ["type", "location"],
       "additionalProperties": false
     },
-    "documentStore": {
+    "issuer": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
           "description": "Issuer's name"
         },
-        "documentStore": {
-          "type": "string",
-          "pattern": "^0x[a-fA-F0-9]{40}$",
-          "description": "Smart contract address of document store"
-        },
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
-      "required": ["name", "documentStore", "identityProof"],
-      "not": {
-        "anyOf": [
-          {
-            "required": ["certificateStore"]
-          },
-          {
-            "required": ["tokenRegistry"]
-          }
-        ]
-      },
+      "required": ["name", "identityProof"],
       "additionalProperties": true
+    },
+    "documentStore": {
+      "allOf": [
+        { "$ref": "#/definitions/issuer" },
+        {
+          "type": "object",
+          "properties": {
+            "documentStore": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$",
+              "description": "Smart contract address of document store"
+            }
+          },
+          "required": ["documentStore"]
+        }
+      ]
     },
     "certificateStore": {
       "type": "object",
@@ -60,44 +61,23 @@
         }
       },
       "required": ["name", "certificateStore"],
-      "not": {
-        "anyOf": [
-          {
-            "required": ["documentStore"]
-          },
-          {
-            "required": ["tokenRegistry"]
-          }
-        ]
-      },
       "additionalProperties": true
     },
     "tokenRegistry": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Issuer's name"
-        },
-        "tokenRegistry": {
-          "type": "string",
-          "pattern": "^0x[a-fA-F0-9]{40}$",
-          "description": "Smart contract address of token registry"
-        },
-        "identityProof": { "$ref": "#/definitions/identityProof" }
-      },
-      "required": ["name", "tokenRegistry", "identityProof"],
-      "not": {
-        "anyOf": [
-          {
-            "required": ["documentStore"]
+      "allOf": [
+        { "$ref": "#/definitions/issuer" },
+        {
+          "type": "object",
+          "properties": {
+            "tokenRegistry": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$",
+              "description": "Smart contract address of token registry"
+            }
           },
-          {
-            "required": ["certificateStore"]
-          }
-        ]
-      },
-      "additionalProperties": true
+          "required": ["tokenRegistry"]
+        }
+      ]
     }
   },
   "type": "object",
@@ -150,6 +130,26 @@
           },
           {
             "$ref": "#/definitions/certificateStore"
+          },
+          {
+            "allOf": [
+              { "$ref": "#/definitions/issuer" },
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": ["certificateStore"]
+                    },
+                    {
+                      "required": ["tokenRegistry"]
+                    },
+                    {
+                      "required": ["documentStore"]
+                    }
+                  ]
+                }
+              }
+            ]
           }
         ]
       },
