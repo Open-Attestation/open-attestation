@@ -12,6 +12,13 @@ export interface Signature {
   merkleRoot: string;
 }
 
+export interface ProofSigningOptions {
+  privateKey: string;
+  verificationMethod: string;
+  type: ProofType;
+  proofPurpose?: ProofPurpose;
+}
+
 export interface ObfuscationMetadata {
   obfuscatedData?: string[];
 }
@@ -29,6 +36,22 @@ export interface WrappedDocument<T = any> {
   data: DeepStringify<T>;
   schema?: string;
   privacy?: ObfuscationMetadata;
+}
+export enum ProofType {
+  EcdsaSecp256k1Signature2019 = "EcdsaSecp256k1Signature2019"
+}
+export enum ProofPurpose {
+  AssertionMethod = "assertionMethod"
+}
+export interface Proof {
+  type: ProofType;
+  created: string;
+  proofPurpose: ProofPurpose;
+  verificationMethod: string;
+  signature: string;
+}
+export interface SignedWrappedDocument<T = any> extends WrappedDocument<T> {
+  proof: Proof;
 }
 
 // feel free to improve, as long as this project compile without changes :)
