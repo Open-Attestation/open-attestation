@@ -27,7 +27,7 @@
     "@context": {
       "type": "array",
       "items": {
-        "type": "string",
+        "type": ["string", "object"],
         "format": "uri"
       },
       "description": "List of URI to determine the terminology used in the verifiable credential as explained by https://www.w3.org/TR/vc-data-model/#contexts"
