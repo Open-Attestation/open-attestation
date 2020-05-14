@@ -3,7 +3,7 @@
 .nyc_output
 yarn-error.log
 yarn.lock
-#/dist
+/dist
 /.idea
 *.iml
 /public

@@ -105,7 +105,6 @@ export async function validateV3<T extends OpenAttestationDocument>(
   await compact(credential, "https://w3id.org/security/v2", {
     expansionMap: info => {
       if (info.unmappedProperty) {
-        console.log(info.unmappedProperty);
         throw new Error(
           'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
         );
