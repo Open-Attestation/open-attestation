@@ -1,8 +1,8 @@
 import * as utils from "./utils";
-import { VerifiableCredential, wrapDocument } from "..";
-import { SchemaId, WrappedDocument } from "../@types/document";
-import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
-import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../__generated__/schemaV3";
+import { VerifiableCredential, wrapDocument } from "../../";
+import { SchemaId, WrappedDocument } from "../../@types/document";
+import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
+import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {

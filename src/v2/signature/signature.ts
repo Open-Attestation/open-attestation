@@ -1,10 +1,10 @@
 import { get } from "lodash";
 import { keccak256 } from "js-sha3";
-import { digestDocument } from "../digest";
-import { MerkleTree } from "./merkle";
-import { hashToBuffer, bufSortJoin } from "../utils";
-import { SchematisedDocument, Signature, WrappedDocument } from "../@types/document";
-import { OpenAttestationDocument } from "../__generated__/schemaV3";
+import { digestDocument } from "../../shared/digest";
+import { MerkleTree } from "../../shared/merkle";
+import { hashToBuffer, bufSortJoin } from "../../shared/utils";
+import { SchematisedDocument, Signature, WrappedDocument } from "../../@types/document";
+import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 
 export const wrap = <T = OpenAttestationDocument>(
   document: SchematisedDocument<T>,

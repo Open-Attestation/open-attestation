@@ -1,5 +1,5 @@
 import { keccak256 } from "js-sha3";
-import { hashArray, hashToBuffer, toBuffer } from "../../utils";
+import { hashArray, hashToBuffer, toBuffer } from "../utils";
 import { checkProof, MerkleTree } from "./merkle";
 
 describe("merkle", () => {

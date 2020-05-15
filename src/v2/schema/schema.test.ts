@@ -13,7 +13,7 @@ describe("schema/v2.0", () => {
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
-  it("should be invalid if identity type is other than DNS-TXT", () => {
+  it("should be invalid if identity type is other than DNS-TXT", async () => {
     expect.assertions(2);
     const document = merge(sampleDoc, {
       issuers: [
@@ -28,7 +28,7 @@ describe("schema/v2.0", () => {
     });
 
     try {
-      wrapDocument(document);
+      await wrapDocument(document);
     } catch (e) {
       expect(e).toHaveProperty("message", "Invalid document");
       expect(e).toHaveProperty(
@@ -84,13 +84,13 @@ describe("schema/v2.0", () => {
   });
 
   describe("issuers", () => {
-    it("should not be valid without identityProof", () => {
+    it("should not be valid without identityProof", async () => {
       expect.assertions(2);
 
       const document = cloneDeep(sampleDoc);
       delete document.issuers[0].identityProof;
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -109,7 +109,7 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid with document with both documentStore and tokenRegistry", () => {
+    it("should not be valid with document with both documentStore and tokenRegistry", async () => {
       expect.assertions(2);
 
       const document = {
@@ -127,7 +127,7 @@ describe("schema/v2.0", () => {
         ]
       };
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -144,7 +144,7 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid with document with both certificateStore and tokenRegistry", () => {
+    it("should not be valid with document with both certificateStore and tokenRegistry", async () => {
       expect.assertions(2);
 
       const document = {
@@ -162,7 +162,7 @@ describe("schema/v2.0", () => {
         ]
       };
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -179,7 +179,7 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid with document with both documentStore and certificateStore", () => {
+    it("should not be valid with document with both documentStore and certificateStore", async () => {
       expect.assertions(2);
 
       const document = {
@@ -197,7 +197,7 @@ describe("schema/v2.0", () => {
         ]
       };
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -214,7 +214,7 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid with invalid documentStore address", () => {
+    it("should not be valid with invalid documentStore address", async () => {
       expect.assertions(2);
 
       const document = {
@@ -231,7 +231,7 @@ describe("schema/v2.0", () => {
         ]
       };
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -248,12 +248,12 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid when issuers is not defined", () => {
+    it("should not be valid when issuers is not defined", async () => {
       expect.assertions(2);
 
       const document = omit(cloneDeep(sampleDoc), "issuers");
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -269,12 +269,12 @@ describe("schema/v2.0", () => {
         ]);
       }
     });
-    it("should not be valid when issuers is an empty array", () => {
+    it("should not be valid when issuers is an empty array", async () => {
       expect.assertions(2);
 
       const document = { ...sampleDoc, issuers: [] };
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -311,12 +311,12 @@ describe("schema/v2.0", () => {
       const wrappedDocument = await wrapDocument(omit(cloneDeep(sampleDoc), "$template"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
-    it("should not be valid if $template does not have name", () => {
+    it("should not be valid if $template does not have name", async () => {
       expect.assertions(2);
 
       const document = omit(cloneDeep(sampleDoc), "$template.name");
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -335,12 +335,12 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid if $template does not have type", () => {
+    it("should not be valid if $template does not have type", async () => {
       expect.assertions(2);
 
       const document = omit(cloneDeep(sampleDoc), "$template.type");
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -359,7 +359,7 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should not be valid with invalid template type", () => {
+    it("should not be valid with invalid template type", async () => {
       expect.assertions(2);
 
       const document = {
@@ -371,7 +371,7 @@ describe("schema/v2.0", () => {
       };
 
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -396,7 +396,7 @@ describe("schema/v2.0", () => {
       const wrappedDocument = await wrapDocument(omit(cloneDeep(sampleDoc), "attachments"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
-    it("should not be valid with invalid file type", () => {
+    it("should not be valid with invalid file type", async () => {
       expect.assertions(2);
 
       const document = {
@@ -410,7 +410,7 @@ describe("schema/v2.0", () => {
         ]
       };
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -426,12 +426,12 @@ describe("schema/v2.0", () => {
         ]);
       }
     });
-    it("should not be valid without attachments filename", () => {
+    it("should not be valid without attachments filename", async () => {
       expect.assertions(2);
 
       const document = omit(cloneDeep(sampleDoc), "attachments[0].filename");
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -447,12 +447,12 @@ describe("schema/v2.0", () => {
         ]);
       }
     });
-    it("should not be valid without attachments data", () => {
+    it("should not be valid without attachments data", async () => {
       expect.assertions(2);
 
       const document = omit(cloneDeep(sampleDoc), "attachments[0].data");
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -468,12 +468,12 @@ describe("schema/v2.0", () => {
         ]);
       }
     });
-    it("should not be valid without attachments type", () => {
+    it("should not be valid without attachments type", async () => {
       expect.assertions(2);
 
       const document = omit(cloneDeep(sampleDoc), "attachments[0].type");
       try {
-        wrapDocument(document);
+        await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [

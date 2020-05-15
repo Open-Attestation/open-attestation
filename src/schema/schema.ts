@@ -1,8 +1,8 @@
 import Ajv from "ajv";
 import { getLogger } from "../logger";
-import openAttestationSchemav2 from "./2.0/schema.json";
-import openAttestationSchemav3 from "./3.0/schema.json";
-import { getData } from "../utils";
+import openAttestationSchemav2 from "../v2/schema/schema.json";
+import openAttestationSchemav3 from "../v3/schema/schema.json";
+import { getData } from "../shared/utils";
 import { SchemaId } from "../@types/document";
 
 const logger = getLogger("validate");

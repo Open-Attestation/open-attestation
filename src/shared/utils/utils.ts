@@ -1,7 +1,7 @@
 import { keccak256 } from "js-sha3";
-import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
-import { OpenAttestationDocument as v3OpenAttestationDocument } from "../__generated__/schemaV3";
-import { WrappedDocument, SchemaId, VerifiableCredential } from "../@types/document";
+import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
+import { OpenAttestationDocument as v3OpenAttestationDocument } from "../../__generated__/schemaV3";
+import { WrappedDocument, SchemaId, VerifiableCredential } from "../../@types/document";
 import { unsaltData } from "../privacy/salt";
 
 export type Hash = string | Buffer;

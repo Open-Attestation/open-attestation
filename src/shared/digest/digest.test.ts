@@ -1,5 +1,5 @@
 import { digestDocument, flattenHashArray } from "./digest";
-import { SchematisedDocument, SchemaId } from "../@types/document";
+import { SchematisedDocument, SchemaId } from "../../@types/document";
 
 describe("digest", () => {
   describe("flattenHashArray", () => {

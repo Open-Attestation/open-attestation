@@ -1,15 +1,15 @@
 import Ajv from "ajv";
-import { digestDocument } from "./digest";
+import { digestDocument } from "./shared/digest";
 import { getSchema, validateSchema as validate } from "./schema";
-import { verify, wrap } from "./signature";
+import { verify, wrap } from "./v2/signature";
 import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./@types/document";
-import { saltData } from "./privacy/salt";
-import * as utils from "./utils";
+import { saltData } from "./shared/privacy/salt";
+import * as utils from "./shared/utils";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
 import { OpenAttestationDocument } from "./__generated__/schemaV3";
-import { obfuscateV3, validateV3, verifyV3, wrapsV3, wrapV3 } from "./signature/signature.v3";
-import { obfuscateDocument } from "./privacy";
+import { obfuscateV3, validateV3, verifyV3, wrapsV3, wrapV3 } from "./v3/signature";
+import { obfuscateDocument } from "./shared/privacy";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
@@ -126,13 +126,13 @@ export function obfuscate(document: any, fields: string[] | string) {
   return document.version === SchemaId.v3 ? obfuscateV3(document, fields) : obfuscateDocument(document, fields);
 }
 
-export { digestDocument } from "./digest";
-export { checkProof, MerkleTree } from "./signature";
-export { obfuscateDocument } from "./privacy";
+export { digestDocument } from "./shared/digest";
+export { checkProof, MerkleTree } from "./shared/merkle";
+export { obfuscateDocument } from "./shared/privacy";
 export { sign } from "./sign";
 export { utils, isSchemaValidationError };
 export * from "./@types/document";
-export * from "./schema/3.0/w3c";
-export { getData } from "./utils"; // keep it to avoid breaking change, moved from privacy to utils
+export * from "./v3/schema/w3c";
+export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };

@@ -1,4 +1,4 @@
-import { Hash, hashArray, toBuffer, hashToBuffer, combineHashBuffers } from "../../utils";
+import { Hash, hashArray, toBuffer, hashToBuffer, combineHashBuffers } from "../utils";
 
 function getNextLayer(elements: Buffer[]) {
   return elements.reduce((layer: Buffer[], element, index, arr) => {

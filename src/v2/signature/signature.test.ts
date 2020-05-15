@@ -1,5 +1,5 @@
 import { wrap, verify } from "./signature";
-import { SchematisedDocument, SchemaId } from "../@types/document";
+import { SchematisedDocument, SchemaId } from "../../@types/document";
 
 const rawDocument: SchematisedDocument = {
   version: SchemaId.v2,

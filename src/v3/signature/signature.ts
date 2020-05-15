@@ -1,8 +1,8 @@
-import { OpenAttestationDocument } from "../__generated__/schemaV3";
-import { bufSortJoin, hashToBuffer, toBuffer } from "../utils";
+import { OpenAttestationDocument } from "../../__generated__/schemaV3";
+import { bufSortJoin, hashToBuffer, toBuffer } from "../../shared/utils";
 import { v4 as uuid } from "uuid";
-import { MerkleTree } from "./merkle";
-import { Salt, VerifiableCredential } from "../@types/document";
+import { MerkleTree } from "../../shared/merkle";
+import { Salt, VerifiableCredential } from "../../@types/document";
 import { cloneDeep, get, sortBy, unset } from "lodash";
 import { keccak256 } from "js-sha3";
 import { compact } from "jsonld";
