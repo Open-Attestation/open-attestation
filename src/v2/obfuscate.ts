@@ -1,7 +1,7 @@
 import { cloneDeep, pick, unset } from "lodash";
-import { flatten } from "../serialize/flatten";
-import { toBuffer } from "../utils";
-import { WrappedDocument } from "../../shared/@types/document";
+import { flatten } from "../shared/serialize/flatten";
+import { toBuffer } from "../shared/utils";
+import { WrappedDocument } from "../shared/@types/document";
 
 export const obfuscateData = (_data: any, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data

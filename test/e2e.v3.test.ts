@@ -69,7 +69,7 @@ const datum = [
 ];
 
 describe("v3 E2E Test Scenarios", () => {
-  describe("Issuing a single documents", () => {
+  describe("Issuing a single document", () => {
     const document = datum[0];
 
     test("fails for malformed data", () => {

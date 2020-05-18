@@ -1,5 +1,7 @@
-import { wrap, verify } from "./signature";
-import { SchematisedDocument, SchemaId } from "../../shared/@types/document";
+import { verify } from "./verify";
+import { wrap } from "./wrap";
+
+import { SchematisedDocument, SchemaId } from "../shared/@types/document";
 
 const rawDocument: SchematisedDocument = {
   version: SchemaId.v2,

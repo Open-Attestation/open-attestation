@@ -2,7 +2,7 @@ import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
 import { OpenAttestationDocument as v3OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { WrappedDocument, SchemaId, VerifiableCredential } from "../../shared/@types/document";
-import { unsaltData } from "../privacy/salt";
+import { unsaltData } from "../../v2/salt";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
