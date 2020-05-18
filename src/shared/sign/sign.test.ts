@@ -1,7 +1,8 @@
 import { sign as EcdsaSecp256k1Signature2019 } from "./ecdsa-secp256k1-signature-2019";
 import { ethers } from "ethers";
-import sampleDoc from "../v2/schema/sample-document.json";
-import { ProofType, wrapDocument } from "../index";
+import sampleDoc from "../../v2/schema/sample-document.json";
+import { ProofType } from "../@types/document";
+import { wrapDocument } from "../..";
 
 describe("proofs", () => {
   describe("EcdsaSecp256k1Signature2019", () => {

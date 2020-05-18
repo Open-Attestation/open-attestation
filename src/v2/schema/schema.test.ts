@@ -5,7 +5,7 @@ import { cloneDeep, merge, omit } from "lodash";
 import sampleToken from "./sample-token.json";
 import sampleDoc from "./sample-document.json";
 import { wrapDocument } from "../../index";
-import { SchemaId } from "../../@types/document";
+import { SchemaId } from "../../shared/@types/document";
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", async () => {

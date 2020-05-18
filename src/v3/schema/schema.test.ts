@@ -3,7 +3,7 @@
 import { wrapDocument } from "../../index";
 import { $id } from "./schema.json";
 import sample from "./sample-document.json";
-import { SchemaId } from "../../@types/document";
+import { SchemaId } from "../../shared/@types/document";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 
 const sampleDoc = sample as OpenAttestationDocument;

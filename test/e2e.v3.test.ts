@@ -1,12 +1,16 @@
 import { obfuscate, validateSchema, verifySignature, wrapDocument, wrapDocuments } from "../src";
 import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../src/__generated__/schemaV3";
-import { SchemaId } from "../src/@types/document";
+import { SchemaId } from "../src/shared/@types/document";
 
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
 
 const openAttestationData: OpenAttestationDocument = {
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
+  issuanceDate: "2010-01-01T19:23:24Z",
+  credentialSubject: {
+
+  },
   name: "document owner name",
   template: {
     name: "any",
@@ -77,8 +81,8 @@ describe("v3 E2E Test Scenarios", () => {
       expect(action).toThrow("Invalid document");
     });
 
-    test("creates a wrapped document", () => {
-      const wrappedDocument = wrapDocument(document, {
+    test("creates a wrapped document", async () => {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -90,8 +94,8 @@ describe("v3 E2E Test Scenarios", () => {
       expect(wrappedDocument.proof.signature.proof).toEqual([]);
       expect(wrappedDocument.proof.signature.merkleRoot).toBe(wrappedDocument.proof.signature.targetHash);
     });
-    test("creates a wrapped document with W3C-DID IdentityProof", () => {
-      const wrappedDocumentWithW3CDID = wrapDocument(openAttestationDataWithW3CDID, {
+    test("creates a wrapped document with W3C-DID IdentityProof", async  () => {
+      const wrappedDocumentWithW3CDID = await wrapDocument(openAttestationDataWithW3CDID, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -125,7 +129,7 @@ describe("v3 E2E Test Scenarios", () => {
     });
 
     test("does not allow for the same merkle root to be generated", async () => {
-      const wrappedDocument = wrapDocument(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });

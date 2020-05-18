@@ -1,5 +1,5 @@
-import { WrappedDocument, ProofSigningOptions, SignedWrappedDocument } from "./@types/document";
-import { sign as EcdsaSecp256k1Signature2019 } from "./sign/ecdsa-secp256k1-signature-2019";
+import { WrappedDocument, ProofSigningOptions, SignedWrappedDocument } from "./shared/@types/document";
+import { sign as EcdsaSecp256k1Signature2019 } from "./shared/sign/ecdsa-secp256k1-signature-2019";
 
 export async function sign<T = any>(
   document: WrappedDocument<T>,

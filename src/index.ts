@@ -2,7 +2,7 @@ import Ajv from "ajv";
 import { digestDocument } from "./shared/digest";
 import { getSchema, validateSchema as validate } from "./schema";
 import { verify, wrap } from "./v2/signature";
-import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./@types/document";
+import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./shared/@types/document";
 import { saltData } from "./shared/privacy/salt";
 import * as utils from "./shared/utils";
 import * as v2 from "./__generated__/schemaV2";
@@ -131,7 +131,7 @@ export { checkProof, MerkleTree } from "./shared/merkle";
 export { obfuscateDocument } from "./shared/privacy";
 export { sign } from "./sign";
 export { utils, isSchemaValidationError };
-export * from "./@types/document";
+export * from "./shared/@types/document";
 export * from "./v3/schema/w3c";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };

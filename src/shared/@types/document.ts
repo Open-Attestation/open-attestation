@@ -1,4 +1,4 @@
-import { OpenAttestationDocument, Proof as ProofV3 } from "../__generated__/schemaV3";
+import { OpenAttestationDocument, Proof as ProofV3 } from "../../__generated__/schemaV3";
 
 export type SignatureProofAlgorithm = "SHA3MerkleProof";
 
