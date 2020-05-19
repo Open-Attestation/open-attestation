@@ -4,7 +4,6 @@ import openAttestationSchemav2 from "../../v2/schema/schema.json";
 import openAttestationSchemav3 from "../../v3/schema/schema.json";
 import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
-
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { VerifiableCredential } from "../../shared/@types/document";
 import { compact } from "jsonld";
@@ -61,9 +60,8 @@ const isValidRFC3339 = (str: any) => {
   return rfc3339.test(str);
 };
 
-/* Based on https://tools.ietf.org/html/rfc3986 */
+/* Based on https://tools.ietf.org/html/rfc3986 and https://stackoverflow.com/a/37249519/950462 */
 const uri = "(?:[A-Za-z][A-Za-z0-9+.-]*:\/{2})?(?:(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})+(?::([A-Za-z0-9-._~]?|[%][A-Fa-f0-9]{2})+)?@)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.){1,126}[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?::[0-9]+)?(?:\/(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})*)*(?:\\?(?:[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)(?:&|;[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)*)?";
-
 const rfc3986 = new RegExp(uri);
 
 const isValidRFC3986 = (str: any) => {
@@ -73,21 +71,23 @@ const isValidRFC3986 = (str: any) => {
 export async function validateW3C<T extends OpenAttestationDocument>(
   credential: VerifiableCredential<T>
 ): Promise<void> {
-  // ensure first context is 'https://www.w3.org/2018/credentials/v1'
+  // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (Array.isArray(credential["@context"]) && credential["@context"][0] !== "https://www.w3.org/2018/credentials/v1") {
     throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts.");
   }
-  // TODO how to ensure issuer is a valid RFC 3986 URI
+  
+  // ensure issuer is a valid URI according to RFC3986 IF it is a string
+  // TODO check if credential.issuer is string first, as it can be an object containing an id property
   const issuerId = getId(credential.issuer);
   if (!isValidRFC3986(issuerId)) {
-    throw new Error(`Property \`issuer\` id must be a a valid RFC 3986 URI`);
+    throw new Error("Property `issuer` id must be a a valid RFC 3986 URI");
   }
 
-  // ensure issuanceDate is a valid RFC3339 date
+  // ensure issuanceDate is a valid RFC3339 date, see https://www.w3.org/TR/vc-data-model/#issuance-date
   if (!isValidRFC3339(credential.issuanceDate)) {
     throw new Error("Property `issuanceDate` must be a a valid RFC 3339 date");
   }
-  // ensure expirationDate is a valid RFC3339 date
+  // ensure expirationDate is a valid RFC3339 date, see https://www.w3.org/TR/vc-data-model/#expiration
   if (credential.expirationDate && !isValidRFC3339(credential.expirationDate)) {
     throw new Error("Property `expirationDate` must be a a valid RFC 3339 date");
   }
