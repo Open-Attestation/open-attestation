@@ -4,7 +4,7 @@ import {
   SignedWrappedDocument,
   ProofPurpose,
   ProofType
-} from "../@types/document";
+} from "../../shared/@types/document";
 import { ethers } from "ethers";
 const type = ProofType.EcdsaSecp256k1Signature2019;
 

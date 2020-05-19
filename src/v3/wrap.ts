@@ -21,7 +21,7 @@ const deepMap = (value: any, path: string): Salt[] => {
 const salt = (data: any) => deepMap(data, "");
 
 // Wrap a single OpenAttestation document in v3 format.
-export const wrapV3 = <T extends OpenAttestationDocument>(document: any): VerifiableCredential<T> => {
+export const wrap = <T extends OpenAttestationDocument>(document: any): VerifiableCredential<T> => {
   document["@context"].push(
     "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld"
   );
@@ -53,7 +53,7 @@ export const wrapV3 = <T extends OpenAttestationDocument>(document: any): Verifi
 };
 
 // Wrap multiple OpenAttestation documents in v3 format.
-export const wrapsV3 = <T extends OpenAttestationDocument>(documents: any[]): VerifiableCredential<T>[] => {
+export const wraps = <T extends OpenAttestationDocument>(documents: any[]): VerifiableCredential<T>[] => {
   const salts = documents.map(document => {
     return salt(document);
   });

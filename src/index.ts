@@ -12,7 +12,7 @@ import { OpenAttestationDocument } from "./__generated__/schemaV3";
 import { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
 import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
 import { verifyV3 } from "./v3/verify";
-import { wrapV3, wrapsV3 } from "./v3/wrap";
+import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
@@ -55,8 +55,6 @@ export async function wrapDocument<T extends OpenAttestationDocument>(
   options?: WrapDocumentOptionV3
 ): Promise<VerifiableCredential<T>>;
 export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentOption): Promise<any> {
-
-  // If it's OpenAttestation v3
   if (options?.version === SchemaId.v3) {
     const wrappedDocument = options.externalSchemaId
       ? wrapV3({ schema: options.externalSchemaId, version: SchemaId.v3, ...data })
@@ -70,7 +68,6 @@ export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentO
     return wrappedDocument;
   }
 
-  // If it's OpenAttestation v2
   const document: SchematisedDocument = createDocument(data, options);
   const errors = validate(document, getSchema(options?.version ?? defaultVersion));
   if (errors.length > 0) {
@@ -85,7 +82,6 @@ export function wrapDocuments<T extends OpenAttestationDocument>(
   options?: WrapDocumentOptionV3
 ): VerifiableCredential<T>[];
 export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): any {
-  // If it's OpenAttestation v3
   if (options?.version === SchemaId.v3) {
     const documents = dataArray.map(data => {
       return options.externalSchemaId
@@ -102,7 +98,6 @@ export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): 
     return wrappedDocument;
   }
 
-  // If it's OpenAttestation v2
   const documents = dataArray.map(data => createDocument(data, options));
   documents.forEach(document => {
     const errors = validate(document, getSchema(options?.version ?? defaultVersion));
@@ -141,7 +136,7 @@ export { checkProof, MerkleTree } from "./shared/merkle";
 // export { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
 // export { obfuscateDocument as obfuscateDocumentV3, validate as validateV3 } from "./v3/obfuscate";
 export { obfuscate as obfuscateDocument }
-export { sign } from "./sign";
+export { sign } from "./v2/sign";
 export { utils, isSchemaValidationError };
 export * from "./shared/@types/document";
 export * from "./v3/schema/w3c";

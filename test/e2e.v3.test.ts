@@ -5,6 +5,7 @@ import { SchemaId } from "../src/shared/@types/document";
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
 
 const openAttestationData: OpenAttestationDocument = {
+  "@context": ["https://www.w3.org/2018/credentials/v1"],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
   issuanceDate: "2010-01-01T19:23:24Z",
