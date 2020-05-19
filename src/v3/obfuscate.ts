@@ -1,8 +1,7 @@
 import { OpenAttestationDocument } from "../__generated__/schemaV3";
 import { toBuffer } from "../shared/utils";
-import { Salt, VerifiableCredential } from "../shared/@types/document";
+import { VerifiableCredential } from "../shared/@types/document";
 import { cloneDeep, get, unset } from "lodash";
-import { compact } from "jsonld";
 
 export const obfuscateData = (_data: VerifiableCredential<OpenAttestationDocument>, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data

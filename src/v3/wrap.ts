@@ -1,12 +1,9 @@
 import { OpenAttestationDocument } from "../__generated__/schemaV3";
-import { bufSortJoin, hashToBuffer, toBuffer } from "../shared/utils";
+import { hashToBuffer } from "../shared/utils";
 import { v4 as uuid } from "uuid";
 import { MerkleTree } from "../shared/merkle";
 import { Salt, VerifiableCredential } from "../shared/@types/document";
-import { cloneDeep, get, sortBy, unset } from "lodash";
-import { keccak256 } from "js-sha3";
-import { compact } from "jsonld";
-import { digestDocumentV3 } from "../shared/digest"
+import { digestDocumentV3 } from "../shared/digest";
 
 const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
