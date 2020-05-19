@@ -17,7 +17,7 @@ export const verifyV3 = <T extends VerifiableCredential<OpenAttestationDocument>
     ...document,
     proof: {
       ...document.proof,
-      sinature: undefined
+      signature: undefined
     }
   };
   const digest = digestDocumentV3(bla, document.proof.signature.salts, document.proof.signature.privacy.obfuscatedData);
