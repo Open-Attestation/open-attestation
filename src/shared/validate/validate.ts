@@ -60,16 +60,26 @@ const rfc3339 = new RegExp("".concat(fullDate.source, "[ tT]").concat(fullTime.s
 const isValidRFC3339 = (str: any) => {
   return rfc3339.test(str);
 };
+
+/* Based on https://tools.ietf.org/html/rfc3986 */
+const uri = "(?:[A-Za-z][A-Za-z0-9+.-]*:\/{2})?(?:(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})+(?::([A-Za-z0-9-._~]?|[%][A-Fa-f0-9]{2})+)?@)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.){1,126}[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?::[0-9]+)?(?:\/(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})*)*(?:\\?(?:[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)(?:&|;[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)*)?";
+
+const rfc3986 = new RegExp(uri);
+
+const isValidRFC3986 = (str: any) => {
+  return rfc3986.test(str)
+}
+
 export async function validateW3C<T extends OpenAttestationDocument>(
   credential: VerifiableCredential<T>
 ): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1'
   if (Array.isArray(credential["@context"]) && credential["@context"][0] !== "https://www.w3.org/2018/credentials/v1") {
-    throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the " + "list of contexts.");
+    throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts.");
   }
   // TODO how to ensure issuer is a valid RFC 3986 URI
   const issuerId = getId(credential.issuer);
-  if (!issuerId.includes(":")) {
+  if (!isValidRFC3986(issuerId)) {
     throw new Error(`Property \`issuer\` id must be a a valid RFC 3986 URI`);
   }
 

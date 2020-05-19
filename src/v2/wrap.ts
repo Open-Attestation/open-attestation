@@ -1,8 +1,8 @@
-import { digestDocumentV2 } from "../shared/digest";
+import { digestDocument  as digestDocumentV2 } from "./digest";
 import { MerkleTree } from "../shared/merkle";
 import { hashToBuffer } from "../shared/utils";
 import { SchematisedDocument, Signature, WrappedDocument } from "../shared/@types/document";
-import { OpenAttestationDocument } from "../__generated__/schemaV3";
+import { OpenAttestationDocument } from "../__generated__/schemaV2";
 
 export const wrap = <T = OpenAttestationDocument>(
   document: SchematisedDocument<T>,

@@ -1,8 +1,11 @@
 import Ajv from "ajv";
-import { digestDocumentV2, digestDocumentV3 } from "./shared/digest";
+import { digestDocument as digestDocumentV2 } from "./v2/digest";
+import { digestDocument as digestDocumentV3 } from "./v3/digest";
 import { getSchema, validateSchema as validate, validateW3C } from "./shared/validate";
 import { verify } from "./v2/verify";
+import { verifyV3 } from "./v3/verify";
 import { wrap } from "./v2/wrap";
+import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
 import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./shared/@types/document";
 import { saltData } from "./v2/salt";
 import * as utils from "./shared/utils";
@@ -11,8 +14,6 @@ import * as v3 from "./__generated__/schemaV3";
 import { OpenAttestationDocument } from "./__generated__/schemaV3";
 import { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
 import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
-import { verifyV3 } from "./v3/verify";
-import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
@@ -131,7 +132,8 @@ export function obfuscate(document: any, fields: string[] | string) {
   return document.version === SchemaId.v3 ? obfuscateDocumentV3(document, fields) : obfuscateDocumentV2(document, fields);
 }
 
-export { digestDocumentV2, digestDocumentV3 } from "./shared/digest";
+export { digestDocument as digestDocumentV2 } from "./v2/digest";
+export { digestDocument as digestDocumentV3 } from "./v3/digest";
 export { checkProof, MerkleTree } from "./shared/merkle";
 // export { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
 // export { obfuscateDocument as obfuscateDocumentV3, validate as validateV3 } from "./v3/obfuscate";

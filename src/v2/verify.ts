@@ -1,6 +1,6 @@
 import { get } from "lodash";
 import { keccak256 } from "js-sha3";
-import { digestDocumentV2 } from "../shared/digest";
+import { digestDocument as digestDocumentV2 } from "./digest";
 import { hashToBuffer, bufSortJoin } from "../shared/utils";
 import { WrappedDocument } from "../shared/@types/document";
 

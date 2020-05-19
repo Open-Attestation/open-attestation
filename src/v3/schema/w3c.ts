@@ -1,4 +1,4 @@
-import { WrappedDocument } from "../../@types/document";
+import { WrappedDocument } from "../../shared/@types/document";
 import { getData } from "../../shared/utils";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 

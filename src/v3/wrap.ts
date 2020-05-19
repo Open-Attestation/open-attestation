@@ -3,7 +3,7 @@ import { hashToBuffer } from "../shared/utils";
 import { v4 as uuid } from "uuid";
 import { MerkleTree } from "../shared/merkle";
 import { Salt, VerifiableCredential } from "../shared/@types/document";
-import { digestDocumentV3 } from "../shared/digest";
+import { digestDocument as digestDocumentV3 } from "../v3/digest";
 
 const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
@@ -20,7 +20,10 @@ const deepMap = (value: any, path: string): Salt[] => {
 
 const salt = (data: any) => deepMap(data, "");
 
-// Wrap a single OpenAttestation document in v3 format.
+/**
+ * Wrap a single OpenAttestation document in v3 format.
+ * @param document 
+ */
 export const wrap = <T extends OpenAttestationDocument>(document: any): VerifiableCredential<T> => {
   document["@context"].push(
     "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld"
@@ -52,7 +55,10 @@ export const wrap = <T extends OpenAttestationDocument>(document: any): Verifiab
   };
 };
 
-// Wrap multiple OpenAttestation documents in v3 format.
+/**
+ * Wrap multiple OpenAttestation documents in v3 format.
+ * @param documents 
+ */
 export const wraps = <T extends OpenAttestationDocument>(documents: any[]): VerifiableCredential<T>[] => {
   const salts = documents.map(document => {
     return salt(document);

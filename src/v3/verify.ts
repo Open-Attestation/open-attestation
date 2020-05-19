@@ -2,7 +2,7 @@ import { OpenAttestationDocument } from "../__generated__/schemaV3";
 import { bufSortJoin, hashToBuffer } from "../shared/utils";
 import { VerifiableCredential } from "../shared/@types/document";
 import { keccak256 } from "js-sha3";
-import { digestDocumentV3 } from "../shared/digest";
+import { digestDocument as digestDocumentV3 } from "./digest";
 
 export const verifyV3 = <T extends VerifiableCredential<OpenAttestationDocument>>(
   document: T
