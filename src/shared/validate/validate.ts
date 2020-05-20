@@ -61,12 +61,12 @@ const isValidRFC3339 = (str: any) => {
 };
 
 /* Based on https://tools.ietf.org/html/rfc3986 and https://stackoverflow.com/a/37249519/950462 */
-const uri = "(?:[A-Za-z][A-Za-z0-9+.-]*:\/{2})?(?:(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})+(?::([A-Za-z0-9-._~]?|[%][A-Fa-f0-9]{2})+)?@)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.){1,126}[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?::[0-9]+)?(?:\/(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})*)*(?:\\?(?:[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)(?:&|;[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)*)?";
+const uri = `(?:[A-Za-z][A-Za-z0-9+.-]*:\/{2})?(?:(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})+(?::([A-Za-z0-9-._~]?|[%][A-Fa-f0-9]{2})+)?@)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.){1,126}[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?::[0-9]+)?(?:\/(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})*)*(?:\\?(?:[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)(?:&|;[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)*)?`;
 const rfc3986 = new RegExp(uri);
 
 const isValidRFC3986 = (str: any) => {
-  return rfc3986.test(str)
-}
+  return rfc3986.test(str);
+};
 
 export async function validateW3C<T extends OpenAttestationDocument>(
   credential: VerifiableCredential<T>
@@ -75,7 +75,7 @@ export async function validateW3C<T extends OpenAttestationDocument>(
   if (Array.isArray(credential["@context"]) && credential["@context"][0] !== "https://www.w3.org/2018/credentials/v1") {
     throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts.");
   }
-  
+
   // ensure issuer is a valid URI according to RFC3986 IF it is a string
   // TODO check if credential.issuer is string first, as it can be an object containing an id property
   const issuerId = getId(credential.issuer);

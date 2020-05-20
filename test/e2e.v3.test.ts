@@ -9,9 +9,7 @@ const openAttestationData: OpenAttestationDocument = {
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
   issuanceDate: "2010-01-01T19:23:24Z",
-  credentialSubject: {
-
-  },
+  credentialSubject: {},
   name: "document owner name",
   template: {
     name: "any",
@@ -95,7 +93,7 @@ describe("v3 E2E Test Scenarios", () => {
       expect(wrappedDocument.proof.signature.proof).toEqual([]);
       expect(wrappedDocument.proof.signature.merkleRoot).toBe(wrappedDocument.proof.signature.targetHash);
     });
-    test("creates a wrapped document with W3C-DID IdentityProof", async  () => {
+    test("creates a wrapped document with W3C-DID IdentityProof", async () => {
       const wrappedDocumentWithW3CDID = await wrapDocument(openAttestationDataWithW3CDID, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3

@@ -22,7 +22,7 @@ const salt = (data: any) => deepMap(data, "");
 
 /**
  * Wrap a single OpenAttestation document in v3 format.
- * @param document 
+ * @param document
  */
 export const wrap = <T extends OpenAttestationDocument>(document: any): VerifiableCredential<T> => {
   document["@context"].push(
@@ -57,7 +57,7 @@ export const wrap = <T extends OpenAttestationDocument>(document: any): Verifiab
 
 /**
  * Wrap multiple OpenAttestation documents in v3 format.
- * @param documents 
+ * @param documents
  */
 export const wraps = <T extends OpenAttestationDocument>(documents: any[]): VerifiableCredential<T>[] => {
   const salts = documents.map(document => {
@@ -94,3 +94,5 @@ export const wraps = <T extends OpenAttestationDocument>(documents: any[]): Veri
     };
   });
 };
+
+export const saltData = (data: any) => salt(data);
