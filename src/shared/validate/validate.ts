@@ -6,7 +6,7 @@ import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { VerifiableCredential } from "../../shared/@types/document";
-import { compact } from "jsonld";
+import { compact, expand } from "jsonld";
 
 const logger = getLogger("validate");
 
@@ -15,6 +15,7 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
     throw new Error("No schema validator provided");
   }
   const valid = validator(document.version === SchemaId.v3 ? document : getData(document));
+  // console.log(validator.errors);
   if (!valid) {
     logger.debug("There are errors in the document");
     logger.debug(validator.errors);
@@ -92,15 +93,21 @@ export async function validateW3C<T extends OpenAttestationDocument>(
     throw new Error("Property `expirationDate` must be a a valid RFC 3339 date");
   }
 
-  await compact(credential, "https://w3id.org/security/v2", {
-    expansionMap: info => {
-      if (info.unmappedProperty) {
-        throw new Error(
-          'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
-        );
-      }
-    }
-  });
+  // const expanded = await expand(credential);
+  // console.log(JSON.stringify(expanded, null, 2));
+
+  // console.log(credential);
+
+  // await compact(credential, "https://w3id.org/security/v2", {
+  //   expansionMap: info => {
+  //     // console.log(info);
+  //     if (info.unmappedProperty) {
+  //       throw new Error(
+  //         'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
+  //       );
+  //     }
+  //   }
+  // });
 }
 
 const ajv = new Ajv({ allErrors: true });

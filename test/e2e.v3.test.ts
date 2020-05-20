@@ -5,12 +5,18 @@ import { SchemaId } from "../src/shared/@types/document";
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
 
 const openAttestationData: OpenAttestationDocument = {
-  "@context": ["https://www.w3.org/2018/credentials/v1"],
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
   issuanceDate: "2010-01-01T19:23:24Z",
-  credentialSubject: {},
   name: "document owner name",
+  credentialSubject: {
+    id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    degree: {
+      type: "BachelorDegree",
+      name: "Bachelor of Science in Mechanical Engineering"
+    }
+  },
   template: {
     name: "any",
     type: TemplateType.EmbeddedRenderer,
@@ -71,13 +77,13 @@ describe("v3 E2E Test Scenarios", () => {
   describe("Issuing a single document", () => {
     const document = datum[0];
 
-    test("fails for malformed data", () => {
+    test("fails for malformed data", async () => {
       const malformedData = {
         ...document,
         issuer: undefined
       };
-      const action = () => wrapDocument(malformedData);
-      expect(action).toThrow("Invalid document");
+
+      await expect(wrapDocument(malformedData)).rejects.toThrow("Invalid document");
     });
 
     test("creates a wrapped document", async () => {
@@ -111,16 +117,16 @@ describe("v3 E2E Test Scenarios", () => {
         openAttestationDataWithW3CDID.proof.identity.location
       );
     });
-    test("checks that document is wrapped correctly", () => {
-      const wrappedDocument = wrapDocument(document, {
+    test("checks that document is wrapped correctly", async () => {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
       const verified = verifySignature(wrappedDocument);
       expect(verified).toBe(true);
     });
-    test("checks that document conforms to the schema", () => {
-      const wrappedDocument = wrapDocument(document, {
+    test("checks that document conforms to the schema", async () => {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -160,7 +166,7 @@ describe("v3 E2E Test Scenarios", () => {
       const malformedDatum = [
         ...datum,
         {
-          cow: "moo"
+          laurent: "task force, assemble!!"
         }
       ];
       const action = () => wrapDocuments(malformedDatum);
@@ -211,6 +217,7 @@ describe("v3 E2E Test Scenarios", () => {
     });
   });
   describe("validate", () => {
+    const document = datum[0];
     test("should throw an error if document id is not a valid open attestation schema version", () => {
       const action = () =>
         validateSchema({
@@ -252,10 +259,16 @@ describe("v3 E2E Test Scenarios", () => {
           schema: "http://example.com/schemaV3.json",
           reference: "reference",
           name: "name",
+          issuanceDate: "2010-01-01T19:23:24Z",
           validFrom: "2010-01-01T19:23:24Z",
           issuer: {
             id: "https://example.com",
             name: "issuer.name"
+          },
+          //type: ["VerifiableCredential", "UniversityDegreeCredential"],
+          credentialSubject: {
+            id: "did:example:1234",
+            name: "Example Name"
           },
           template: {
             name: "template.name",
@@ -287,10 +300,16 @@ describe("v3 E2E Test Scenarios", () => {
           schema: "http://example.com/schemaV3.json",
           reference: "reference",
           name: "name",
+          issuanceDate: "2010-01-01T19:23:24Z",
           validFrom: "2010-01-01T19:23:24Z",
+          // TODO: no type and somehow test still pass?
           issuer: {
             id: "https://example.com",
             name: "issuer.name"
+          },
+          credentialSubject: {
+            id: "did:example:1234",
+            name: "Example Name"
           },
           template: {
             name: "template.name",
@@ -315,7 +334,7 @@ describe("v3 E2E Test Scenarios", () => {
         })
       ).toStrictEqual(true);
     });
-    test("should return false when document is invalid due to no W3D-DID location", () => {
+    test("should return false when document is invalid due to no W3C-DID location", () => {
       expect(
         validateSchema({
           version: SchemaId.v3,

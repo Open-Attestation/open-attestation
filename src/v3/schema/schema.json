@@ -3,7 +3,6 @@
   "$id": "https://schema.openattestation.com/3.0/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-
   "definitions": {
     "issuer": {
       "type": "object",
@@ -18,16 +17,21 @@
           "description": "Issuer's name"
         }
       },
-      "required": ["id", "name"],
+      "required": [
+        "id",
+        "name"
+      ],
       "additionalProperties": false
     }
   },
-
   "properties": {
     "@context": {
       "type": "array",
       "items": {
-        "type": ["string", "object"],
+        "type": [
+          "string",
+          "object"
+        ],
         "format": "uri"
       },
       "description": "List of URI to determine the terminology used in the verifiable credential as explained by https://www.w3.org/TR/vc-data-model/#contexts"
@@ -82,13 +86,14 @@
     },
     "issuer": {
       "oneOf": [
-        { "$ref": "#/definitions/issuer" },
+        {
+          "$ref": "#/definitions/issuer"
+        },
         {
           "type": "string"
         }
       ]
     },
-
     "template": {
       "type": "object",
       "properties": {
@@ -99,7 +104,9 @@
         "type": {
           "type": "string",
           "description": "Type of renderer template",
-          "enum": ["EMBEDDED_RENDERER"]
+          "enum": [
+            "EMBEDDED_RENDERER"
+          ]
         },
         "url": {
           "type": "string",
@@ -107,7 +114,11 @@
           "pattern": "^(https?)://"
         }
       },
-      "required": ["name", "type", "url"],
+      "required": [
+        "name",
+        "type",
+        "url"
+      ],
       "additionalProperties": false
     },
     "proof": {
@@ -116,12 +127,17 @@
         "type": {
           "type": "string",
           "description": "Proof method name as explained by https://www.w3.org/TR/vc-data-model/#types",
-          "enum": ["OpenAttestationSignature2018"]
+          "enum": [
+            "OpenAttestationSignature2018"
+          ]
         },
         "method": {
           "type": "string",
           "description": "Proof open attestation method",
-          "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE"]
+          "enum": [
+            "TOKEN_REGISTRY",
+            "DOCUMENT_STORE"
+          ]
         },
         "value": {
           "description": "Proof value for issuer(s)",
@@ -132,7 +148,10 @@
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["DNS-TXT", "W3C-DID"]
+              "enum": [
+                "DNS-TXT",
+                "W3C-DID"
+              ]
             },
             "location": {
               "type": "string",
@@ -140,10 +159,18 @@
             }
           },
           "additionalProperties": false,
-          "required": ["type", "location"]
+          "required": [
+            "type",
+            "location"
+          ]
         }
       },
-      "required": ["type", "method", "value", "identity"],
+      "required": [
+        "type",
+        "method",
+        "value",
+        "identity"
+      ],
       "additionalProperties": true
     },
     "recipient": {
@@ -177,19 +204,33 @@
           "mimeType": {
             "type": "string",
             "description": "Mime-type of attachment",
-            "enum": ["application/pdf", "image/png", "image/jpeg"]
+            "enum": [
+              "application/pdf",
+              "image/png",
+              "image/jpeg"
+            ]
           },
           "data": {
             "type": "string",
             "description": "Base64 encoding of attachment"
           }
         },
-        "required": ["filename", "mimeType", "data", "type"],
+        "required": [
+          "filename",
+          "mimeType",
+          "data",
+          "type"
+        ],
         "additionalProperties": false
       }
     }
   },
-
-  "required": ["issuer", "template", "proof", "credentialSubject", "issuanceDate"],
+  "required": [
+    "issuer",
+    "template",
+    "proof",
+    "credentialSubject",
+    "issuanceDate"
+  ],
   "additionalProperties": true
 }
