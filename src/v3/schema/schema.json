@@ -58,7 +58,10 @@
       "description": "The date and time when a credential becomes valid"
     },
     "type": {
-      "type": "array",
+      "type": [
+        "array",
+        "string"
+      ],
       "items": {
         "type": "string"
       },
@@ -230,7 +233,8 @@
     "template",
     "proof",
     "credentialSubject",
-    "issuanceDate"
+    "issuanceDate",
+    "type"
   ],
   "additionalProperties": true
 }
