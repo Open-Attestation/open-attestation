@@ -26,7 +26,9 @@ const salt = (data: any) => deepMap(data, "");
  */
 export const wrap = <T extends OpenAttestationDocument>(document: any): VerifiableCredential<T> => {
   document["@context"].push(
-    "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld"
+    // "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld",
+    "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/66958a4c57197422e6fc0ad1828571c126532c3c/OpenAttestationv3.json",
+    "https://gist.githubusercontent.com/gjj/022965296cf08285ff5dfcf6fa831602/raw/7bdee16db180da97b9b51e4933a3ddf5eda98bce/CustomAttributes.json"
   );
   const salts = salt(document);
   const digest = digestDocumentV3(document, salts, []);

@@ -175,12 +175,13 @@ describe("Util Functions", () => {
     test("should return all issuers address for v3 document", async () => {
       const document: VerifiableCredential<OpenAttestationDocument> = await wrapDocument(
         {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
+          "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
           issuer: {
             name: "name",
             id: "https://example.com"
           },
           issuanceDate: "2010-01-01T19:23:24Z",
+          type: ["VerifiableCredential", "UniversityDegreeCredential"],
           credentialSubject: {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
             degree: {

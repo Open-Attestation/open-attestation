@@ -6,7 +6,7 @@ import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { VerifiableCredential } from "../../shared/@types/document";
-import { compact, expand } from "jsonld";
+import { compact } from "jsonld";
 
 const logger = getLogger("validate");
 
@@ -73,7 +73,10 @@ export async function validateW3C<T extends OpenAttestationDocument>(
   credential: VerifiableCredential<T>
 ): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
-  if (Array.isArray(credential["@context"]) && credential["@context"][0] !== "https://www.w3.org/2018/credentials/v1") {
+  if (
+    !Array.isArray(credential["@context"]) ||
+    (Array.isArray(credential["@context"]) && credential["@context"][0] !== "https://www.w3.org/2018/credentials/v1")
+  ) {
     throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts.");
   }
 
@@ -81,16 +84,16 @@ export async function validateW3C<T extends OpenAttestationDocument>(
   // TODO check if credential.issuer is string first, as it can be an object containing an id property
   const issuerId = getId(credential.issuer);
   if (!isValidRFC3986(issuerId)) {
-    throw new Error("Property `issuer` id must be a a valid RFC 3986 URI");
+    throw new Error("Property `issuer` id must be a valid RFC 3986 URI");
   }
 
   // ensure issuanceDate is a valid RFC3339 date, see https://www.w3.org/TR/vc-data-model/#issuance-date
   if (!isValidRFC3339(credential.issuanceDate)) {
-    throw new Error("Property `issuanceDate` must be a a valid RFC 3339 date");
+    throw new Error("Property `issuanceDate` must be a valid RFC 3339 date");
   }
   // ensure expirationDate is a valid RFC3339 date, see https://www.w3.org/TR/vc-data-model/#expiration
   if (credential.expirationDate && !isValidRFC3339(credential.expirationDate)) {
-    throw new Error("Property `expirationDate` must be a a valid RFC 3339 date");
+    throw new Error("Property `expirationDate` must be a valid RFC 3339 date");
   }
 
   // const expanded = await expand(credential);
@@ -98,16 +101,44 @@ export async function validateW3C<T extends OpenAttestationDocument>(
 
   // console.log(credential);
 
-  // await compact(credential, "https://w3id.org/security/v2", {
-  //   expansionMap: info => {
-  //     // console.log(info);
-  //     if (info.unmappedProperty) {
-  //       throw new Error(
-  //         'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
-  //       );
-  //     }
+  // Does it have to be https://w3id.org/security/v2?
+
+  // https://www.w3.org/TR/vc-data-model/#types
+  // console.log(Array.isArray(!("VerifiableCredential" in credential.type)));
+
+  // if ("type" in credential) {
+  //   console.log("credential has type");
+  // }
+  // if (Array.isArray(credential.type)) {
+  //   console.log("credential has array type");
+  // }
+  // if (credential.type != undefined) {
+  //   console.log();
+  //   if ("VerifiableCredential" in credential.type) {
+  //     console.log("credential has VerifiableCredential in type");
   //   }
-  // });
+  // }
+  if (credential.type && Array.isArray(credential.type) && !credential.type.includes("VerifiableCredential")) {
+    throw new Error("Property `type` must have VerifiableCredential");
+  }
+
+  // compact creates the @context for the JSON-ld if it is missing
+  if (!("@context" in credential)) {
+    await compact(credential, "https://w3id.org/security/v2", {
+      expansionMap: info => {
+        // console.log(info);
+        if (info.unmappedProperty) {
+          throw new Error(
+            'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
+          );
+        }
+      }
+    });
+  }
+
+  // if (credential['@context'][0] != "https://www.w3.org/2018/credentials/v1") {
+  //   throw new Error("First value MUST be https://www.w3.org/2018/credentials/v1");
+  // }
 }
 
 const ajv = new Ajv({ allErrors: true });
