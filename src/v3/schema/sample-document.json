@@ -1,23 +1,36 @@
 {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://gist.githubusercontent.com/gjj/e667c86cef10b230b64de9a3dcf23a15/raw/1b3dbf7eff1dd50263c18c0dc44df138bc503c14/DrivingLicenceCredential.jsonld"
+  ],
   "reference": "SERIAL_NUMBER_123",
-  "name": "Singapore Driving Licence",
+  "name": "Republic of Singapore Driving Licence",
+  "issuanceDate": "2010-01-01T19:23:24Z",
   "validFrom": "2010-01-01T19:23:24Z",
-  "template": {
-    "name": "CUSTOM_TEMPLATE",
-    "type": "EMBEDDED_RENDERER",
-    "url": "https://localhost:3000/renderer"
-  },
   "issuer": {
     "id": "https://example.com",
     "name": "DEMO STORE"
   },
-  "issuanceDate": "2010-01-01T19:23:24Z",
+  "type": [
+    "VerifiableCredential"
+  ],
   "credentialSubject": {
-    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    "degree": {
-      "type": "BachelorDegree",
-      "name": "Bachelor of Science and Arts"
-    }
+    "id": "did:example:SERIAL_NUMBER_123",
+    "class": [
+      {
+        "type": "3",
+        "effectiveDate": "2010-01-01T19:23:24Z"
+      },
+      {
+        "type": "3A",
+        "effectiveDate": "2010-01-01T19:23:24Z"
+      }
+    ]
+  },
+  "template": {
+    "name": "CUSTOM_TEMPLATE",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://localhost:3000/renderer"
   },
   "proof": {
     "type": "OpenAttestationSignature2018",
@@ -31,11 +44,10 @@
   "recipient": {
     "name": "Recipient Name"
   },
-  "unknownKey": "unknownValue",
-  "attachments": [
+  "evidence": [
     {
       "type": "DocumentVerification2018",
-      "filename": "sample.pdf",
+      "fileName": "sample.pdf",
       "mimeType": "application/pdf",
       "data": "BASE64_ENCODED_FILE"
     }

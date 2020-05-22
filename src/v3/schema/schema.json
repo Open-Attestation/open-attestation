@@ -41,41 +41,52 @@
       "format": "uri",
       "description": "URI to the subject of the credential as explained by https://www.w3.org/TR/vc-data-model/#credential-subject"
     },
-    "reference": {
-      "type": "string",
-      "description": "Internal reference, usually serial number, of this document"
-    },
-    "name": {
-      "type": "string",
-      "description": "Human readable name of the credential"
-    },
-    "issuanceDate": {
-      "type": "string",
-      "description": "The date and time when a credential becomes valid"
-    },
-    "expirationDate": {
-      "type": "string",
-      "description": "The date and time when a credential becomes valid"
-    },
     "type": {
-      "type": [
-        "array",
-        "string"
+      "oneOf": [
+        {
+          "type": "array"
+        },
+        {
+          "type": "string"
+        }
       ],
       "items": {
         "type": "string"
       },
       "description": "Specific verifiable credential type as explained by https://www.w3.org/TR/vc-data-model/#types"
     },
+    "reference": {
+      "type": "string",
+      "description": "Internal reference, usually a serial number, of this document"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human readable name of this credential"
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential becomes valid (may be deprecated in favor of issued/validFrom a future version of W3C's VC Data Model)"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential expires"
+    },
+    "issued": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential becomes valid"
+    },
     "validFrom": {
       "type": "string",
       "format": "date-time",
-      "description": "Date and time when a credential becomes valid."
+      "description": "The date and time when this credential becomes valid"
     },
     "validUntil": {
       "type": "string",
       "format": "date-time",
-      "description": "Date and time when a credential becomes valid."
+      "description": "The date and time when this credential expires"
     },
     "credentialSubject": {
       "oneOf": [
@@ -136,14 +147,14 @@
         },
         "method": {
           "type": "string",
-          "description": "Proof open attestation method",
+          "description": "Proof Open Attestation method",
           "enum": [
             "TOKEN_REGISTRY",
             "DOCUMENT_STORE"
           ]
         },
         "value": {
-          "description": "Proof value for issuer(s)",
+          "description": "Proof value of issuer(s)",
           "type": "string"
         },
         "identity": {
@@ -158,7 +169,7 @@
             },
             "location": {
               "type": "string",
-              "description": "Url of the website referencing to document store OR valid DID as defined by W3C: https://www.w3.org/TR/did-core/"
+              "description": "URL of the website referencing to document store OR a valid DID as defined by W3C in https://www.w3.org/TR/did-core/"
             }
           },
           "additionalProperties": false,
@@ -194,19 +205,29 @@
           "id": {
             "type": "string",
             "format": "uri",
-            "description": "The id property is optional, but if present, SHOULD contain a URL that points to where more information about this instance of evidence can be found."
+            "description": "The id property is optional, but if present, SHOULD contain a URL that points to where more information about this instance of evidence can be found"
           },
-          "filename": {
+          "fileName": {
             "type": "string",
-            "description": "Name of attachment, with appropriate extensions"
+            "description": "Name of this attachment, with appropriate extensions"
           },
           "type": {
-            "type": "string",
-            "description": "A valid evidence type as explained by https://www.w3.org/TR/vc-data-model/#types"
+            "oneOf": [
+              {
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Specific evidence type as explained by https://www.w3.org/TR/vc-data-model/#types"
           },
           "mimeType": {
             "type": "string",
-            "description": "Mime-type of attachment",
+            "description": "Media type (or MIME type) of this attachment",
             "enum": [
               "application/pdf",
               "image/png",
@@ -215,11 +236,11 @@
           },
           "data": {
             "type": "string",
-            "description": "Base64 encoding of attachment"
+            "description": "Base64 encoding of this attachment"
           }
         },
         "required": [
-          "filename",
+          "fileName",
           "mimeType",
           "data",
           "type"
@@ -229,12 +250,13 @@
     }
   },
   "required": [
-    "issuer",
-    "template",
-    "proof",
+    "@context",
+    "type",
     "credentialSubject",
+    "issuer",
     "issuanceDate",
-    "type"
+    "proof",
+    "template"
   ],
   "additionalProperties": true
 }

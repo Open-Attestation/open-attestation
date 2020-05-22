@@ -218,7 +218,6 @@ describe("v3 E2E Test Scenarios", () => {
     });
   });
   describe("validate", () => {
-    const document = datum[0];
     test("should throw an error if document id is not a valid open attestation schema version", () => {
       const action = () =>
         validateSchema({

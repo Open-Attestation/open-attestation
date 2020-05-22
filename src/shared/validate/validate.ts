@@ -96,49 +96,25 @@ export async function validateW3C<T extends OpenAttestationDocument>(
     throw new Error("Property `expirationDate` must be a valid RFC 3339 date");
   }
 
-  // const expanded = await expand(credential);
-  // console.log(JSON.stringify(expanded, null, 2));
-
-  // console.log(credential);
-
-  // Does it have to be https://w3id.org/security/v2?
-
   // https://www.w3.org/TR/vc-data-model/#types
-  // console.log(Array.isArray(!("VerifiableCredential" in credential.type)));
-
-  // if ("type" in credential) {
-  //   console.log("credential has type");
-  // }
-  // if (Array.isArray(credential.type)) {
-  //   console.log("credential has array type");
-  // }
-  // if (credential.type != undefined) {
-  //   console.log();
-  //   if ("VerifiableCredential" in credential.type) {
-  //     console.log("credential has VerifiableCredential in type");
-  //   }
-  // }
-  if (credential.type && Array.isArray(credential.type) && !credential.type.includes("VerifiableCredential")) {
-    throw new Error("Property `type` must have VerifiableCredential");
+  if (!credential.type || !Array.isArray(credential.type)) {
+    throw new Error("Property `type` must exist and be an array");
+  }
+  if (!credential.type.includes("VerifiableCredential")) {
+    throw new Error("Property `type` must have VerifiableCredential as one of the items");
   }
 
-  // compact creates the @context for the JSON-ld if it is missing
-  if (!("@context" in credential)) {
-    await compact(credential, "https://w3id.org/security/v2", {
-      expansionMap: info => {
-        // console.log(info);
-        if (info.unmappedProperty) {
-          throw new Error(
-            'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
-          );
-        }
+  // Check if we can use some other context other than https://w3id.org/security/v2
+  await compact(credential, "https://w3id.org/security/v2", {
+    expansionMap: info => {
+      // console.log(credential);
+      if (info.unmappedProperty) {
+        throw new Error(
+          'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
+        );
       }
-    });
-  }
-
-  // if (credential['@context'][0] != "https://www.w3.org/2018/credentials/v1") {
-  //   throw new Error("First value MUST be https://www.w3.org/2018/credentials/v1");
-  // }
+    }
+  });
 }
 
 const ajv = new Ajv({ allErrors: true });

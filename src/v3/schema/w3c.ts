@@ -36,7 +36,8 @@ export const __unsafe__mapToW3cVc = (document: WrappedDocument<OpenAttestationDo
   const salts = getSalts(document);
   return {
     "@context": [...(context ?? [])],
-    type: ["VerifiableCredential", ...(type ?? [])].filter(Boolean),
+    type: ["VerifiableCredential", ...[type]].filter(Boolean),
+    // type: ["VerifiableCredential", ...(type ?? [])].filter(Boolean),
     issuer,
     validFrom,
     validUntil,
