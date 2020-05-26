@@ -21,9 +21,14 @@ describe("schema/v3.0", () => {
   });
   it("should be valid when adding any additional data", async () => {
     const document = { ...cloneDeep(sampleDoc), key1: "some" };
-    const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+    const wrappedDocument = await wrapDocument(document, {
+      externalSchemaId: $id,
+      version: SchemaId.v3,
+      validateTypeWithContext: false
+    });
     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
   });
+
   describe("@context", () => {
     it("should be invalid when @context contains valid URI but is not https://www.w3.org/2018/credentials/v1", async () => {
       // This should not have AJV validation errors as it's only caught after
@@ -43,13 +48,12 @@ describe("schema/v3.0", () => {
       );
     });
     it("should be invalid if @context contains one invalid URI", async () => {
-      expect.assertions(2);
+      expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), "@context": ["https://www.w3.org/2018/credentials/v1", "any"] };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "format",
             dataPath: "['@context'][1]",
@@ -57,8 +61,8 @@ describe("schema/v3.0", () => {
             params: { format: "uri" },
             message: 'should match format "uri"'
           }
-        ]);
-      }
+        ]
+      );
     });
   });
 
@@ -68,7 +72,8 @@ describe("schema/v3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "id") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3
+        version: SchemaId.v3,
+        validateTypeWithContext: false
       });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -76,25 +81,26 @@ describe("schema/v3.0", () => {
       // id can be optional, but if present, it has to be a URI, see https://www.w3.org/TR/vc-data-model/#identifiers
       const wrappedDocument = await wrapDocument(
         { ...cloneDeep(sampleDoc), id: "https://example.com" },
-        { externalSchemaId: $id, version: SchemaId.v3 }
+        { externalSchemaId: $id, version: SchemaId.v3, validateTypeWithContext: false }
       );
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be invalid when id exists but is not a valid URI", async () => {
       // id can be optional, but if present, it has to be a URI, see https://www.w3.org/TR/vc-data-model/#identifiers
-      const wrappedDocument = await wrapDocument(
-        { ...cloneDeep(sampleDoc), id: "any123" },
-        { externalSchemaId: $id, version: SchemaId.v3 }
+      expect.assertions(1);
+      const document = { ...cloneDeep(sampleDoc), id: "any123" };
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
+          {
+            keyword: "format",
+            dataPath: ".id",
+            schemaPath: "#/properties/id/format",
+            params: { format: "uri" },
+            message: 'should match format "uri"'
+          }
+        ]
       );
-      await expect(wrappedDocument.version).rejects.toHaveProperty("validationErrors", [
-        {
-          keyword: "format",
-          dataPath: "['@context'][0]",
-          schemaPath: "#/properties/%40context/items/format",
-          params: { format: "uri" },
-          message: 'should match format "uri"'
-        }
-      ]);
     });
   });
 
@@ -103,31 +109,33 @@ describe("schema/v3.0", () => {
       // For now, reference is not compulsory
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "reference") };
-      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, {
+        externalSchemaId: $id,
+        version: SchemaId.v3,
+        validateTypeWithContext: false
+      });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
     it("should be invalid if reference is undefined", async () => {
       // But if reference is given, it should not be undefined as we cannot salt undefined values
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), reference: undefined };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Unexpected value 'undefined' in 'reference'");
-      }
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Unexpected value 'undefined' in 'reference'"
+      );
     });
     it("should be invalid if reference is null", async () => {
       // But if reference is given, it should not be null as we cannot salt null values
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), reference: null };
-      try {
-        // TODO FIXME <- ASK LAURENT: what's this
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Cannot convert undefined or null to object");
-      }
+      // TODO FIXME <- ASK LAURENT: what's this
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Cannot convert undefined or null to object"
+      );
     });
   });
 
@@ -136,29 +144,31 @@ describe("schema/v3.0", () => {
       // For now, it's not compulsory
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "name") };
-      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, {
+        externalSchemaId: $id,
+        version: SchemaId.v3,
+        validateTypeWithContext: false
+      });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
     it("should be invalid if name is undefined", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), name: undefined };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Unexpected value 'undefined' in 'name'");
-      }
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Unexpected value 'undefined' in 'name'"
+      );
     });
     it("should be invalid if name is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), name: null };
-      try {
-        // TODO FIXME & ASK LAURENT: same here
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Cannot convert undefined or null to object");
-      }
+      // TODO FIXME <- ASK LAURENT: what's this
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Cannot convert undefined or null to object"
+      );
     });
   });
 
@@ -166,65 +176,79 @@ describe("schema/v3.0", () => {
     it("should be invalid if type is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: null };
-      try {
-        // TODO FIXME & ASK LAURENT: same here
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Cannot convert undefined or null to object");
-      }
+      // TODO FIXME <- ASK LAURENT: what's this
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Cannot convert undefined or null to object"
+      );
     });
-    it("should be invalid if type does not map to any context, when type is a string", async () => {
+    it("should be invalid if type is a string", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: "VerifiableCredential" };
-      try {
-        const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-        console.log(wrappedDocument);
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Property `type` must exist and be an array");
-      }
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Property 'type' must exist and be an array"
+      );
+    });
+    it("should be invalid if type is an array, but does not have VerifiableCredential", async () => {
+      expect.assertions(1);
+      const document = { ...cloneDeep(sampleDoc), type: ["DrivingLicenceCredential"] };
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Property 'type' must have VerifiableCredential as one of the items"
+      );
+    });
+    it("should be invalid if any item in type does not map to any context", async () => {
+      // https://github.com/w3c/vc-test-suite/issues/97#issuecomment-537982033
+      expect.assertions(1);
+      const document = { ...cloneDeep(sampleDoc), type: ["VerifiableCredential", "SomeNonExistentCredential"] };
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "The property 'SomeNonExistentCredential' in the input was not defined in the context"
+      );
     });
   });
 
   describe("validFrom", () => {
-    it("should be valid if validFrom is missing", async () => {
+    it.only("should be valid if validFrom is missing", async () => {
       // For now, it's not compulsory and is reserved for a later version of W3C VC Data Model, see https://www.w3.org/TR/vc-data-model/#issuance-date
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "validFrom") };
-      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, {
+        externalSchemaId: $id,
+        version: SchemaId.v3,
+        validateTypeWithContext: false
+      });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
     it("should be invalid if validFrom is undefined", async () => {
       // If validFrom is present, it should be an RFC3339 date and time string
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validFrom: undefined };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Unexpected value 'undefined' in 'validFrom'");
-      }
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Unexpected value 'undefined' in 'validFrom'"
+      );
     });
     it("should be invalid if validFrom is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validFrom: null };
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Cannot convert undefined or null to object");
-      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Cannot convert undefined or null to object"
+      );
     });
 
     it("should be invalid if validFrom is not in the RFC3339 date and time format", async () => {
-      expect.assertions(2);
+      expect.assertions(1);
       const document = { ...sampleDoc, validFrom: "some" };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "format",
             dataPath: ".validFrom",
@@ -232,8 +256,8 @@ describe("schema/v3.0", () => {
             params: { format: "date-time" },
             message: 'should match format "date-time"'
           }
-        ]);
-      }
+        ]
+      );
     });
   });
 
@@ -242,35 +266,37 @@ describe("schema/v3.0", () => {
       // validUntil does not exist in our sample document anyways
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "validUntil") };
-      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, {
+        externalSchemaId: $id,
+        version: SchemaId.v3,
+        validateTypeWithContext: false
+      });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
     it("should be invalid when validUntil is undefined", async () => {
+      expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validUntil: undefined };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Unexpected value 'undefined' in 'validUntil'");
-      }
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Unexpected value 'undefined' in 'validUntil'"
+      );
     });
     it("should be invalid when validUntil is null", async () => {
+      expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validUntil: null };
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Unexpected value 'undefined' in 'validUntil'");
-      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "message",
+        "Cannot convert undefined or null to object"
+      );
     });
     it("should be invalid if validUntil exists and is not in the RFC3339 date and time format", async () => {
-      expect.assertions(2);
+      expect.assertions(1);
       const document = { ...sampleDoc, validUntil: "some" };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "format",
             dataPath: ".validUntil",
@@ -278,13 +304,14 @@ describe("schema/v3.0", () => {
             params: { format: "date-time" },
             message: 'should match format "date-time"'
           }
-        ]);
-      }
+        ]
+      );
     });
   });
 
   describe("template", () => {
     it("should be valid when type is EMBEDDED_RENDERER", async () => {
+      expect.assertions(1);
       const document = {
         ...cloneDeep(sampleDoc),
         template: { ...sampleDoc.template, type: TemplateType.EmbeddedRenderer }
@@ -293,6 +320,7 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when url starts with http", async () => {
+      expect.assertions(1);
       const document = {
         ...cloneDeep(sampleDoc),
         template: { ...sampleDoc.template, url: "http://some.example.com" }
@@ -301,6 +329,7 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when url starts with https", async () => {
+      expect.assertions(1);
       const document = {
         ...cloneDeep(sampleDoc),
         template: { ...sampleDoc.template, url: "https://some.example.com" }
@@ -309,16 +338,14 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be invalid when adding additional data", async () => {
-      expect.assertions(2);
+      expect.assertions(1);
       const document = {
         ...cloneDeep(sampleDoc),
         template: { ...sampleDoc.template, key: "any" }
       };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "additionalProperties",
             dataPath: ".template",
@@ -326,18 +353,17 @@ describe("schema/v3.0", () => {
             params: { additionalProperty: "key" },
             message: "should NOT have additional properties"
           }
-        ]);
-      }
+        ]
+      );
     });
     it("should be invalid if template is missing", async () => {
-      expect.assertions(2);
-      const document = { ...sampleDoc };
-      delete document.template;
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+      expect.assertions(1);
+      const document = { ...omit(cloneDeep(sampleDoc), "template") };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "required",
             dataPath: "",
@@ -345,18 +371,15 @@ describe("schema/v3.0", () => {
             params: { missingProperty: "template" },
             message: "should have required property 'template'"
           }
-        ]);
-      }
+        ]
+      );
     });
     it("should be invalid if template.name is missing", async () => {
-      expect.assertions(2);
-      const document = { ...sampleDoc, template: { ...sampleDoc.template } };
-      delete document.template.name;
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+      expect.assertions(1);
+      const document = { ...omit(cloneDeep(sampleDoc), "template.name") };
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "required",
             dataPath: ".template",
@@ -364,18 +387,15 @@ describe("schema/v3.0", () => {
             params: { missingProperty: "name" },
             message: "should have required property 'name'"
           }
-        ]);
-      }
+        ]
+      );
     });
     it("should be invalid if template.type is missing", async () => {
-      expect.assertions(2);
-      const document = { ...sampleDoc, template: { ...sampleDoc.template } };
-      delete document.template.type;
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
+      expect.assertions(1);
+      const document = { ...omit(cloneDeep(sampleDoc), "template.type") };
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
           {
             keyword: "required",
             dataPath: ".template",
@@ -383,8 +403,8 @@ describe("schema/v3.0", () => {
             params: { missingProperty: "type" },
             message: "should have required property 'type'"
           }
-        ]);
-      }
+        ]
+      );
     });
     it("should be invalid if template.type is not equal to EMBEDDED_RENDERER", async () => {
       expect.assertions(2);
@@ -689,43 +709,43 @@ describe("schema/v3.0", () => {
   });
 
   // describe("proof", () => {
-    // it("should be valid when type is DNS-TXT", async () => {
-    //   const document = {
-    //     ...cloneDeep(sampleDoc)
-    //   };
-    //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-    //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-    // });
-    // it("should be valid when identityProof type is W3C-DID", async () => {
-    //   const document = {
-    //     ...sampleDoc,
-    //     // TODO FIXME ASK LAURENT
-    //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //     // @ts-ignore
-    //     issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "W3C-DID" } }
-    //   };
-    //   console.log(document);
-    //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-    //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-    // });
-    // it("should be valid when type is W3C-DID and location is a valid DID", async () => {
-    //   const document = {
-    //     ...sampleDoc,
-    //     issuer: {
-    //       // TODO FIXME
-    //       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //       // @ts-ignore
-    //       ...sampleDoc.issuer,
-    //       identityProof: {
-    //         ...sampleDoc.issuer.identityProof,
-    //         type: "W3C-DID",
-    //         location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
-    //       }
-    //     }
-    //   };
-    //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-    //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-    // });
+  // it("should be valid when type is DNS-TXT", async () => {
+  //   const document = {
+  //     ...cloneDeep(sampleDoc)
+  //   };
+  //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+  //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+  // });
+  // it("should be valid when identityProof type is W3C-DID", async () => {
+  //   const document = {
+  //     ...sampleDoc,
+  //     // TODO FIXME ASK LAURENT
+  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  //     // @ts-ignore
+  //     issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "W3C-DID" } }
+  //   };
+  //   console.log(document);
+  //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+  //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+  // });
+  // it("should be valid when type is W3C-DID and location is a valid DID", async () => {
+  //   const document = {
+  //     ...sampleDoc,
+  //     issuer: {
+  //       // TODO FIXME
+  //       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  //       // @ts-ignore
+  //       ...sampleDoc.issuer,
+  //       identityProof: {
+  //         ...sampleDoc.issuer.identityProof,
+  //         type: "W3C-DID",
+  //         location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
+  //       }
+  //     }
+  //   };
+  //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+  //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+  // });
   //   it("should be valid when type is OpenAttestationSignature2018", async () => {
   //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof, type: "OpenAttestationSignature2018" } };
   //     // TODO FIXME

@@ -26,7 +26,7 @@ interface WrapDocumentOptionV2 {
 interface WrapDocumentOptionV3 {
   externalSchemaId?: string;
   version?: SchemaId.v3;
-  validateTypeWithContext?: true;
+  validateTypeWithContext?: boolean;
 }
 const defaultVersion = SchemaId.v2;
 

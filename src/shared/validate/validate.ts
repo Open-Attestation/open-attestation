@@ -6,7 +6,7 @@ import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { VerifiableCredential } from "../../shared/@types/document";
-import { compact } from "jsonld";
+import { compact, expand } from "jsonld";
 
 const logger = getLogger("validate");
 
@@ -104,19 +104,31 @@ export async function validateW3C<T extends OpenAttestationDocument>(
   if (!credential.type.includes("VerifiableCredential")) {
     throw new Error("Property 'type' must have VerifiableCredential as one of the items");
   }
+  // if (credential["@context"].length > 1) {
+  //   // e.g. type: ["VerifiableCredential"]
+  //   if (Array.isArray(credential.type) && credential.type.length == 1) {
+  //     throw new Error("Property 'type' must have VerifiableCredential as one of the items");
+  //   }
+  //   // e.g. type: "VerifiableCredential"
+  //   if (typeof credential.type == "string") {
+  //     throw new Error("Property 'type' must be string that is 'VerifiableCredential'");
+  //   }
+  // }
+  // const compacted = await compact(credential, "https://www.w3.org/2018/credentials/v1");
+  // console.log(JSON.stringify(compacted, null, 2));
+  await compact(credential, "https://www.w3.org/2018/credentials/v1", {
+    expansionMap: info => {
+      console.log(info);
+      if (info.unmappedProperty) {
+        throw new Error("The property '" + info.unmappedProperty + "' in the input was not defined in the context");
+      }
+    }
+  });
+
+  // console.log(compacted);
 
   if (validateTypeWithContext) {
     // Check if we can use some other context other than https://w3id.org/security/v2
-    await compact(credential, "https://w3id.org/security/v2", {
-      expansionMap: info => {
-        // console.log(credential);
-        if (info.unmappedProperty) {
-          throw new Error(
-            'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context"
-          );
-        }
-      }
-    });
   }
 }
 
