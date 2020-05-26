@@ -212,7 +212,7 @@ describe("schema/v3.0", () => {
   });
 
   describe("validFrom", () => {
-    it.only("should be valid if validFrom is missing", async () => {
+    it("should be valid if validFrom is missing", async () => {
       // For now, it's not compulsory and is reserved for a later version of W3C VC Data Model, see https://www.w3.org/TR/vc-data-model/#issuance-date
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "validFrom") };
@@ -471,7 +471,7 @@ describe("schema/v3.0", () => {
   describe("issuer", () => {
     it("should be valid when id is an URI", async () => {
       const document = {
-        ...sampleDoc,
+        ...cloneDeep(sampleDoc),
         // TODO FIXME
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -485,7 +485,7 @@ describe("schema/v3.0", () => {
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer, key: "any" } };
+      const document = { ...cloneDeep(sampleDoc), issuer: { ...sampleDoc.issuer, key: "any" } };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -497,6 +497,20 @@ describe("schema/v3.0", () => {
             schemaPath: "#/definitions/issuer/additionalProperties",
             params: { additionalProperty: "key" },
             message: "should NOT have additional properties"
+          },
+          {
+            keyword: "type",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf/1/type",
+            params: { type: "string" },
+            message: "should be string"
+          },
+          {
+            keyword: "oneOf",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf",
+            params: { passingSchemas: null },
+            message: "should match exactly one schema in oneOf"
           }
         ]);
       }
@@ -504,11 +518,11 @@ describe("schema/v3.0", () => {
     it("should be invalid when adding additional data in identity proof", async () => {
       expect.assertions(2);
       const document = {
-        ...sampleDoc,
+        ...cloneDeep(sampleDoc),
         // TODO FIXME
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, key1: "any" } }
+        proof: { ...sampleDoc.proof, identity: { ...sampleDoc.proof.identity, key: "any" } }
       };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -517,9 +531,9 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "additionalProperties",
-            dataPath: ".issuer.identityProof",
-            schemaPath: "#/definitions/issuer/properties/identityProof/additionalProperties",
-            params: { additionalProperty: "key1" },
+            dataPath: ".proof.identity",
+            schemaPath: "#/properties/proof/properties/identity/additionalProperties",
+            params: { additionalProperty: "key" },
             message: "should NOT have additional properties"
           }
         ]);
@@ -530,7 +544,7 @@ describe("schema/v3.0", () => {
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer, id: "" } };
+      const document = { ...cloneDeep(sampleDoc), issuer: { ...sampleDoc.issuer, id: "" } };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -542,13 +556,27 @@ describe("schema/v3.0", () => {
             schemaPath: "#/definitions/issuer/properties/id/format",
             params: { format: "uri" },
             message: 'should match format "uri"'
+          },
+          {
+            keyword: "type",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf/1/type",
+            params: { type: "string" },
+            message: "should be string"
+          },
+          {
+            keyword: "oneOf",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf",
+            params: { passingSchemas: null },
+            message: "should match exactly one schema in oneOf"
           }
         ]);
       }
     });
     it("should be invalid if issuer is missing", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc };
+      const document = { ...cloneDeep(sampleDoc) };
       delete document.issuer;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -567,10 +595,10 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if issuer has no name", async () => {
       expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer } };
       delete document.issuer.name;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -583,16 +611,30 @@ describe("schema/v3.0", () => {
             schemaPath: "#/definitions/issuer/required",
             params: { missingProperty: "name" },
             message: "should have required property 'name'"
+          },
+          {
+            keyword: "type",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf/1/type",
+            params: { type: "string" },
+            message: "should be string"
+          },
+          {
+            keyword: "oneOf",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf",
+            params: { passingSchemas: null },
+            message: "should match exactly one schema in oneOf"
           }
         ]);
       }
     });
     it("should be invalid if issuer has no id", async () => {
       expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer } };
       delete document.issuer.id;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -605,17 +647,31 @@ describe("schema/v3.0", () => {
             schemaPath: "#/definitions/issuer/required",
             params: { missingProperty: "id" },
             message: "should have required property 'id'"
+          },
+          {
+            keyword: "type",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf/1/type",
+            params: { type: "string" },
+            message: "should be string"
+          },
+          {
+            keyword: "oneOf",
+            dataPath: ".issuer",
+            schemaPath: "#/properties/issuer/oneOf",
+            params: { passingSchemas: null },
+            message: "should match exactly one schema in oneOf"
           }
         ]);
       }
     });
-    it("should be invalid if issuer has no identityProof", async () => {
+    it("should be invalid if issuer has no identity proof", async () => {
       expect.assertions(2);
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      const document = { ...sampleDoc, issuer: { ...sampleDoc.issuer } };
-      delete document.issuer.identityProof;
+      const document = { ...cloneDeep(sampleDoc) };
+      delete document.proof.identity;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -623,24 +679,20 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".issuer",
-            schemaPath: "#/definitions/issuer/required",
-            params: { missingProperty: "identityProof" },
-            message: "should have required property 'identityProof'"
+            dataPath: ".proof",
+            schemaPath: "#/properties/proof/required",
+            params: { missingProperty: "identity" },
+            message: "should have required property 'identity'"
           }
         ]);
       }
     });
-    it("should be invalid if identityProof has no type", async () => {
+    it("should be invalid if identity proof has no type", async () => {
       expect.assertions(2);
       const document = {
-        ...sampleDoc,
-        // TODO FIXME
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof } }
+        ...cloneDeep(sampleDoc)
       };
-      delete document.issuer.identityProof.type;
+      delete document.proof.identity.type;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -648,24 +700,23 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".issuer.identityProof",
-            schemaPath: "#/definitions/issuer/properties/identityProof/required",
+            dataPath: ".proof.identity",
+            schemaPath: "#/properties/proof/properties/identity/required",
             params: { missingProperty: "type" },
             message: "should have required property 'type'"
           }
         ]);
       }
     });
-    it("should be invalid if identityProof type is not valid", async () => {
+    it("should be invalid if identity proof type is not valid", async () => {
       expect.assertions(2);
       const document = {
-        ...sampleDoc,
-        // TODO FIXME
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof } }
+        ...cloneDeep(sampleDoc)
       };
-      document.issuer.identityProof.type = "OTHER";
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      document.proof.identity.type = "OTHER";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -673,24 +724,20 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".issuer.identityProof.type",
-            schemaPath: "#/definitions/issuer/properties/identityProof/properties/type/enum",
+            dataPath: ".proof.identity.type",
+            schemaPath: "#/properties/proof/properties/identity/properties/type/enum",
             params: { allowedValues: ["DNS-TXT", "W3C-DID"] },
             message: "should be equal to one of the allowed values"
           }
         ]);
       }
     });
-    it("should be invalid if identityProof has no location", async () => {
+    it("should be invalid if identity proof has no location", async () => {
       expect.assertions(2);
       const document = {
-        ...sampleDoc,
-        // TODO FIXME
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof } }
+        ...cloneDeep(sampleDoc)
       };
-      delete document.issuer.identityProof.location;
+      delete document.proof.identity.location;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -698,8 +745,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".issuer.identityProof",
-            schemaPath: "#/definitions/issuer/properties/identityProof/required",
+            dataPath: ".proof.identity",
+            schemaPath: "#/properties/proof/properties/identity/required",
             params: { missingProperty: "location" },
             message: "should have required property 'location'"
           }

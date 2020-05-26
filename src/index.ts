@@ -62,6 +62,7 @@ export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentO
       : wrapV3({ version: SchemaId.v3, ...data });
     const errors = validate(wrappedDocument, getSchema(SchemaId.v3));
     if (errors.length > 0) {
+      console.log({ indexError: errors });
       throw new SchemaValidationError("Invalid document", errors, wrappedDocument);
     }
     await validateW3C(wrappedDocument, options.validateTypeWithContext);

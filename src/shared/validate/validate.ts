@@ -17,6 +17,7 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
   const valid = validator(document.version === SchemaId.v3 ? document : getData(document));
   // console.log(validator.errors);
   if (!valid) {
+    console.log({ validateError: validator.errors });
     logger.debug("There are errors in the document");
     logger.debug(validator.errors);
     return validator.errors ?? [];
