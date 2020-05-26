@@ -12,7 +12,7 @@
     "name": "DEMO STORE"
   },
   "type": [
-    "VerifiableCredential"
+    "VerifiableCredential", "DrivingLicenceCredential"
   ],
   "credentialSubject": {
     "id": "did:example:SERIAL_NUMBER_123",

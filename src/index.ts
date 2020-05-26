@@ -17,6 +17,7 @@ import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
 interface WrapDocumentOption {
   externalSchemaId?: string;
   version?: SchemaId;
+  validateTypeWithContext?: boolean;
 }
 interface WrapDocumentOptionV2 {
   externalSchemaId?: string;
@@ -25,6 +26,7 @@ interface WrapDocumentOptionV2 {
 interface WrapDocumentOptionV3 {
   externalSchemaId?: string;
   version?: SchemaId.v3;
+  validateTypeWithContext?: true;
 }
 const defaultVersion = SchemaId.v2;
 
@@ -62,7 +64,7 @@ export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentO
     if (errors.length > 0) {
       throw new SchemaValidationError("Invalid document", errors, wrappedDocument);
     }
-    await validateW3C(wrappedDocument);
+    await validateW3C(wrappedDocument, options.validateTypeWithContext);
     return wrappedDocument;
   }
 

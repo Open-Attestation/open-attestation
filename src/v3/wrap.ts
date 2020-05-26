@@ -15,7 +15,7 @@ const deepMap = (value: any, path: string): Salt[] => {
   if (typeof value === "string") {
     return [{ value: uuid(), path }];
   }
-  throw new Error(`unexpected element  ${value} => ${path}`);
+  throw new Error(`Unexpected value '${value}' in '${path}'`);
 };
 
 const salt = (data: any) => deepMap(data, "");

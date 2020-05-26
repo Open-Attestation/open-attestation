@@ -61,8 +61,8 @@ const isValidRFC3339 = (str: any) => {
   return rfc3339.test(str);
 };
 
-/* Based on https://tools.ietf.org/html/rfc3986 and https://stackoverflow.com/a/37249519/950462 */
-const uri = `(?:[A-Za-z][A-Za-z0-9+.-]*:\/{2})?(?:(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})+(?::([A-Za-z0-9-._~]?|[%][A-Fa-f0-9]{2})+)?@)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.){1,126}[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?::[0-9]+)?(?:\/(?:[A-Za-z0-9-._~]|%[A-Fa-f0-9]{2})*)*(?:\\?(?:[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)(?:&|;[A-Za-z0-9-._~]+(?:=(?:[A-Za-z0-9-._~+]|%[A-Fa-f0-9]{2})+)?)*)?`;
+/* Based on https://tools.ietf.org/html/rfc3986 and https://github.com/ajv-validator/ajv/search?q=uri&unscoped_q=uri */
+const uri = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
 const rfc3986 = new RegExp(uri);
 
 const isValidRFC3986 = (str: any) => {
@@ -70,51 +70,54 @@ const isValidRFC3986 = (str: any) => {
 };
 
 export async function validateW3C<T extends OpenAttestationDocument>(
-  credential: VerifiableCredential<T>
+  credential: VerifiableCredential<T>,
+  validateTypeWithContext = true
 ): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (
     !Array.isArray(credential["@context"]) ||
     (Array.isArray(credential["@context"]) && credential["@context"][0] !== "https://www.w3.org/2018/credentials/v1")
   ) {
-    throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts.");
+    throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts");
   }
 
   // ensure issuer is a valid URI according to RFC3986 IF it is a string
   // TODO check if credential.issuer is string first, as it can be an object containing an id property
   const issuerId = getId(credential.issuer);
   if (!isValidRFC3986(issuerId)) {
-    throw new Error("Property `issuer` id must be a valid RFC 3986 URI");
+    throw new Error("Property 'issuer' id must be a valid RFC 3986 URI");
   }
 
   // ensure issuanceDate is a valid RFC3339 date, see https://www.w3.org/TR/vc-data-model/#issuance-date
   if (!isValidRFC3339(credential.issuanceDate)) {
-    throw new Error("Property `issuanceDate` must be a valid RFC 3339 date");
+    throw new Error("Property 'issuanceDate' must be a valid RFC 3339 date");
   }
   // ensure expirationDate is a valid RFC3339 date, see https://www.w3.org/TR/vc-data-model/#expiration
   if (credential.expirationDate && !isValidRFC3339(credential.expirationDate)) {
-    throw new Error("Property `expirationDate` must be a valid RFC 3339 date");
+    throw new Error("Property 'expirationDate' must be a valid RFC 3339 date");
   }
 
   // https://www.w3.org/TR/vc-data-model/#types
   if (!credential.type || !Array.isArray(credential.type)) {
-    throw new Error("Property `type` must exist and be an array");
+    throw new Error("Property 'type' must exist and be an array");
   }
   if (!credential.type.includes("VerifiableCredential")) {
-    throw new Error("Property `type` must have VerifiableCredential as one of the items");
+    throw new Error("Property 'type' must have VerifiableCredential as one of the items");
   }
 
-  // Check if we can use some other context other than https://w3id.org/security/v2
-  await compact(credential, "https://w3id.org/security/v2", {
-    expansionMap: info => {
-      // console.log(credential);
-      if (info.unmappedProperty) {
-        throw new Error(
-          'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context."
-        );
+  if (validateTypeWithContext) {
+    // Check if we can use some other context other than https://w3id.org/security/v2
+    await compact(credential, "https://w3id.org/security/v2", {
+      expansionMap: info => {
+        // console.log(credential);
+        if (info.unmappedProperty) {
+          throw new Error(
+            'The property "' + info.unmappedProperty + '" in the input ' + "was not defined in the context"
+          );
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 const ajv = new Ajv({ allErrors: true });

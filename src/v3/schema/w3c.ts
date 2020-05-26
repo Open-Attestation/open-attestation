@@ -19,7 +19,7 @@ const deepMap = (value: any, path: string): Salt[] => {
     const [salt, type] = value.split(":");
     return [{ type, value: salt, path }];
   }
-  throw new Error(`unexpected element  ${value} => ${path}`);
+  throw new Error(`Unexpected element '${value}' in '${path}'`);
 };
 const getSalts = (document: WrappedDocument<OpenAttestationDocument>): Salt[] => {
   return deepMap(document.data, "");
