@@ -515,30 +515,6 @@ describe("schema/v3.0", () => {
         ]);
       }
     });
-    it("should be invalid when adding additional data in identity proof", async () => {
-      expect.assertions(2);
-      const document = {
-        ...cloneDeep(sampleDoc),
-        // TODO FIXME
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        proof: { ...sampleDoc.proof, identity: { ...sampleDoc.proof.identity, key: "any" } }
-      };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "additionalProperties",
-            dataPath: ".proof.identity",
-            schemaPath: "#/properties/proof/properties/identity/additionalProperties",
-            params: { additionalProperty: "key" },
-            message: "should NOT have additional properties"
-          }
-        ]);
-      }
-    });
     it("should be invalid when id is not a URI", async () => {
       expect.assertions(2);
       // TODO FIXME
@@ -665,28 +641,6 @@ describe("schema/v3.0", () => {
         ]);
       }
     });
-    it("should be invalid if issuer has no identity proof", async () => {
-      expect.assertions(2);
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      const document = { ...cloneDeep(sampleDoc) };
-      delete document.proof.identity;
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "required",
-            dataPath: ".proof",
-            schemaPath: "#/properties/proof/required",
-            params: { missingProperty: "identity" },
-            message: "should have required property 'identity'"
-          }
-        ]);
-      }
-    });
     it("should be invalid if identity proof has no type", async () => {
       expect.assertions(2);
       const document = {
@@ -755,208 +709,209 @@ describe("schema/v3.0", () => {
     });
   });
 
-  // describe("proof", () => {
-  // it("should be valid when type is DNS-TXT", async () => {
-  //   const document = {
-  //     ...cloneDeep(sampleDoc)
-  //   };
-  //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  // });
-  // it("should be valid when identityProof type is W3C-DID", async () => {
-  //   const document = {
-  //     ...sampleDoc,
-  //     // TODO FIXME ASK LAURENT
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "W3C-DID" } }
-  //   };
-  //   console.log(document);
-  //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  // });
-  // it("should be valid when type is W3C-DID and location is a valid DID", async () => {
-  //   const document = {
-  //     ...sampleDoc,
-  //     issuer: {
-  //       // TODO FIXME
-  //       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //       // @ts-ignore
-  //       ...sampleDoc.issuer,
-  //       identityProof: {
-  //         ...sampleDoc.issuer.identityProof,
-  //         type: "W3C-DID",
-  //         location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
-  //       }
-  //     }
-  //   };
-  //   const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //   expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  // });
-  //   it("should be valid when type is OpenAttestationSignature2018", async () => {
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof, type: "OpenAttestationSignature2018" } };
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  //   });
-  //   it("should be valid when method is TOKEN_REGISTRY", async () => {
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: "TOKEN_REGISTRY" } };
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  //   });
-  //   it("should be valid when method is DOCUMENT_STORE", async () => {
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: "DOCUMENT_STORE" } };
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  //   });
+  describe("proof", () => {
+    it("should be valid when type is DNS-TXT", async () => {
+      const document = {
+        ...cloneDeep(sampleDoc)
+      };
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when identity proof type is W3C-DID", async () => {
+      const document = {
+        ...cloneDeep(sampleDoc)
+      };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      document.proof.identity.type = "W3C-DID";
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when type is W3C-DID and location is a valid DID", async () => {
+      const document = {
+        ...cloneDeep(sampleDoc)
+      };
+      document.proof.identity = {
+        // TODO FIXME
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        type: "W3C-DID",
+        location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
+      };
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when type is OpenAttestationSignature2018", async () => {
+      const document = { ...cloneDeep(sampleDoc) };
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when method is TOKEN_REGISTRY", async () => {
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: "TOKEN_REGISTRY" } };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when method is DOCUMENT_STORE", async () => {
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: "DOCUMENT_STORE" } };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
 
-  //   it("should be invalid when adding additional data", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof, key: "any" } };
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "additionalProperties",
-  //           dataPath: ".proof",
-  //           schemaPath: "#/properties/proof/additionalProperties",
-  //           params: { additionalProperty: "key" },
-  //           message: "should NOT have additional properties"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if proof is missing", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc };
-  //     delete document.proof;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: "",
-  //           schemaPath: "#/required",
-  //           params: { missingProperty: "proof" },
-  //           message: "should have required property 'proof'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if proof type is missing", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
-  //     delete document.proof.type;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".proof",
-  //           schemaPath: "#/properties/proof/required",
-  //           params: { missingProperty: "type" },
-  //           message: "should have required property 'type'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if proof type is not OpenAttestationSignature2018", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     document.proof.type = "Something";
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "enum",
-  //           dataPath: ".proof.type",
-  //           schemaPath: "#/properties/proof/properties/type/enum",
-  //           params: { allowedValues: ["OpenAttestationSignature2018"] },
-  //           message: "should be equal to one of the allowed values"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if proof method is missing", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
-  //     delete document.proof.method;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".proof",
-  //           schemaPath: "#/properties/proof/required",
-  //           params: { missingProperty: "method" },
-  //           message: "should have required property 'method'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     document.proof.method = "Something";
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "enum",
-  //           dataPath: ".proof.method",
-  //           schemaPath: "#/properties/proof/properties/method/enum",
-  //           params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE"] },
-  //           message: "should be equal to one of the allowed values"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if proof value is missing", async () => {
-  //     expect.assertions(2);
-  //     const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
-  //     delete document.proof.value;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".proof",
-  //           schemaPath: "#/properties/proof/required",
-  //           params: { missingProperty: "value" },
-  //           message: "should have required property 'value'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  // });
+    it("should be invalid when adding additional data in identity proof", async () => {
+      expect.assertions(2);
+      const document = {
+        ...cloneDeep(sampleDoc),
+        // TODO FIXME
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        proof: { ...sampleDoc.proof, identity: { ...sampleDoc.proof.identity, key: "any" } }
+      };
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "additionalProperties",
+            dataPath: ".proof.identity",
+            schemaPath: "#/properties/proof/properties/identity/additionalProperties",
+            params: { additionalProperty: "key" },
+            message: "should NOT have additional properties"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if issuer has no identity proof", async () => {
+      expect.assertions(2);
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const document = { ...cloneDeep(sampleDoc) };
+      delete document.proof.identity;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".proof",
+            schemaPath: "#/properties/proof/required",
+            params: { missingProperty: "identity" },
+            message: "should have required property 'identity'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if proof type is missing", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      delete document.proof.type;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".proof",
+            schemaPath: "#/properties/proof/required",
+            params: { missingProperty: "type" },
+            message: "should have required property 'type'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if proof type is not OpenAttestationSignature2018", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      document.proof.type = "Something";
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "enum",
+            dataPath: ".proof.type",
+            schemaPath: "#/properties/proof/properties/type/enum",
+            params: { allowedValues: ["OpenAttestationSignature2018"] },
+            message: "should be equal to one of the allowed values"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if proof method is missing", async () => {
+      expect.assertions(2);
+      const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      delete document.proof.method;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".proof",
+            schemaPath: "#/properties/proof/required",
+            params: { missingProperty: "method" },
+            message: "should have required property 'method'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
+      expect.assertions(2);
+      const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      document.proof.method = "Something";
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "enum",
+            dataPath: ".proof.method",
+            schemaPath: "#/properties/proof/properties/method/enum",
+            params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE"] },
+            message: "should be equal to one of the allowed values"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if proof value is missing", async () => {
+      expect.assertions(2);
+      const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      delete document.proof.value;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".proof",
+            schemaPath: "#/properties/proof/required",
+            params: { missingProperty: "value" },
+            message: "should have required property 'value'"
+          }
+        ]);
+      }
+    });
+  });
 
   // describe("attachments", () => {
   //   it("should be valid when mimeType is application/pdf", async () => {
