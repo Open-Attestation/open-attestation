@@ -137,7 +137,7 @@ export { checkProof, MerkleTree } from "./shared/merkle";
 // export { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
 // export { obfuscateDocument as obfuscateDocumentV3, validate as validateV3 } from "./v3/obfuscate";
 export { obfuscate as obfuscateDocument };
-export { sign } from "./shared/sign";
+export { sign } from "./v2/sign";
 export { utils, isSchemaValidationError };
 export * from "./shared/@types/document";
 export * from "./v3/schema/w3c";

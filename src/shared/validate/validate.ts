@@ -18,7 +18,6 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
   if (!valid) {
     logger.debug("There are errors in the document");
     logger.debug(validator.errors);
-    console.log(validator.errors);
     return validator.errors ?? [];
   }
   logger.debug(`Document is a valid open attestation document v${document.version}`);
