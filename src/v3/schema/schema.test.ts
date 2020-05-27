@@ -245,7 +245,7 @@ describe("schema/v3.0", () => {
 
     it("should be invalid if validFrom is not in the RFC3339 date and time format", async () => {
       expect.assertions(1);
-      const document = { ...sampleDoc, validFrom: "some" };
+      const document = { ...cloneDeep(sampleDoc), validFrom: "some" };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
@@ -293,7 +293,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if validUntil exists and is not in the RFC3339 date and time format", async () => {
       expect.assertions(1);
-      const document = { ...sampleDoc, validUntil: "some" };
+      const document = { ...cloneDeep(sampleDoc), validUntil: "some" };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
@@ -408,7 +408,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if template.type is not equal to EMBEDDED_RENDERER", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, template: { ...sampleDoc.template } };
+      const document = { ...cloneDeep(sampleDoc), template: { ...sampleDoc.template } };
       // TODO FIXME <- ASK LAURENT: why though
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -430,7 +430,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if template.url is missing", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, template: { ...sampleDoc.template } };
+      const document = { ...cloneDeep(sampleDoc), template: { ...sampleDoc.template } };
       delete document.template.url;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -449,7 +449,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if template.url is not an http url", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, template: { ...sampleDoc.template } };
+      const document = { ...cloneDeep(sampleDoc), template: { ...sampleDoc.template } };
       document.template.url = "ftp://some";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -853,7 +853,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof method is missing", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof } };
       delete document.proof.method;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -872,7 +872,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof } };
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -894,7 +894,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof value is missing", async () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof } };
       delete document.proof.value;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -913,162 +913,174 @@ describe("schema/v3.0", () => {
     });
   });
 
-  // describe("attachments", () => {
-  //   it("should be valid when mimeType is application/pdf", async () => {
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }] };
-  //     const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  //   });
-  //   it("should be valid when mimeType is image/png", async () => {
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }] };
-  //     const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  //   });
-  //   it("should be valid when mimeType is image/jpeg", async () => {
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }] };
-  //     const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
-  //   });
+  describe("evidence", () => {
+    it("should be valid when mimeType is application/pdf", async () => {
+      const document = {
+        ...cloneDeep(sampleDoc),
+        // TODO FIXME
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        evidence: [{ ...sampleDoc.evidence[0], mimeType: "application/pdf" }]
+      };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when mimeType is image/png", async () => {
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/png" }] };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be valid when mimeType is image/jpeg", async () => {
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/jpeg" }] };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
 
-  //   it("should be invalid when adding additional data", async () => {
-  //     expect.assertions(2);
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], key: "any" }] };
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "additionalProperties",
-  //           dataPath: ".attachments[0]",
-  //           schemaPath: "#/properties/attachments/items/additionalProperties",
-  //           params: { additionalProperty: "key" },
-  //           message: "should NOT have additional properties"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if filename is missing", async () => {
-  //     expect.assertions(2);
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
-  //     delete document.attachments[0].filename;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".attachments[0]",
-  //           schemaPath: "#/properties/attachments/items/required",
-  //           params: { missingProperty: "filename" },
-  //           message: "should have required property 'filename'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if mimeType is missing", async () => {
-  //     expect.assertions(2);
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
-  //     delete document.attachments[0].mimeType;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".attachments[0]",
-  //           schemaPath: "#/properties/attachments/items/required",
-  //           params: { missingProperty: "mimeType" },
-  //           message: "should have required property 'mimeType'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if mimeType is not one of the specified enum value", async () => {
-  //     expect.assertions(2);
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
-  //     document.attachments[0].mimeType = "Something";
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "enum",
-  //           dataPath: ".attachments[0].mimeType",
-  //           schemaPath: "#/properties/attachments/items/properties/mimeType/enum",
-  //           params: { allowedValues: ["application/pdf", "image/png", "image/jpeg"] },
-  //           message: "should be equal to one of the allowed values"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if data is missing", async () => {
-  //     expect.assertions(2);
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
-  //     delete document.attachments[0].data;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".attachments[0]",
-  //           schemaPath: "#/properties/attachments/items/required",
-  //           params: { missingProperty: "data" },
-  //           message: "should have required property 'data'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  //   it("should be invalid if type is missing", async () => {
-  //     expect.assertions(2);
-  //     // TODO FIXME
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  //     // @ts-ignore
-  //     const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
-  //     delete document.attachments[0].type;
-  //     try {
-  //       await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-  //     } catch (e) {
-  //       expect(e).toHaveProperty("message", "Invalid document");
-  //       expect(e).toHaveProperty("validationErrors", [
-  //         {
-  //           keyword: "required",
-  //           dataPath: ".attachments[0]",
-  //           schemaPath: "#/properties/attachments/items/required",
-  //           params: { missingProperty: "type" },
-  //           message: "should have required property 'type'"
-  //         }
-  //       ]);
-  //     }
-  //   });
-  // });
+    it("should be invalid when adding additional data", async () => {
+      expect.assertions(2);
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], key: "any" }] };
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "additionalProperties",
+            dataPath: ".evidence[0]",
+            schemaPath: "#/properties/evidence/items/additionalProperties",
+            params: { additionalProperty: "key" },
+            message: "should NOT have additional properties"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if filename is missing", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      delete document.evidence[0].fileName;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".evidence[0]",
+            schemaPath: "#/properties/evidence/items/required",
+            params: { missingProperty: "fileName" },
+            message: "should have required property 'fileName'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if mimeType is missing", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      delete document.evidence[0].mimeType;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".evidence[0]",
+            schemaPath: "#/properties/evidence/items/required",
+            params: { missingProperty: "mimeType" },
+            message: "should have required property 'mimeType'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if mimeType is not one of the specified enum value", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      document.evidence[0].mimeType = "Something";
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "enum",
+            dataPath: ".evidence[0].mimeType",
+            schemaPath: "#/properties/evidence/items/properties/mimeType/enum",
+            params: { allowedValues: ["application/pdf", "image/png", "image/jpeg"] },
+            message: "should be equal to one of the allowed values"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if data is missing", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      delete document.evidence[0].data;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".evidence[0]",
+            schemaPath: "#/properties/evidence/items/required",
+            params: { missingProperty: "data" },
+            message: "should have required property 'data'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if type is missing", async () => {
+      expect.assertions(2);
+      const document = { ...cloneDeep(sampleDoc) };
+      // TODO FIXME
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      delete document.evidence[0].type;
+      try {
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".evidence[0]",
+            schemaPath: "#/properties/evidence/items/required",
+            params: { missingProperty: "type" },
+            message: "should have required property 'type'"
+          }
+        ]);
+      }
+    });
+  });
 });
