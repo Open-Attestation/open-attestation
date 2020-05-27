@@ -3,7 +3,7 @@ import { hashToBuffer } from "../shared/utils";
 import { v4 as uuid } from "uuid";
 import { MerkleTree } from "../shared/merkle";
 import { Salt, VerifiableCredential } from "../shared/@types/document";
-import { digestDocument as digestDocumentV3 } from "../v3/digest";
+import { digestDocument } from "../v3/digest";
 
 const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
@@ -35,7 +35,7 @@ export const wrap = <T extends OpenAttestationDocument>(document: any): Verifiab
   //   "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld",
   // );
   const salts = salt(document);
-  const digest = digestDocumentV3(document, salts, []);
+  const digest = digestDocument(document, salts, []);
 
   const batchBuffers = [digest].map(hashToBuffer);
 
@@ -70,7 +70,7 @@ export const wraps = <T extends OpenAttestationDocument>(documents: any[]): Veri
     return salt(document);
   });
   const digests = documents.map((document, index) => {
-    return digestDocumentV3(document, salts[index], []);
+    return digestDocument(document, salts[index], []);
   });
 
   const batchBuffers = digests.map(hashToBuffer);

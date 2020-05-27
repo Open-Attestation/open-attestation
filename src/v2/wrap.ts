@@ -1,4 +1,4 @@
-import { digestDocument as digestDocumentV2 } from "./digest";
+import { digestDocument } from "./digest";
 import { MerkleTree } from "../shared/merkle";
 import { hashToBuffer } from "../shared/utils";
 import { SchematisedDocument, Signature, WrappedDocument } from "../shared/@types/document";
@@ -8,7 +8,7 @@ export const wrap = <T = OpenAttestationDocument>(
   document: SchematisedDocument<T>,
   batch?: string[]
 ): WrappedDocument<T> => {
-  const digest = digestDocumentV2(document);
+  const digest = digestDocument(document);
 
   if (batch && !batch.includes(digest)) {
     throw new Error("Document is not in batch");
