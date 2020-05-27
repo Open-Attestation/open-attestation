@@ -1,0 +1,120 @@
+{
+  "version": "https://schema.openattestation.com/3.0/schema.json",
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld"
+  ],
+  "id": "http://example.edu/credentials/58473",
+  "type": [
+    "VerifiableCredential",
+    "AlumniCredential"
+  ],
+  "issuer": "https://example.edu/issuers/14",
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "alumniOf": "Example University"
+  },
+  "proof": {
+    "type": "OpenAttestationSignature2018",
+    "identity": {
+      "location": "example.com",
+      "type": "DNS-TXT"
+    },
+    "method": "DOCUMENT_STORE",
+    "value": "0xabcd",
+    "signature": {
+      "type": "SHA3MerkleProof",
+      "targetHash": "c9ce50e668be418cd233db0dc10d11699287f9d52855b87a2bd26e5608031c1f",
+      "proof": [],
+      "merkleRoot": "c9ce50e668be418cd233db0dc10d11699287f9d52855b87a2bd26e5608031c1f",
+      "salts": [
+        {
+          "value": "7ab4dc82-e42c-455a-bee6-fb3a6fa8db4e",
+          "path": "version"
+        },
+        {
+          "value": "0826c3b4-e991-42ce-a540-6e696c1a6fda",
+          "path": "@context[0]"
+        },
+        {
+          "value": "ee39a6c1-7f80-4280-9b2a-b6fd362929dd",
+          "path": "@context[1]"
+        },
+        {
+          "value": "6997fc44-d3dd-4940-a3a9-b36f4e5a0b7f",
+          "path": "@context[2]"
+        },
+        {
+          "value": "c4927d0f-1349-400b-b5ec-3bc0ef47831d",
+          "path": "id"
+        },
+        {
+          "value": "c3b9cb22-3763-4128-bffa-cb5a7942538e",
+          "path": "type[0]"
+        },
+        {
+          "value": "9c908ef1-eb21-4945-bb9a-8f5859c244e6",
+          "path": "type[1]"
+        },
+        {
+          "value": "4dbf2b03-546f-445d-9f1c-b597398ff9dd",
+          "path": "issuer"
+        },
+        {
+          "value": "f7e51807-f1cf-4b9c-bc66-08900e3a8437",
+          "path": "issuanceDate"
+        },
+        {
+          "value": "f7c59ea6-a197-46da-b893-2671a259569b",
+          "path": "credentialSubject.id"
+        },
+        {
+          "value": "d7008495-9e82-4cdf-b79f-d25ce8318eb2",
+          "path": "credentialSubject.alumniOf"
+        },
+        {
+          "value": "e93f854a-8a5b-43c5-89b3-89f5677254d1",
+          "path": "proof.type"
+        },
+        {
+          "value": "95a0b9e3-756d-4ce8-95e7-827af57a8671",
+          "path": "proof.identity.location"
+        },
+        {
+          "value": "f2623b5a-318e-4773-bcc2-d4d5433cd2a4",
+          "path": "proof.identity.type"
+        },
+        {
+          "value": "24035666-a193-4e73-aa87-b719522851fc",
+          "path": "proof.method"
+        },
+        {
+          "value": "abd4ecf5-e384-4d59-848c-bc63595298eb",
+          "path": "proof.value"
+        },
+        {
+          "value": "005e7ce3-108f-4eec-8155-7f9c1eeca288",
+          "path": "template.name"
+        },
+        {
+          "value": "58105e04-08c7-4993-bc14-1b16eb3850c3",
+          "path": "template.type"
+        },
+        {
+          "value": "13d31e70-590f-4c0a-8fd4-e9cd2dd646a2",
+          "path": "template.url"
+        }
+      ],
+      "privacy": {
+        "obfuscatedData": []
+      }
+    }
+  },
+  "template": {
+    "name": "CUSTOM_TEMPLATE",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://lol"
+  }
+}

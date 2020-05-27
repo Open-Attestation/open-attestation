@@ -1,19 +1,30 @@
 import Ajv from "ajv";
-import { digestDocument } from "./digest";
-import { getSchema, validateSchema as validate } from "./schema";
-import { verify, wrap } from "./signature";
-import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./@types/document";
-import { saltData } from "./privacy/salt";
-import * as utils from "./utils";
+import { digestDocument as digestDocumentV2 } from "./v2/digest";
+import { getSchema, validateSchema as validate, validateW3C } from "./shared/validate";
+import { verify } from "./v2/verify";
+import { verifyV3 } from "./v3/verify";
+import { wrap } from "./v2/wrap";
+import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
+import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./shared/@types/document";
+import { saltData } from "./v2/salt";
+import * as utils from "./shared/utils";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
 import { OpenAttestationDocument } from "./__generated__/schemaV3";
-import { obfuscateV3, validateV3, verifyV3, wrapsV3, wrapV3 } from "./signature/signature.v3";
-import { obfuscateDocument } from "./privacy";
+import { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
+import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
   version?: SchemaId;
+}
+interface WrapDocumentOptionV2 {
+  externalSchemaId?: string;
+  version?: SchemaId.v2;
+}
+interface WrapDocumentOptionV3 {
+  externalSchemaId?: string;
+  version?: SchemaId.v3;
 }
 const defaultVersion = SchemaId.v2;
 
@@ -37,15 +48,6 @@ const isSchemaValidationError = (error: any): error is SchemaValidationError => 
   return !!error.validationErrors;
 };
 
-interface WrapDocumentOptionV2 {
-  externalSchemaId?: string;
-  version?: SchemaId.v2;
-}
-interface WrapDocumentOptionV3 {
-  externalSchemaId?: string;
-  version?: SchemaId.v3;
-}
-
 export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentOptionV2): Promise<WrappedDocument<T>>;
 export async function wrapDocument<T extends OpenAttestationDocument>(
   data: T,
@@ -58,18 +60,18 @@ export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentO
       : wrapV3({ version: SchemaId.v3, ...data });
     const errors = validate(wrappedDocument, getSchema(SchemaId.v3));
     if (errors.length > 0) {
-      console.log(errors);
       throw new SchemaValidationError("Invalid document", errors, wrappedDocument);
     }
-    await validateV3(wrappedDocument);
+    await validateW3C(wrappedDocument);
     return wrappedDocument;
   }
+
   const document: SchematisedDocument = createDocument(data, options);
   const errors = validate(document, getSchema(options?.version ?? defaultVersion));
   if (errors.length > 0) {
     throw new SchemaValidationError("Invalid document", errors, document);
   }
-  return wrap(document, [digestDocument(document)]);
+  return wrap(document, [digestDocumentV2(document)]);
 }
 
 export function wrapDocuments<T = unknown>(dataArray: T[], options?: WrapDocumentOptionV2): WrappedDocument<T>[];
@@ -93,6 +95,7 @@ export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): 
     });
     return wrappedDocument;
   }
+
   const documents = dataArray.map(data => createDocument(data, options));
   documents.forEach(document => {
     const errors = validate(document, getSchema(options?.version ?? defaultVersion));
@@ -101,7 +104,7 @@ export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): 
     }
   });
 
-  const batchHashes = documents.map(digestDocument);
+  const batchHashes = documents.map(digestDocumentV2);
   return documents.map(doc => wrap(doc, batchHashes));
 }
 
@@ -123,16 +126,21 @@ export function obfuscate<T extends VerifiableCredential<OpenAttestationDocument
   fields: string[] | string
 ): T;
 export function obfuscate(document: any, fields: string[] | string) {
-  return document.version === SchemaId.v3 ? obfuscateV3(document, fields) : obfuscateDocument(document, fields);
+  return document.version === SchemaId.v3
+    ? obfuscateDocumentV3(document, fields)
+    : obfuscateDocumentV2(document, fields);
 }
 
-export { digestDocument } from "./digest";
-export { checkProof, MerkleTree } from "./signature";
-export { obfuscateDocument } from "./privacy";
-export { sign } from "./sign";
+export { digestDocument as digestDocumentV2 } from "./v2/digest";
+export { digestDocument as digestDocumentV3 } from "./v3/digest";
+export { checkProof, MerkleTree } from "./shared/merkle";
+// export { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
+// export { obfuscateDocument as obfuscateDocumentV3, validate as validateV3 } from "./v3/obfuscate";
+export { obfuscate as obfuscateDocument };
+export { sign } from "./v2/sign";
 export { utils, isSchemaValidationError };
-export * from "./@types/document";
-export * from "./schema/3.0/w3c";
-export { getData } from "./utils"; // keep it to avoid breaking change, moved from privacy to utils
+export * from "./shared/@types/document";
+export * from "./v3/schema/w3c";
+export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };

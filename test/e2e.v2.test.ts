@@ -21,8 +21,8 @@ const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
 
 describe("v2 E2E Test Scenarios", () => {
   describe("Issuing a single documents", () => {
-    test("should create a wrapped v2 document", () => {
-      const wrappedDocument = wrapDocument(openAttestationDatav2);
+    test("should create a wrapped v2 document", async () => {
+      const wrappedDocument = await wrapDocument(openAttestationDatav2);
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
       expect(wrappedDocument.signature.targetHash).toBeDefined();
@@ -31,7 +31,7 @@ describe("v2 E2E Test Scenarios", () => {
       expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
     });
     test("should create a wrapped v2 document with a signed proof block", async () => {
-      const wrappedDocument = wrapDocument(openAttestationDatav2);
+      const wrappedDocument = await wrapDocument(openAttestationDatav2);
       const options = {
         privateKey: "0x0123456789012345678901234567890123456789012345678901234567890123",
         verificationMethod: "0x14791697260E4c9A71f18484C9f997B308e59325",
@@ -44,8 +44,8 @@ describe("v2 E2E Test Scenarios", () => {
       const recoverAddress = ethers.utils.verifyMessage(msg, proof.signature);
       expect(recoverAddress.toLowerCase()).toStrictEqual(options.verificationMethod.toLowerCase());
     });
-    test("should create a wrapped v2 document when issuer contains additional data", () => {
-      const wrappedDocument = wrapDocument({
+    test("should create a wrapped v2 document when issuer contains additional data", async () => {
+      const wrappedDocument = await wrapDocument({
         ...openAttestationDatav2,
         issuers: [
           {
