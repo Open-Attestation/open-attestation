@@ -88,9 +88,6 @@ describe("v3 E2E Test Scenarios", () => {
       const missingData = {
         ...omit(cloneDeep(document), "issuer")
       };
-
-      console.log(missingData);
-
       await expect(
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -100,7 +97,6 @@ describe("v3 E2E Test Scenarios", () => {
         })
       ).rejects.toThrow("Invalid document");
     });
-
     test("creates a wrapped document", async () => {
       const wrappedDocument = await wrapDocument(
         {

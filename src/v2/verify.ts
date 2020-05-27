@@ -1,6 +1,6 @@
 import { get } from "lodash";
 import { keccak256 } from "js-sha3";
-import { digestDocument as digestDocumentV2 } from "./digest";
+import { digestDocument } from "./digest";
 import { hashToBuffer, bufSortJoin } from "../shared/utils";
 import { WrappedDocument } from "../shared/@types/document";
 
@@ -11,7 +11,7 @@ export const verify = <T = any>(document: any): document is WrappedDocument<T> =
   }
 
   // Checks target hash
-  const digest = digestDocumentV2(document);
+  const digest = digestDocument(document);
   const targetHash: string = get(document, "signature.targetHash");
   if (digest !== targetHash) return false;
 

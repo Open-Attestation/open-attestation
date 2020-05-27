@@ -8,15 +8,10 @@ export const digestDocument = (
   salts: Salt[],
   obfuscatedData: string[]
 ) => {
-  // Prepare array of hashes from filtered data
-  // const hashedDataArray = document.proof.signature.privacy.obfuscatedData;
-
-  // console.log(JSON.stringify(salts, null, 2));
   // Prepare array of hashes from visible data
   const hashedUnhashedDataArray = salts
     .filter(salt => get(document, salt.path))
     .map(salt => {
-      // console.log(`[${salt.path}] = ${get(document, salt.path)}`);
       return keccak256(JSON.stringify(`${salt.value}:${get(document, salt.path)}`));
     });
 
