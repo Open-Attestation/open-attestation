@@ -173,6 +173,7 @@ describe("Util Functions", () => {
       ]);
     });
     test("should return all issuers address for v3 document", async () => {
+      // This test takes some time to run, so we set the timeout to 14s
       const document: VerifiableCredential<OpenAttestationDocument> = await wrapDocument(
         {
           "@context": [
@@ -214,6 +215,6 @@ describe("Util Functions", () => {
         { version: SchemaId.v3 }
       );
       expect(utils.getIssuerAddress(document)).toStrictEqual("0xabcf");
-    });
+    }, 14000);
   });
 });

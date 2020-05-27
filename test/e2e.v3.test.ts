@@ -152,13 +152,12 @@ describe("v3 E2E Test Scenarios", () => {
       });
       expect(validateSchema(wrappedDocument)).toBe(true);
     });
-
     test("does not allow for the same merkle root to be generated", async () => {
+      // This test takes some time to run, so we set the timeout to 14s
       const wrappedDocument = await wrapDocument(document, { version: SchemaId.v3 });
       const newDocument = await wrapDocument(document, { version: SchemaId.v3 });
       expect(wrappedDocument.proof.signature.merkleRoot).not.toBe(newDocument.proof.signature.merkleRoot);
     }, 14000);
-
     test("obfuscate data correctly", async () => {
       const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscate(newDocument, ["key2"]);
@@ -167,7 +166,6 @@ describe("v3 E2E Test Scenarios", () => {
       expect(verified).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
     });
-
     test("obfuscate data transistively", async () => {
       const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
       const intermediateDocument = obfuscate(newDocument, ["key2"]);
@@ -178,6 +176,7 @@ describe("v3 E2E Test Scenarios", () => {
       expect(comparison).toEqual(obfuscatedDocument);
     });
   });
+
   describe("Issuing a batch of documents", () => {
     test("fails if there is a malformed document", () => {
       const malformedDatum = [
@@ -189,7 +188,6 @@ describe("v3 E2E Test Scenarios", () => {
       const action = () => wrapDocuments(malformedDatum);
       expect(action).toThrow("Invalid document");
     });
-
     test("creates a batch of documents if all are in the right format", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
@@ -204,7 +202,6 @@ describe("v3 E2E Test Scenarios", () => {
         expect(doc.proof.signature.proof.length).toEqual(2);
       });
     });
-
     test("checks that documents are wrapped correctly", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
@@ -221,7 +218,6 @@ describe("v3 E2E Test Scenarios", () => {
       const validatedSchema = signedDocuments.reduce((prev: boolean, curr: any) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
     });
-
     test("does not allow for same merkle root to be generated", () => {
       const signedDocuments = wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
@@ -233,6 +229,7 @@ describe("v3 E2E Test Scenarios", () => {
       expect(signedDocuments[0].proof.signature.merkleRoot).not.toBe(newSignedDocuments[0].proof.signature.merkleRoot);
     });
   });
+
   describe("validate", () => {
     test("should throw an error if document id is not a valid open attestation schema version", () => {
       const action = () =>
