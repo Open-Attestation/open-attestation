@@ -1,11 +1,17 @@
 import { obfuscate, validateSchema, verifySignature, wrapDocument, wrapDocuments } from "../src";
 import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../src/__generated__/schemaV3";
 import { SchemaId } from "../src/shared/@types/document";
+import { cloneDeep, omit } from "lodash";
 
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
 
 const openAttestationData: OpenAttestationDocument = {
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld",
+    "https://gist.githubusercontent.com/gjj/1225b659da194b56dc48c0ac1c9b3043/raw/5cdf20c40aa0c0bbe02d111f973772e012b702b1/CustomContext.jsonld"
+  ],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
   issuanceDate: "2010-01-01T19:23:24Z",
@@ -78,22 +84,39 @@ describe("v3 E2E Test Scenarios", () => {
   describe("Issuing a single document", () => {
     const document = datum[0];
 
-    test("fails for malformed data", async () => {
-      const malformedData = {
-        ...document,
-        issuer: undefined
+    test("fails for missing data", async () => {
+      const missingData = {
+        ...omit(cloneDeep(document), "issuer")
       };
 
-      await expect(wrapDocument(malformedData)).rejects.toThrow("Invalid document");
+      console.log(missingData);
+
+      await expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        wrapDocument(missingData, {
+          externalSchemaId: "http://example.com/schema.json",
+          version: SchemaId.v3
+        })
+      ).rejects.toThrow("Invalid document");
     });
 
     test("creates a wrapped document", async () => {
-      const wrappedDocument = await wrapDocument(openAttestationData, {
-        externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
-      });
+      const wrappedDocument = await wrapDocument(
+        {
+          ...openAttestationData,
+          key1: "test"
+        },
+        {
+          externalSchemaId: "http://example.com/schema.json",
+          version: SchemaId.v3
+        }
+      );
       expect(wrappedDocument.schema).toBe("http://example.com/schema.json");
-      // expect(wrappedDocument.key1).toEqual(expect.stringContaining("test"));
+      // TODO: To fix later
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      expect(wrappedDocument.key1).toEqual(expect.stringContaining("test"));
       expect(wrappedDocument.proof.signature.type).toBe("SHA3MerkleProof");
       expect(wrappedDocument.proof.signature.targetHash).toBeDefined();
       expect(wrappedDocument.proof.signature.merkleRoot).toBeDefined();
@@ -135,13 +158,10 @@ describe("v3 E2E Test Scenarios", () => {
     });
 
     test("does not allow for the same merkle root to be generated", async () => {
-      const wrappedDocument = await wrapDocument(document, {
-        externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
-      });
+      const wrappedDocument = await wrapDocument(document, { version: SchemaId.v3 });
       const newDocument = await wrapDocument(document, { version: SchemaId.v3 });
       expect(wrappedDocument.proof.signature.merkleRoot).not.toBe(newDocument.proof.signature.merkleRoot);
-    });
+    }, 14000);
 
     test("obfuscate data correctly", async () => {
       const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
@@ -256,40 +276,59 @@ describe("v3 E2E Test Scenarios", () => {
       expect(
         validateSchema({
           version: SchemaId.v3,
-          schema: "http://example.com/schemaV3.json",
-          reference: "reference",
-          name: "name",
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld",
+            "https://gist.githubusercontent.com/gjj/1225b659da194b56dc48c0ac1c9b3043/raw/5cdf20c40aa0c0bbe02d111f973772e012b702b1/CustomContext.jsonld",
+            "https://gist.githubusercontent.com/gjj/e667c86cef10b230b64de9a3dcf23a15/raw/1b3dbf7eff1dd50263c18c0dc44df138bc503c14/DrivingLicenceCredential.jsonld"
+          ],
+          reference: "SERIAL_NUMBER_123",
+          name: "Republic of Singapore Driving Licence",
           issuanceDate: "2010-01-01T19:23:24Z",
           validFrom: "2010-01-01T19:23:24Z",
           issuer: {
             id: "https://example.com",
-            name: "issuer.name"
+            name: "DEMO STORE"
           },
-          type: ["VerifiableCredential", "UniversityDegreeCredential"],
+          type: ["VerifiableCredential", "DrivingLicenceCredential"],
           credentialSubject: {
-            id: "did:example:1234",
-            name: "Example Name"
+            id: "did:example:SERIAL_NUMBER_123",
+            class: [
+              {
+                type: "3",
+                effectiveDate: "2010-01-01T19:23:24Z"
+              },
+              {
+                type: "3A",
+                effectiveDate: "2010-01-01T19:23:24Z"
+              }
+            ]
           },
           template: {
-            name: "template.name",
+            name: "CUSTOM_TEMPLATE",
             type: "EMBEDDED_RENDERER",
-            url: "https://example.com"
+            url: "https://localhost:3000/renderer"
           },
           proof: {
             type: "OpenAttestationSignature2018",
-            method: "TOKEN_REGISTRY",
-            value: "proof.value",
+            method: "DOCUMENT_STORE",
+            value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identity: {
               type: "DNS-TXT",
-              location: "issuer.identityProof.location"
-            },
-            signature: {
-              merkleRoot: "0xabc",
-              proof: [],
-              targetHash: "0xabc",
-              type: "SHA3MerkleProof"
+              location: "tradetrust.io"
             }
-          }
+          },
+          recipient: {
+            name: "Recipient Name"
+          },
+          evidence: [
+            {
+              type: "DocumentVerification2018",
+              fileName: "sample.pdf",
+              mimeType: "application/pdf",
+              data: "BASE64_ENCODED_FILE"
+            }
+          ]
         })
       ).toStrictEqual(true);
     });
@@ -298,6 +337,11 @@ describe("v3 E2E Test Scenarios", () => {
         validateSchema({
           version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://www.w3.org/2018/credentials/examples/v1",
+            "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld"
+          ],
           reference: "reference",
           name: "name",
           issuanceDate: "2010-01-01T19:23:24Z",
@@ -370,7 +414,7 @@ describe("v3 E2E Test Scenarios", () => {
         })
       ).toStrictEqual(false);
     });
-    test("should return true when document is valid and version is not provided", () => {
+    test("should default to v2 when document is valid and version is undefined", () => {
       expect(
         validateSchema({
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore

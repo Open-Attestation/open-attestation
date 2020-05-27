@@ -6,7 +6,7 @@ import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { VerifiableCredential } from "../../shared/@types/document";
-import { compact, expand } from "jsonld";
+import { expand } from "jsonld";
 
 const logger = getLogger("validate");
 
@@ -15,11 +15,10 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
     throw new Error("No schema validator provided");
   }
   const valid = validator(document.version === SchemaId.v3 ? document : getData(document));
-  // console.log(validator.errors);
   if (!valid) {
-    console.log({ validateError: validator.errors });
     logger.debug("There are errors in the document");
     logger.debug(validator.errors);
+    console.log(validator.errors);
     return validator.errors ?? [];
   }
   logger.debug(`Document is a valid open attestation document v${document.version}`);
@@ -71,8 +70,7 @@ const isValidRFC3986 = (str: any) => {
 };
 
 export async function validateW3C<T extends OpenAttestationDocument>(
-  credential: VerifiableCredential<T>,
-  validateTypeWithContext = true
+  credential: VerifiableCredential<T>
 ): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (
@@ -105,32 +103,14 @@ export async function validateW3C<T extends OpenAttestationDocument>(
   if (!credential.type.includes("VerifiableCredential")) {
     throw new Error("Property 'type' must have VerifiableCredential as one of the items");
   }
-  // if (credential["@context"].length > 1) {
-  //   // e.g. type: ["VerifiableCredential"]
-  //   if (Array.isArray(credential.type) && credential.type.length == 1) {
-  //     throw new Error("Property 'type' must have VerifiableCredential as one of the items");
-  //   }
-  //   // e.g. type: "VerifiableCredential"
-  //   if (typeof credential.type == "string") {
-  //     throw new Error("Property 'type' must be string that is 'VerifiableCredential'");
-  //   }
-  // }
-  // const compacted = await compact(credential, "https://www.w3.org/2018/credentials/v1");
-  // console.log(JSON.stringify(compacted, null, 2));
-  await compact(credential, "https://www.w3.org/2018/credentials/v1", {
+
+  await expand(credential, {
     expansionMap: info => {
-      console.log(info);
       if (info.unmappedProperty) {
         throw new Error("The property '" + info.unmappedProperty + "' in the input was not defined in the context");
       }
     }
   });
-
-  // console.log(compacted);
-
-  if (validateTypeWithContext) {
-    // Check if we can use some other context other than https://w3id.org/security/v2
-  }
 }
 
 const ajv = new Ajv({ allErrors: true });

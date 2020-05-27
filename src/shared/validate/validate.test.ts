@@ -1,13 +1,6 @@
 import Ajv from "ajv";
-import { cloneDeep } from "lodash";
 import { validateSchema } from "./validate";
-import { wrapDocument } from "../../index";
 import { SchematisedDocument, SchemaId } from "../@types/document";
-import { $id } from "../../v3/schema/schema.json";
-import sample from "../../v3/schema/sample-document.json";
-import { OpenAttestationDocument } from "../../__generated__/schemaV3";
-
-const sampleDoc = sample as OpenAttestationDocument;
 
 const schema = {
   $id: "http://example.com/schema.json",

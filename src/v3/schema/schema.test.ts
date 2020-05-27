@@ -23,8 +23,7 @@ describe("schema/v3.0", () => {
     const document = { ...cloneDeep(sampleDoc), key1: "some" };
     const wrappedDocument = await wrapDocument(document, {
       externalSchemaId: $id,
-      version: SchemaId.v3,
-      validateTypeWithContext: false
+      version: SchemaId.v3
     });
     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
   });
@@ -72,8 +71,7 @@ describe("schema/v3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "id") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3,
-        validateTypeWithContext: false
+        version: SchemaId.v3
       });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -81,7 +79,7 @@ describe("schema/v3.0", () => {
       // id can be optional, but if present, it has to be a URI, see https://www.w3.org/TR/vc-data-model/#identifiers
       const wrappedDocument = await wrapDocument(
         { ...cloneDeep(sampleDoc), id: "https://example.com" },
-        { externalSchemaId: $id, version: SchemaId.v3, validateTypeWithContext: false }
+        { externalSchemaId: $id, version: SchemaId.v3 }
       );
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -111,8 +109,7 @@ describe("schema/v3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "reference") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3,
-        validateTypeWithContext: false
+        version: SchemaId.v3
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -146,8 +143,7 @@ describe("schema/v3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "name") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3,
-        validateTypeWithContext: false
+        version: SchemaId.v3
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -200,15 +196,6 @@ describe("schema/v3.0", () => {
         "Property 'type' must have VerifiableCredential as one of the items"
       );
     });
-    it("should be invalid if any item in type does not map to any context", async () => {
-      // https://github.com/w3c/vc-test-suite/issues/97#issuecomment-537982033
-      expect.assertions(1);
-      const document = { ...cloneDeep(sampleDoc), type: ["VerifiableCredential", "SomeNonExistentCredential"] };
-      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "message",
-        "The property 'SomeNonExistentCredential' in the input was not defined in the context"
-      );
-    });
   });
 
   describe("validFrom", () => {
@@ -218,8 +205,7 @@ describe("schema/v3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "validFrom") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3,
-        validateTypeWithContext: false
+        version: SchemaId.v3
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -268,8 +254,7 @@ describe("schema/v3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "validUntil") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3,
-        validateTypeWithContext: false
+        version: SchemaId.v3
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });

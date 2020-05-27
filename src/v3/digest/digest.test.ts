@@ -1,4 +1,4 @@
-import { digestDocument as digestDocumentV3 } from "./digest";
+import { digestDocument } from "./digest";
 import { saltData } from "../wrap";
 import { TemplateType, IdentityType, Method, ProofType } from "../../__generated__/schemaV3";
 import { VerifiableCredential, SchemaId } from "../../shared/@types/document";
@@ -6,6 +6,7 @@ import { VerifiableCredential, SchemaId } from "../../shared/@types/document";
 describe("digest v3.0", () => {
   describe("placeholder for future tests", () => {
     test("digests a document with all visible content correctly", () => {
+      // TODO: fix this
       // Should this be any?
       const document: VerifiableCredential<any> = {
         version: SchemaId.v3,
@@ -34,11 +35,9 @@ describe("digest v3.0", () => {
         }
       };
 
-      // const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
       const salts = saltData(document);
-      const digest = digestDocumentV3(document, salts, []);
-      // expect(digest).toBe(expectedDigest);
-      expect(digest).toBeTruthy(); // Temporary thing
+      const digest = digestDocument(document, salts, []);
+      expect(digest).toBeTruthy();
     });
   });
 });

@@ -31,11 +31,9 @@ export const wrap = <T extends OpenAttestationDocument>(document: any): Verifiab
   // }
 
   //ASK LAURENT: Push in user defined @contexts?
-  document["@context"].push(
-    // "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld",
-    "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld",
-    "https://gist.githubusercontent.com/gjj/1225b659da194b56dc48c0ac1c9b3043/raw/5cdf20c40aa0c0bbe02d111f973772e012b702b1/CustomContext.jsonld"
-  );
+  // document["@context"].push(
+  //   "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld",
+  // );
   const salts = salt(document);
   const digest = digestDocumentV3(document, salts, []);
 

@@ -175,7 +175,11 @@ describe("Util Functions", () => {
     test("should return all issuers address for v3 document", async () => {
       const document: VerifiableCredential<OpenAttestationDocument> = await wrapDocument(
         {
-          "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://www.w3.org/2018/credentials/examples/v1",
+            "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld"
+          ],
           issuer: {
             name: "name",
             id: "https://example.com"

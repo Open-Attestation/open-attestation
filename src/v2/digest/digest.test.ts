@@ -1,4 +1,4 @@
-import { digestDocument as digestDocumentV2, flattenHashArray } from "./digest";
+import { digestDocument, flattenHashArray } from "./digest";
 import { SchematisedDocument, SchemaId } from "../../shared/@types/document";
 
 describe("digest", () => {
@@ -96,7 +96,7 @@ describe("digest", () => {
         }
       };
       const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
-      const digest = digestDocumentV2(document);
+      const digest = digestDocument(document);
       expect(digest).toBe(expectedDigest);
     });
 
@@ -112,7 +112,7 @@ describe("digest", () => {
         }
       };
 
-      const digestFn = () => digestDocumentV2(documentWithShadowedKey);
+      const digestFn = () => digestDocument(documentWithShadowedKey);
 
       expect(digestFn).toThrow("Key names must not have . in them");
     });
@@ -139,7 +139,7 @@ describe("digest", () => {
       };
 
       const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
-      const digest = digestDocumentV2(document);
+      const digest = digestDocument(document);
       expect(digest).toBe(expectedDigest);
     });
 
@@ -163,7 +163,7 @@ describe("digest", () => {
       };
 
       const expectedDigest = "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c";
-      const digest = digestDocumentV2(document);
+      const digest = digestDocument(document);
       expect(digest).toBe(expectedDigest);
     });
   });
