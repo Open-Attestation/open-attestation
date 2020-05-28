@@ -3,7 +3,7 @@
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld"
+    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
   ],
   "id": "http://example.edu/credentials/58473",
   "type": [
