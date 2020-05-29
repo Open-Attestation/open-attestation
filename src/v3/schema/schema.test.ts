@@ -126,9 +126,7 @@ describe("schema/v3.0", () => {
       // But if reference is given, it should not be null as we cannot salt null values
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), reference: null };
-      // TODO FIXME <- ASK LAURENT: what's this
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      // @ts-expect-error reference must be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Cannot convert undefined or null to object"
