@@ -25,5 +25,13 @@
     "@typescript-eslint/no-explicit-any": "off",
     "no-unused-expressions": "off",
     "@typescript-eslint/no-unused-expressions": ["error"]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.json"],
+      "rules": {
+        "@typescript-eslint/no-unused-expressions": ["off"]
+      }
+    }
+  ]
 }

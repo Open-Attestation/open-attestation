@@ -11,11 +11,13 @@
   "validFrom": "2010-01-01T19:23:24Z",
   "issuer": {
     "id": "https://example.com",
-    "name": "DEMO STORE"
+    "name": "DEMO STORE",
+    "identityProof": {
+      "type": "DNS-TXT",
+      "location": "tradetrust.io"
+    }
   },
-  "type": [
-    "VerifiableCredential", "DrivingLicenceCredential"
-  ],
+  "type": ["VerifiableCredential", "DrivingLicenceCredential"],
   "credentialSubject": {
     "id": "did:example:SERIAL_NUMBER_123",
     "class": [
@@ -37,11 +39,7 @@
   "proof": {
     "type": "OpenAttestationSignature2018",
     "method": "DOCUMENT_STORE",
-    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-    "identity": {
-      "type": "DNS-TXT",
-      "location": "tradetrust.io"
-    }
+    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
   },
   "recipient": {
     "name": "Recipient Name"

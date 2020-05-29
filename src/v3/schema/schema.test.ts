@@ -1,13 +1,13 @@
 // disable to check error properties, tried with objectContaining but didnt work
 /* eslint-disable jest/no-try-expect */
 import { cloneDeep, omit } from "lodash";
-import { wrapDocument } from "../../index";
+import { OpenAttestationDocumentWithIssuer, wrapDocument } from "../../index";
 import { $id } from "./schema.json";
 import sample from "./sample-document.json";
 import { SchemaId } from "../../shared/@types/document";
-import { OpenAttestationDocument, TemplateType } from "../../__generated__/schemaV3";
+import { IdentityProofType, Method, TemplateType } from "../../__generated__/schemaV3";
 
-const sampleDoc = sample as OpenAttestationDocument;
+const sampleDoc = sample as OpenAttestationDocumentWithIssuer;
 
 // eslint-disable-next-line jest/no-disabled-tests
 describe("schema/v3.0", () => {
@@ -631,20 +631,23 @@ describe("schema/v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc)
       };
-      delete document.proof.identity.type;
+      delete document.issuer.identityProof.type;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "required",
-            dataPath: ".proof.identity",
-            schemaPath: "#/properties/proof/properties/identity/required",
-            params: { missingProperty: "type" },
-            message: "should have required property 'type'"
-          }
-        ]);
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "required",
+              dataPath: ".issuer.identityProof",
+              schemaPath: "#/definitions/issuer/properties/identityProof/required",
+              params: { missingProperty: "type" },
+              message: "should have required property 'type'"
+            }
+          ])
+        );
       }
     });
     it("should be invalid if identity proof type is not valid", async () => {
@@ -655,20 +658,23 @@ describe("schema/v3.0", () => {
       // TODO FIXME
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      document.proof.identity.type = "OTHER";
+      document.issuer.identityProof.type = "OTHER";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "enum",
-            dataPath: ".proof.identity.type",
-            schemaPath: "#/properties/proof/properties/identity/properties/type/enum",
-            params: { allowedValues: ["DNS-TXT", "W3C-DID"] },
-            message: "should be equal to one of the allowed values"
-          }
-        ]);
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "enum",
+              dataPath: ".issuer.identityProof.type",
+              schemaPath: "#/definitions/issuer/properties/identityProof/properties/type/enum",
+              params: { allowedValues: ["DNS-TXT", "W3C-DID"] },
+              message: "should be equal to one of the allowed values"
+            }
+          ])
+        );
       }
     });
     it("should be invalid if identity proof has no location", async () => {
@@ -676,20 +682,23 @@ describe("schema/v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc)
       };
-      delete document.proof.identity.location;
+      delete document.issuer.identityProof.location;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "required",
-            dataPath: ".proof.identity",
-            schemaPath: "#/properties/proof/properties/identity/required",
-            params: { missingProperty: "location" },
-            message: "should have required property 'location'"
-          }
-        ]);
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "required",
+              dataPath: ".issuer.identityProof",
+              schemaPath: "#/definitions/issuer/properties/identityProof/required",
+              params: { missingProperty: "location" },
+              message: "should have required property 'location'"
+            }
+          ])
+        );
       }
     });
   });
@@ -706,10 +715,7 @@ describe("schema/v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc)
       };
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      document.proof.identity.type = "W3C-DID";
+      document.issuer.identityProof.type = IdentityProofType.W3CDid;
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -717,11 +723,8 @@ describe("schema/v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc)
       };
-      document.proof.identity = {
-        // TODO FIXME
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        type: "W3C-DID",
+      document.issuer.identityProof = {
+        type: IdentityProofType.W3CDid,
         location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -733,18 +736,12 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is TOKEN_REGISTRY", async () => {
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: "TOKEN_REGISTRY" } };
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: Method.TokenRegistry } };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is DOCUMENT_STORE", async () => {
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: "DOCUMENT_STORE" } };
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: Method.DocumentStore } };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -753,46 +750,46 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = {
         ...cloneDeep(sampleDoc),
-        // TODO FIXME
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        proof: { ...sampleDoc.proof, identity: { ...sampleDoc.proof.identity, key: "any" } }
+        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, key: "any" } }
       };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "additionalProperties",
-            dataPath: ".proof.identity",
-            schemaPath: "#/properties/proof/properties/identity/additionalProperties",
-            params: { additionalProperty: "key" },
-            message: "should NOT have additional properties"
-          }
-        ]);
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "additionalProperties",
+              dataPath: ".issuer.identityProof",
+              schemaPath: "#/definitions/issuer/properties/identityProof/additionalProperties",
+              params: { additionalProperty: "key" },
+              message: "should NOT have additional properties"
+            }
+          ])
+        );
       }
     });
     it("should be invalid if issuer has no identity proof", async () => {
       expect.assertions(2);
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       const document = { ...cloneDeep(sampleDoc) };
-      delete document.proof.identity;
+      delete document.issuer.identityProof;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "required",
-            dataPath: ".proof",
-            schemaPath: "#/properties/proof/required",
-            params: { missingProperty: "identity" },
-            message: "should have required property 'identity'"
-          }
-        ]);
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "required",
+              dataPath: ".issuer",
+              schemaPath: "#/definitions/issuer/required",
+              params: { missingProperty: "identityProof" },
+              message: "should have required property 'identityProof'"
+            }
+          ])
+        );
       }
     });
     it("should be invalid if proof type is missing", async () => {
