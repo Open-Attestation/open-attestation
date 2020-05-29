@@ -15,12 +15,24 @@
         "name": {
           "type": "string",
           "description": "Issuer's name"
+        },
+        "identityProof": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DNS-TXT", "W3C-DID"]
+            },
+            "location": {
+              "type": "string",
+              "description": "URL of the website referencing to document store OR a valid DID as defined by W3C in https://www.w3.org/TR/did-core/"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["type", "location"]
         }
       },
-      "required": [
-        "id",
-        "name"
-      ],
+      "required": ["id", "name", "identityProof"],
       "additionalProperties": false
     }
   },
@@ -28,10 +40,7 @@
     "@context": {
       "type": "array",
       "items": {
-        "type": [
-          "string",
-          "object"
-        ],
+        "type": ["string", "object"],
         "format": "uri"
       },
       "description": "List of URI to determine the terminology used in the verifiable credential as explained by https://www.w3.org/TR/vc-data-model/#contexts"
@@ -118,9 +127,7 @@
         "type": {
           "type": "string",
           "description": "Type of renderer template",
-          "enum": [
-            "EMBEDDED_RENDERER"
-          ]
+          "enum": ["EMBEDDED_RENDERER"]
         },
         "url": {
           "type": "string",
@@ -128,11 +135,7 @@
           "pattern": "^(https?)://"
         }
       },
-      "required": [
-        "name",
-        "type",
-        "url"
-      ],
+      "required": ["name", "type", "url"],
       "additionalProperties": false
     },
     "proof": {
@@ -141,50 +144,19 @@
         "type": {
           "type": "string",
           "description": "Proof method name as explained by https://www.w3.org/TR/vc-data-model/#types",
-          "enum": [
-            "OpenAttestationSignature2018"
-          ]
+          "enum": ["OpenAttestationSignature2018"]
         },
         "method": {
           "type": "string",
           "description": "Proof Open Attestation method",
-          "enum": [
-            "TOKEN_REGISTRY",
-            "DOCUMENT_STORE"
-          ]
+          "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE"]
         },
         "value": {
           "description": "Proof value of issuer(s)",
           "type": "string"
-        },
-        "identity": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "DNS-TXT",
-                "W3C-DID"
-              ]
-            },
-            "location": {
-              "type": "string",
-              "description": "URL of the website referencing to document store OR a valid DID as defined by W3C in https://www.w3.org/TR/did-core/"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "type",
-            "location"
-          ]
         }
       },
-      "required": [
-        "type",
-        "method",
-        "value",
-        "identity"
-      ],
+      "required": ["type", "method", "value"],
       "additionalProperties": true
     },
     "recipient": {
@@ -228,35 +200,18 @@
           "mimeType": {
             "type": "string",
             "description": "Media type (or MIME type) of this attachment",
-            "enum": [
-              "application/pdf",
-              "image/png",
-              "image/jpeg"
-            ]
+            "enum": ["application/pdf", "image/png", "image/jpeg"]
           },
           "data": {
             "type": "string",
             "description": "Base64 encoding of this attachment"
           }
         },
-        "required": [
-          "fileName",
-          "mimeType",
-          "data",
-          "type"
-        ],
+        "required": ["fileName", "mimeType", "data", "type"],
         "additionalProperties": false
       }
     }
   },
-  "required": [
-    "@context",
-    "type",
-    "credentialSubject",
-    "issuer",
-    "issuanceDate",
-    "proof",
-    "template"
-  ],
+  "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "proof", "template"],
   "additionalProperties": true
 }

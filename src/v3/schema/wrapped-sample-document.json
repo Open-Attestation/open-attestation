@@ -1,110 +1,180 @@
 {
+  "schema": "https://schema.openattestation.com/3.0/schema.json",
   "version": "https://schema.openattestation.com/3.0/schema.json",
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://www.w3.org/2018/credentials/examples/v1",
-    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
+    "https://nebulis.github.io/tmp-jsonld/DrivingLicenceCredential.jsonld",
+    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
+    "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
   ],
-  "id": "http://example.edu/credentials/58473",
-  "type": [
-    "VerifiableCredential",
-    "AlumniCredential"
-  ],
-  "issuer": "https://example.edu/issuers/14",
+  "reference": "SERIAL_NUMBER_123",
+  "name": "Republic of Singapore Driving Licence",
   "issuanceDate": "2010-01-01T19:23:24Z",
+  "validFrom": "2010-01-01T19:23:24Z",
+  "issuer": {
+    "id": "https://example.com",
+    "name": "DEMO STORE",
+    "identityProof": {
+      "type": "DNS-TXT",
+      "location": "tradetrust.io"
+    }
+  },
+  "type": ["VerifiableCredential", "DrivingLicenceCredential"],
   "credentialSubject": {
-    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    "alumniOf": "Example University"
+    "id": "did:example:SERIAL_NUMBER_123",
+    "class": [
+      {
+        "type": "3",
+        "effectiveDate": "2010-01-01T19:23:24Z"
+      },
+      {
+        "type": "3A",
+        "effectiveDate": "2010-01-01T19:23:24Z"
+      }
+    ]
+  },
+  "template": {
+    "name": "CUSTOM_TEMPLATE",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://localhost:3000/renderer"
   },
   "proof": {
     "type": "OpenAttestationSignature2018",
-    "identity": {
-      "location": "example.com",
-      "type": "DNS-TXT"
-    },
     "method": "DOCUMENT_STORE",
-    "value": "0xabcd",
+    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
     "signature": {
       "type": "SHA3MerkleProof",
-      "targetHash": "c9ce50e668be418cd233db0dc10d11699287f9d52855b87a2bd26e5608031c1f",
+      "targetHash": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
       "proof": [],
-      "merkleRoot": "c9ce50e668be418cd233db0dc10d11699287f9d52855b87a2bd26e5608031c1f",
+      "merkleRoot": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
       "salts": [
         {
-          "value": "7ab4dc82-e42c-455a-bee6-fb3a6fa8db4e",
+          "value": "660c843c-f253-454f-a965-0d291fc0607c",
+          "path": "schema"
+        },
+        {
+          "value": "9232070c-1a4e-4e5c-80df-0f7f919ca34f",
           "path": "version"
         },
         {
-          "value": "0826c3b4-e991-42ce-a540-6e696c1a6fda",
+          "value": "1a0235f2-7707-4de7-b888-619ec9bd3f9f",
           "path": "@context[0]"
         },
         {
-          "value": "ee39a6c1-7f80-4280-9b2a-b6fd362929dd",
+          "value": "f0101fd2-3593-4b38-b809-45916dc10a36",
           "path": "@context[1]"
         },
         {
-          "value": "6997fc44-d3dd-4940-a3a9-b36f4e5a0b7f",
+          "value": "c2bd7a18-daec-405e-860b-9fff25615934",
           "path": "@context[2]"
         },
         {
-          "value": "c4927d0f-1349-400b-b5ec-3bc0ef47831d",
-          "path": "id"
+          "value": "a2b7422b-8b96-4781-8bb4-9af56e92bd08",
+          "path": "@context[3]"
         },
         {
-          "value": "c3b9cb22-3763-4128-bffa-cb5a7942538e",
-          "path": "type[0]"
+          "value": "52bb395c-b20d-4da8-b851-07ca3d5d708f",
+          "path": "reference"
         },
         {
-          "value": "9c908ef1-eb21-4945-bb9a-8f5859c244e6",
-          "path": "type[1]"
+          "value": "c95ae30a-20c2-440b-a891-71d0d766eb67",
+          "path": "name"
         },
         {
-          "value": "4dbf2b03-546f-445d-9f1c-b597398ff9dd",
-          "path": "issuer"
-        },
-        {
-          "value": "f7e51807-f1cf-4b9c-bc66-08900e3a8437",
+          "value": "59ff66a0-0af4-4531-a095-8fb1badc900a",
           "path": "issuanceDate"
         },
         {
-          "value": "f7c59ea6-a197-46da-b893-2671a259569b",
+          "value": "f64b17df-f04d-4318-9c2f-e394308dd1dc",
+          "path": "validFrom"
+        },
+        {
+          "value": "b2e9b194-003e-4df4-b81d-4f0b2c505865",
+          "path": "issuer.id"
+        },
+        {
+          "value": "8982927d-f8c3-4492-8371-4df1f5fa61ab",
+          "path": "issuer.name"
+        },
+        {
+          "value": "d8fe5c04-16d2-485c-b9fa-261a73499378",
+          "path": "issuer.identityProof.type"
+        },
+        {
+          "value": "ee66646d-ca86-40e5-bbb6-e5adf495ad43",
+          "path": "issuer.identityProof.location"
+        },
+        {
+          "value": "1e3fd985-fa97-4d23-b183-4241525de978",
+          "path": "type[0]"
+        },
+        {
+          "value": "9a6eb836-2e42-47df-98e9-26152849b249",
+          "path": "type[1]"
+        },
+        {
+          "value": "6f7a3433-670d-4833-99b0-81a3e946880a",
           "path": "credentialSubject.id"
         },
         {
-          "value": "d7008495-9e82-4cdf-b79f-d25ce8318eb2",
-          "path": "credentialSubject.alumniOf"
+          "value": "0582f6c5-7f86-49c1-8b01-708aa510bf21",
+          "path": "credentialSubject.class[0].type"
         },
         {
-          "value": "e93f854a-8a5b-43c5-89b3-89f5677254d1",
-          "path": "proof.type"
+          "value": "e6187e08-2a8b-4370-9a93-d795916e294d",
+          "path": "credentialSubject.class[0].effectiveDate"
         },
         {
-          "value": "95a0b9e3-756d-4ce8-95e7-827af57a8671",
-          "path": "proof.identity.location"
+          "value": "b21c1236-f3b0-4f8d-b265-1488a08788f0",
+          "path": "credentialSubject.class[1].type"
         },
         {
-          "value": "f2623b5a-318e-4773-bcc2-d4d5433cd2a4",
-          "path": "proof.identity.type"
+          "value": "b318051b-7b08-41e2-8f9a-4fea32b1cc2a",
+          "path": "credentialSubject.class[1].effectiveDate"
         },
         {
-          "value": "24035666-a193-4e73-aa87-b719522851fc",
-          "path": "proof.method"
-        },
-        {
-          "value": "abd4ecf5-e384-4d59-848c-bc63595298eb",
-          "path": "proof.value"
-        },
-        {
-          "value": "005e7ce3-108f-4eec-8155-7f9c1eeca288",
+          "value": "1a820e2b-0105-4426-afc1-976cf64179c8",
           "path": "template.name"
         },
         {
-          "value": "58105e04-08c7-4993-bc14-1b16eb3850c3",
+          "value": "c4124c3a-477c-4a39-a026-18a988d6dc10",
           "path": "template.type"
         },
         {
-          "value": "13d31e70-590f-4c0a-8fd4-e9cd2dd646a2",
+          "value": "ba4902fc-b2a6-4345-8431-ba25ecc686f2",
           "path": "template.url"
+        },
+        {
+          "value": "7d05215c-bd71-468a-8976-d531cd6fe70d",
+          "path": "proof.type"
+        },
+        {
+          "value": "fa7fa2dd-4b10-480c-8a91-aa105462f773",
+          "path": "proof.method"
+        },
+        {
+          "value": "9bf15bbe-5b29-4325-a00e-8ebf03b53f86",
+          "path": "proof.value"
+        },
+        {
+          "value": "0452ac9a-7240-4a19-a321-b6ffbab9f8f7",
+          "path": "recipient.name"
+        },
+        {
+          "value": "3e9f13e9-db41-4028-829e-ed376c30ce3b",
+          "path": "evidence[0].type"
+        },
+        {
+          "value": "f82c817d-d57f-48f9-b347-caf005eed41c",
+          "path": "evidence[0].fileName"
+        },
+        {
+          "value": "50d51f9f-f04d-43e4-8761-55091b235fc3",
+          "path": "evidence[0].mimeType"
+        },
+        {
+          "value": "aca6dc62-a541-4a55-8f9d-7469e620595c",
+          "path": "evidence[0].data"
         }
       ],
       "privacy": {
@@ -112,9 +182,15 @@
       }
     }
   },
-  "template": {
-    "name": "CUSTOM_TEMPLATE",
-    "type": "EMBEDDED_RENDERER",
-    "url": "https://lol"
-  }
+  "recipient": {
+    "name": "Recipient Name"
+  },
+  "evidence": [
+    {
+      "type": "DocumentVerification2018",
+      "fileName": "sample.pdf",
+      "mimeType": "application/pdf",
+      "data": "BASE64_ENCODED_FILE"
+    }
+  ]
 }
