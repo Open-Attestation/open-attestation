@@ -26,20 +26,24 @@ export const salt = (data: any) => deepMap(data, "");
 
 /**
  * Wrap a single OpenAttestation document in v3 format.
- * @param document
+ * @param document an unwrapped OpenAttestation document
  */
 export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
   document: T
 ): OpenAttestationVerifiableCredential<T> => {
-  //ASK LAURENT: Should we have this? To ensure @context exists
-  // if (document["@context"] == undefined) {
-  //   document["@context"] = ["https://www.w3.org/2018/credentials/v1"];
-  // }
+  // To ensure that base @context exists, but this also means some of our validateW3C errors may be unreachable
+  if (document["@context"] == undefined) {
+    document["@context"] = ["https://www.w3.org/2018/credentials/v1"];
+  }
 
-  //ASK LAURENT: Push in user defined @contexts?
-  // document["@context"].push(
-  //   "https://gist.githubusercontent.com/Nebulis/18efab9f8801c886a7dd0f6230efd89d/raw/f9f3107cabd7768f84a36c65d756abd961d19bda/w3c.json.ld",
-  // );
+  // Since our wrapper adds in OA-specific properties, we should push our OA context. This is also to pass W3C VC test suite.
+  if (
+    Array.isArray(document["@context"]) &&
+    !("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld" in document["@context"])
+  ) {
+    document["@context"].push("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld");
+  }
+
   const salts = salt(document);
   const digest = digestDocument(document, salts, []);
 
@@ -66,7 +70,7 @@ export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
 
 /**
  * Wrap multiple OpenAttestation documents in v3 format.
- * @param documents
+ * @param documents an array of unwrapped OpenAttestation documents
  */
 export const wraps = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
   documents: T[]

@@ -36,8 +36,26 @@ describe("schema/v3.0", () => {
         "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
       );
     });
+    it("should be invalid when @context is a string", async () => {
+      // @context MUST be an ordered set in W3C VC data model, see https://www.w3.org/TR/vc-data-model/#contexts
+      const document = { ...cloneDeep(sampleDoc), "@context": "https://www.w3.org/2018/credentials/v1" };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+        "validationErrors",
+        [
+          {
+            keyword: "type",
+            dataPath: "['@context']",
+            schemaPath: "#/properties/%40context/type",
+            params: { type: "array" },
+            message: "should be array"
+          }
+        ]
+      );
+    });
     it("should be invalid when @context has https://www.w3.org/2018/credentials/v1 but is not the first", async () => {
-      // This should not have AJV validation errors as it's only caught after
+      // This should not have AJV validation errors as it's only caught during validateW3C
       const document = {
         ...cloneDeep(sampleDoc),
         "@context": ["https://www.w3.org/2018/credentials/examples/v1", "https://www.w3.org/2018/credentials/v1"]
