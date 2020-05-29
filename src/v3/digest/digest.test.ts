@@ -1,14 +1,16 @@
 import { digestDocument } from "./digest";
-import { saltData } from "../wrap";
-import { Method, ProofType, TemplateType } from "../../__generated__/schemaV3";
-import { SchemaId, VerifiableCredential } from "../../shared/@types/document";
+import { salt } from "../wrap";
+import { Method, CredentialProofType, TemplateType } from "../../__generated__/schemaV3";
+import { SchemaId, OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 
 describe("digest v3.0", () => {
   describe("placeholder for future tests", () => {
     test("digests a document with all visible content correctly", () => {
       // TODO: fix this
-      // Should this be any?
-      const document: VerifiableCredential<any> = {
+      // it's not correct
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const document: OpenAttestationVerifiableCredential = {
         version: SchemaId.v3,
         "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
         id: "http://example.edu/credentials/58473",
@@ -24,14 +26,14 @@ describe("digest v3.0", () => {
           type: TemplateType.EmbeddedRenderer,
           url: "https://renderer.openattestation.com/"
         },
-        proof: {
-          type: ProofType.OpenAttestationSignature2018,
+        credentialProof: {
+          type: CredentialProofType.OpenAttestationSignature2018,
           method: Method.DocumentStore,
           value: ""
         }
       };
 
-      const salts = saltData(document);
+      const salts = salt(document);
       const digest = digestDocument(document, salts, []);
       expect(digest).toBeTruthy();
     });

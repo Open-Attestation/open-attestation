@@ -39,147 +39,144 @@
     "url": "https://localhost:3000/renderer"
   },
   "proof": {
-    "type": "OpenAttestationSignature2018",
+    "type": "OpenAttestationMerkleProofSignature2018",
     "method": "DOCUMENT_STORE",
     "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-    "signature": {
-      "type": "SHA3MerkleProof",
-      "targetHash": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
-      "proof": [],
-      "merkleRoot": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
-      "salts": [
-        {
-          "value": "660c843c-f253-454f-a965-0d291fc0607c",
-          "path": "schema"
-        },
-        {
-          "value": "9232070c-1a4e-4e5c-80df-0f7f919ca34f",
-          "path": "version"
-        },
-        {
-          "value": "1a0235f2-7707-4de7-b888-619ec9bd3f9f",
-          "path": "@context[0]"
-        },
-        {
-          "value": "f0101fd2-3593-4b38-b809-45916dc10a36",
-          "path": "@context[1]"
-        },
-        {
-          "value": "c2bd7a18-daec-405e-860b-9fff25615934",
-          "path": "@context[2]"
-        },
-        {
-          "value": "a2b7422b-8b96-4781-8bb4-9af56e92bd08",
-          "path": "@context[3]"
-        },
-        {
-          "value": "52bb395c-b20d-4da8-b851-07ca3d5d708f",
-          "path": "reference"
-        },
-        {
-          "value": "c95ae30a-20c2-440b-a891-71d0d766eb67",
-          "path": "name"
-        },
-        {
-          "value": "59ff66a0-0af4-4531-a095-8fb1badc900a",
-          "path": "issuanceDate"
-        },
-        {
-          "value": "f64b17df-f04d-4318-9c2f-e394308dd1dc",
-          "path": "validFrom"
-        },
-        {
-          "value": "b2e9b194-003e-4df4-b81d-4f0b2c505865",
-          "path": "issuer.id"
-        },
-        {
-          "value": "8982927d-f8c3-4492-8371-4df1f5fa61ab",
-          "path": "issuer.name"
-        },
-        {
-          "value": "d8fe5c04-16d2-485c-b9fa-261a73499378",
-          "path": "issuer.identityProof.type"
-        },
-        {
-          "value": "ee66646d-ca86-40e5-bbb6-e5adf495ad43",
-          "path": "issuer.identityProof.location"
-        },
-        {
-          "value": "1e3fd985-fa97-4d23-b183-4241525de978",
-          "path": "type[0]"
-        },
-        {
-          "value": "9a6eb836-2e42-47df-98e9-26152849b249",
-          "path": "type[1]"
-        },
-        {
-          "value": "6f7a3433-670d-4833-99b0-81a3e946880a",
-          "path": "credentialSubject.id"
-        },
-        {
-          "value": "0582f6c5-7f86-49c1-8b01-708aa510bf21",
-          "path": "credentialSubject.class[0].type"
-        },
-        {
-          "value": "e6187e08-2a8b-4370-9a93-d795916e294d",
-          "path": "credentialSubject.class[0].effectiveDate"
-        },
-        {
-          "value": "b21c1236-f3b0-4f8d-b265-1488a08788f0",
-          "path": "credentialSubject.class[1].type"
-        },
-        {
-          "value": "b318051b-7b08-41e2-8f9a-4fea32b1cc2a",
-          "path": "credentialSubject.class[1].effectiveDate"
-        },
-        {
-          "value": "1a820e2b-0105-4426-afc1-976cf64179c8",
-          "path": "template.name"
-        },
-        {
-          "value": "c4124c3a-477c-4a39-a026-18a988d6dc10",
-          "path": "template.type"
-        },
-        {
-          "value": "ba4902fc-b2a6-4345-8431-ba25ecc686f2",
-          "path": "template.url"
-        },
-        {
-          "value": "7d05215c-bd71-468a-8976-d531cd6fe70d",
-          "path": "proof.type"
-        },
-        {
-          "value": "fa7fa2dd-4b10-480c-8a91-aa105462f773",
-          "path": "proof.method"
-        },
-        {
-          "value": "9bf15bbe-5b29-4325-a00e-8ebf03b53f86",
-          "path": "proof.value"
-        },
-        {
-          "value": "0452ac9a-7240-4a19-a321-b6ffbab9f8f7",
-          "path": "recipient.name"
-        },
-        {
-          "value": "3e9f13e9-db41-4028-829e-ed376c30ce3b",
-          "path": "evidence[0].type"
-        },
-        {
-          "value": "f82c817d-d57f-48f9-b347-caf005eed41c",
-          "path": "evidence[0].fileName"
-        },
-        {
-          "value": "50d51f9f-f04d-43e4-8761-55091b235fc3",
-          "path": "evidence[0].mimeType"
-        },
-        {
-          "value": "aca6dc62-a541-4a55-8f9d-7469e620595c",
-          "path": "evidence[0].data"
-        }
-      ],
-      "privacy": {
-        "obfuscatedData": []
+    "targetHash": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
+    "merkleRoot": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
+    "proofs": [],
+    "salts": [
+      {
+        "value": "660c843c-f253-454f-a965-0d291fc0607c",
+        "path": "schema"
+      },
+      {
+        "value": "9232070c-1a4e-4e5c-80df-0f7f919ca34f",
+        "path": "version"
+      },
+      {
+        "value": "1a0235f2-7707-4de7-b888-619ec9bd3f9f",
+        "path": "@context[0]"
+      },
+      {
+        "value": "f0101fd2-3593-4b38-b809-45916dc10a36",
+        "path": "@context[1]"
+      },
+      {
+        "value": "c2bd7a18-daec-405e-860b-9fff25615934",
+        "path": "@context[2]"
+      },
+      {
+        "value": "a2b7422b-8b96-4781-8bb4-9af56e92bd08",
+        "path": "@context[3]"
+      },
+      {
+        "value": "52bb395c-b20d-4da8-b851-07ca3d5d708f",
+        "path": "reference"
+      },
+      {
+        "value": "c95ae30a-20c2-440b-a891-71d0d766eb67",
+        "path": "name"
+      },
+      {
+        "value": "59ff66a0-0af4-4531-a095-8fb1badc900a",
+        "path": "issuanceDate"
+      },
+      {
+        "value": "f64b17df-f04d-4318-9c2f-e394308dd1dc",
+        "path": "validFrom"
+      },
+      {
+        "value": "b2e9b194-003e-4df4-b81d-4f0b2c505865",
+        "path": "issuer.id"
+      },
+      {
+        "value": "8982927d-f8c3-4492-8371-4df1f5fa61ab",
+        "path": "issuer.name"
+      },
+      {
+        "value": "d8fe5c04-16d2-485c-b9fa-261a73499378",
+        "path": "issuer.identityProof.type"
+      },
+      {
+        "value": "ee66646d-ca86-40e5-bbb6-e5adf495ad43",
+        "path": "issuer.identityProof.location"
+      },
+      {
+        "value": "1e3fd985-fa97-4d23-b183-4241525de978",
+        "path": "type[0]"
+      },
+      {
+        "value": "9a6eb836-2e42-47df-98e9-26152849b249",
+        "path": "type[1]"
+      },
+      {
+        "value": "6f7a3433-670d-4833-99b0-81a3e946880a",
+        "path": "credentialSubject.id"
+      },
+      {
+        "value": "0582f6c5-7f86-49c1-8b01-708aa510bf21",
+        "path": "credentialSubject.class[0].type"
+      },
+      {
+        "value": "e6187e08-2a8b-4370-9a93-d795916e294d",
+        "path": "credentialSubject.class[0].effectiveDate"
+      },
+      {
+        "value": "b21c1236-f3b0-4f8d-b265-1488a08788f0",
+        "path": "credentialSubject.class[1].type"
+      },
+      {
+        "value": "b318051b-7b08-41e2-8f9a-4fea32b1cc2a",
+        "path": "credentialSubject.class[1].effectiveDate"
+      },
+      {
+        "value": "1a820e2b-0105-4426-afc1-976cf64179c8",
+        "path": "template.name"
+      },
+      {
+        "value": "c4124c3a-477c-4a39-a026-18a988d6dc10",
+        "path": "template.type"
+      },
+      {
+        "value": "ba4902fc-b2a6-4345-8431-ba25ecc686f2",
+        "path": "template.url"
+      },
+      {
+        "value": "7d05215c-bd71-468a-8976-d531cd6fe70d",
+        "path": "proof.type"
+      },
+      {
+        "value": "fa7fa2dd-4b10-480c-8a91-aa105462f773",
+        "path": "proof.method"
+      },
+      {
+        "value": "9bf15bbe-5b29-4325-a00e-8ebf03b53f86",
+        "path": "proof.value"
+      },
+      {
+        "value": "0452ac9a-7240-4a19-a321-b6ffbab9f8f7",
+        "path": "recipient.name"
+      },
+      {
+        "value": "3e9f13e9-db41-4028-829e-ed376c30ce3b",
+        "path": "evidence[0].type"
+      },
+      {
+        "value": "f82c817d-d57f-48f9-b347-caf005eed41c",
+        "path": "evidence[0].fileName"
+      },
+      {
+        "value": "50d51f9f-f04d-43e4-8761-55091b235fc3",
+        "path": "evidence[0].mimeType"
+      },
+      {
+        "value": "aca6dc62-a541-4a55-8f9d-7469e620595c",
+        "path": "evidence[0].data"
       }
+    ],
+    "privacy": {
+      "obfuscatedData": []
     }
   },
   "recipient": {

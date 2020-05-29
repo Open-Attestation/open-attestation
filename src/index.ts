@@ -5,12 +5,17 @@ import { verify } from "./v2/verify";
 import { verifyV3 } from "./v3/verify";
 import { wrap } from "./v2/wrap";
 import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
-import { SchemaId, SchematisedDocument, VerifiableCredential, WrappedDocument } from "./shared/@types/document";
+import {
+  SchemaId,
+  SchematisedDocument,
+  OpenAttestationVerifiableCredential,
+  WrappedDocument
+} from "./shared/@types/document";
 import { saltData } from "./v2/salt";
 import * as utils from "./shared/utils";
 import * as v2 from "./__generated__/schemaV2";
 import * as v3 from "./__generated__/schemaV3";
-import { OpenAttestationDocument } from "./__generated__/schemaV3";
+import { OpenAttestationCredential } from "./__generated__/schemaV3";
 import { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
 import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
 
@@ -49,10 +54,10 @@ const isSchemaValidationError = (error: any): error is SchemaValidationError => 
 };
 
 export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentOptionV2): Promise<WrappedDocument<T>>;
-export async function wrapDocument<T extends OpenAttestationDocument>(
+export async function wrapDocument<T extends OpenAttestationCredential>(
   data: T,
   options?: WrapDocumentOptionV3
-): Promise<VerifiableCredential<T>>;
+): Promise<OpenAttestationVerifiableCredential<T>>;
 export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentOption): Promise<any> {
   if (options?.version === SchemaId.v3) {
     const wrappedDocument = options.externalSchemaId
@@ -75,10 +80,10 @@ export async function wrapDocument<T = unknown>(data: T, options?: WrapDocumentO
 }
 
 export function wrapDocuments<T = unknown>(dataArray: T[], options?: WrapDocumentOptionV2): WrappedDocument<T>[];
-export function wrapDocuments<T extends OpenAttestationDocument>(
+export function wrapDocuments<T extends OpenAttestationCredential>(
   dataArray: T[],
   options?: WrapDocumentOptionV3
-): VerifiableCredential<T>[];
+): OpenAttestationVerifiableCredential<T>[];
 export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): any {
   if (options?.version === SchemaId.v3) {
     const documents = dataArray.map(data => {
@@ -108,20 +113,20 @@ export function wrapDocuments<T>(dataArray: T[], options?: WrapDocumentOption): 
   return documents.map(doc => wrap(doc, batchHashes));
 }
 
-export const validateSchema = (document: WrappedDocument | VerifiableCredential<any>): boolean => {
+export const validateSchema = (document: WrappedDocument | OpenAttestationVerifiableCredential<any>): boolean => {
   return validate(document, getSchema(`${document?.version || SchemaId.v2}`)).length === 0;
 };
 
 export function verifySignature<T = any>(document: any): document is WrappedDocument<T>;
-export function verifySignature<T extends VerifiableCredential<OpenAttestationDocument>>(
+export function verifySignature<T extends OpenAttestationVerifiableCredential<OpenAttestationCredential>>(
   document: T
-): document is VerifiableCredential<T>;
+): document is OpenAttestationVerifiableCredential<T>;
 export function verifySignature(document: any) {
   return document.version === SchemaId.v3 ? verifyV3(document) : verify(document);
 }
 
 export function obfuscate<T = any>(document: WrappedDocument<T>, fields: string[] | string): WrappedDocument<T>;
-export function obfuscate<T extends VerifiableCredential<OpenAttestationDocument>>(
+export function obfuscate<T extends OpenAttestationVerifiableCredential<OpenAttestationCredential>>(
   document: T,
   fields: string[] | string
 ): T;
@@ -140,7 +145,6 @@ export { obfuscate as obfuscateDocument };
 export { sign } from "./v2/sign";
 export { utils, isSchemaValidationError };
 export * from "./shared/@types/document";
-export * from "./v3/schema/w3c";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };

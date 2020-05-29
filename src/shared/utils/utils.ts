@@ -1,7 +1,7 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
-import { OpenAttestationDocument as v3OpenAttestationDocument } from "../../__generated__/schemaV3";
-import { WrappedDocument, SchemaId, VerifiableCredential } from "../../shared/@types/document";
+import { OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { WrappedDocument, SchemaId, OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 import { unsaltData } from "../../v2/salt";
 
 export type Hash = string | Buffer;
@@ -64,7 +64,9 @@ export function combineHashString(first?: string, second?: string): string {
       (first || second)!; // this should always return a value right ? :)
 }
 
-export const isWrappedV3Document = (document: any): document is VerifiableCredential<v3OpenAttestationDocument> => {
+export const isWrappedV3Document = (
+  document: any
+): document is OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
   return document && document.version === SchemaId.v3;
 };
 export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
@@ -72,13 +74,13 @@ export const isWrappedV2Document = (document: any): document is WrappedDocument<
 };
 
 export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
-export function getIssuerAddress(param: VerifiableCredential<v3OpenAttestationDocument>): string;
+export function getIssuerAddress(param: OpenAttestationVerifiableCredential<OpenAttestationCredential>): string;
 export function getIssuerAddress(document: any): any {
   if (isWrappedV2Document(document)) {
     const data = getData(document);
     return data.issuers.map(issuer => issuer.certificateStore || issuer.documentStore || issuer.tokenRegistry);
   } else if (isWrappedV3Document(document)) {
-    return document.proof.value;
+    return document.credentialProof.value;
   }
   throw new Error("");
 }
