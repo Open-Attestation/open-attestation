@@ -63,7 +63,7 @@
     "semantic-release": "^15.13.31",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.5.2",
-    "typescript": "^3.7.2"
+    "typescript": "^3.9.3"
   },
   "dependencies": {
     "ajv": "6.10.2",
