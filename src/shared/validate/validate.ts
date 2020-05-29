@@ -6,7 +6,8 @@ import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
 import { OpenAttestationDocument } from "../../__generated__/schemaV3";
 import { VerifiableCredential } from "../../shared/@types/document";
-import { expand } from "jsonld";
+import { documentLoaders, expand } from "jsonld";
+import fetch from "node-fetch";
 
 const logger = getLogger("validate");
 
@@ -68,6 +69,45 @@ const isValidRFC3986 = (str: any) => {
   return rfc3986.test(str);
 };
 
+const preloadedContextList = [
+  "https://www.w3.org/2018/credentials/v1",
+  "https://www.w3.org/2018/credentials/examples/v1",
+  "https://nebulis.github.io/tmp-jsonld/DrivingLicenceCredential.jsonld",
+  "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
+  "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
+];
+const contexts: Map<string, Promise<any>> = new Map();
+const nodeDocumentLoader = documentLoaders.node();
+// this function will be directly run and pre-load and cache in memory the list of context available in preloadedContextList
+// it will also cache in memory any context not in the list that needs to be retrieved
+const contextLoader = () => {
+  // pre-load the contexts
+  for (const url of preloadedContextList) {
+    contexts.set(
+      url,
+      fetch(url, { headers: { accept: "application/json" } }).then((res: any) => res.json())
+    );
+  }
+  return async (url: string) => {
+    if (contexts.get(url)) {
+      const promise = contexts.get(url);
+      return {
+        contextUrl: undefined, // this is for a context via a link header
+        document: await promise, // this is the actual document that was loaded
+        documentUrl: url // this is the actual context URL after redirects
+      };
+    } else {
+      const promise = nodeDocumentLoader(url);
+      contexts.set(
+        url,
+        promise.then(({ document }) => document)
+      );
+      return promise;
+    }
+  };
+};
+const documentLoader = contextLoader();
+
 export async function validateW3C<T extends OpenAttestationDocument>(
   credential: VerifiableCredential<T>
 ): Promise<void> {
@@ -108,7 +148,8 @@ export async function validateW3C<T extends OpenAttestationDocument>(
       if (info.unmappedProperty) {
         throw new Error("The property '" + info.unmappedProperty + "' in the input was not defined in the context");
       }
-    }
+    },
+    documentLoader
   });
 }
 

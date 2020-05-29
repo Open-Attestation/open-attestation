@@ -1,8 +1,8 @@
 import * as utils from "./utils";
 import { wrapDocument } from "../../";
-import { VerifiableCredential, SchemaId, WrappedDocument } from "../../shared/@types/document";
+import { SchemaId, VerifiableCredential, WrappedDocument } from "../../shared/@types/document";
 import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
-import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../../__generated__/schemaV3";
+import { Method, OpenAttestationDocument, ProofType, TemplateType } from "../../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -179,11 +179,15 @@ describe("Util Functions", () => {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
             "https://www.w3.org/2018/credentials/examples/v1",
-            "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld"
+            "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
           ],
           issuer: {
             name: "name",
-            id: "https://example.com"
+            id: "https://example.com",
+            identityProof: {
+              location: "whatever",
+              type: IdentityProofType.DNSTxt
+            }
           },
           issuanceDate: "2010-01-01T19:23:24Z",
           type: ["VerifiableCredential", "UniversityDegreeCredential"],
@@ -195,10 +199,6 @@ describe("Util Functions", () => {
             }
           },
           proof: {
-            identity: {
-              location: "whatever",
-              type: IdentityType.DNSTxt
-            },
             value: "0xabcf",
             type: ProofType.OpenAttestationSignature2018,
             method: Method.DocumentStore

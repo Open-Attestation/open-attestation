@@ -1,16 +1,23 @@
-import { obfuscate, validateSchema, verifySignature, wrapDocument, wrapDocuments } from "../src";
-import { IdentityType, Method, OpenAttestationDocument, ProofType, TemplateType } from "../src/__generated__/schemaV3";
+import {
+  obfuscate,
+  OpenAttestationDocumentWithIssuer,
+  validateSchema,
+  verifySignature,
+  wrapDocument,
+  wrapDocuments
+} from "../src";
+import { IdentityProofType, Method, ProofType, TemplateType } from "../src/__generated__/schemaV3";
 import { SchemaId } from "../src/shared/@types/document";
 import { cloneDeep, omit } from "lodash";
 
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
 
-const openAttestationData: OpenAttestationDocument = {
+const openAttestationData: OpenAttestationDocumentWithIssuer = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld",
-    "https://gist.githubusercontent.com/gjj/1225b659da194b56dc48c0ac1c9b3043/raw/5cdf20c40aa0c0bbe02d111f973772e012b702b1/CustomContext.jsonld"
+    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
+    "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
   ],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
@@ -31,26 +38,25 @@ const openAttestationData: OpenAttestationDocument = {
   },
   issuer: {
     id: "http://some.example.com",
-    name: "DEMO STORE"
+    name: "DEMO STORE",
+    identityProof: {
+      type: IdentityProofType.DNSTxt,
+      location: "tradetrust.io"
+    }
   },
   proof: {
     type: ProofType.OpenAttestationSignature2018,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-    method: Method.TokenRegistry,
-    identity: {
-      type: IdentityType.DNSTxt,
-      location: "tradetrust.io"
-    }
+    method: Method.TokenRegistry
   }
 };
 
-const openAttestationDataWithW3CDID: OpenAttestationDocument = {
+const openAttestationDataWithW3CDID: OpenAttestationDocumentWithIssuer = {
   ...openAttestationData,
-  proof: {
-    ...openAttestationData.proof,
-    identity: {
-      ...openAttestationData.proof.identity,
-      type: IdentityType.W3CDid,
+  issuer: {
+    ...openAttestationData.issuer,
+    identityProof: {
+      type: IdentityProofType.W3CDid,
       location: "did:ethr:0x0xE6Fe788d8ca214A080b0f6aC7F48480b2AEfa9a6"
     }
   }
@@ -132,9 +138,9 @@ describe("v3 E2E Test Scenarios", () => {
       expect(wrappedDocumentWithW3CDID.proof.signature.merkleRoot).toBe(
         wrappedDocumentWithW3CDID.proof.signature.targetHash
       );
-      expect(wrappedDocumentWithW3CDID.proof.identity.type).toContain(IdentityType.W3CDid);
-      expect(wrappedDocumentWithW3CDID.proof.identity.location).toContain(
-        openAttestationDataWithW3CDID.proof.identity.location
+      expect(wrappedDocumentWithW3CDID.issuer.identityProof.type).toContain(IdentityProofType.W3CDid);
+      expect(wrappedDocumentWithW3CDID.issuer.identityProof.location).toContain(
+        openAttestationDataWithW3CDID.issuer.identityProof.location
       );
     });
     test("checks that document is wrapped correctly", async () => {
@@ -271,9 +277,9 @@ describe("v3 E2E Test Scenarios", () => {
           version: SchemaId.v3,
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld",
-            "https://gist.githubusercontent.com/gjj/1225b659da194b56dc48c0ac1c9b3043/raw/5cdf20c40aa0c0bbe02d111f973772e012b702b1/CustomContext.jsonld",
-            "https://gist.githubusercontent.com/gjj/e667c86cef10b230b64de9a3dcf23a15/raw/1b3dbf7eff1dd50263c18c0dc44df138bc503c14/DrivingLicenceCredential.jsonld"
+            "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
+            "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld",
+            "https://nebulis.github.io/tmp-jsonld/DrivingLicenceCredential.jsonld"
           ],
           reference: "SERIAL_NUMBER_123",
           name: "Republic of Singapore Driving Licence",
@@ -281,7 +287,11 @@ describe("v3 E2E Test Scenarios", () => {
           validFrom: "2010-01-01T19:23:24Z",
           issuer: {
             id: "https://example.com",
-            name: "DEMO STORE"
+            name: "DEMO STORE",
+            identityProof: {
+              type: "DNS-TXT",
+              location: "tradetrust.io"
+            }
           },
           type: ["VerifiableCredential", "DrivingLicenceCredential"],
           credentialSubject: {
@@ -305,11 +315,7 @@ describe("v3 E2E Test Scenarios", () => {
           proof: {
             type: "OpenAttestationSignature2018",
             method: "DOCUMENT_STORE",
-            value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-            identity: {
-              type: "DNS-TXT",
-              location: "tradetrust.io"
-            }
+            value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
           },
           recipient: {
             name: "Recipient Name"
@@ -333,7 +339,7 @@ describe("v3 E2E Test Scenarios", () => {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
             "https://www.w3.org/2018/credentials/examples/v1",
-            "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld"
+            "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
           ],
           reference: "reference",
           name: "name",
@@ -342,7 +348,11 @@ describe("v3 E2E Test Scenarios", () => {
           type: ["VerifiableCredential", "UniversityDegreeCredential"],
           issuer: {
             id: "https://example.com",
-            name: "issuer.name"
+            name: "issuer.name",
+            identityProof: {
+              type: IdentityProofType.W3CDid,
+              location: openAttestationDataWithW3CDID.issuer.identityProof.location
+            }
           },
           credentialSubject: {
             id: "did:example:1234",
@@ -357,10 +367,6 @@ describe("v3 E2E Test Scenarios", () => {
             type: "OpenAttestationSignature2018",
             method: "TOKEN_REGISTRY",
             value: "proof.value",
-            identity: {
-              type: IdentityType.W3CDid,
-              location: openAttestationDataWithW3CDID.proof.identity.location
-            },
             signature: {
               merkleRoot: "0xabc",
               proof: [],
@@ -384,7 +390,7 @@ describe("v3 E2E Test Scenarios", () => {
               id: "https://example.com",
               name: "issuer.name",
               identityProof: {
-                type: IdentityType.W3CDid
+                type: IdentityProofType.W3CDid
               }
             },
             template: {

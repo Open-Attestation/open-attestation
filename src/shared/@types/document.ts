@@ -1,10 +1,14 @@
-import { OpenAttestationDocument, Proof as ProofV3 } from "../../__generated__/schemaV3";
+import { Issuer, OpenAttestationDocument, Proof as ProofV3 } from "../../__generated__/schemaV3";
 
 export type SignatureProofAlgorithm = "SHA3MerkleProof";
 
 export enum SchemaId {
   v2 = "https://schema.openattestation.com/2.0/schema.json",
   v3 = "https://schema.openattestation.com/3.0/schema.json"
+}
+
+export interface OpenAttestationDocumentWithIssuer extends OpenAttestationDocument {
+  issuer: Issuer;
 }
 
 export interface Signature {

@@ -1,7 +1,7 @@
 import { digestDocument } from "./digest";
 import { saltData } from "../wrap";
-import { TemplateType, IdentityType, Method, ProofType } from "../../__generated__/schemaV3";
-import { VerifiableCredential, SchemaId } from "../../shared/@types/document";
+import { Method, ProofType, TemplateType } from "../../__generated__/schemaV3";
+import { SchemaId, VerifiableCredential } from "../../shared/@types/document";
 
 describe("digest v3.0", () => {
   describe("placeholder for future tests", () => {
@@ -26,10 +26,6 @@ describe("digest v3.0", () => {
         },
         proof: {
           type: ProofType.OpenAttestationSignature2018,
-          identity: {
-            location: "https://identity.openattestation.com/",
-            type: IdentityType.DNSTxt
-          },
           method: Method.DocumentStore,
           value: ""
         }
