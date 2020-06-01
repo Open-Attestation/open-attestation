@@ -140,7 +140,7 @@ export async function validateW3C<T extends OpenAttestationCredential>(
     throw new Error("Property 'type' must exist and be an array");
   }
   if (!credential.type.includes("VerifiableCredential")) {
-    throw new Error("Property 'type' must have OpenAttestationVerifiableCredential as one of the items");
+    throw new Error("Property 'type' must have VerifiableCredential as one of the items");
   }
 
   await expand(credential, {

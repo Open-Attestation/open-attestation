@@ -1,8 +1,12 @@
-import { OpenAttestationCredential } from "../__generated__/schemaV3";
 import { hashToBuffer } from "../shared/utils";
 import { v4 as uuid } from "uuid";
 import { MerkleTree } from "../shared/merkle";
-import { OpenAttestationVerifiableCredential, Salt, SchemaId, SignatureAlgorithm } from "../shared/@types/document";
+import {
+  OpenAttestationVerifiableCredential,
+  OpenAttestationVerifiableCredentialWithoutProof,
+  Salt,
+  SignatureAlgorithm
+} from "../shared/@types/document";
 import { digestDocument } from "../v3/digest";
 
 const deepMap = (value: any, path: string): Salt[] => {
@@ -24,7 +28,9 @@ export const salt = (data: any) => deepMap(data, "");
  * Wrap a single OpenAttestation document in v3 format.
  * @param document
  */
-export const wrap = <T extends OpenAttestationCredential>(document: T): OpenAttestationVerifiableCredential<T> => {
+export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
+  document: T
+): OpenAttestationVerifiableCredential<T> => {
   //ASK LAURENT: Should we have this? To ensure @context exists
   // if (document["@context"] == undefined) {
   //   document["@context"] = ["https://www.w3.org/2018/credentials/v1"];
@@ -44,7 +50,6 @@ export const wrap = <T extends OpenAttestationCredential>(document: T): OpenAtte
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
   return {
-    version: SchemaId.v3,
     ...document,
     proof: {
       type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018,
@@ -63,7 +68,7 @@ export const wrap = <T extends OpenAttestationCredential>(document: T): OpenAtte
  * Wrap multiple OpenAttestation documents in v3 format.
  * @param documents
  */
-export const wraps = <T extends OpenAttestationCredential>(
+export const wraps = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
   documents: T[]
 ): OpenAttestationVerifiableCredential<T>[] => {
   const salts = documents.map(document => {
@@ -83,7 +88,6 @@ export const wraps = <T extends OpenAttestationCredential>(
     const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
     return {
-      version: SchemaId.v3,
       ...document,
       proof: {
         type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018,
