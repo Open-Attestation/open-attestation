@@ -1,13 +1,13 @@
 // disable to check error properties, tried with objectContaining but didnt work
 /* eslint-disable jest/no-try-expect */
 import { cloneDeep, omit } from "lodash";
-import { OpenAttestationDocumentWithIssuer, wrapDocument } from "../../index";
+import { OpenAttestationCredentialWithInnerIssuer, wrapDocument } from "../../index";
 import { $id } from "./schema.json";
 import sample from "./sample-document.json";
 import { SchemaId } from "../../shared/@types/document";
 import { IdentityProofType, Method, TemplateType } from "../../__generated__/schemaV3";
 
-const sampleDoc = sample as OpenAttestationDocumentWithIssuer;
+const sampleDoc = sample as OpenAttestationCredentialWithInnerIssuer;
 
 // eslint-disable-next-line jest/no-disabled-tests
 describe("schema/v3.0", () => {
@@ -734,12 +734,18 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is TOKEN_REGISTRY", async () => {
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: Method.TokenRegistry } };
+      const document = {
+        ...cloneDeep(sampleDoc),
+        oaProof: { ...sampleDoc.oaProof, method: Method.TokenRegistry }
+      };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is DOCUMENT_STORE", async () => {
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof, method: Method.DocumentStore } };
+      const document = {
+        ...cloneDeep(sampleDoc),
+        oaProof: { ...sampleDoc.oaProof, method: Method.DocumentStore }
+      };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -793,7 +799,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is missing", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
-      delete document.proof.type;
+      delete document.oaProof.type;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -801,8 +807,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".proof",
-            schemaPath: "#/properties/proof/required",
+            dataPath: ".oaProof",
+            schemaPath: "#/properties/oaProof/required",
             params: { missingProperty: "type" },
             message: "should have required property 'type'"
           }
@@ -812,10 +818,8 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not OpenAttestationSignature2018", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      document.proof.type = "Something";
+      // @ts-expect-error
+      document.oaProof.type = "Something";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -823,8 +827,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".proof.type",
-            schemaPath: "#/properties/proof/properties/type/enum",
+            dataPath: ".oaProof.type",
+            schemaPath: "#/properties/oaProof/properties/type/enum",
             params: { allowedValues: ["OpenAttestationSignature2018"] },
             message: "should be equal to one of the allowed values"
           }
@@ -833,8 +837,8 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof method is missing", async () => {
       expect.assertions(2);
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof } };
-      delete document.proof.method;
+      const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
+      delete document.oaProof.method;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -842,8 +846,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".proof",
-            schemaPath: "#/properties/proof/required",
+            dataPath: ".oaProof",
+            schemaPath: "#/properties/oaProof/required",
             params: { missingProperty: "method" },
             message: "should have required property 'method'"
           }
@@ -852,11 +856,9 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
       expect.assertions(2);
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof } };
-      // TODO FIXME
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      document.proof.method = "Something";
+      const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
+      // @ts-expect-error
+      document.oaProof.method = "Something";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -864,8 +866,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".proof.method",
-            schemaPath: "#/properties/proof/properties/method/enum",
+            dataPath: ".oaProof.method",
+            schemaPath: "#/properties/oaProof/properties/method/enum",
             params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE"] },
             message: "should be equal to one of the allowed values"
           }
@@ -874,8 +876,8 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof value is missing", async () => {
       expect.assertions(2);
-      const document = { ...cloneDeep(sampleDoc), proof: { ...sampleDoc.proof } };
-      delete document.proof.value;
+      const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
+      delete document.oaProof.value;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -883,8 +885,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".proof",
-            schemaPath: "#/properties/proof/required",
+            dataPath: ".oaProof",
+            schemaPath: "#/properties/oaProof/required",
             params: { missingProperty: "value" },
             message: "should have required property 'value'"
           }

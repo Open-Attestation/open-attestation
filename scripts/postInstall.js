@@ -14,7 +14,7 @@ if (fs.existsSync(quicktype) && process.env.npm_config_production !== "true") {
   console.log('"Creating types from src/v3/schema/schema.json"');
   execSync(
     quicktype +
-      " -s schema -o src/__generated__/schemaV3.ts -t OpenAttestationDocument --just-types src/v3/schema/schema.json --no-date-times"
+      " -s schema -o src/__generated__/schemaV3.ts -t OpenAttestationCredential --just-types src/v3/schema/schema.json --no-date-times"
   );
 } else {
   console.log("Not running quicktype");

@@ -1,18 +1,20 @@
-import { Issuer, OpenAttestationDocument, Proof as ProofV3 } from "../../__generated__/schemaV3";
+import { Issuer, OpenAttestationCredential } from "../../__generated__/schemaV3";
 
-export type SignatureProofAlgorithm = "SHA3MerkleProof";
+export enum SignatureAlgorithm {
+  OpenAttestationMerkleProofSignature2018 = "OpenAttestationMerkleProofSignature2018"
+}
 
 export enum SchemaId {
   v2 = "https://schema.openattestation.com/2.0/schema.json",
   v3 = "https://schema.openattestation.com/3.0/schema.json"
 }
 
-export interface OpenAttestationDocumentWithIssuer extends OpenAttestationDocument {
+export interface OpenAttestationCredentialWithInnerIssuer extends OpenAttestationCredential {
   issuer: Issuer;
 }
 
 export interface Signature {
-  type: SignatureProofAlgorithm;
+  type: "SHA3MerkleProof";
   targetHash: string;
   proof: string[];
   merkleRoot: string;
@@ -60,26 +62,27 @@ export interface SignedWrappedDocument<T = any> extends WrappedDocument<T> {
   proof: Proof;
 }
 
-export interface SignatureV3 {
-  type: SignatureProofAlgorithm;
-  targetHash: string;
-  proof: string[];
-  merkleRoot: string;
-  salts: Salt[];
-  privacy: { obfuscatedData: string[] };
-}
 export interface Salt {
   value: string;
   path: string;
 }
-export interface VerifiableCredentialProof extends ProofV3 {
-  signature: SignatureV3;
+export interface VerifiableCredentialProof {
+  type: SignatureAlgorithm;
+  targetHash: string;
+  merkleRoot: string;
+  proofs: string[];
+  salts: Salt[];
+  privacy: { obfuscated: string[] };
 }
-export type VerifiableCredential<T extends OpenAttestationDocument> = T & {
+export type OpenAttestationVerifiableCredential<T extends OpenAttestationCredential = OpenAttestationCredential> = T & {
   version: SchemaId.v3;
   schema?: string;
   proof: VerifiableCredentialProof;
 };
+// TODO is this necessary ? :)
+export type OpenAttestationVerifiableCredentialWithoutProof<
+  T extends OpenAttestationCredential = OpenAttestationCredential
+> = Omit<OpenAttestationVerifiableCredential<T>, "proof">;
 
 // feel free to improve, as long as this project compile without changes :)
 // once salted, every property is turned into a string

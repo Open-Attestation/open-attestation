@@ -4,8 +4,8 @@ import openAttestationSchemav2 from "../../v2/schema/schema.json";
 import openAttestationSchemav3 from "../../v3/schema/schema.json";
 import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
-import { OpenAttestationDocument } from "../../__generated__/schemaV3";
-import { VerifiableCredential } from "../../shared/@types/document";
+import { OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 import { documentLoaders, expand } from "jsonld";
 import fetch from "node-fetch";
 
@@ -108,8 +108,8 @@ const contextLoader = () => {
 };
 const documentLoader = contextLoader();
 
-export async function validateW3C<T extends OpenAttestationDocument>(
-  credential: VerifiableCredential<T>
+export async function validateW3C<T extends OpenAttestationCredential>(
+  credential: OpenAttestationVerifiableCredential<T>
 ): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (

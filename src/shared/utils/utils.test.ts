@@ -1,8 +1,8 @@
 import * as utils from "./utils";
 import { wrapDocument } from "../../";
-import { SchemaId, VerifiableCredential, WrappedDocument } from "../../shared/@types/document";
+import { OpenAttestationVerifiableCredential, SchemaId, WrappedDocument } from "../../shared/@types/document";
 import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
-import { Method, OpenAttestationDocument, ProofType, TemplateType } from "../../__generated__/schemaV3";
+import { OaProofType, Method, OpenAttestationCredential, TemplateType } from "../../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -174,7 +174,7 @@ describe("Util Functions", () => {
     });
     test("should return all issuers address for v3 document", async () => {
       // This test takes some time to run, so we set the timeout to 14s
-      const document: VerifiableCredential<OpenAttestationDocument> = await wrapDocument(
+      const document: OpenAttestationVerifiableCredential<OpenAttestationCredential> = await wrapDocument(
         {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
@@ -198,9 +198,9 @@ describe("Util Functions", () => {
               name: "Bachelor of Science and Arts"
             }
           },
-          proof: {
+          oaProof: {
             value: "0xabcf",
-            type: ProofType.OpenAttestationSignature2018,
+            type: OaProofType.OpenAttestationSignature2018,
             method: Method.DocumentStore
           },
           name: "",

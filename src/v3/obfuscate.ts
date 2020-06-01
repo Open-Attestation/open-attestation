@@ -1,12 +1,15 @@
-import { OpenAttestationDocument } from "../__generated__/schemaV3";
+import { OpenAttestationCredential } from "../__generated__/schemaV3";
 import { toBuffer } from "../shared/utils";
-import { VerifiableCredential } from "../shared/@types/document";
+import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 import { cloneDeep, get, unset } from "lodash";
 
-export const obfuscateData = (_data: VerifiableCredential<OpenAttestationDocument>, fields: string[] | string) => {
+export const obfuscateData = (
+  _data: OpenAttestationVerifiableCredential<OpenAttestationCredential>,
+  fields: string[] | string
+) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
   const fieldsToRemove = Array.isArray(fields) ? fields : [fields];
-  const salts = _data.proof.signature.salts;
+  const salts = _data.proof.salts;
 
   // Obfuscate data by hashing them with the key
   const obfuscatedData = fieldsToRemove
@@ -32,23 +35,20 @@ export const obfuscateData = (_data: VerifiableCredential<OpenAttestationDocumen
 };
 
 export const obfuscateDocument = (
-  document: VerifiableCredential<OpenAttestationDocument>,
+  document: OpenAttestationVerifiableCredential<OpenAttestationCredential>,
   fields: string[] | string
-): VerifiableCredential<OpenAttestationDocument> => {
+): OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
   const { data, obfuscatedData } = obfuscateData(document, fields);
 
-  const currentObfuscatedData = document.proof.signature.privacy.obfuscatedData;
+  const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
   return {
     ...data,
     proof: {
       ...data.proof,
-      signature: {
-        ...data.proof.signature,
-        privacy: {
-          ...data.proof.signature.privacy,
-          obfuscatedData: newObfuscatedData
-        }
+      privacy: {
+        ...data.proof.privacy,
+        obfuscated: newObfuscatedData
       }
     }
   };
