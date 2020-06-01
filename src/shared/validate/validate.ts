@@ -4,8 +4,8 @@ import openAttestationSchemav2 from "../../v2/schema/schema.json";
 import openAttestationSchemav3 from "../../v3/schema/schema.json";
 import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
-import { OpenAttestationDocument } from "../../__generated__/schemaV3";
-import { VerifiableCredential } from "../../shared/@types/document";
+import { OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 import { documentLoaders, expand } from "jsonld";
 import fetch from "node-fetch";
 
@@ -25,7 +25,7 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
   return [];
 };
 
-const getId = (objectOrString: any) => {
+const getId = (objectOrString: string | { id: string }): string => {
   if (typeof objectOrString === "string") {
     return objectOrString;
   }
@@ -108,8 +108,8 @@ const contextLoader = () => {
 };
 const documentLoader = contextLoader();
 
-export async function validateW3C<T extends OpenAttestationDocument>(
-  credential: VerifiableCredential<T>
+export async function validateW3C<T extends OpenAttestationCredential>(
+  credential: OpenAttestationVerifiableCredential<T>
 ): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (
@@ -119,8 +119,7 @@ export async function validateW3C<T extends OpenAttestationDocument>(
     throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts");
   }
 
-  // ensure issuer is a valid URI according to RFC3986 IF it is a string
-  // TODO check if credential.issuer is string first, as it can be an object containing an id property
+  // ensure issuer is a valid URI according to RFC3986
   const issuerId = getId(credential.issuer);
   if (!isValidRFC3986(issuerId)) {
     throw new Error("Property 'issuer' id must be a valid RFC 3986 URI");
