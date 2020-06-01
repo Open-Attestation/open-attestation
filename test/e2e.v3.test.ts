@@ -46,7 +46,7 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
     }
   },
   oaProof: {
-    type: OaProofType.OpenAttestationSignature2018,
+    type: OaProofType.OpenAttestationProofMethod,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
     method: Method.TokenRegistry
   }
@@ -313,7 +313,7 @@ describe("v3 E2E Test Scenarios", () => {
             url: "https://localhost:3000/renderer"
           },
           oaProof: {
-            type: "OpenAttestationSignature2018",
+            type: "OpenAttestationProofMethod",
             method: "DOCUMENT_STORE",
             value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
           },
@@ -364,7 +364,7 @@ describe("v3 E2E Test Scenarios", () => {
             url: "https://example.com"
           },
           oaProof: {
-            type: "OpenAttestationSignature2018",
+            type: OaProofType.OpenAttestationProofMethod,
             method: "TOKEN_REGISTRY",
             value: "proof.value"
           },
@@ -399,7 +399,7 @@ describe("v3 E2E Test Scenarios", () => {
               url: "https://example.com"
             },
             proof: {
-              type: "OpenAttestationSignature2018",
+              type: OaProofType.OpenAttestationProofMethod,
               method: "TOKEN_REGISTRY",
               value: "proof.value"
             }

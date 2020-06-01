@@ -4,6 +4,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "definitions": {
+    "type": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
     "issuer": {
       "type": "object",
       "properties": {
@@ -51,17 +64,7 @@
       "description": "URI to the subject of the credential as explained by https://www.w3.org/TR/vc-data-model/#credential-subject"
     },
     "type": {
-      "oneOf": [
-        {
-          "type": "array"
-        },
-        {
-          "type": "string"
-        }
-      ],
-      "items": {
-        "type": "string"
-      },
+      "$ref": "#/definitions/type",
       "description": "Specific verifiable credential type as explained by https://www.w3.org/TR/vc-data-model/#types"
     },
     "reference": {
@@ -103,7 +106,10 @@
           "type": "object"
         },
         {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
         }
       ]
     },
@@ -144,7 +150,7 @@
         "type": {
           "type": "string",
           "description": "Proof method name as explained by https://www.w3.org/TR/vc-data-model/#types",
-          "enum": ["OpenAttestationSignature2018"]
+          "enum": ["OpenAttestationProofMethod"]
         },
         "method": {
           "type": "string",
@@ -184,17 +190,7 @@
             "description": "Name of this attachment, with appropriate extensions"
           },
           "type": {
-            "oneOf": [
-              {
-                "type": "array"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "items": {
-              "type": "string"
-            },
+            "$ref": "#/definitions/type",
             "description": "Specific evidence type as explained by https://www.w3.org/TR/vc-data-model/#types"
           },
           "mimeType": {

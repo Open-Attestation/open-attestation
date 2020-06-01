@@ -728,7 +728,7 @@ describe("schema/v3.0", () => {
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
-    it("should be valid when type is OpenAttestationSignature2018", async () => {
+    it("should be valid when type is OpenAttestationProofMethod", async () => {
       const document = { ...cloneDeep(sampleDoc) };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -815,7 +815,7 @@ describe("schema/v3.0", () => {
         ]);
       }
     });
-    it("should be invalid if proof type is not OpenAttestationSignature2018", async () => {
+    it("should be invalid if proof type is not OpenAttestationProofMethod", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
       // @ts-expect-error
@@ -829,7 +829,7 @@ describe("schema/v3.0", () => {
             keyword: "enum",
             dataPath: ".oaProof.type",
             schemaPath: "#/properties/oaProof/properties/type/enum",
-            params: { allowedValues: ["OpenAttestationSignature2018"] },
+            params: { allowedValues: ["OpenAttestationProofMethod"] },
             message: "should be equal to one of the allowed values"
           }
         ]);

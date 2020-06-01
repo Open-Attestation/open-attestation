@@ -200,7 +200,7 @@ describe("Util Functions", () => {
           },
           oaProof: {
             value: "0xabcf",
-            type: OaProofType.OpenAttestationSignature2018,
+            type: OaProofType.OpenAttestationProofMethod,
             method: Method.DocumentStore
           },
           name: "",

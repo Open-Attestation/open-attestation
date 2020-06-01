@@ -27,7 +27,7 @@ describe("digest v3.0", () => {
           url: "https://renderer.openattestation.com/"
         },
         oaProof: {
-          type: OaProofType.OpenAttestationSignature2018,
+          type: OaProofType.OpenAttestationProofMethod,
           method: Method.DocumentStore,
           value: ""
         }
