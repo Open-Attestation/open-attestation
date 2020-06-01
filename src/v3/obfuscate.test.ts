@@ -1,21 +1,22 @@
 import { obfuscateDocument } from "./obfuscate";
-import { validateSchema, verifySignature, wrapDocument } from "../";
+import { OpenAttestationCredentialWithInnerIssuer, validateSchema, verifySignature, wrapDocument } from "../";
 
 import { SchemaId } from "../shared/@types/document";
-import {
-  IdentityType,
-  Method,
-  OpenAttestationDocument,
-  ProofType,
-  TemplateType
-} from "../../src/__generated__/schemaV3";
+// import {
+//   IdentityType,
+//   Method,
+//   OpenAttestationDocument,
+//   ProofType,
+//   TemplateType
+// } from "../../src/__generated__/schemaV3";
+import { IdentityProofType, Method, OaProofType, TemplateType } from "../../src/__generated__/schemaV3";
 
-const openAttestationData: OpenAttestationDocument = {
+const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://gist.githubusercontent.com/gjj/4eb6b5324d9774ebba2e5d6229e8a44d/raw/06ab473392545fc1f6bb03a5cc9c9f4fa8b4d0a0/OpenAttestation.v3.jsonld",
-    "https://gist.githubusercontent.com/gjj/1225b659da194b56dc48c0ac1c9b3043/raw/5cdf20c40aa0c0bbe02d111f973772e012b702b1/CustomContext.jsonld"
+    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
+    "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
   ],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
@@ -36,16 +37,16 @@ const openAttestationData: OpenAttestationDocument = {
   },
   issuer: {
     id: "http://some.example.com",
-    name: "DEMO STORE"
-  },
-  proof: {
-    type: ProofType.OpenAttestationSignature2018,
-    value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-    method: Method.TokenRegistry,
-    identity: {
-      type: IdentityType.DNSTxt,
+    name: "DEMO STORE",
+    identityProof: {
+      type: IdentityProofType.DNSTxt,
       location: "tradetrust.io"
     }
+  },
+  oaProof: {
+    type: OaProofType.OpenAttestationSignature2018,
+    value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+    method: Method.TokenRegistry
   }
 };
 
