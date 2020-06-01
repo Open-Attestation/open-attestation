@@ -25,7 +25,7 @@ export const validateSchema = (document: any, validator: Ajv.ValidateFunction): 
   return [];
 };
 
-const getId = (objectOrString: any) => {
+const getId = (objectOrString: string | { id: string }): string => {
   if (typeof objectOrString === "string") {
     return objectOrString;
   }
@@ -119,8 +119,7 @@ export async function validateW3C<T extends OpenAttestationCredential>(
     throw new Error("https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts");
   }
 
-  // ensure issuer is a valid URI according to RFC3986 IF it is a string
-  // TODO check if credential.issuer is string first, as it can be an object containing an id property
+  // ensure issuer is a valid URI according to RFC3986
   const issuerId = getId(credential.issuer);
   if (!isValidRFC3986(issuerId)) {
     throw new Error("Property 'issuer' id must be a valid RFC 3986 URI");
