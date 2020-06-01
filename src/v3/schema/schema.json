@@ -138,7 +138,7 @@
       "required": ["name", "type", "url"],
       "additionalProperties": false
     },
-    "credentialProof": {
+    "oaProof": {
       "type": "object",
       "properties": {
         "type": {
@@ -212,6 +212,6 @@
       }
     }
   },
-  "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "credentialProof", "template"],
+  "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "oaProof", "template"],
   "additionalProperties": true
 }

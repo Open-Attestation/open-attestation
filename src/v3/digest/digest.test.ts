@@ -1,6 +1,6 @@
 import { digestDocument } from "./digest";
 import { salt } from "../wrap";
-import { Method, CredentialProofType, TemplateType } from "../../__generated__/schemaV3";
+import { Method, OaProofType, TemplateType } from "../../__generated__/schemaV3";
 import { SchemaId, OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 
 describe("digest v3.0", () => {
@@ -26,8 +26,8 @@ describe("digest v3.0", () => {
           type: TemplateType.EmbeddedRenderer,
           url: "https://renderer.openattestation.com/"
         },
-        credentialProof: {
-          type: CredentialProofType.OpenAttestationSignature2018,
+        oaProof: {
+          type: OaProofType.OpenAttestationSignature2018,
           method: Method.DocumentStore,
           value: ""
         }

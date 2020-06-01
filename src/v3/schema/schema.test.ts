@@ -736,7 +736,7 @@ describe("schema/v3.0", () => {
     it("should be valid when method is TOKEN_REGISTRY", async () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        credentialProof: { ...sampleDoc.credentialProof, method: Method.TokenRegistry }
+        oaProof: { ...sampleDoc.oaProof, method: Method.TokenRegistry }
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -744,7 +744,7 @@ describe("schema/v3.0", () => {
     it("should be valid when method is DOCUMENT_STORE", async () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        credentialProof: { ...sampleDoc.credentialProof, method: Method.DocumentStore }
+        oaProof: { ...sampleDoc.oaProof, method: Method.DocumentStore }
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -799,7 +799,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is missing", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
-      delete document.credentialProof.type;
+      delete document.oaProof.type;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -807,8 +807,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".credentialProof",
-            schemaPath: "#/properties/credentialProof/required",
+            dataPath: ".oaProof",
+            schemaPath: "#/properties/oaProof/required",
             params: { missingProperty: "type" },
             message: "should have required property 'type'"
           }
@@ -819,7 +819,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
       // @ts-expect-error
-      document.credentialProof.type = "Something";
+      document.oaProof.type = "Something";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -827,8 +827,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".credentialProof.type",
-            schemaPath: "#/properties/credentialProof/properties/type/enum",
+            dataPath: ".oaProof.type",
+            schemaPath: "#/properties/oaProof/properties/type/enum",
             params: { allowedValues: ["OpenAttestationSignature2018"] },
             message: "should be equal to one of the allowed values"
           }
@@ -837,8 +837,8 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof method is missing", async () => {
       expect.assertions(2);
-      const document = { ...cloneDeep(sampleDoc), credentialProof: { ...sampleDoc.credentialProof } };
-      delete document.credentialProof.method;
+      const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
+      delete document.oaProof.method;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -846,8 +846,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".credentialProof",
-            schemaPath: "#/properties/credentialProof/required",
+            dataPath: ".oaProof",
+            schemaPath: "#/properties/oaProof/required",
             params: { missingProperty: "method" },
             message: "should have required property 'method'"
           }
@@ -856,9 +856,9 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
       expect.assertions(2);
-      const document = { ...cloneDeep(sampleDoc), credentialProof: { ...sampleDoc.credentialProof } };
+      const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
       // @ts-expect-error
-      document.credentialProof.method = "Something";
+      document.oaProof.method = "Something";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -866,8 +866,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".credentialProof.method",
-            schemaPath: "#/properties/credentialProof/properties/method/enum",
+            dataPath: ".oaProof.method",
+            schemaPath: "#/properties/oaProof/properties/method/enum",
             params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE"] },
             message: "should be equal to one of the allowed values"
           }
@@ -876,8 +876,8 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if proof value is missing", async () => {
       expect.assertions(2);
-      const document = { ...cloneDeep(sampleDoc), credentialProof: { ...sampleDoc.credentialProof } };
-      delete document.credentialProof.value;
+      const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
+      delete document.oaProof.value;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -885,8 +885,8 @@ describe("schema/v3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".credentialProof",
-            schemaPath: "#/properties/credentialProof/required",
+            dataPath: ".oaProof",
+            schemaPath: "#/properties/oaProof/required",
             params: { missingProperty: "value" },
             message: "should have required property 'value'"
           }

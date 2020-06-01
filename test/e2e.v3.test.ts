@@ -7,7 +7,7 @@ import {
   wrapDocument,
   wrapDocuments
 } from "../src";
-import { IdentityProofType, Method, CredentialProofType, TemplateType } from "../src/__generated__/schemaV3";
+import { IdentityProofType, Method, OaProofType, TemplateType } from "../src/__generated__/schemaV3";
 import { SchemaId } from "../src/shared/@types/document";
 import { cloneDeep, omit } from "lodash";
 
@@ -45,8 +45,8 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
       location: "tradetrust.io"
     }
   },
-  credentialProof: {
-    type: CredentialProofType.OpenAttestationSignature2018,
+  oaProof: {
+    type: OaProofType.OpenAttestationSignature2018,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
     method: Method.TokenRegistry
   }
@@ -312,7 +312,7 @@ describe("v3 E2E Test Scenarios", () => {
             type: "EMBEDDED_RENDERER",
             url: "https://localhost:3000/renderer"
           },
-          credentialProof: {
+          oaProof: {
             type: "OpenAttestationSignature2018",
             method: "DOCUMENT_STORE",
             value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
@@ -363,7 +363,7 @@ describe("v3 E2E Test Scenarios", () => {
             type: "EMBEDDED_RENDERER",
             url: "https://example.com"
           },
-          credentialProof: {
+          oaProof: {
             type: "OpenAttestationSignature2018",
             method: "TOKEN_REGISTRY",
             value: "proof.value"

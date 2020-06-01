@@ -36,7 +36,7 @@
     "type": "EMBEDDED_RENDERER",
     "url": "https://localhost:3000/renderer"
   },
-  "credentialProof": {
+  "oaProof": {
     "type": "OpenAttestationSignature2018",
     "method": "DOCUMENT_STORE",
     "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"

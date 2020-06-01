@@ -80,7 +80,7 @@ export function getIssuerAddress(document: any): any {
     const data = getData(document);
     return data.issuers.map(issuer => issuer.certificateStore || issuer.documentStore || issuer.tokenRegistry);
   } else if (isWrappedV3Document(document)) {
-    return document.credentialProof.value;
+    return document.oaProof.value;
   }
   throw new Error("");
 }

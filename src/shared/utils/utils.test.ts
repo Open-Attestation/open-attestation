@@ -2,7 +2,7 @@ import * as utils from "./utils";
 import { wrapDocument } from "../../";
 import { OpenAttestationVerifiableCredential, SchemaId, WrappedDocument } from "../../shared/@types/document";
 import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
-import { CredentialProofType, Method, OpenAttestationCredential, TemplateType } from "../../__generated__/schemaV3";
+import { OaProofType, Method, OpenAttestationCredential, TemplateType } from "../../__generated__/schemaV3";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -198,9 +198,9 @@ describe("Util Functions", () => {
               name: "Bachelor of Science and Arts"
             }
           },
-          credentialProof: {
+          oaProof: {
             value: "0xabcf",
-            type: CredentialProofType.OpenAttestationSignature2018,
+            type: OaProofType.OpenAttestationSignature2018,
             method: Method.DocumentStore
           },
           name: "",
