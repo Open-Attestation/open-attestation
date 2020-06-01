@@ -1,6 +1,7 @@
 import {
   obfuscate,
   OpenAttestationCredentialWithInnerIssuer,
+  OpenAttestationVerifiableCredential,
   validateSchema,
   verifySignature,
   wrapDocument,
@@ -185,9 +186,10 @@ describe("v3 E2E Test Scenarios", () => {
     test("fails if there is a malformed document", () => {
       const malformedDatum = [
         ...datum,
+        // @ts-expect-error
         {
           laurent: "task force, assemble!!"
-        }
+        } as OpenAttestationVerifiableCredential
       ];
       const action = () => wrapDocuments(malformedDatum);
       expect(action).toThrow("Invalid document");

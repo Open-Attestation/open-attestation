@@ -186,12 +186,12 @@ describe("schema/v3.0", () => {
         "Property 'type' must exist and be an array"
       );
     });
-    it("should be invalid if type is an array, but does not have OpenAttestationVerifiableCredential", async () => {
+    it("should be invalid if type is an array, but does not have VerifiableCredential", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: ["DrivingLicenceCredential"] };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Property 'type' must have OpenAttestationVerifiableCredential as one of the items"
+        "Property 'type' must have VerifiableCredential as one of the items"
       );
     });
   });

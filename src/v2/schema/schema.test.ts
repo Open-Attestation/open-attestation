@@ -3,22 +3,26 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { cloneDeep, merge, omit } from "lodash";
 import sampleToken from "./sample-token.json";
-import sampleDoc from "./sample-document.json";
+import sampleDocument from "./sample-document.json";
 import { wrapDocument } from "../../index";
 import { SchemaId } from "../../shared/@types/document";
+import { IdentityProofType, OpenAttestationDocument } from "../../__generated__/schemaV2";
+
+const openAttestationDocument = sampleDocument as OpenAttestationDocument;
+const openAttestationToken = sampleToken as OpenAttestationDocument;
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", async () => {
-    const wrappedDocument = await wrapDocument(sampleDoc);
+    const wrappedDocument = await wrapDocument(openAttestationDocument);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
   it("should be invalid if identity type is other than DNS-TXT", async () => {
     expect.assertions(2);
-    const document = merge(sampleDoc, {
+    const document = merge(openAttestationDocument, {
       issuers: [
         {
-          ...sampleDoc.issuers[0],
+          ...openAttestationDocument.issuers[0],
           identityProof: {
             type: "ABC",
             location: "abc.com"
@@ -48,10 +52,10 @@ describe("schema/v2.0", () => {
     }
   });
   it("should be valid if identity type is DNS-TXT", async () => {
-    const document = merge(sampleDoc, {
+    const document = merge(openAttestationDocument, {
       issuers: [
         {
-          ...sampleDoc.issuers[0],
+          ...openAttestationDocument.issuers[0],
           identityProof: {
             type: "DNS-TXT",
             location: "abc.com"
@@ -63,10 +67,10 @@ describe("schema/v2.0", () => {
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
   it("should be valid when issuer has extra properties", async () => {
-    const document = merge(sampleDoc, {
+    const document = merge(openAttestationDocument, {
       issuers: [
         {
-          ...sampleDoc.issuers[0],
+          ...openAttestationDocument.issuers[0],
           identityProof: {
             type: "DNS-TXT",
             location: "abc.com"
@@ -79,7 +83,7 @@ describe("schema/v2.0", () => {
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
   it("should be valid with sample token", async () => {
-    const wrappedDocument = await wrapDocument(sampleToken);
+    const wrappedDocument = await wrapDocument(openAttestationToken);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
@@ -87,7 +91,7 @@ describe("schema/v2.0", () => {
     it("should not be valid without identityProof", async () => {
       expect.assertions(2);
 
-      const document = cloneDeep(sampleDoc);
+      const document = cloneDeep(openAttestationDocument);
       delete document.issuers[0].identityProof;
       try {
         await wrapDocument(document);
@@ -113,14 +117,14 @@ describe("schema/v2.0", () => {
       expect.assertions(2);
 
       const document = {
-        ...sampleToken,
+        ...openAttestationToken,
         issuers: [
           {
             name: "DEMO STORE",
             documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -148,14 +152,14 @@ describe("schema/v2.0", () => {
       expect.assertions(2);
 
       const document = {
-        ...sampleToken,
+        ...openAttestationToken,
         issuers: [
           {
             name: "DEMO STORE",
             certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -183,14 +187,14 @@ describe("schema/v2.0", () => {
       expect.assertions(2);
 
       const document = {
-        ...sampleToken,
+        ...openAttestationToken,
         issuers: [
           {
             name: "DEMO STORE",
             documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -218,13 +222,13 @@ describe("schema/v2.0", () => {
       expect.assertions(2);
 
       const document = {
-        ...sampleDoc,
+        ...openAttestationDocument,
         issuers: [
           {
             name: "DEMO STORE",
             documentStore: "Invalid Address",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -251,8 +255,9 @@ describe("schema/v2.0", () => {
     it("should not be valid when issuers is not defined", async () => {
       expect.assertions(2);
 
-      const document = omit(cloneDeep(sampleDoc), "issuers");
+      const document = omit(cloneDeep(openAttestationDocument), "issuers");
       try {
+        // @ts-expect-error
         await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -272,7 +277,7 @@ describe("schema/v2.0", () => {
     it("should not be valid when issuers is an empty array", async () => {
       expect.assertions(2);
 
-      const document = { ...sampleDoc, issuers: [] };
+      const document = { ...openAttestationDocument, issuers: [] };
       try {
         await wrapDocument(document);
       } catch (e) {
@@ -292,12 +297,12 @@ describe("schema/v2.0", () => {
     });
     it("should be valid when issuer has no documentStore, certificateStore and tokenRegistry", async () => {
       const wrappedDocument = await wrapDocument({
-        ...sampleDoc,
+        ...openAttestationDocument,
         issuers: [
           {
             name: "ABC",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -308,13 +313,13 @@ describe("schema/v2.0", () => {
   });
   describe("template", () => {
     it("should be valid without $template (will use default view)", async () => {
-      const wrappedDocument = await wrapDocument(omit(cloneDeep(sampleDoc), "$template"));
+      const wrappedDocument = await wrapDocument(omit(cloneDeep(openAttestationDocument), "$template"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
     it("should not be valid if $template does not have name", async () => {
       expect.assertions(2);
 
-      const document = omit(cloneDeep(sampleDoc), "$template.name");
+      const document = omit(cloneDeep(openAttestationDocument), "$template.name");
       try {
         await wrapDocument(document);
       } catch (e) {
@@ -338,7 +343,7 @@ describe("schema/v2.0", () => {
     it("should not be valid if $template does not have type", async () => {
       expect.assertions(2);
 
-      const document = omit(cloneDeep(sampleDoc), "$template.type");
+      const document = omit(cloneDeep(openAttestationDocument), "$template.type");
       try {
         await wrapDocument(document);
       } catch (e) {
@@ -363,7 +368,7 @@ describe("schema/v2.0", () => {
       expect.assertions(2);
 
       const document = {
-        ...sampleDoc,
+        ...openAttestationDocument,
         $template: {
           name: "CUSTOM_TEMPLATE",
           type: "INVALID_RENDERER"
@@ -371,6 +376,7 @@ describe("schema/v2.0", () => {
       };
 
       try {
+        // @ts-expect-error
         await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -393,14 +399,14 @@ describe("schema/v2.0", () => {
   });
   describe("attachments", () => {
     it("should be valid without attachments", async () => {
-      const wrappedDocument = await wrapDocument(omit(cloneDeep(sampleDoc), "attachments"));
+      const wrappedDocument = await wrapDocument(omit(cloneDeep(openAttestationDocument), "attachments"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
     it("should not be valid with invalid file type", async () => {
       expect.assertions(2);
 
       const document = {
-        ...sampleDoc,
+        ...openAttestationDocument,
         attachments: [
           {
             filename: "sample.aac",
@@ -410,6 +416,7 @@ describe("schema/v2.0", () => {
         ]
       };
       try {
+        // @ts-expect-error
         await wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -429,7 +436,7 @@ describe("schema/v2.0", () => {
     it("should not be valid without attachments filename", async () => {
       expect.assertions(2);
 
-      const document = omit(cloneDeep(sampleDoc), "attachments[0].filename");
+      const document = omit(cloneDeep(openAttestationDocument), "attachments[0].filename");
       try {
         await wrapDocument(document);
       } catch (e) {
@@ -450,7 +457,7 @@ describe("schema/v2.0", () => {
     it("should not be valid without attachments data", async () => {
       expect.assertions(2);
 
-      const document = omit(cloneDeep(sampleDoc), "attachments[0].data");
+      const document = omit(cloneDeep(openAttestationDocument), "attachments[0].data");
       try {
         await wrapDocument(document);
       } catch (e) {
@@ -471,7 +478,7 @@ describe("schema/v2.0", () => {
     it("should not be valid without attachments type", async () => {
       expect.assertions(2);
 
-      const document = omit(cloneDeep(sampleDoc), "attachments[0].type");
+      const document = omit(cloneDeep(openAttestationDocument), "attachments[0].type");
       try {
         await wrapDocument(document);
       } catch (e) {
@@ -491,7 +498,7 @@ describe("schema/v2.0", () => {
     });
   });
   it("should be valid with additonal key:value", async () => {
-    const wrappedDocument = await wrapDocument({ ...sampleDoc, foo: "bar" });
+    const wrappedDocument = await wrapDocument({ ...openAttestationDocument, foo: "bar" });
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 });
