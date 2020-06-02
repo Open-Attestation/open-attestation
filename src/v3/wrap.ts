@@ -32,14 +32,14 @@ export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
   document: T
 ): OpenAttestationVerifiableCredential<T> => {
   // To ensure that base @context exists, but this also means some of our validateW3C errors may be unreachable
-  if (document["@context"] == undefined) {
+  if (!document["@context"]) {
     document["@context"] = ["https://www.w3.org/2018/credentials/v1"];
   }
 
   // Since our wrapper adds in OA-specific properties, we should push our OA context. This is also to pass W3C VC test suite.
   if (
     Array.isArray(document["@context"]) &&
-    !("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld" in document["@context"])
+    !document["@context"].includes("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld")
   ) {
     document["@context"].push("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld");
   }
