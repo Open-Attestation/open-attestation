@@ -37,7 +37,7 @@
     "url": "https://localhost:3000/renderer"
   },
   "oaProof": {
-    "type": "OpenAttestationSignature2018",
+    "type": "OpenAttestationProofMethod",
     "method": "DOCUMENT_STORE",
     "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
   },

@@ -1,15 +1,10 @@
-import { obfuscateDocument } from "./obfuscate";
+import { obfuscateDocument, obfuscateData } from "./obfuscate";
 import { OpenAttestationCredentialWithInnerIssuer, validateSchema, verifySignature, wrapDocument } from "../";
+import { get } from "lodash";
 
 import { SchemaId } from "../shared/@types/document";
-// import {
-//   IdentityType,
-//   Method,
-//   OpenAttestationDocument,
-//   ProofType,
-//   TemplateType
-// } from "../../src/__generated__/schemaV3";
 import { IdentityProofType, Method, OaProofType, TemplateType } from "../../src/__generated__/schemaV3";
+import { toBuffer } from "../shared/utils";
 
 const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
   "@context": [
@@ -44,7 +39,7 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
     }
   },
   oaProof: {
-    type: OaProofType.OpenAttestationSignature2018,
+    type: OaProofType.OpenAttestationProofMethod,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
     method: Method.TokenRegistry
   }
@@ -52,6 +47,56 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
+    test.only("removes one field", async () => {
+      const testData = {
+        key1: "value1",
+        key2: "value2",
+        ...openAttestationData
+      };
+      const field = "key1";
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
+      const { data, obfuscatedData } = obfuscateData(newDocument, field);
+      const salt = newDocument.proof.salts[1];
+      const value = get(newDocument, field);
+      console.log(newDocument.proof.salts[1]);
+      console.log(toBuffer(`${salt.value}:${value}`).toString("hex"));
+      console.log(obfuscatedData);
+      expect(obfuscatedData).toEqual([toBuffer(`${salt.value}:${value}`).toString("hex")]);
+    });
+
+    test.only("removes multiple fields", async () => {
+      const testData = {
+        key1: "value1",
+        key2: "value2",
+        ...openAttestationData
+      };
+      const fields = ["key1", "key2"];
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salt1 = newDocument.proof.salts[1];
+      const salt2 = newDocument.proof.salts[2];
+      const value1 = get(newDocument, fields[0]);
+      const value2 = get(newDocument, fields[1]);
+      expect(obfuscatedData).toEqual([
+        toBuffer(`${salt1.value}:${value1}`).toString("hex"),
+        toBuffer(`${salt2.value}:${value2}`).toString("hex")
+      ]);
+    });
+  });
+
+  describe("obfuscateDocument", () => {
+    test("is transitive", async () => {
+      const testData = {
+        key1: "value1",
+        key2: "value2",
+        ...openAttestationData
+      };
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
+      const intermediateDoc2 = obfuscateDocument(newDocument, "key1");
+      const finalDoc1 = obfuscateDocument(intermediateDoc2, "key2");
+      const finalDoc2 = obfuscateDocument(newDocument, ["key1", "key2"]);
+      expect(finalDoc1).toEqual(finalDoc2);
+    });
     test("removes one field", async () => {
       const testData = {
         key1: "value1",
@@ -96,21 +141,6 @@ describe("privacy", () => {
       expect(verified).toBe(true);
       console.log(obfuscatedDocument);
       expect(obfuscatedDocument).not.toHaveProperty("issuer.name");
-    });
-  });
-
-  describe("obfuscateDocument", () => {
-    test("is transitive", async () => {
-      const testData = {
-        key1: "value1",
-        key2: "value2",
-        ...openAttestationData
-      };
-      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
-      const intermediateDoc2 = obfuscateDocument(newDocument, "key1");
-      const finalDoc1 = obfuscateDocument(intermediateDoc2, "key2");
-      const finalDoc2 = obfuscateDocument(newDocument, ["key1", "key2"]);
-      expect(finalDoc1).toEqual(finalDoc2);
     });
   });
 

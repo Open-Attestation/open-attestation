@@ -12,22 +12,18 @@ export const obfuscateData = (
   const salts = _data.proof.salts;
 
   // Obfuscate data by hashing them with the key
-  const obfuscatedData = fieldsToRemove
-    // .filter(field => {
-    //   get(data, field);
-    //   console.log("field to obfuscate " + field);
-    // })
-    .map(field => {
-      const value = get(data, field);
-      const salt = salts.find(s => s.path === field);
-      console.log("value: " + data);
-      console.log("salt value: " + salt?.value);
+  const obfuscatedData = fieldsToRemove.map(field => {
+    const value = get(data, field);
+    const salt = salts.find(s => s.path === field);
+    console.log("salt path: " + salt?.path);
 
-      if (!salt) {
-        throw new Error(`Salt not found for ${field}`);
-      }
-      return toBuffer(`${salt.value}:${value}`).toString("hex");
-    });
+    console.log("salt value: " + salt?.value);
+
+    if (!salt) {
+      throw new Error(`Salt not found for ${field}`);
+    }
+    return toBuffer(`${salt.value}:${value}`).toString("hex");
+  });
 
   // Return remaining data
   fieldsToRemove.forEach(path => {
@@ -45,12 +41,8 @@ export const obfuscateDocument = (
   fields: string[] | string
 ): OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
   const { data, obfuscatedData } = obfuscateData(document, fields);
-  console.log(obfuscatedData);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
-  console.log(newObfuscatedData);
-  console.log(currentObfuscatedData);
-
   return {
     ...data,
     proof: {
