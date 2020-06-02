@@ -14,13 +14,7 @@ const deepMap = (value: any, path: string): Salt[] => {
     return value.flatMap((v, index) => deepMap(v, `${path}[${index}]`));
   }
   if (typeof value === "object") {
-    return Object.keys(value).flatMap(key => {
-      // TODO: Feels weird... cos deepMap itself is recursive. Need to check on this again
-      // if (path.includes(".")) {
-      //   throw new Error("Key names must not have . in them");
-      // }
-      return deepMap(value[key], path ? `${path}.${key}` : key);
-    });
+    return Object.keys(value).flatMap(key => deepMap(value[key], path ? `${path}.${key}` : key));
   }
   if (typeof value === "string") {
     return [{ value: uuid(), path }];
@@ -37,7 +31,7 @@ const illegalCharactersCheck = (data: object) => {
       throw new Error("Key names must not have '[' or ']' in them");
     }
     if (value && typeof value === "object") {
-      return illegalCharactersCheck(value);
+      return illegalCharactersCheck(value); // Recursively search if property contains sub-properties
     }
   });
 };
