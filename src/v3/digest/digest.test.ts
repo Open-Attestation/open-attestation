@@ -1,30 +1,34 @@
+import { cloneDeep } from "lodash";
 import { digestDocument } from "./digest";
 import { Method, OaProofType, TemplateType, OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { salt } from "../wrap";
+
+const sampleDoc: OpenAttestationCredential = {
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
+  id: "http://example.edu/credentials/58473",
+  type: ["VerifiableCredential", "AlumniCredential"],
+  issuer: "https://example.edu/issuers/14",
+  issuanceDate: "2010-01-01T19:23:24Z",
+  credentialSubject: {
+    id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    alumniOf: "Example University"
+  },
+  template: {
+    name: "EXAMPLE_RENDERER",
+    type: TemplateType.EmbeddedRenderer,
+    url: "https://renderer.openattestation.com/"
+  },
+  oaProof: {
+    type: OaProofType.OpenAttestationSignature2018,
+    method: Method.DocumentStore,
+    value: "0xED2E50434Ac3623bAD763a35213DAD79b43208E4"
+  }
+};
 
 describe("digest v3.0", () => {
-  describe("placeholder for future tests", () => {
+  describe("digestDocument", () => {
     test("digests a document with all visible content correctly", () => {
-      const document: OpenAttestationCredential = {
-        "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
-        id: "http://example.edu/credentials/58473",
-        type: ["VerifiableCredential", "AlumniCredential"],
-        issuer: "https://example.edu/issuers/14",
-        issuanceDate: "2010-01-01T19:23:24Z",
-        credentialSubject: {
-          id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
-          alumniOf: "Example University"
-        },
-        template: {
-          name: "EXAMPLE_RENDERER",
-          type: TemplateType.EmbeddedRenderer,
-          url: "https://renderer.openattestation.com/"
-        },
-        oaProof: {
-          type: OaProofType.OpenAttestationSignature2018,
-          method: Method.DocumentStore,
-          value: ""
-        }
-      };
+      const document = cloneDeep(sampleDoc);
 
       // We shouldn't use const salts = salt(document); here as it's non-deterministic
       const salts = [
@@ -47,6 +51,10 @@ describe("digest v3.0", () => {
       const digest = digestDocument(document, salts, []);
       const expectedDigest = "a54fb763afbe8608c073d1d90490a7591bb074cb54f72654c7437c6e4aaab908";
       expect(digest).toEqual(expectedDigest);
+    });
+    test("handles shadowed keys correctly", () => {
+      const document = { ...cloneDeep(sampleDoc), "oaProof.value": "0xSomeMaliciousDocumentStore" };
+      expect(salt(document)).toThrow("Key names must not have . in them");
     });
   });
 });
