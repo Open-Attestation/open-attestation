@@ -1,10 +1,11 @@
+import { cloneDeep } from "lodash";
 import { digestDocument } from "./digest";
 import { salt } from "../wrap";
 import { Method, OaProofType, TemplateType } from "../../__generated__/schemaV3";
 import { SchemaId, OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 
 describe("digest v3.0", () => {
-  describe("placeholder for future tests", () => {
+  describe("digestDocument", () => {
     test("digests a document with all visible content correctly", () => {
       // TODO: fix this
       // it's not correct
@@ -37,6 +38,10 @@ describe("digest v3.0", () => {
       const digest = digestDocument(document, salts, []);
       const expectedDigest = "a54fb763afbe8608c073d1d90490a7591bb074cb54f72654c7437c6e4aaab908";
       expect(digest).toEqual(expectedDigest);
+    });
+    test("handles shadowed keys correctly", () => {
+      const document = { ...cloneDeep(sampleDoc), "oaProof.value": "0xSomeMaliciousDocumentStore" };
+      expect(salt(document)).toThrow("Key names must not have . in them");
     });
   });
 });
