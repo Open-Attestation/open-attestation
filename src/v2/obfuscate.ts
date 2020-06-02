@@ -36,6 +36,7 @@ export const obfuscateDocument = <T = any>(
 
   const currentObfuscatedData = document?.privacy?.obfuscatedData ?? [];
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
+  console.log(newObfuscatedData);
   return {
     ...document,
     data,

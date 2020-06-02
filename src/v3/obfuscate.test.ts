@@ -62,6 +62,9 @@ describe("privacy", () => {
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateDocument(newDocument, field);
       const verified = verifySignature(obfuscatedDocument);
+      console.log(obfuscatedDocument);
+
+      console.log(obfuscatedDocument.proof.privacy.obfuscated);
       expect(verified).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
       expect(obfuscatedDocument).not.toHaveProperty(field);
