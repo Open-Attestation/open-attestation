@@ -143,7 +143,7 @@ describe("schema/v3.0", () => {
       // But if reference is given, it should not be null as we cannot salt null values
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), reference: null };
-      // @ts-expect-error reference must be undefined or null
+      // @ts-expect-error reference cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Cannot convert undefined or null to object"
@@ -173,7 +173,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if name is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), name: null };
-      // @ts-expect-error
+      // @ts-expect-error name cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Cannot convert undefined or null to object"
@@ -185,7 +185,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if type is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: null };
-      // @ts-expect-error
+      // @ts-expect-error type cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Cannot convert undefined or null to object"
@@ -232,7 +232,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if validFrom is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validFrom: null };
-      // @ts-expect-error
+      // @ts-expect-error validFrom cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Cannot convert undefined or null to object"
@@ -279,7 +279,7 @@ describe("schema/v3.0", () => {
     it("should be invalid when validUntil is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validUntil: null };
-      // @ts-expect-error
+      // @ts-expect-error validUntil cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Cannot convert undefined or null to object"
@@ -353,8 +353,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if template is missing", async () => {
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "template") };
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      // @ts-expect-error template cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
@@ -403,7 +402,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if template.type is not equal to EMBEDDED_RENDERER", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc), template: { ...sampleDoc.template } };
-      // @ts-expect-error
+      // @ts-expect-error SOMETHING cannot be assigned to template.type
       document.template.type = "SOMETHING";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -647,7 +646,7 @@ describe("schema/v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc)
       };
-      // @ts-expect-error
+      // @ts-expect-error OTHER cannot be assigned to issuer.identityProof.type
       document.issuer.identityProof.type = "OTHER";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -810,7 +809,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not OpenAttestationProofMethod", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
-      // @ts-expect-error
+      // @ts-expect-error Something cannot be assigned to oaProof.type
       document.oaProof.type = "Something";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -849,7 +848,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
-      // @ts-expect-error
+      // @ts-expect-error Something cannot be assigned to oaProof.method
       document.oaProof.method = "Something";
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -891,31 +890,31 @@ describe("schema/v3.0", () => {
     it("should be valid when mimeType is application/pdf", async () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        // @ts-expect-error
+        // @ts-expect-error evidence is possibly undefined
         evidence: [{ ...sampleDoc.evidence[0], mimeType: "application/pdf" }]
       };
-      // @ts-expect-error
+      // @ts-expect-error mimeType cannot be a string "application/pdf"
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/png", async () => {
-      // @ts-expect-error
+      // @ts-expect-error evidence is possibly undefined
       const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/png" }] };
-      // @ts-expect-error
+      // @ts-expect-error mimeType cannot be a string "image/png"
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/jpeg", async () => {
-      // @ts-expect-error
+      // @ts-expect-error evidence is possibly undefined
       const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/jpeg" }] };
-      // @ts-expect-error
+      // @ts-expect-error mimeType cannot be a string "image/jpeg"
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
 
     it("should be invalid when adding additional data", async () => {
       expect.assertions(2);
-      // @ts-expect-error
+      // @ts-expect-error evidence is possibly undefined
       const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], key: "any" }] };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
