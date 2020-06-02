@@ -40,7 +40,7 @@ describe("digest v3.0", () => {
       expect(digest).toEqual(expectedDigest);
     });
     test("handles shadowed keys correctly", () => {
-      const document = { ...cloneDeep(sampleDoc), "oaProof.value": "0xSomeMaliciousDocumentStore" };
+      const document = { ...cloneDeep(digestDocument), "oaProof.value": "0xSomeMaliciousDocumentStore" };
       expect(salt(document)).toThrow("Key names must not have . in them");
     });
   });

@@ -64,7 +64,7 @@ describe("privacy", () => {
       expect(obfuscatedData).toEqual([toBuffer(`${salt.value}:${value}`).toString("hex")]);
     });
 
-    test.only("removes multiple fields", async () => {
+    test("removes multiple fields", async () => {
       const testData = {
         key1: "value1",
         key2: "value2",
