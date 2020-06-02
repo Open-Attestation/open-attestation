@@ -14,7 +14,13 @@ const deepMap = (value: any, path: string): Salt[] => {
     return value.flatMap((v, index) => deepMap(v, `${path}[${index}]`));
   }
   if (typeof value === "object") {
-    return Object.keys(value).flatMap(key => deepMap(value[key], path ? `${path}.${key}` : key));
+    return Object.keys(value).flatMap(key => {
+      // TODO: Feels weird... cos deepMap itself is recursive. Need to check on this again
+      // if (path.includes(".")) {
+      //   throw new Error("Key names must not have . in them");
+      // }
+      return deepMap(value[key], path ? `${path}.${key}` : key);
+    });
   }
   if (typeof value === "string") {
     return [{ value: uuid(), path }];
@@ -22,7 +28,25 @@ const deepMap = (value: any, path: string): Salt[] => {
   throw new Error(`Unexpected value '${value}' in '${path}'`);
 };
 
-export const salt = (data: any) => deepMap(data, "");
+const illegalCharactersCheck = (data: object) => {
+  Object.entries(data).forEach(([key, value]) => {
+    if (key.includes(".")) {
+      throw new Error("Key names must not have . in them");
+    }
+    if (key.includes("[") || key.includes("]")) {
+      throw new Error("Key names must not have '[' or ']' in them");
+    }
+    if (value && typeof value === "object") {
+      return illegalCharactersCheck(value);
+    }
+  });
+};
+
+export const salt = (data: any) => {
+  // Check for illegal characters e.g. '.', '[' or ']'
+  illegalCharactersCheck(data);
+  return deepMap(data, "");
+};
 
 /**
  * Wrap a single OpenAttestation document in v3 format.
