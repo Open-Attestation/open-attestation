@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-try-expect */
 import { cloneDeep, omit } from "lodash";
 import { OpenAttestationCredentialWithInnerIssuer, wrapDocument } from "../../index";
 import { $id } from "./schema.json";
@@ -913,7 +914,6 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/png", async () => {
-
       // @ts-expect-error evidence is possibly undefined
       const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/png" }] };
       // @ts-expect-error mimeType cannot be a string "image/png"
@@ -921,7 +921,6 @@ describe("schema/v3.0", () => {
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/jpeg", async () => {
-
       // @ts-expect-error evidence is possibly undefined
       const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/jpeg" }] };
       // @ts-expect-error mimeType cannot be a string "image/jpeg"
