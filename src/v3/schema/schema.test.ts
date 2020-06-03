@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-try-expect */
 import { cloneDeep, omit } from "lodash";
 import { OpenAttestationCredentialWithInnerIssuer, wrapDocument } from "../../index";
 import { $id } from "./schema.json";
