@@ -1,0 +1,70 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "identity": {
+      "@id": "https://lol.com/todo",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "id": "@id",
+        "type": "@type",
+        "location": "xsd:string",
+        "DNS-TXT": "xsd:string"
+      }
+    },
+    "template": {
+      "@id": "https://lol.com/todo",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "id": "@id",
+        "type": "@type",
+        "name": "xsd:string",
+        "url": "xsd:string",
+        "EMBEDDED_RENDERER": "xsd:string"
+      }
+    },
+    "privacy": {
+      "@id": "https://lol.com/todo",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "obfuscatedData": {
+          "@id": "https://lol.com/todo",
+          "@container": [
+            "@index",
+            "@set"
+          ]
+        }
+      }
+    },
+    "method": "xsd:string",
+    "OpenAttestationSignature2018": "xsd:string",
+    "reference": "xsd:string",
+    "name": "xsd:string",
+    "value": "xsd:string",
+    "path": "xsd:string",
+    "signature": {
+      "@id": "https://lol.com/todo",
+      "@context": {
+        "@version": 1.1,
+        "id": "@id",
+        "@protected": true,
+        "targetHash": "xsd:string",
+        "proof": "xsd:string",
+        "merkleRoot": "xsd:string",
+        "salts": {
+          "@id": "https://lol.com/todo",
+          "@container": [
+            "@index",
+            "@set"
+          ]
+        }
+      }
+    },
+    "data": "xsd:string",
+    "fileName": "xsd:string",
+    "mimeType": "xsd:string"
+  }
+}
