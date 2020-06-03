@@ -47,7 +47,7 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
-    test.only("removes one field", async () => {
+    test("removes one field", async () => {
       const testData = {
         key1: "value1",
         key2: "value2",
@@ -58,9 +58,6 @@ describe("privacy", () => {
       const { data, obfuscatedData } = obfuscateData(newDocument, field);
       const salt = newDocument.proof.salts[1];
       const value = get(newDocument, field);
-      console.log(newDocument.proof.salts[1]);
-      console.log(toBuffer(`${salt.value}:${value}`).toString("hex"));
-      console.log(obfuscatedData);
       expect(obfuscatedData).toEqual([toBuffer(`${salt.value}:${value}`).toString("hex")]);
     });
 
@@ -76,6 +73,47 @@ describe("privacy", () => {
       const salt1 = newDocument.proof.salts[1];
       const salt2 = newDocument.proof.salts[2];
       const value1 = get(newDocument, fields[0]);
+      const value2 = get(newDocument, fields[1]);
+      expect(obfuscatedData).toEqual([
+        toBuffer(`${salt1.value}:${value1}`).toString("hex"),
+        toBuffer(`${salt2.value}:${value2}`).toString("hex")
+      ]);
+    });
+    test("removes values from root object", async () => {
+      const testData = {
+        key1: "value1",
+        key2: "value2",
+        ...openAttestationData
+      };
+      const fields = ["key1", "key2"];
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salt1 = newDocument.proof.salts[1];
+      const salt2 = newDocument.proof.salts[2];
+      const value1 = get(newDocument, fields[0]);
+      const value2 = get(newDocument, fields[1]);
+      expect(obfuscatedData).toEqual([
+        toBuffer(`${salt1.value}:${value1}`).toString("hex"),
+        toBuffer(`${salt2.value}:${value2}`).toString("hex")
+      ]);
+    });
+
+    test("removes values from nested object", async () => {
+      const fields = ["credentialSubject.degree.name"];
+      const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salt = newDocument.proof.salts[13];
+      const value = get(newDocument, fields[0]);
+      expect(obfuscatedData).toEqual([toBuffer(`${salt.value}:${value}`).toString("hex")]);
+    });
+
+    test("removes values from arrays", async () => {
+      const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
+      const fields = ["@context[2]", "@context[3]"];
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salt1 = newDocument.proof.salts[3];
+      const value1 = get(newDocument, fields[0]);
+      const salt2 = newDocument.proof.salts[4];
       const value2 = get(newDocument, fields[1]);
       expect(obfuscatedData).toEqual([
         toBuffer(`${salt1.value}:${value1}`).toString("hex"),
@@ -107,9 +145,6 @@ describe("privacy", () => {
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateDocument(newDocument, field);
       const verified = verifySignature(obfuscatedDocument);
-      console.log(obfuscatedDocument);
-
-      console.log(obfuscatedDocument.proof.privacy.obfuscated);
       expect(verified).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
       expect(obfuscatedDocument).not.toHaveProperty(field);
@@ -139,39 +174,7 @@ describe("privacy", () => {
       const obfuscatedDocument = await obfuscateDocument(newDocument, fields);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
-      console.log(obfuscatedDocument);
       expect(obfuscatedDocument).not.toHaveProperty("issuer.name");
     });
   });
-
-  // describe("getData", () => {
-  //   test("returns original data given salted content and, optionally, salt length", () => {
-  //     const document: WrappedDocument = {
-  //       version: SchemaId.v2,
-  //       schema: "http://example.com/schema.json",
-  //       signature: {
-  //         type: "SHA3MerkleProof",
-  //         targetHash: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54",
-  //         proof: [],
-  //         merkleRoot: "9d88ff928654395a23619187227014fd7c9ef098052bad98b13ad6f8bee50e54"
-  //       },
-  //       privacy: {
-  //         obfuscatedData: ["674afcc934fede83cbfef6361de969d520ec3f8aebacbc984b8d39b11dbdcd38"]
-  //       },
-  //       data: {
-  //         key1: "f9ec69be-ab21-474d-b8d7-012424813dc3:string:value1",
-  //         key2: {
-  //           key21: "181e6794-45e4-4ecd-ac45-4c2aed0d757f:boolean:true"
-  //         }
-  //       }
-  //     };
-  //     const data = getData(document);
-  //     expect(data).toEqual({
-  //       key1: "value1",
-  //       key2: {
-  //         key21: true
-  //       }
-  //     });
-  //   });
-  // });
 });

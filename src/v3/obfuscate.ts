@@ -15,10 +15,6 @@ export const obfuscateData = (
   const obfuscatedData = fieldsToRemove.map(field => {
     const value = get(data, field);
     const salt = salts.find(s => s.path === field);
-    console.log("salt path: " + salt?.path);
-
-    console.log("salt value: " + salt?.value);
-
     if (!salt) {
       throw new Error(`Salt not found for ${field}`);
     }
