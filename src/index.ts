@@ -75,9 +75,12 @@ export async function wrapDocument<T extends any>(data: T, options?: WrapDocumen
     const errors = validate(wrappedDocument, getSchema(SchemaId.v3));
     if (errors.length > 0) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       console.log(errors);
 >>>>>>> chore: squashed changes from w3c-obfuscate-tests-v3
+=======
+>>>>>>> chore: fix lint issues
       throw new SchemaValidationError("Invalid document", errors, wrappedDocument);
     }
     await validateW3C(wrappedDocument);
