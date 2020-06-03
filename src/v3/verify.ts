@@ -19,7 +19,5 @@ export const verify = <T extends OpenAttestationVerifiableCredential>(
   if (digest !== targetHash) return false;
 
   // Calculates merkle root from target hash and proof, then compare to merkle root in document
-
-
   return checkProof(document.proof.proofs, document.proof.merkleRoot, document.proof.targetHash);
 };

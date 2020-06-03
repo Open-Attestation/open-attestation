@@ -32,7 +32,6 @@ export const salt = (data: any) => deepMap(data, "");
 export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
   document: T
 ): OpenAttestationVerifiableCredential<T> => {
-
   // To ensure that base @context exists, but this also means some of our validateW3C errors may be unreachable
   if (!document["@context"]) {
     document["@context"] = ["https://www.w3.org/2018/credentials/v1"];
