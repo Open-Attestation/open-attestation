@@ -46,6 +46,22 @@
         }
       ]
     },
+    "revocationStore": {
+      "allOf": [
+        { "$ref": "#/definitions/issuer" },
+        {
+          "type": "object",
+          "properties": {
+            "revocationStore": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$",
+              "description": "Smart contract address of revocation store"
+            }
+          },
+          "required": ["revocationStore"]
+        }
+      ]
+    },
     "certificateStore": {
       "type": "object",
       "properties": {
@@ -132,6 +148,9 @@
             "$ref": "#/definitions/certificateStore"
           },
           {
+            "$ref": "#/definitions/revocationStore"
+          },
+          {
             "allOf": [
               { "$ref": "#/definitions/issuer" },
               {
@@ -145,6 +164,9 @@
                     },
                     {
                       "required": ["documentStore"]
+                    },
+                    {
+                      "required": ["revocationStore"]
                     }
                   ]
                 }
