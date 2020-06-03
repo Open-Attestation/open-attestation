@@ -171,7 +171,6 @@ describe("v3 E2E Test Scenarios", () => {
       expect(verified).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
     });
-
   });
 
   describe("Issuing a batch of documents", () => {

@@ -22,7 +22,6 @@ export const obfuscateData = (
     return toBuffer(`${salt.value}:${value}`).toString("hex");
   });
 
-
   // Return remaining data
   fieldsToRemove.forEach(path => {
     unset(data, path);
