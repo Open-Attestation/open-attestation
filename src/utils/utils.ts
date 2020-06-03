@@ -1,7 +1,7 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
 import { OpenAttestationDocument as v3OpenAttestationDocument } from "../__generated__/schemaV3";
-import { WrappedDocument, SchemaId } from "../@types/document";
+import { SchemaId, SignedWrappedDocument, WrappedDocument } from "../@types/document";
 import { unsaltData } from "../privacy/salt";
 
 export type Hash = string | Buffer;
@@ -69,6 +69,9 @@ export const isWrappedV3Document = (document: any): document is WrappedDocument<
 };
 export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
   return !isWrappedV3Document(document);
+};
+export const isSignedWrappedDocument = (document: any): document is SignedWrappedDocument => {
+  return document.proof;
 };
 
 export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
