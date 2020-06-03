@@ -16,7 +16,7 @@ const deepMap = (value: any, path: string): Salt[] => {
   if (typeof value === "object") {
     return Object.keys(value).flatMap(key => deepMap(value[key], path ? `${path}.${key}` : key));
   }
-  if (typeof value === "string") {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return [{ value: uuid(), path }];
   }
   throw new Error(`Unexpected value '${value}' in '${path}'`);

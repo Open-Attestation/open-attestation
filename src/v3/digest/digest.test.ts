@@ -132,14 +132,19 @@ describe("digest v3.0", () => {
         salt(document);
       }).toThrow("Unexpected value 'undefined' in 'grades'"); // Cannot convert undefined or null to object?
     });
-    test("handles funny stuff correctly (TODO)", () => {
+    test("handles numbers and booleans correctly", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        grades: ["A+", 100, 50.28, undefined, "B+"]
+        grades: ["A+", 100, 50.28, true, "B+"]
       };
-      expect(() => {
-        salt(document);
-      }).toThrow("Unexpected value 'undefined' in 'grades[3]'");
+      expect(salt(document)).toBeTruthy();
+    });
+    test("handles sparse arrays correctly", () => {
+      const document = {
+        ...cloneDeep(sampleDoc),
+        grades: ["A+", 100, , , , true, "B+"]
+      };
+      expect(salt(document)).toBeTruthy();
     });
   });
 });
