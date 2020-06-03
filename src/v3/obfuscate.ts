@@ -22,6 +22,7 @@ export const obfuscateData = (
     return toBuffer(`${salt.value}:${value}`).toString("hex");
   });
 
+
   // Return remaining data
   fieldsToRemove.forEach(path => {
     unset(data, path);
@@ -38,6 +39,7 @@ export const obfuscateDocument = (
   fields: string[] | string
 ): OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
   const { data, obfuscatedData } = obfuscateData(document, fields);
+
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
   return {
