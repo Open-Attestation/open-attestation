@@ -70,8 +70,10 @@ export const isWrappedV3Document = (document: any): document is WrappedDocument<
 export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
   return !isWrappedV3Document(document);
 };
-export const isSignedWrappedDocument = (document: any): document is SignedWrappedDocument => {
-  return document.proof;
+export const isSignedWrappedV2Document = (
+  document: any
+): document is SignedWrappedDocument<v2OpenAttestationDocument> => {
+  return document.proof && isWrappedV2Document(document);
 };
 
 export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
