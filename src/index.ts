@@ -2,7 +2,6 @@ import Ajv from "ajv";
 import { digestDocument as digestDocumentV2 } from "./v2/digest";
 import { getSchema, validateSchema as validate, validateW3C } from "./shared/validate";
 import { verify } from "./v2/verify";
-
 import { verify as verifyV3 } from "./v3/verify";
 import { wrap } from "./v2/wrap";
 import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";

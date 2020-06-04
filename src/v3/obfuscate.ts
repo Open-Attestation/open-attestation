@@ -13,7 +13,7 @@ export const obfuscateData = (
 
   // Obfuscate data by hashing them with the key
 
-  const obfuscatedData = fieldsToRemove.map(field => {
+  const obfuscated = fieldsToRemove.map(field => {
     const value = get(data, field);
     const salt = salts.find(s => s.path === field);
     if (!salt) {
@@ -29,7 +29,7 @@ export const obfuscateData = (
 
   return {
     data,
-    obfuscatedData
+    obfuscated
   };
 };
 
@@ -37,10 +37,10 @@ export const obfuscateDocument = (
   document: OpenAttestationVerifiableCredential<OpenAttestationCredential>,
   fields: string[] | string
 ): OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
-  const { data, obfuscatedData } = obfuscateData(document, fields);
+  const { data, obfuscated } = obfuscateData(document, fields);
 
   const currentObfuscatedData = document.proof.privacy.obfuscated;
-  const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
+  const newObfuscatedData = currentObfuscatedData.concat(obfuscated);
   return {
     ...data,
     proof: {
