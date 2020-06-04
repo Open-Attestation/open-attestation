@@ -38,146 +38,10 @@
     "type": "EMBEDDED_RENDERER",
     "url": "https://localhost:3000/renderer"
   },
-  "proof": {
-    "type": "OpenAttestationMerkleProofSignature2018",
+  "oaProof": {
+    "type": "OpenAttestationProofMethod",
     "method": "DOCUMENT_STORE",
-    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-    "targetHash": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
-    "merkleRoot": "b79a72cfb2d7e951541d60055e048c0ac503eedfd4ebf6b85a0c72f9d93407d9",
-    "proofs": [],
-    "salts": [
-      {
-        "value": "660c843c-f253-454f-a965-0d291fc0607c",
-        "path": "schema"
-      },
-      {
-        "value": "9232070c-1a4e-4e5c-80df-0f7f919ca34f",
-        "path": "version"
-      },
-      {
-        "value": "1a0235f2-7707-4de7-b888-619ec9bd3f9f",
-        "path": "@context[0]"
-      },
-      {
-        "value": "f0101fd2-3593-4b38-b809-45916dc10a36",
-        "path": "@context[1]"
-      },
-      {
-        "value": "c2bd7a18-daec-405e-860b-9fff25615934",
-        "path": "@context[2]"
-      },
-      {
-        "value": "a2b7422b-8b96-4781-8bb4-9af56e92bd08",
-        "path": "@context[3]"
-      },
-      {
-        "value": "52bb395c-b20d-4da8-b851-07ca3d5d708f",
-        "path": "reference"
-      },
-      {
-        "value": "c95ae30a-20c2-440b-a891-71d0d766eb67",
-        "path": "name"
-      },
-      {
-        "value": "59ff66a0-0af4-4531-a095-8fb1badc900a",
-        "path": "issuanceDate"
-      },
-      {
-        "value": "f64b17df-f04d-4318-9c2f-e394308dd1dc",
-        "path": "validFrom"
-      },
-      {
-        "value": "b2e9b194-003e-4df4-b81d-4f0b2c505865",
-        "path": "issuer.id"
-      },
-      {
-        "value": "8982927d-f8c3-4492-8371-4df1f5fa61ab",
-        "path": "issuer.name"
-      },
-      {
-        "value": "d8fe5c04-16d2-485c-b9fa-261a73499378",
-        "path": "issuer.identityProof.type"
-      },
-      {
-        "value": "ee66646d-ca86-40e5-bbb6-e5adf495ad43",
-        "path": "issuer.identityProof.location"
-      },
-      {
-        "value": "1e3fd985-fa97-4d23-b183-4241525de978",
-        "path": "type[0]"
-      },
-      {
-        "value": "9a6eb836-2e42-47df-98e9-26152849b249",
-        "path": "type[1]"
-      },
-      {
-        "value": "6f7a3433-670d-4833-99b0-81a3e946880a",
-        "path": "credentialSubject.id"
-      },
-      {
-        "value": "0582f6c5-7f86-49c1-8b01-708aa510bf21",
-        "path": "credentialSubject.class[0].type"
-      },
-      {
-        "value": "e6187e08-2a8b-4370-9a93-d795916e294d",
-        "path": "credentialSubject.class[0].effectiveDate"
-      },
-      {
-        "value": "b21c1236-f3b0-4f8d-b265-1488a08788f0",
-        "path": "credentialSubject.class[1].type"
-      },
-      {
-        "value": "b318051b-7b08-41e2-8f9a-4fea32b1cc2a",
-        "path": "credentialSubject.class[1].effectiveDate"
-      },
-      {
-        "value": "1a820e2b-0105-4426-afc1-976cf64179c8",
-        "path": "template.name"
-      },
-      {
-        "value": "c4124c3a-477c-4a39-a026-18a988d6dc10",
-        "path": "template.type"
-      },
-      {
-        "value": "ba4902fc-b2a6-4345-8431-ba25ecc686f2",
-        "path": "template.url"
-      },
-      {
-        "value": "7d05215c-bd71-468a-8976-d531cd6fe70d",
-        "path": "proof.type"
-      },
-      {
-        "value": "fa7fa2dd-4b10-480c-8a91-aa105462f773",
-        "path": "proof.method"
-      },
-      {
-        "value": "9bf15bbe-5b29-4325-a00e-8ebf03b53f86",
-        "path": "proof.value"
-      },
-      {
-        "value": "0452ac9a-7240-4a19-a321-b6ffbab9f8f7",
-        "path": "recipient.name"
-      },
-      {
-        "value": "3e9f13e9-db41-4028-829e-ed376c30ce3b",
-        "path": "evidence[0].type"
-      },
-      {
-        "value": "f82c817d-d57f-48f9-b347-caf005eed41c",
-        "path": "evidence[0].fileName"
-      },
-      {
-        "value": "50d51f9f-f04d-43e4-8761-55091b235fc3",
-        "path": "evidence[0].mimeType"
-      },
-      {
-        "value": "aca6dc62-a541-4a55-8f9d-7469e620595c",
-        "path": "evidence[0].data"
-      }
-    ],
-    "privacy": {
-      "obfuscatedData": []
-    }
+    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
   },
   "recipient": {
     "name": "Recipient Name"
@@ -189,5 +53,15 @@
       "mimeType": "application/pdf",
       "data": "BASE64_ENCODED_FILE"
     }
-  ]
+  ],
+  "proof": {
+    "type": "OpenAttestationMerkleProofSignature2018",
+    "targetHash": "4b953195786426a1be2c3bfea32b3c2a5381859d00caadd33f4100b7d3723068",
+    "proofs": [],
+    "merkleRoot": "4b953195786426a1be2c3bfea32b3c2a5381859d00caadd33f4100b7d3723068",
+    "salts": "W3sidmFsdWUiOiJlMjcxY2I3ZS04YWUxLTQwOWUtYjJmZS0zMDExZDQ5MGMwYWMiLCJwYXRoIjoic2NoZW1hIn0seyJ2YWx1ZSI6IjRjMTc0MzMyLWE1NzMtNDk0Mi1hZTY0LWRmYWNhYzExMWZkNiIsInBhdGgiOiJ2ZXJzaW9uIn0seyJ2YWx1ZSI6ImJmZDcwYjQ3LTdiOTQtNDk3Mi1hNTY0LWU4N2EwYTI2YmQ2OCIsInBhdGgiOiJAY29udGV4dFswXSJ9LHsidmFsdWUiOiIwNWU5ODdiNC1mM2FjLTQwODAtODExOS01ZmJjMDFjZGY3NTIiLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiZmEwYzVkNWMtYmMwMC00NjU0LTk3MTktY2RhZWYxZTVlNTMyIiwicGF0aCI6IkBjb250ZXh0WzJdIn0seyJ2YWx1ZSI6IjhjMjA1ODA5LWRjNDUtNGE0MC04YTRjLTU2ZTJkNjBkNmNjNSIsInBhdGgiOiJAY29udGV4dFszXSJ9LHsidmFsdWUiOiJiNjZkNzc2NC1kMDcwLTQ0MGQtODA3Zi01OWZiOThmYjJhYmUiLCJwYXRoIjoicmVmZXJlbmNlIn0seyJ2YWx1ZSI6ImIwNjFiMzU5LWRlZjQtNGU4ZC1iNTU4LTI5OTdkNDczM2Q2YyIsInBhdGgiOiJuYW1lIn0seyJ2YWx1ZSI6ImRmNzIxN2QxLTQ2YzQtNDFmNi05MTMxLWUyNzUyODQ2NTRmNyIsInBhdGgiOiJpc3N1YW5jZURhdGUifSx7InZhbHVlIjoiNGY1NTIyZjktNDBjMC00Y2M2LWFiOWEtODlmYmJhNzUwZDRmIiwicGF0aCI6InZhbGlkRnJvbSJ9LHsidmFsdWUiOiJiMmQ0NDAyZi1lYWNkLTRmOTQtOTY2MC0yYzEyNDlmZTA1ODkiLCJwYXRoIjoiaXNzdWVyLmlkIn0seyJ2YWx1ZSI6IjdhMTI3ZWFlLTFiMTgtNDhhNS1hOGY1LTUyMzFhNzU4M2I1YiIsInBhdGgiOiJpc3N1ZXIubmFtZSJ9LHsidmFsdWUiOiIwNDg2YWYxNS1lZTVhLTQ0OTItYWRhZS1iZjRmYjc1OWI5ZjMiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YudHlwZSJ9LHsidmFsdWUiOiIyODRlOGZlYi0yMDc1LTQ3M2QtYmZkZS1jOGIyMDI3OWFjYzUiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YubG9jYXRpb24ifSx7InZhbHVlIjoiNmJhMjgyYTMtYmU1My00MDUxLTg4N2QtZDBkZGIyN2EwZjQxIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiMGJhYzU2NDQtN2JiNS00NTYxLWEwMjUtNDNmYjM3MGJjODg5IiwicGF0aCI6InR5cGVbMV0ifSx7InZhbHVlIjoiN2FlZTcyYmQtOTA0Ni00M2Y0LTk5YmYtOTQyOTViNjBkMTAwIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmlkIn0seyJ2YWx1ZSI6ImE2ZTdhYzRlLTEwZmUtNDJmMS1iNTE4LWMyYThiMDU5ODNmZSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS50eXBlIn0seyJ2YWx1ZSI6ImU3YzFiOTg4LWRiOGYtNDMzNS05NTVmLTBiYTRlMTYxYzQwOSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6ImVkN2Q2ZTM4LTE3ZTEtNDgyOS1iMjdmLTVjZTNkNjU2YzFiNSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS50eXBlIn0seyJ2YWx1ZSI6ImJmODcwNjE1LTQyODYtNDg2YS04ZWE0LTM3ZTZmMDNjNGY4NSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjhhM2NmZDhiLTE0MjctNDAyMi1iMDZmLWEzNjcwYzhiMzc5MCIsInBhdGgiOiJ0ZW1wbGF0ZS5uYW1lIn0seyJ2YWx1ZSI6IjkzMTY0ZmYzLTU4ZDMtNGZmNi04MDAxLTlkM2Y0YzdiYTRlZiIsInBhdGgiOiJ0ZW1wbGF0ZS50eXBlIn0seyJ2YWx1ZSI6ImVhOWQ3NTM3LTJjMTctNDMyZi04YjRlLWEzOTIxNjY5MmQzNCIsInBhdGgiOiJ0ZW1wbGF0ZS51cmwifSx7InZhbHVlIjoiYTVkMTBhNWUtMThiZS00MWQzLTgwNjctMDkyNTYwZWMyZDZiIiwicGF0aCI6Im9hUHJvb2YudHlwZSJ9LHsidmFsdWUiOiI2YTg4MjcwNy1kMDIyLTRmZDUtOWU2MS0xNDNlZGRlNjg3YjEiLCJwYXRoIjoib2FQcm9vZi5tZXRob2QifSx7InZhbHVlIjoiZjBkMjUyZWEtN2U5OS00ZmM4LTgxY2MtOWFkNWZmMDgwY2YyIiwicGF0aCI6Im9hUHJvb2YudmFsdWUifSx7InZhbHVlIjoiYjAwMGRmZDAtOTc0Ni00OTI5LWJiMTItZDk1NWY2Zjk3MjU2IiwicGF0aCI6InJlY2lwaWVudC5uYW1lIn0seyJ2YWx1ZSI6IjkzNzNjYTBlLWQ5ZTAtNDI1Zi1hYTYxLTc3NDA3YjBlODVjZSIsInBhdGgiOiJldmlkZW5jZVswXS50eXBlIn0seyJ2YWx1ZSI6ImFjZmQwYjVjLWNlNDktNDU4Mi04NmQ1LTNhMWJlNGIzMWFkOSIsInBhdGgiOiJldmlkZW5jZVswXS5maWxlTmFtZSJ9LHsidmFsdWUiOiJiZTRiMDUzYy0wNTJiLTQ1NzgtOWJjZC02NjUwNWQ5YzhmMjEiLCJwYXRoIjoiZXZpZGVuY2VbMF0ubWltZVR5cGUifSx7InZhbHVlIjoiNDkyNGIyMTQtMjhkZi00YTU4LWE2NTQtYTFmZWY0OTlhMmQxIiwicGF0aCI6ImV2aWRlbmNlWzBdLmRhdGEifV0=",
+    "privacy": {
+      "obfuscated": []
+    }
+  }
 }

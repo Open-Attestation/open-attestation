@@ -8,6 +8,7 @@ import {
   SignatureAlgorithm
 } from "../shared/@types/document";
 import { digestDocument } from "../v3/digest";
+import { Base64 } from "js-base64";
 
 const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
@@ -42,6 +43,9 @@ export const salt = (data: any) => {
   illegalCharactersCheck(data);
   return deepMap(data, "");
 };
+
+export const encodeSalt = (salts: Salt[]): string => Base64.encode(JSON.stringify(salts));
+export const decodeSalt = (salts: string): Salt[] => JSON.parse(Base64.decode(salts));
 
 /**
  * Wrap a single OpenAttestation document in v3 format.
@@ -79,7 +83,7 @@ export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
       targetHash: digest,
       proofs: merkleProof,
       merkleRoot,
-      salts,
+      salts: encodeSalt(salts),
       privacy: {
         obfuscated: []
       }
@@ -117,7 +121,7 @@ export const wraps = <T extends OpenAttestationVerifiableCredentialWithoutProof>
         targetHash: digest,
         proofs: merkleProof,
         merkleRoot,
-        salts: salts[index],
+        salts: encodeSalt(salts[index]),
         privacy: {
           obfuscated: []
         }

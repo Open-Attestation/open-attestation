@@ -71,7 +71,7 @@ export interface VerifiableCredentialProof {
   targetHash: string;
   merkleRoot: string;
   proofs: string[];
-  salts: Salt[];
+  salts: string;
   privacy: { obfuscated: string[] };
 }
 export type OpenAttestationVerifiableCredential<T extends OpenAttestationCredential = OpenAttestationCredential> = T & {
