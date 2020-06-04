@@ -13,6 +13,7 @@ const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
     return value.flatMap((v, index) => deepMap(v, `${path}[${index}]`));
   }
+  // Since null values are allowed but typeof null === "object", the "&& value" is used to skip this
   if (typeof value === "object" && value) {
     return Object.keys(value).flatMap(key => deepMap(value[key], path ? `${path}.${key}` : key));
   }
