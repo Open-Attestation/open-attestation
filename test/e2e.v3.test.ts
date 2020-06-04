@@ -166,10 +166,16 @@ describe("v3 E2E Test Scenarios", () => {
     test("obfuscate data correctly", async () => {
       const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscate(newDocument, ["key2"]);
-
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
+    });
+    test("obfuscate data transistively", async () => {
+      const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
+      const intermediateDocument = obfuscate(newDocument, ["key2"]);
+      const obfuscatedDocument = obfuscate(intermediateDocument, ["key3"]);
+      const comparison = obfuscate(newDocument, ["key2", "key3"]);
+      expect(comparison).toEqual(obfuscatedDocument);
     });
   });
 
