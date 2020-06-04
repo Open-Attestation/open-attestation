@@ -30,7 +30,7 @@ describe("digest v3.0", () => {
     test("digests a document with all visible content correctly", () => {
       const document = cloneDeep(sampleDoc);
 
-      // We shouldn't use const salts = salt(document); here as it's non-deterministic
+      // We shouldn't use create salts on every test here as it's non-deterministic
       const salts = [
         { value: "dcc8c555-017d-433e-8a72-8b985e4b5fa8", path: "@context[0]" },
         { value: "f24b43bf-8262-4d93-af69-3c059bb00f6a", path: "@context[1]" },
@@ -118,12 +118,10 @@ describe("digest v3.0", () => {
         ...cloneDeep(sampleDoc),
         grades: null
       };
-      expect(() => {
-        salt(document);
-      }).toThrow("Cannot convert undefined or null to object");
+      const salted = salt(document);
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades" }));
     });
     test("handles undefined values correctly", () => {
-      // TODO: check on how we handle undefined vs. null
       const document = {
         ...cloneDeep(sampleDoc),
         grades: undefined
@@ -137,14 +135,26 @@ describe("digest v3.0", () => {
         ...cloneDeep(sampleDoc),
         grades: ["A+", 100, 50.28, true, "B+"]
       };
-      expect(salt(document)).toBeTruthy();
+      const salted = salt(document);
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[0]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[1]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[2]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[3]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[4]" }));
     });
     test("handles sparse arrays correctly", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         grades: ["A+", 100, , , , true, "B+"]
       };
-      expect(salt(document)).toBeTruthy();
+      const salted = salt(document);
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[0]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[1]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[5]" }));
+      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[6]" }));
+      expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[2]" }));
+      expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[3]" }));
+      expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[4]" }));
     });
   });
 });

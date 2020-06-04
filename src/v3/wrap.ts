@@ -13,10 +13,10 @@ const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
     return value.flatMap((v, index) => deepMap(v, `${path}[${index}]`));
   }
-  if (typeof value === "object") {
+  if (typeof value === "object" && value) {
     return Object.keys(value).flatMap(key => deepMap(value[key], path ? `${path}.${key}` : key));
   }
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean" || value === null) {
     return [{ value: uuid(), path }];
   }
   throw new Error(`Unexpected value '${value}' in '${path}'`);

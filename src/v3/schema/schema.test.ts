@@ -145,8 +145,16 @@ describe("schema/v3.0", () => {
       const document = { ...cloneDeep(sampleDoc), reference: null };
       // @ts-expect-error reference cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "message",
-        "Cannot convert undefined or null to object"
+        "validationErrors",
+        [
+          {
+            dataPath: ".reference",
+            keyword: "type",
+            message: "should be string",
+            params: { type: "string" },
+            schemaPath: "#/properties/reference/type"
+          }
+        ]
       );
     });
   });
@@ -175,8 +183,16 @@ describe("schema/v3.0", () => {
       const document = { ...cloneDeep(sampleDoc), name: null };
       // @ts-expect-error name cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "message",
-        "Cannot convert undefined or null to object"
+        "validationErrors",
+        [
+          {
+            dataPath: ".name",
+            keyword: "type",
+            message: "should be string",
+            params: { type: "string" },
+            schemaPath: "#/properties/name/type"
+          }
+        ]
       );
     });
   });
@@ -187,8 +203,34 @@ describe("schema/v3.0", () => {
       const document = { ...cloneDeep(sampleDoc), type: null };
       // @ts-expect-error type cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "message",
-        "Cannot convert undefined or null to object"
+        "validationErrors",
+        [
+          {
+            dataPath: ".type",
+            keyword: "type",
+            message: "should be array",
+            params: { type: "array" },
+            schemaPath: "#/definitions/type/oneOf/0/type"
+          },
+          {
+            dataPath: ".type",
+            keyword: "type",
+            message: "should be string",
+            params: {
+              type: "string"
+            },
+            schemaPath: "#/definitions/type/oneOf/1/type"
+          },
+          {
+            dataPath: ".type",
+            keyword: "oneOf",
+            message: "should match exactly one schema in oneOf",
+            params: {
+              passingSchemas: null
+            },
+            schemaPath: "#/definitions/type/oneOf"
+          }
+        ]
       );
     });
     it("should be invalid if type is a string", async () => {
@@ -234,8 +276,16 @@ describe("schema/v3.0", () => {
       const document = { ...cloneDeep(sampleDoc), validFrom: null };
       // @ts-expect-error validFrom cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "message",
-        "Cannot convert undefined or null to object"
+        "validationErrors",
+        [
+          {
+            dataPath: ".validFrom",
+            keyword: "type",
+            message: "should be string",
+            params: { type: "string" },
+            schemaPath: "#/properties/validFrom/type"
+          }
+        ]
       );
     });
 
@@ -281,8 +331,16 @@ describe("schema/v3.0", () => {
       const document = { ...cloneDeep(sampleDoc), validUntil: null };
       // @ts-expect-error validUntil cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "message",
-        "Cannot convert undefined or null to object"
+        "validationErrors",
+        [
+          {
+            dataPath: ".validUntil",
+            keyword: "type",
+            message: "should be string",
+            params: { type: "string" },
+            schemaPath: "#/properties/validUntil/type"
+          }
+        ]
       );
     });
     it("should be invalid if validUntil exists and is not in the RFC3339 date and time format", async () => {
