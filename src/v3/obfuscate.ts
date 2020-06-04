@@ -2,6 +2,7 @@ import { OpenAttestationCredential } from "../__generated__/schemaV3";
 import { toBuffer } from "../shared/utils";
 import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 import { cloneDeep, get, unset } from "lodash";
+import { decodeSalt } from "./wrap";
 
 export const obfuscateData = (
   _data: OpenAttestationVerifiableCredential<OpenAttestationCredential>,
@@ -9,7 +10,7 @@ export const obfuscateData = (
 ) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
   const fieldsToRemove = Array.isArray(fields) ? fields : [fields];
-  const salts = _data.proof.salts;
+  const salts = decodeSalt(_data.proof.salts);
 
   // Obfuscate data by hashing them with the key
   const obfuscatedData = fieldsToRemove

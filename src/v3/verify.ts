@@ -1,6 +1,7 @@
 import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 import { digestDocument as digestDocumentV3 } from "./digest";
 import { checkProof } from "../shared/merkle";
+import { decodeSalt } from "./wrap";
 
 export const verify = <T extends OpenAttestationVerifiableCredential>(
   document: T
@@ -14,7 +15,11 @@ export const verify = <T extends OpenAttestationVerifiableCredential>(
   const { proof, ...documentWithoutProof } = document;
 
   // Checks target hash
-  const digest = digestDocumentV3(documentWithoutProof, document.proof.salts, document.proof.privacy.obfuscated);
+  const digest = digestDocumentV3(
+    documentWithoutProof,
+    decodeSalt(document.proof.salts),
+    document.proof.privacy.obfuscated
+  );
   const targetHash = document.proof.targetHash;
   if (digest !== targetHash) return false;
 
