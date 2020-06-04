@@ -13,16 +13,35 @@ const deepMap = (value: any, path: string): Salt[] => {
   if (Array.isArray(value)) {
     return value.flatMap((v, index) => deepMap(v, `${path}[${index}]`));
   }
-  if (typeof value === "object") {
+  // Since null values are allowed but typeof null === "object", the "&& value" is used to skip this
+  if (typeof value === "object" && value) {
     return Object.keys(value).flatMap(key => deepMap(value[key], path ? `${path}.${key}` : key));
   }
-  if (typeof value === "string") {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean" || value === null) {
     return [{ value: uuid(), path }];
   }
   throw new Error(`Unexpected value '${value}' in '${path}'`);
 };
 
-export const salt = (data: any) => deepMap(data, "");
+const illegalCharactersCheck = (data: object) => {
+  Object.entries(data).forEach(([key, value]) => {
+    if (key.includes(".")) {
+      throw new Error("Key names must not have . in them");
+    }
+    if (key.includes("[") || key.includes("]")) {
+      throw new Error("Key names must not have '[' or ']' in them");
+    }
+    if (value && typeof value === "object") {
+      return illegalCharactersCheck(value); // Recursively search if property contains sub-properties
+    }
+  });
+};
+
+export const salt = (data: any) => {
+  // Check for illegal characters e.g. '.', '[' or ']'
+  illegalCharactersCheck(data);
+  return deepMap(data, "");
+};
 
 /**
  * Wrap a single OpenAttestation document in v3 format.
