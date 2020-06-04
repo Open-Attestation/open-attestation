@@ -21,6 +21,11 @@
     "issuer": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI when dereferenced, results in a document containing machine-readable information about the issuer that can be used to verify the information expressed in the credential. More information in https://www.w3.org/TR/vc-data-model/#issuer"
+        },
         "name": {
           "type": "string",
           "description": "Issuer's name"
@@ -108,7 +113,7 @@
               "description": "URL of a decentralised renderer to render this document"
             }
           },
-          "required": ["name", "type"]
+          "required": ["name", "type", "url"]
         }
       ]
     },

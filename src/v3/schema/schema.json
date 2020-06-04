@@ -208,6 +208,6 @@
       }
     }
   },
-  "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "oaProof", "template"],
+  "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "oaProof"],
   "additionalProperties": true
 }
