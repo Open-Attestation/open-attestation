@@ -54,15 +54,9 @@ describe("privacy", () => {
     test("removes one field", async () => {
       const field = "key1";
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
-      // newDocument.proof.salts.forEach(salt => {
-      //   console.log(salt?.value, salt?.path);
-      // });
       const { data, obfuscated } = obfuscateData(newDocument, field);
       const salt = newDocument.proof.salts.find(s => s.path === field);
       const value = get(newDocument, field);
-      // data.proof.salts.forEach(salt => {
-      //   console.log(salt?.value, salt?.path);
-      // });
       expect(obfuscated).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
       expect(data).not.toHaveProperty(field);
     });
