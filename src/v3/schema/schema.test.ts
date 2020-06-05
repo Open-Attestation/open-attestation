@@ -5,9 +5,9 @@ import { OpenAttestationCredentialWithInnerIssuer, wrapDocument } from "../../in
 import { $id } from "./schema.json";
 import sample from "./sample-document.json";
 import { SchemaId } from "../../shared/@types/document";
-import { IdentityProofType, Method, TemplateType } from "../../__generated__/schemaV3";
+import { IdentityProofType, Method, Template, TemplateType } from "../../__generated__/schemaV3";
 
-const sampleDoc = sample as OpenAttestationCredentialWithInnerIssuer;
+const sampleDoc = sample as OpenAttestationCredentialWithInnerIssuer & { template: Template };
 
 // eslint-disable-next-line jest/no-disabled-tests
 describe("schema/v3.0", () => {
@@ -404,23 +404,6 @@ describe("schema/v3.0", () => {
             schemaPath: "#/properties/template/additionalProperties",
             params: { additionalProperty: "key" },
             message: "should NOT have additional properties"
-          }
-        ]
-      );
-    });
-    it("should be invalid if template is missing", async () => {
-      expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "template") };
-      // @ts-expect-error template cannot be undefined or null
-      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
-        "validationErrors",
-        [
-          {
-            keyword: "required",
-            dataPath: "",
-            schemaPath: "#/required",
-            params: { missingProperty: "template" },
-            message: "should have required property 'template'"
           }
         ]
       );
