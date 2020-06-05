@@ -35,6 +35,7 @@ describe("schema/v3.0", () => {
         "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
       );
     });
+
     it("should be invalid when @context is a string", async () => {
       // @context MUST be an ordered set in W3C VC data model, see https://www.w3.org/TR/vc-data-model/#contexts
       const document = { ...cloneDeep(sampleDoc), "@context": "https://www.w3.org/2018/credentials/v1" };
@@ -142,6 +143,7 @@ describe("schema/v3.0", () => {
       // But if reference is given, it should not be null as we cannot salt null values
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), reference: null };
+
       // @ts-expect-error reference cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
@@ -180,6 +182,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if name is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), name: null };
+
       // @ts-expect-error name cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
@@ -200,6 +203,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if type is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: null };
+
       // @ts-expect-error type cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
@@ -273,6 +277,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if validFrom is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validFrom: null };
+
       // @ts-expect-error validFrom cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
@@ -328,6 +333,7 @@ describe("schema/v3.0", () => {
     it("should be invalid when validUntil is null", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validUntil: null };
+
       // @ts-expect-error validUntil cannot be undefined or null
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
@@ -442,6 +448,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if template.type is not equal to EMBEDDED_RENDERER", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc), template: { ...sampleDoc.template } };
+
       // @ts-expect-error SOMETHING cannot be assigned to template.type
       document.template.type = "SOMETHING";
       try {
@@ -503,6 +510,7 @@ describe("schema/v3.0", () => {
     it("should be valid when id is an URI", async () => {
       const document = {
         ...cloneDeep(sampleDoc),
+
         issuer: { ...sampleDoc.issuer, id: "http://example.com" }
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -510,6 +518,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid when adding additional data", async () => {
       expect.assertions(2);
+
       const document = { ...cloneDeep(sampleDoc), issuer: { ...sampleDoc.issuer, key: "any" } };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -542,6 +551,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid when id is not a URI", async () => {
       expect.assertions(2);
+
       const document = { ...cloneDeep(sampleDoc), issuer: { ...sampleDoc.issuer, id: "" } };
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -594,6 +604,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if issuer has no name", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       delete document.issuer.name;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -627,6 +638,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if issuer has no id", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       delete document.issuer.id;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -686,6 +698,7 @@ describe("schema/v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc)
       };
+
       // @ts-expect-error OTHER cannot be assigned to issuer.identityProof.type
       document.issuer.identityProof.type = "OTHER";
       try {
@@ -849,6 +862,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not OpenAttestationProofMethod", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       // @ts-expect-error Something cannot be assigned to oaProof.type
       document.oaProof.type = "Something";
       try {
@@ -888,6 +902,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc), oaProof: { ...sampleDoc.oaProof } };
+
       // @ts-expect-error Something cannot be assigned to oaProof.method
       document.oaProof.method = "Something";
       try {
@@ -930,6 +945,7 @@ describe("schema/v3.0", () => {
     it("should be valid when mimeType is application/pdf", async () => {
       const document = {
         ...cloneDeep(sampleDoc),
+
         // @ts-expect-error evidence is possibly undefined
         evidence: [{ ...sampleDoc.evidence[0], mimeType: "application/pdf" }]
       };
@@ -954,6 +970,7 @@ describe("schema/v3.0", () => {
 
     it("should be invalid when adding additional data", async () => {
       expect.assertions(2);
+
       // @ts-expect-error evidence is possibly undefined
       const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], key: "any" }] };
       try {
@@ -974,6 +991,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if filename is missing", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       // @ts-expect-error
       delete document.evidence[0].fileName;
       try {
@@ -994,6 +1012,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if mimeType is missing", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       // @ts-expect-error
       delete document.evidence[0].mimeType;
       try {
@@ -1014,6 +1033,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if mimeType is not one of the specified enum value", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       // @ts-expect-error
       document.evidence[0].mimeType = "Something";
       try {
@@ -1034,6 +1054,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if data is missing", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       // @ts-expect-error
       delete document.evidence[0].data;
       try {
@@ -1054,6 +1075,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if type is missing", async () => {
       expect.assertions(2);
       const document = { ...cloneDeep(sampleDoc) };
+
       // @ts-expect-error
       delete document.evidence[0].type;
       try {
