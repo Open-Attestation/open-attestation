@@ -1,6 +1,7 @@
 import { obfuscateDocument, obfuscateData } from "./obfuscate";
 import { OpenAttestationCredentialWithInnerIssuer, validateSchema, verifySignature, wrapDocument } from "../";
 import { get } from "lodash";
+import { decodeSalt } from "./wrap";
 
 import { SchemaId } from "../shared/@types/document";
 import { Method, OaProofType, TemplateType, IdentityProofType } from "../../src/__generated__/schemaV3";
@@ -54,22 +55,23 @@ describe("privacy", () => {
     test("removes one field", async () => {
       const field = "key1";
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
-      const { data, obfuscated } = obfuscateData(newDocument, field);
-      const salt = newDocument.proof.salts.find(s => s.path === field);
+      const { data, obfuscatedData } = obfuscateData(newDocument, field);
+      const salt = decodeSalt(newDocument.proof.salts).find(s => s.path === field);
       const value = get(newDocument, field);
-      expect(obfuscated).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
+      expect(obfuscatedData).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
       expect(data).not.toHaveProperty(field);
     });
 
     test("removes multiple fields", async () => {
       const fields = ["key1", "key2"];
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
-      const { data, obfuscated } = obfuscateData(newDocument, fields);
-      const salt1 = newDocument.proof.salts.find(s => s.path === fields[0]);
-      const salt2 = newDocument.proof.salts.find(s => s.path === fields[1]);
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salts = decodeSalt(newDocument.proof.salts);
+      const salt1 = salts.find(s => s.path === fields[0]);
+      const salt2 = salts.find(s => s.path === fields[1]);
       const value1 = get(newDocument, fields[0]);
       const value2 = get(newDocument, fields[1]);
-      expect(obfuscated).toEqual([
+      expect(obfuscatedData).toEqual([
         toBuffer(`${salt1?.value}:${value1}`).toString("hex"),
         toBuffer(`${salt2?.value}:${value2}`).toString("hex")
       ]);
@@ -78,12 +80,13 @@ describe("privacy", () => {
     test("removes values from root object", async () => {
       const fields = ["key1", "key2"];
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
-      const { data, obfuscated } = obfuscateData(newDocument, fields);
-      const salt1 = newDocument.proof.salts.find(s => s.path === fields[0]);
-      const salt2 = newDocument.proof.salts.find(s => s.path === fields[1]);
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salts = decodeSalt(newDocument.proof.salts);
+      const salt1 = salts.find(s => s.path === fields[0]);
+      const salt2 = salts.find(s => s.path === fields[1]);
       const value1 = get(newDocument, fields[0]);
       const value2 = get(newDocument, fields[1]);
-      expect(obfuscated).toEqual([
+      expect(obfuscatedData).toEqual([
         toBuffer(`${salt1?.value}:${value1}`).toString("hex"),
         toBuffer(`${salt2?.value}:${value2}`).toString("hex")
       ]);
@@ -93,22 +96,23 @@ describe("privacy", () => {
     test("removes values from nested object", async () => {
       const field = "credentialSubject.degree.name";
       const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
-      const { data, obfuscated } = obfuscateData(newDocument, field);
-      const salt = newDocument.proof.salts.find(s => s.path === field);
+      const { data, obfuscatedData } = obfuscateData(newDocument, field);
+      const salt = decodeSalt(newDocument.proof.salts).find(s => s.path === field);
       const value = get(newDocument, field);
-      expect(obfuscated).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
+      expect(obfuscatedData).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
       expect(data).not.toHaveProperty(field);
     });
 
     test("removes values from arrays", async () => {
       const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
       const fields = ["@context[2]", "@context[3]"];
-      const { data, obfuscated } = obfuscateData(newDocument, fields);
-      const salt1 = newDocument.proof.salts.find(s => s.path === fields[0]);
+      const { data, obfuscatedData } = obfuscateData(newDocument, fields);
+      const salts = decodeSalt(newDocument.proof.salts);
+      const salt1 = salts.find(s => s.path === fields[0]);
       const value1 = get(newDocument, fields[0]);
-      const salt2 = newDocument.proof.salts.find(s => s.path === fields[1]);
+      const salt2 = salts.find(s => s.path === fields[1]);
       const value2 = get(newDocument, fields[1]);
-      expect(obfuscated).toEqual([
+      expect(obfuscatedData).toEqual([
         toBuffer(`${salt1?.value}:${value1}`).toString("hex"),
         toBuffer(`${salt2?.value}:${value2}`).toString("hex")
       ]);

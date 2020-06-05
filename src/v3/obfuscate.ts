@@ -31,7 +31,7 @@ export const obfuscateData = (
 
   return {
     data,
-    obfuscated
+    obfuscatedData
   };
 };
 
@@ -41,7 +41,7 @@ export const obfuscateDocument = (
 ): OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
   const { data, obfuscatedData } = obfuscateData(document, fields);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
-  const newObfuscatedData = currentObfuscatedData.concat(obfuscated);
+  const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
   return {
     ...data,
     proof: {
