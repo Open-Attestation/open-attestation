@@ -1,59 +1,22 @@
-import Ajv from "ajv";
-import { digestDocument as digestDocumentV2 } from "./v2/digest";
-import { getSchema, validateSchema as validate, validateW3C } from "./shared/validate";
-import { verify } from "./v2/verify";
-import { verify as verifyV3 } from "./v3/verify";
-import { wrap } from "./v2/wrap";
-import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
-import {
-  OpenAttestationVerifiableCredential,
-  OpenAttestationVerifiableCredentialWithoutProof,
-  SchemaId,
-  SchematisedDocument,
-  WrappedDocument
-} from "./shared/@types/document";
-import { saltData } from "./v2/salt";
+import { getSchema, validateSchema as validate } from "./shared/validate";
+import { verify } from "./2.0/verify";
+import { verify as verifyV3 } from "./3.0/verify";
+import { wrapDocument as wrapDocumentV2, wrapDocuments as wrapDocumentsV2 } from "./2.0/wrap";
+import { wrapCredential, wrapCredentials } from "./3.0/wrap";
+import { OpenAttestationVerifiableCredential, SchemaId, WrappedDocument } from "./shared/@types/document";
 import * as utils from "./shared/utils";
-import * as v2 from "./__generated__/schemaV2";
-import { OpenAttestationDocument } from "./__generated__/schemaV2";
-import * as v3 from "./__generated__/schemaV3";
-import { OpenAttestationCredential } from "./__generated__/schemaV3";
-import { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
-import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
-
-interface WrapDocumentOption {
-  externalSchemaId?: string;
-  version?: SchemaId;
-}
-interface WrapDocumentOptionV2 {
-  externalSchemaId?: string;
-  version?: SchemaId.v2;
-}
-interface WrapDocumentOptionV3 {
-  externalSchemaId?: string;
-  version: SchemaId.v3;
-}
-const defaultVersion = SchemaId.v2;
-
-const createDocument = (data: any, option?: WrapDocumentOption) => {
-  const documentSchema: SchematisedDocument = {
-    version: option?.version ?? defaultVersion,
-    data: saltData(data)
-  };
-  if (option?.externalSchemaId) {
-    documentSchema.schema = option.externalSchemaId;
-  }
-  return documentSchema;
-};
-
-class SchemaValidationError extends Error {
-  constructor(message: string, public validationErrors: Ajv.ErrorObject[], public document: any) {
-    super(message);
-  }
-}
-const isSchemaValidationError = (error: any): error is SchemaValidationError => {
-  return !!error.validationErrors;
-};
+import * as v2 from "./__generated__/schema.2.0";
+import { OpenAttestationDocument } from "./__generated__/schema.2.0";
+import * as v3 from "./__generated__/schema.3.0";
+import { OpenAttestationCredential } from "./__generated__/schema.3.0";
+import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
+import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
+import {
+  isWrapDocumentOptionV3,
+  WrapDocumentOption,
+  WrapDocumentOptionV2,
+  WrapDocumentOptionV3
+} from "./shared/@types/wrap";
 
 export async function wrapDocument<T extends OpenAttestationDocument>(
   data: T,
@@ -64,65 +27,27 @@ export async function wrapDocument<T extends OpenAttestationCredential>(
   options?: WrapDocumentOptionV3
 ): Promise<OpenAttestationVerifiableCredential<T>>;
 export async function wrapDocument<T extends any>(data: T, options?: WrapDocumentOption): Promise<any> {
-  if (options?.version === SchemaId.v3) {
-    const wrappedDocument = options.externalSchemaId
-      ? wrapV3({
-          schema: options.externalSchemaId,
-          version: SchemaId.v3,
-          ...(data as OpenAttestationCredential)
-        })
-      : wrapV3({ version: SchemaId.v3, ...(data as OpenAttestationCredential) });
-    const errors = validate(wrappedDocument, getSchema(SchemaId.v3));
-    if (errors.length > 0) {
-      throw new SchemaValidationError("Invalid document", errors, wrappedDocument);
-    }
-    await validateW3C(wrappedDocument);
-    return wrappedDocument;
+  if (isWrapDocumentOptionV3(options)) {
+    return wrapCredential(data as OpenAttestationCredential, options);
+  } else {
+    return wrapDocumentV2(data, { externalSchemaId: options?.externalSchemaId });
   }
-
-  const document: SchematisedDocument = createDocument(data, options);
-  const errors = validate(document, getSchema(options?.version ?? defaultVersion));
-  if (errors.length > 0) {
-    throw new SchemaValidationError("Invalid document", errors, document);
-  }
-  return wrap(document, [digestDocumentV2(document)]);
 }
 
 export function wrapDocuments<T extends OpenAttestationDocument>(
   dataArray: T[],
   options?: WrapDocumentOptionV2
-): WrappedDocument<T>[];
+): Promise<WrappedDocument<T>[]>;
 export function wrapDocuments<T extends OpenAttestationCredential>(
   dataArray: T[],
   options?: WrapDocumentOptionV3
-): OpenAttestationVerifiableCredential<T>[];
+): Promise<OpenAttestationVerifiableCredential<T>[]>;
 export function wrapDocuments<T extends any>(dataArray: T[], options?: WrapDocumentOption): any {
-  if (options?.version === SchemaId.v3) {
-    const documents: OpenAttestationVerifiableCredentialWithoutProof[] = dataArray.map(data => {
-      return options.externalSchemaId
-        ? { schema: options.externalSchemaId, version: SchemaId.v3, ...(data as OpenAttestationCredential) }
-        : { version: SchemaId.v3, ...(data as OpenAttestationCredential) };
-    });
-    const wrappedDocument = wrapsV3(documents);
-    wrappedDocument.forEach(document => {
-      const errors = validate(document, getSchema(options?.version ?? defaultVersion));
-      if (errors.length > 0) {
-        throw new SchemaValidationError("Invalid document", errors, document);
-      }
-    });
-    return wrappedDocument;
+  if (isWrapDocumentOptionV3(options)) {
+    return wrapCredentials(dataArray as OpenAttestationCredential[], options);
+  } else {
+    return wrapDocumentsV2(dataArray, { externalSchemaId: options?.externalSchemaId });
   }
-
-  const documents = dataArray.map(data => createDocument(data, options));
-  documents.forEach(document => {
-    const errors = validate(document, getSchema(options?.version ?? defaultVersion));
-    if (errors.length > 0) {
-      throw new SchemaValidationError("Invalid document", errors, document);
-    }
-  });
-
-  const batchHashes = documents.map(digestDocumentV2);
-  return documents.map(doc => wrap(doc, batchHashes));
 }
 
 export const validateSchema = (document: WrappedDocument | OpenAttestationVerifiableCredential<any>): boolean => {
@@ -144,18 +69,16 @@ export function obfuscate<T extends OpenAttestationVerifiableCredential<OpenAtte
 ): T;
 export function obfuscate(document: any, fields: string[] | string) {
   return document.version === SchemaId.v3
-    ? obfuscateDocumentV3(document, fields)
+    ? obfuscateVerifiableCredential(document, fields)
     : obfuscateDocumentV2(document, fields);
 }
 
-export { digestDocument as digestDocumentV2 } from "./v2/digest";
-export { digestDocument as digestDocumentV3 } from "./v3/digest";
+export { digestDocument } from "./2.0/digest";
+export { digestCredential } from "./3.0/digest";
 export { checkProof, MerkleTree } from "./shared/merkle";
-// export { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
-// export { obfuscateDocument as obfuscateDocumentV3, validate as validateV3 } from "./v3/obfuscate";
 export { obfuscate as obfuscateDocument };
-export { sign } from "./v2/sign";
-export { utils, isSchemaValidationError };
+export { sign } from "./2.0/sign";
+export { utils };
 export * from "./shared/@types/document";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };

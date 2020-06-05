@@ -1,10 +1,10 @@
 import Ajv from "ajv";
 import { getLogger } from "../logger";
-import openAttestationSchemav2 from "../../v2/schema/schema.json";
-import openAttestationSchemav3 from "../../v3/schema/schema.json";
+import openAttestationSchemav2 from "../../2.0/schema/schema.json";
+import openAttestationSchemav3 from "../../3.0/schema/schema.json";
 import { getData } from "../utils";
 import { SchemaId } from "../@types/document";
-import { OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { OpenAttestationCredential } from "../../__generated__/schema.3.0";
 import { OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 import { documentLoaders, expand } from "jsonld";
 import fetch from "node-fetch";

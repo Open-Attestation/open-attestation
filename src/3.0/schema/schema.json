@@ -1,0 +1,203 @@
+{
+  "title": "Open Attestation Schema 3.0",
+  "$id": "https://schema.openattestation.com/3.0/schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "type": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "issuer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI when dereferenced, results in a document containing machine-readable information about the issuer that can be used to verify the information expressed in the credential. More information in https://www.w3.org/TR/vc-data-model/#issuer"
+        },
+        "name": {
+          "type": "string",
+          "description": "Issuer's name"
+        },
+        "identityProof": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DNS-TXT", "W3C-DID"]
+            },
+            "location": {
+              "type": "string",
+              "description": "URL of the website referencing to document store OR a valid DID as defined by W3C in https://www.w3.org/TR/did-core/"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["type", "location"]
+        }
+      },
+      "required": ["id", "name", "identityProof"],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "@context": {
+      "type": "array",
+      "items": {
+        "type": ["string", "object"],
+        "format": "uri"
+      },
+      "description": "List of URI to determine the terminology used in the verifiable credential as explained by https://www.w3.org/TR/vc-data-model/#contexts"
+    },
+    "id": {
+      "type": "string",
+      "format": "uri",
+      "description": "URI to the subject of the credential as explained by https://www.w3.org/TR/vc-data-model/#credential-subject"
+    },
+    "type": {
+      "$ref": "#/definitions/type",
+      "description": "Specific verifiable credential type as explained by https://www.w3.org/TR/vc-data-model/#types"
+    },
+    "reference": {
+      "type": "string",
+      "description": "Internal reference, usually a serial number, of this document"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human readable name of this credential"
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential becomes valid (may be deprecated in favor of issued/validFrom a future version of W3C's VC Data Model)"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential expires"
+    },
+    "issued": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential becomes valid"
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential becomes valid"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential expires"
+    },
+    "credentialSubject": {
+      "oneOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      ]
+    },
+    "issuer": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/issuer"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "template": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Template name to be use by template renderer to determine the template to use"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of renderer template",
+          "enum": ["EMBEDDED_RENDERER"]
+        },
+        "url": {
+          "type": "string",
+          "description": "URL of a decentralised renderer to render this document",
+          "pattern": "^(https?)://"
+        }
+      },
+      "required": ["name", "type", "url"],
+      "additionalProperties": false
+    },
+    "oaProof": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Proof method name as explained by https://www.w3.org/TR/vc-data-model/#types",
+          "enum": ["OpenAttestationProofMethod"]
+        },
+        "method": {
+          "type": "string",
+          "description": "Proof Open Attestation method",
+          "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE"]
+        },
+        "value": {
+          "description": "Proof value of issuer(s)",
+          "type": "string"
+        }
+      },
+      "required": ["type", "method", "value"],
+      "additionalProperties": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "The id property is optional, but if present, SHOULD contain a URL that points to where more information about this instance of evidence can be found"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Name of this attachment, with appropriate extensions"
+          },
+          "type": {
+            "$ref": "#/definitions/type",
+            "description": "Specific evidence type as explained by https://www.w3.org/TR/vc-data-model/#types"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Media type (or MIME type) of this attachment",
+            "enum": ["application/pdf", "image/png", "image/jpeg"]
+          },
+          "data": {
+            "type": "string",
+            "description": "Base64 encoding of this attachment"
+          }
+        },
+        "required": ["fileName", "mimeType", "data", "type"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "oaProof"],
+  "additionalProperties": true
+}

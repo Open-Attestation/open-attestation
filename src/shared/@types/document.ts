@@ -1,4 +1,4 @@
-import { Issuer, OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { Issuer, OpenAttestationCredential } from "../../__generated__/schema.3.0";
 
 export enum SignatureAlgorithm {
   OpenAttestationMerkleProofSignature2018 = "OpenAttestationMerkleProofSignature2018"
@@ -10,6 +10,9 @@ export enum SchemaId {
 }
 
 export interface OpenAttestationCredentialWithInnerIssuer extends OpenAttestationCredential {
+  issuer: Issuer;
+}
+export interface OpenAttestationVerifiableCredentialWithInnerIssuer extends OpenAttestationVerifiableCredential {
   issuer: Issuer;
 }
 
@@ -79,10 +82,6 @@ export type OpenAttestationVerifiableCredential<T extends OpenAttestationCredent
   schema?: string;
   proof: VerifiableCredentialProof;
 };
-// TODO is this necessary ? :)
-export type OpenAttestationVerifiableCredentialWithoutProof<
-  T extends OpenAttestationCredential = OpenAttestationCredential
-> = Omit<OpenAttestationVerifiableCredential<T>, "proof">;
 
 // feel free to improve, as long as this project compile without changes :)
 // once salted, every property is turned into a string
