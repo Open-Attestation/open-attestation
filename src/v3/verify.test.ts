@@ -1,21 +1,15 @@
 import { verify } from "./verify";
-import sample1 from "./schema/sample-document.json";
-import sample2 from "./schema/wrapped-sample-document.json";
-import batched1 from "./schema/wrapped-batched-documents-1.json";
-import batched2 from "./schema/wrapped-batched-documents-2.json";
+import sample from "./schema/wrapped-sample-document.json";
+import batched from "./schema/wrapped-batched-documents-1.json";
 
 import { cloneDeep } from "lodash";
-import { OpenAttestationVerifiableCredential, SignatureAlgorithm, SchemaId } from "../shared/@types/document";
-import { OpenAttestationCredential } from "src/__generated__/schemaV3";
-import { wrapDocuments } from "../index";
+import { OpenAttestationVerifiableCredential, SignatureAlgorithm } from "../shared/@types/document";
 
 // sample1: unwrapped (aka credential), sample2: only 1 doc is wrapped (aka verifiable credential/VC)
-const sampleCredential = sample1 as OpenAttestationCredential;
-const sampleVerifiableCredential = sample2 as OpenAttestationVerifiableCredential;
+const sampleVerifiableCredential = sample as OpenAttestationVerifiableCredential;
 
 // sample3 & sample4: more than 1 doc wrapped (aka batched VC, where 'proofs' has values)
-const sampleBatched1 = batched1 as OpenAttestationVerifiableCredential;
-const sampleBatched2 = batched2 as OpenAttestationVerifiableCredential;
+const sampleBatched1 = batched as OpenAttestationVerifiableCredential;
 
 describe("signature", () => {
   describe("verify", () => {
@@ -147,67 +141,5 @@ describe("signature", () => {
       const verified = verify(verifiableCredential);
       expect(verified).toBe(false);
     });
-
-    // describe("sign", () => {
-    //   test("throws when the document is not in the batch", () => {
-    //     const emptySign = () => wrap(rawDocument, []);
-    //     expect(emptySign).toThrow("Document is not in batch");
-    //   });
-
-    //   test("signs correctly for single document", () => {
-    //     const expectedverifiableCredential = {
-    //       ...rawDocument,
-    //       signature: {
-    //         type: "SHA3MerkleProof",
-    //         targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
-    //         proof: [],
-    //         merkleRoot: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c"
-    //       }
-    //     };
-
-    //     const verifiableCredential = wrap(rawDocument);
-    //     expect(verifiableCredential).toEqual(expectedverifiableCredential);
-    //   });
-
-    //   test("signs correctly for document in a batch", () => {
-    //     const batch = [
-    //       "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
-    //       "46c732825d2111a7019929d7f21988081f88084bb05fd54ab4c1843b53cbe799",
-    //       "7ba10b40626cd6e57c9f9b6264996932259ad79053e8d1225b0336ed06e83bf0",
-    //       "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c"
-    //     ];
-    //     const expectedverifiableCredential = {
-    //       ...rawDocument,
-    //       signature: {
-    //         type: "SHA3MerkleProof",
-    //         targetHash: "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
-    //         proof: [
-    //           "46c732825d2111a7019929d7f21988081f88084bb05fd54ab4c1843b53cbe799",
-    //           "b1fee809d2803cbf7f63070eee763709eadca9abcaeab349b4c85a10bc48bc49"
-    //         ],
-    //         merkleRoot: "c16a56c5f0bf0e985f731816635fa772ca921a68848090a49cbe10c7a55d521b"
-    //       }
-    //     };
-
-    //     const verifiableCredential = wrap(rawDocument, batch);
-    //     expect(verifiableCredential).toEqual(expectedverifiableCredential);
-    //   });
-
-    //   test("signs correctly regardless of batch ordering", () => {
-    //     const batch1 = [
-    //       "7ba10b40626cd6e57c9f9b6264996932259ad79053e8d1225b0336ed06e83bf0",
-    //       "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c",
-    //       "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
-    //       "46c732825d2111a7019929d7f21988081f88084bb05fd54ab4c1843b53cbe799"
-    //     ];
-    //     const batch2 = [
-    //       "3826fcc2b0122a3555051a29b09b8cf5a6a8c776abf5da4e966ab92dbdbd518c",
-    //       "46c732825d2111a7019929d7f21988081f88084bb05fd54ab4c1843b53cbe799",
-    //       "7ba10b40626cd6e57c9f9b6264996932259ad79053e8d1225b0336ed06e83bf0",
-    //       "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c"
-    //     ];
-
-    //     expect(wrap(rawDocument, batch1)).toEqual(wrap(rawDocument, batch2));
-    //   });
   });
 });
