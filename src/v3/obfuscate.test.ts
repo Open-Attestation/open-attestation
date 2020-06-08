@@ -1,13 +1,13 @@
 import { obfuscateDocument, obfuscateData } from "./obfuscate";
-import { OpenAttestationCredentialWithInnerIssuer, validateSchema, verifySignature, wrapDocument } from "../";
+import { validateSchema, verifySignature, wrapDocument } from "../";
 import { get } from "lodash";
 import { decodeSalt } from "./wrap";
 
 import { SchemaId } from "../shared/@types/document";
-import { Method, OaProofType, TemplateType, IdentityProofType } from "../../src/__generated__/schemaV3";
+import { Method, OaProofType, TemplateType, OpenAttestationCredential } from "../../src/__generated__/schemaV3";
 import { toBuffer } from "../shared/utils";
 
-const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationData: OpenAttestationCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -16,27 +16,17 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
   ],
   issuanceDate: "2010-01-01T19:23:24Z",
   name: "document owner name",
-  type: ["VerifiableCredential", "UniversityDegreeCredential"],
+  type: ["VerifiableCredential", "AlumniCredential"],
   credentialSubject: {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    degree: {
-      type: "BachelorDegree",
-      name: "Bachelor of Science in Mechanical Engineering"
-    }
+    alumniOf: "Example University"
   },
   template: {
     name: "any",
     type: TemplateType.EmbeddedRenderer,
     url: "http://some.example.com"
   },
-  issuer: {
-    id: "http://some.example.com",
-    name: "DEMO STORE",
-    identityProof: {
-      type: IdentityProofType.DNSTxt,
-      location: "tradetrust.io"
-    }
-  },
+  issuer: "https://example.edu/issuers/14",
   oaProof: {
     type: OaProofType.OpenAttestationProofMethod,
     value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
@@ -58,7 +48,8 @@ describe("privacy", () => {
       const { data, obfuscatedData } = obfuscateData(newDocument, field);
       const salt = decodeSalt(newDocument.proof.salts).find(s => s.path === field);
       const value = get(newDocument, field);
-      expect(obfuscatedData).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
+      expect(obfuscatedData).toEqual([toBuffer({ [field]: `${salt?.value}:${value}` }).toString("hex")]);
+      expect(decodeSalt(data.proof.salts)).not.toHaveProperty(field);
       expect(data).not.toHaveProperty(field);
     });
 
@@ -71,12 +62,15 @@ describe("privacy", () => {
       const salt2 = salts.find(s => s.path === fields[1]);
       const value1 = get(newDocument, fields[0]);
       const value2 = get(newDocument, fields[1]);
+
       expect(obfuscatedData).toEqual([
-        toBuffer(`${salt1?.value}:${value1}`).toString("hex"),
-        toBuffer(`${salt2?.value}:${value2}`).toString("hex")
+        toBuffer({ [fields[0]]: `${salt1?.value}:${value1}` }).toString("hex"),
+        toBuffer({ [fields[1]]: `${salt2?.value}:${value2}` }).toString("hex")
       ]);
+      expect(decodeSalt(data.proof.salts)).not.toHaveProperty(fields);
       expect(data).not.toHaveProperty(fields);
     });
+
     test("removes values from root object", async () => {
       const fields = ["key1", "key2"];
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
@@ -87,19 +81,21 @@ describe("privacy", () => {
       const value1 = get(newDocument, fields[0]);
       const value2 = get(newDocument, fields[1]);
       expect(obfuscatedData).toEqual([
-        toBuffer(`${salt1?.value}:${value1}`).toString("hex"),
-        toBuffer(`${salt2?.value}:${value2}`).toString("hex")
+        toBuffer({ [fields[0]]: `${salt1?.value}:${value1}` }).toString("hex"),
+        toBuffer({ [fields[1]]: `${salt2?.value}:${value2}` }).toString("hex")
       ]);
+      expect(decodeSalt(data.proof.salts)).not.toHaveProperty(fields);
       expect(data).not.toHaveProperty(fields);
     });
 
     test("removes values from nested object", async () => {
-      const field = "credentialSubject.degree.name";
+      const field = "template.name";
       const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
       const { data, obfuscatedData } = obfuscateData(newDocument, field);
       const salt = decodeSalt(newDocument.proof.salts).find(s => s.path === field);
       const value = get(newDocument, field);
-      expect(obfuscatedData).toEqual([toBuffer(`${salt?.value}:${value}`).toString("hex")]);
+      expect(obfuscatedData).toEqual([toBuffer({ [field]: `${salt?.value}:${value}` }).toString("hex")]);
+      expect(decodeSalt(data.proof.salts)).not.toHaveProperty(field);
       expect(data).not.toHaveProperty(field);
     });
 
@@ -113,9 +109,10 @@ describe("privacy", () => {
       const salt2 = salts.find(s => s.path === fields[1]);
       const value2 = get(newDocument, fields[1]);
       expect(obfuscatedData).toEqual([
-        toBuffer(`${salt1?.value}:${value1}`).toString("hex"),
-        toBuffer(`${salt2?.value}:${value2}`).toString("hex")
+        toBuffer({ [fields[0]]: `${salt1?.value}:${value1}` }).toString("hex"),
+        toBuffer({ [fields[1]]: `${salt2?.value}:${value2}` }).toString("hex")
       ]);
+      expect(decodeSalt(data.proof.salts)).not.toHaveProperty(fields);
       expect(data).not.toHaveProperty(fields);
     });
   });
@@ -131,6 +128,7 @@ describe("privacy", () => {
       expect(finalDoc1).not.toHaveProperty(["key1", "key2"]);
       expect(finalDoc2).not.toHaveProperty(["key1", "key2"]);
     });
+
     test("removes one field", async () => {
       const field = "key1";
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
@@ -152,12 +150,12 @@ describe("privacy", () => {
     });
 
     test("removes values from nested object", async () => {
-      const fields = ["issuer.name"];
+      const fields = ["template.name"];
       const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateDocument(newDocument, fields);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
-      expect(obfuscatedDocument).not.toHaveProperty("issuer.name");
+      expect(obfuscatedDocument).not.toHaveProperty(fields);
     });
   });
 });
