@@ -24,18 +24,18 @@
     "class": [
       {
         "type": "3",
-        "effectiveDate": "2010-01-01T19: 23: 24Z"
+        "effectiveDate": "2010-01-01T19:23:24Z"
       },
       {
         "type": "3A",
-        "effectiveDate": "2010-01-01T19: 23: 24Z"
+        "effectiveDate": "2010-01-01T19:23:24Z"
       }
     ]
   },
   "template": {
     "name": "CUSTOM_TEMPLATE",
     "type": "EMBEDDED_RENDERER",
-    "url": "https: //localhost:3000/renderer"
+    "url": "https://localhost:3000/renderer"
   },
   "oaProof": {
     "type": "OpenAttestationProofMethod",
