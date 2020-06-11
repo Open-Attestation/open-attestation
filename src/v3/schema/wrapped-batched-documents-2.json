@@ -1,0 +1,66 @@
+{
+  "version": "https://schema.openattestation.com/3.0/schema.json",
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://nebulis.github.io/tmp-jsonld/DrivingLicenceCredential.jsonld",
+    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
+    "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
+  ],
+  "reference": "SERIAL_NUMBER_123",
+  "name": "Republic of Singapore Driving Licence",
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "validFrom": "2010-01-01T19:23:24Z",
+  "issuer": {
+    "id": "https://example.com",
+    "name": "DEMO STORE",
+    "identityProof": {
+      "type": "DNS-TXT",
+      "location": "tradetrust.io"
+    }
+  },
+  "type": ["VerifiableCredential", "DrivingLicenceCredential"],
+  "credentialSubject": {
+    "id": "did:example:SERIAL_NUMBER_123",
+    "class": [
+      {
+        "type": "3",
+        "effectiveDate": "2010-01-01T19:23:24Z"
+      },
+      {
+        "type": "3A",
+        "effectiveDate": "2010-01-01T19:23:24Z"
+      }
+    ]
+  },
+  "template": {
+    "name": "CUSTOM_TEMPLATE",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://localhost:3000/renderer"
+  },
+  "oaProof": {
+    "type": "OpenAttestationProofMethod",
+    "method": "DOCUMENT_STORE",
+    "value": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
+  },
+  "recipient": {
+    "name": "Recipient Name"
+  },
+  "evidence": [
+    {
+      "type": "DocumentVerification2018",
+      "fileName": "sample.pdf",
+      "mimeType": "application/pdf",
+      "data": "BASE64_ENCODED_FILE"
+    }
+  ],
+  "proof": {
+    "type": "OpenAttestationMerkleProofSignature2018",
+    "targetHash": "964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5530",
+    "proofs": ["76eee8fc36924975c00420e463aab1a2e6b24fb8cfb81e8c789b2534da4b59a4"],
+    "merkleRoot": "8505f27ea43ca3720b419ab96b80039eb4b2a1126acc9cb90f2a31349c110137",
+    "salts": "W3sidmFsdWUiOiI3MzgxYjIzNC1kNzUyLTRhYjgtYWIyOS03NmFkMDBiODJkNjciLCJwYXRoIjoidmVyc2lvbiJ9LHsidmFsdWUiOiJjNDE5ZDlhNS1mZDU1LTRkZTItODY5ZC0zZDdlOTE4ZjA4MmQiLCJwYXRoIjoiQGNvbnRleHRbMF0ifSx7InZhbHVlIjoiZWZmYzhhN2YtYzg1MC00ZDg2LWFlYjgtMGRjZTQ4MGMwMWI4IiwicGF0aCI6IkBjb250ZXh0WzFdIn0seyJ2YWx1ZSI6ImI3OGI5NjViLTA1ODktNDEzMi1iMjMwLTY2NTU4ZTBhODYwNSIsInBhdGgiOiJAY29udGV4dFsyXSJ9LHsidmFsdWUiOiJhMWY0NmU1NS0wMmU4LTQ1OWEtYTA0Yy1hNWE2ZjZhNzllN2UiLCJwYXRoIjoiQGNvbnRleHRbM10ifSx7InZhbHVlIjoiZGNjNTc0NjYtNzlhMi00OTU1LWIxNmUtMTFjNzI1NGFiM2U1IiwicGF0aCI6InJlZmVyZW5jZSJ9LHsidmFsdWUiOiJhMTczZGRhOC01MjE4LTRiNWUtOTdjMS1jOGE4MjM3MDFlNGIiLCJwYXRoIjoibmFtZSJ9LHsidmFsdWUiOiJlYTY2MDZmNC00NWNhLTQ1ZjAtODQ1MC1hODE2NmNmMzE1NGYiLCJwYXRoIjoiaXNzdWFuY2VEYXRlIn0seyJ2YWx1ZSI6ImE0OTBlMzQ5LTY5NDMtNDhjNS1iYmViLTU3MDAxNWY3NGJlZCIsInBhdGgiOiJ2YWxpZEZyb20ifSx7InZhbHVlIjoiMzRkZmVkNjUtODAwYi00MTQwLTgwZjItYzBkZDEyOGQ4MTZlIiwicGF0aCI6Imlzc3Vlci5pZCJ9LHsidmFsdWUiOiI0YTk2MTNiOC1iNmI0LTRiZjMtOTM0Yy1hNzc5OThjMTZjNzYiLCJwYXRoIjoiaXNzdWVyLm5hbWUifSx7InZhbHVlIjoiMTcyMjMxYWMtZWZkNi00ODdmLWI2YWYtN2RjOTJmZjJkNDgxIiwicGF0aCI6Imlzc3Vlci5pZGVudGl0eVByb29mLnR5cGUifSx7InZhbHVlIjoiMGQ4YzMxODEtMzE3Ni00YTU2LWIxZWItZWVjMWUzODBmNmNhIiwicGF0aCI6Imlzc3Vlci5pZGVudGl0eVByb29mLmxvY2F0aW9uIn0seyJ2YWx1ZSI6ImUzNzBmOWNmLTY4ZjYtNDllNy1iNzEwLWI1N2Y3NTY3N2UwNSIsInBhdGgiOiJ0eXBlWzBdIn0seyJ2YWx1ZSI6ImI1ZDdhOGZlLWU5ZDUtNDNjMi04ODA3LTYxMDFiZjJhZTVlNSIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6IjMzM2M0YzllLTcyZDAtNDgyZS1hYzJjLTYwYTU2MTIyMjlmYSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5pZCJ9LHsidmFsdWUiOiI5MjIwMThkMi0yMDQ3LTRiYWItYjE4YS0yOWUwNzU4NzQxZTgiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0udHlwZSJ9LHsidmFsdWUiOiI3NjVhMDIyNi1lNTE4LTRjOTMtYWIxNS0yM2ZhYTRmYjE3ZTAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiIzZTI1YzZlNi1mMzE1LTQ1N2MtOTQ3MS00MDA4MzEyNmRkNWEiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMV0udHlwZSJ9LHsidmFsdWUiOiIzZDc1MjhhOS1mMTIyLTQzMmUtODVlZS0yMWJhNGUzNTM3ODIiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMV0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiI2OTg4ZGExMi0xMmUxLTQwODEtOTc0Yy1hODgzMjA0NTg2ZDciLCJwYXRoIjoidGVtcGxhdGUubmFtZSJ9LHsidmFsdWUiOiIxYWJjYzgxOS1hNDlkLTQyMDgtYjgzNC1jMzMzOWE5ZjZkYTkiLCJwYXRoIjoidGVtcGxhdGUudHlwZSJ9LHsidmFsdWUiOiI2ZWU2YzZmMi02ZmQyLTQzYzAtOTM4YS0xMzgzZTZhMWU4ZDAiLCJwYXRoIjoidGVtcGxhdGUudXJsIn0seyJ2YWx1ZSI6ImVkOTM4ODA5LTI2NWEtNDM4Mi1hNTRiLTY2ZDhiNDY4NjdhNyIsInBhdGgiOiJvYVByb29mLnR5cGUifSx7InZhbHVlIjoiZjc0MGIxNGUtYjgxYy00MjhmLTkzMjQtZDg2NTUxOTVmYzUxIiwicGF0aCI6Im9hUHJvb2YubWV0aG9kIn0seyJ2YWx1ZSI6ImQ1OTdlNTZiLTFjNDgtNGI2OS05MmMyLTFiODlhOTViOTA3ZSIsInBhdGgiOiJvYVByb29mLnZhbHVlIn0seyJ2YWx1ZSI6IjQwMTE1YmJhLTg1MmItNGE2OS1iZjA3LTI3YTk1MjFmNDI3MSIsInBhdGgiOiJyZWNpcGllbnQubmFtZSJ9LHsidmFsdWUiOiJjZjBjOTU2Mi03YmFhLTRmYmEtOTczYS0wNDY0NDhmMjhkZGMiLCJwYXRoIjoiZXZpZGVuY2VbMF0udHlwZSJ9LHsidmFsdWUiOiI2ZWVjMWQ5Mi0xMDRiLTQ0OWMtYmQ2Mi05YjM3MTZkNjIzMTQiLCJwYXRoIjoiZXZpZGVuY2VbMF0uZmlsZU5hbWUifSx7InZhbHVlIjoiZmYwZDQzNTgtYmIxMy00MGExLWJlMzktYzBlNGY5MzcyNjg0IiwicGF0aCI6ImV2aWRlbmNlWzBdLm1pbWVUeXBlIn0seyJ2YWx1ZSI6IjFmM2Q0ZDg5LTIyYTMtNDk4Mi05OGFjLTU3ZGQ3NjUwNWMwNiIsInBhdGgiOiJldmlkZW5jZVswXS5kYXRhIn1d",
+    "privacy": {
+      "obfuscated": []
+    }
+  }
+}

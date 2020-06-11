@@ -19,6 +19,7 @@ export const obfuscateData = (_data: any, fields: string[] | string) => {
   fieldsToRemove.forEach(path => {
     unset(data, path);
   });
+
   return {
     data,
     obfuscatedData
