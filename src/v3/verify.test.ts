@@ -1,7 +1,7 @@
 import { verify } from "./verify";
 import sample from "./schema/wrapped-sample-document.json";
 import batched from "./schema/wrapped-batched-documents-1.json";
-import { OpenAttestationVerifiableCredential, SignatureAlgorithm } from "../shared/@types/document";
+import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 
 // sample1: unwrapped (aka credential), sample2: only 1 doc is wrapped (aka verifiable credential/VC)
 const sampleVerifiableCredential = sample as OpenAttestationVerifiableCredential;
