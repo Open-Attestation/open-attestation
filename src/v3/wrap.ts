@@ -49,6 +49,7 @@ export const decodeSalt = (salts: string): Salt[] => JSON.parse(Base64.decode(sa
 
 /**
  * Wrap a single OpenAttestation document in v3 format.
+
  * @param document an unwrapped OpenAttestation document
  */
 export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
@@ -93,6 +94,7 @@ export const wrap = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
 
 /**
  * Wrap multiple OpenAttestation documents in v3 format.
+
  * @param documents an array of unwrapped OpenAttestation documents
  */
 export const wraps = <T extends OpenAttestationVerifiableCredentialWithoutProof>(
