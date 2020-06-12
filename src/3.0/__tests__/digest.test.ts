@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { digestDocument } from "../digest";
-import { Method, OaProofType, TemplateType, OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { Method, OaProofType, TemplateType, OpenAttestationCredential } from "../../__generated__/schema.3.0";
 import { salt } from "../salt";
 
 const sampleDoc: OpenAttestationCredential = {
