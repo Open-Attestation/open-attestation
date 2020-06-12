@@ -169,10 +169,10 @@ describe("signature", () => {
     });
   });
 
-  describe("sign", () => {
+  describe("wrap", () => {
     test("throws when the document is not in the batch", () => {
-      const emptySign = () => wrap(rawDocument, []);
-      expect(emptySign).toThrow("Document is not in batch");
+      const emptyWrap = () => wrap(rawDocument, []);
+      expect(emptyWrap).toThrow("Document is not in batch");
     });
 
     test("signs correctly for single document", () => {
@@ -214,7 +214,7 @@ describe("signature", () => {
       expect(wrappedDocument).toEqual(expectedWrappedDocument);
     });
 
-    test("signs correctly regardless of batch ordering", () => {
+    test("wrap correctly regardless of batch ordering", () => {
       const batch1 = [
         "7ba10b40626cd6e57c9f9b6264996932259ad79053e8d1225b0336ed06e83bf0",
         "d7e0f88baaa5b389a7e031c0939522e1bd3e30146a47141a1192918c6e53926c",
