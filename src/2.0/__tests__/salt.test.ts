@@ -6,7 +6,7 @@ import {
   unsalt,
   unsaltData,
   uuidSalt
-} from "./salt";
+} from "../salt";
 
 const someObj = {
   keyA: "value 1",

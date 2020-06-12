@@ -1,4 +1,4 @@
-import { digestDocument, flattenHashArray } from "./digest";
+import { digestDocument, flattenHashArray } from "../digest";
 import { SchematisedDocument, SchemaId } from "../../shared/@types/document";
 
 describe("digest", () => {
