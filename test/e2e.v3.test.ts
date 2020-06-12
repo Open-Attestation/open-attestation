@@ -181,7 +181,7 @@ describe("v3 E2E Test Scenarios", () => {
     test("fails if there is a malformed document", () => {
       const malformedDatum = [
         ...datum,
-        // @ts-expect-error
+        // @ts-expect-error missing properties from OpenAttestationCredential: "@context", credentialSubject, issuanceDate, issuer, and 2 more.
         {
           laurent: "task force, assemble!!"
         } as OpenAttestationVerifiableCredential
