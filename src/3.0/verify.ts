@@ -1,7 +1,7 @@
 import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 import { digestDocument } from "./digest";
 import { checkProof } from "../shared/merkle";
-import { decodeSalt, salt } from "./wrap";
+import { decodeSalt, salt } from "./salt";
 
 export const verify = <T extends OpenAttestationVerifiableCredential>(
   document: T

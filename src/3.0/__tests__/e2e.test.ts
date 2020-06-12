@@ -6,9 +6,9 @@ import {
   verifySignature,
   wrapDocument,
   wrapDocuments
-} from "..";
-import { IdentityProofType, Method, OaProofType, TemplateType } from "../__generated__/schema.3.0";
-import { SchemaId } from "../shared/@types/document";
+} from "../..";
+import { IdentityProofType, Method, OaProofType, TemplateType } from "../../__generated__/schema.3.0";
+import { SchemaId } from "../../shared/@types/document";
 import { cloneDeep, omit } from "lodash";
 
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
@@ -189,8 +189,8 @@ describe("3.0 E2E Test Scenarios", () => {
       const action = () => wrapDocuments(malformedDatum);
       expect(action).toThrow("Invalid document");
     });
-    test("creates a batch of documents if all are in the right format", () => {
-      const signedDocuments = wrapDocuments(datum, {
+    test("creates a batch of documents if all are in the right format", async () => {
+      const signedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -203,28 +203,28 @@ describe("3.0 E2E Test Scenarios", () => {
         expect(doc.proof.proofs.length).toEqual(2);
       });
     });
-    test("checks that documents are wrapped correctly", () => {
-      const signedDocuments = wrapDocuments(datum, {
+    test("checks that documents are wrapped correctly", async () => {
+      const signedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
       const verified = signedDocuments.reduce((prev, curr) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
     });
-    test("checks that documents conforms to the schema", () => {
-      const signedDocuments = wrapDocuments(datum, {
+    test("checks that documents conforms to the schema", async () => {
+      const signedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
       const validatedSchema = signedDocuments.reduce((prev: boolean, curr: any) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
     });
-    test("does not allow for same merkle root to be generated", () => {
-      const signedDocuments = wrapDocuments(datum, {
+    test("does not allow for same merkle root to be generated", async () => {
+      const signedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
-      const newSignedDocuments = wrapDocuments(datum, {
+      const newSignedDocuments = await wrapDocuments(datum, {
         version: SchemaId.v3
       });
       expect(signedDocuments[0].proof.merkleRoot).not.toBe(newSignedDocuments[0].proof.merkleRoot);

@@ -1,8 +1,8 @@
 import {
   IdentityProofType as v2IdentityProofType,
   OpenAttestationDocument as v2OpenAttestationDocument
-} from "../__generated__/schema.2.0";
-import { wrapDocument, sign, ProofType } from "..";
+} from "../../__generated__/schema.2.0";
+import { wrapDocument, sign, ProofType } from "../..";
 import { ethers } from "ethers";
 
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {

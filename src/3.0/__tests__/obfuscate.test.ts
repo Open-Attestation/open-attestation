@@ -1,11 +1,11 @@
-import { obfuscateDocument } from "./obfuscate";
-import { verifySignature, wrapDocument } from "../";
+import { obfuscateDocument } from "../obfuscate";
+import { verifySignature, wrapDocument } from "../..";
 import { get } from "lodash";
-import { decodeSalt } from "./wrap";
+import { decodeSalt } from "../salt";
 
-import { SchemaId } from "../shared/@types/document";
-import { Method, OaProofType, OpenAttestationCredential } from "../../src/__generated__/schema.3.0";
-import { toBuffer } from "../shared/utils";
+import { SchemaId } from "../../shared/@types/document";
+import { Method, OaProofType, OpenAttestationCredential } from "../../__generated__/schema.3.0";
+import { toBuffer } from "../../shared/utils";
 
 const openAttestationData: OpenAttestationCredential = {
   "@context": [

@@ -79,10 +79,6 @@ export type OpenAttestationVerifiableCredential<T extends OpenAttestationCredent
   schema?: string;
   proof: VerifiableCredentialProof;
 };
-// TODO is this necessary ? :)
-export type OpenAttestationVerifiableCredentialWithoutProof<
-  T extends OpenAttestationCredential = OpenAttestationCredential
-> = Omit<OpenAttestationVerifiableCredential<T>, "proof">;
 
 // feel free to improve, as long as this project compile without changes :)
 // once salted, every property is turned into a string

@@ -3,6 +3,7 @@ import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__ge
 import { OpenAttestationCredential } from "../../__generated__/schema.3.0";
 import { WrappedDocument, SchemaId, OpenAttestationVerifiableCredential } from "../../shared/@types/document";
 import { unsaltData } from "../../2.0/salt";
+import Ajv from "ajv";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
@@ -84,6 +85,15 @@ export function getIssuerAddress(document: any): any {
   }
   throw new Error("");
 }
+
+export class SchemaValidationError extends Error {
+  constructor(message: string, public validationErrors: Ajv.ErrorObject[], public document: any) {
+    super(message);
+  }
+}
+export const isSchemaValidationError = (error: any): error is SchemaValidationError => {
+  return !!error.validationErrors;
+};
 
 // make it available for consumers
 export { keccak256 } from "js-sha3";

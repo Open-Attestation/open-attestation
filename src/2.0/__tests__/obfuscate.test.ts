@@ -1,6 +1,6 @@
-import { obfuscateData, obfuscateDocument } from "./obfuscate";
-import { WrappedDocument, SchemaId } from "../shared/@types/document";
-import { getData } from "../shared/utils";
+import { obfuscateData, obfuscateDocument } from "../obfuscate";
+import { WrappedDocument, SchemaId } from "../../shared/@types/document";
+import { getData } from "../../shared/utils";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
