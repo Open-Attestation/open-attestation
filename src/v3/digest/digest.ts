@@ -8,7 +8,7 @@ export const digestDocument = (document: OpenAttestationCredential, salts: Salt[
   const hashedUnhashedDataArray = salts
     .filter(salt => get(document, salt.path))
     .map(salt => {
-      return keccak256(JSON.stringify(`${salt.value}:${get(document, salt.path)}`));
+      return keccak256(JSON.stringify({ [salt.path]: `${salt.value}:${get(document, salt.path)}` }));
     });
 
   // Combine both array and sort them to ensure determinism
