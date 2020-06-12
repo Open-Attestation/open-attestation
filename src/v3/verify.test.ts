@@ -184,7 +184,6 @@ describe("signature", () => {
             proofs: [] // Was "964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5530"
           }
         };
-        console.log(verifiableCredential);
 
         expect(verify(verifiableCredential)).toBe(false);
       });

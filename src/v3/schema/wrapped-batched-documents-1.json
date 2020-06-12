@@ -1,4 +1,5 @@
 {
+  "schema": "https://schema.openattestation.com/3.0/schema.json",
   "version": "https://schema.openattestation.com/3.0/schema.json",
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
