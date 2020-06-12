@@ -15,10 +15,10 @@ export const verify = <T extends OpenAttestationVerifiableCredential>(
   const { proof, ...documentWithoutProof } = document;
   const decodedSalts = decodeSalt(document.proof.salts);
 
-  // Count number of hashes: count(visible) should match count(decodedSalts)
-  const countVisible = salt(documentWithoutProof).length;
+  // Checks to ensure there are no added/removed values, so visibleSalts.length must match decodedSalts.length
+  const visibleSalts = salt(documentWithoutProof);
 
-  if (countVisible !== decodedSalts.length) return false;
+  if (visibleSalts.length !== decodedSalts.length) return false;
 
   // Checks target hash
   const digest = digestDocument(documentWithoutProof, decodedSalts, document.proof.privacy.obfuscated);
