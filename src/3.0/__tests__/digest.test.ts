@@ -27,7 +27,7 @@ const sampleDoc: OpenAttestationCredential = {
 
 describe("digest v3.0", () => {
   describe("digestDocument", () => {
-    test.only("digests a document with all visible content correctly", () => {
+    test("digests a document with all visible content correctly", () => {
       const document = cloneDeep(sampleDoc);
 
       // We shouldn't use create salts on every test here as it's non-deterministic
