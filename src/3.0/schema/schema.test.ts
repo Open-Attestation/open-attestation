@@ -4,12 +4,12 @@ import { OpenAttestationCredentialWithInnerIssuer, wrapDocument } from "../../in
 import { $id } from "./schema.json";
 import sample from "./sample-document.json";
 import { SchemaId } from "../../shared/@types/document";
-import { IdentityProofType, Method, Template, TemplateType } from "../../__generated__/schemaV3";
+import { IdentityProofType, Method, Template, TemplateType } from "../../__generated__/schema.3.0";
 
 const sampleDoc = sample as OpenAttestationCredentialWithInnerIssuer & { template: Template };
 
 // eslint-disable-next-line jest/no-disabled-tests
-describe("schema/v3.0", () => {
+describe("schema/3.0", () => {
   it("should be valid with sample document", async () => {
     const document = { ...cloneDeep(sampleDoc) };
     const wrappedDocument = await wrapDocument(document, {

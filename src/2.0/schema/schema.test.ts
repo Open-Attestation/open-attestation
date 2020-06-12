@@ -6,12 +6,12 @@ import sampleToken from "./sample-token.json";
 import sampleDocument from "./sample-document.json";
 import { wrapDocument } from "../../index";
 import { SchemaId } from "../../shared/@types/document";
-import { IdentityProofType, OpenAttestationDocument } from "../../__generated__/schemaV2";
+import { IdentityProofType, OpenAttestationDocument } from "../../__generated__/schema.2.0";
 
 const openAttestationDocument = sampleDocument as OpenAttestationDocument;
 const openAttestationToken = sampleToken as OpenAttestationDocument;
 
-describe("schema/v2.0", () => {
+describe("schema/2.0", () => {
   it("should be valid with sample document", async () => {
     const wrappedDocument = await wrapDocument(openAttestationDocument);
     expect(wrappedDocument.version).toBe(SchemaId.v2);

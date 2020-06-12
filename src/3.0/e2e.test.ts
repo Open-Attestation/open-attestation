@@ -6,9 +6,9 @@ import {
   verifySignature,
   wrapDocument,
   wrapDocuments
-} from "../src";
-import { IdentityProofType, Method, OaProofType, TemplateType } from "../src/__generated__/schemaV3";
-import { SchemaId } from "../src/shared/@types/document";
+} from "..";
+import { IdentityProofType, Method, OaProofType, TemplateType } from "../__generated__/schema.3.0";
+import { SchemaId } from "../shared/@types/document";
 import { cloneDeep, omit } from "lodash";
 
 // TODO sth might be wrong with the verify signature => if I add data, it will still be valid
@@ -87,7 +87,7 @@ const datum = [
   }
 ];
 
-describe("v3 E2E Test Scenarios", () => {
+describe("3.0 E2E Test Scenarios", () => {
   describe("Issuing a single document", () => {
     const document = datum[0];
 
@@ -408,7 +408,7 @@ describe("v3 E2E Test Scenarios", () => {
         })
       ).toStrictEqual(false);
     });
-    test("should default to v2 when document is valid and version is undefined", () => {
+    test("should default to 2.0 when document is valid and version is undefined", () => {
       expect(
         validateSchema({
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore

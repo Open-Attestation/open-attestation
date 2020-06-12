@@ -1,4 +1,4 @@
-import { Issuer, OpenAttestationCredential } from "../../__generated__/schemaV3";
+import { Issuer, OpenAttestationCredential } from "../../__generated__/schema.3.0";
 
 export enum SignatureAlgorithm {
   OpenAttestationMerkleProofSignature2018 = "OpenAttestationMerkleProofSignature2018"

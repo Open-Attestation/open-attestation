@@ -1,4 +1,4 @@
-import { OpenAttestationCredential } from "../__generated__/schemaV3";
+import { OpenAttestationCredential } from "../__generated__/schema.3.0";
 import { toBuffer } from "../shared/utils";
 import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 import { cloneDeep, get, unset } from "lodash";
