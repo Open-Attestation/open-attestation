@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import sampleDocument from "../schema/sample-document.json";
 import { ProofType } from "../../shared/@types/document";
 import { wrapDocument } from "../..";
-import { OpenAttestationDocument } from "../../__generated__/schemaV2";
+import { OpenAttestationDocument } from "../../__generated__/schema.2.0";
 const openAttestationDocument = sampleDocument as OpenAttestationDocument;
 
 describe("proofs", () => {

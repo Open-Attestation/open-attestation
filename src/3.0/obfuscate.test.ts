@@ -4,7 +4,7 @@ import { get } from "lodash";
 import { decodeSalt } from "./wrap";
 
 import { SchemaId } from "../shared/@types/document";
-import { Method, OaProofType, OpenAttestationCredential } from "../../src/__generated__/schemaV3";
+import { Method, OaProofType, OpenAttestationCredential } from "../../src/__generated__/schema.3.0";
 import { toBuffer } from "../shared/utils";
 
 const openAttestationData: OpenAttestationCredential = {

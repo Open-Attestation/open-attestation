@@ -1,8 +1,8 @@
 import {
   IdentityProofType as v2IdentityProofType,
   OpenAttestationDocument as v2OpenAttestationDocument
-} from "../src/__generated__/schemaV2";
-import { wrapDocument, sign, ProofType } from "../src";
+} from "../__generated__/schema.2.0";
+import { wrapDocument, sign, ProofType } from "..";
 import { ethers } from "ethers";
 
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
@@ -19,9 +19,9 @@ const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
   foo: "bar"
 };
 
-describe("v2 E2E Test Scenarios", () => {
+describe("2.0 E2E Test Scenarios", () => {
   describe("Issuing a single documents", () => {
-    test("should create a wrapped v2 document", async () => {
+    test("should create a wrapped 2.0 document", async () => {
       const wrappedDocument = await wrapDocument(openAttestationDatav2);
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
@@ -30,7 +30,7 @@ describe("v2 E2E Test Scenarios", () => {
       expect(wrappedDocument.signature.proof).toEqual([]);
       expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
     });
-    test("should create a wrapped v2 document with a signed proof block", async () => {
+    test("should create a wrapped 2.0 document with a signed proof block", async () => {
       const wrappedDocument = await wrapDocument(openAttestationDatav2);
       const options = {
         privateKey: "0x0123456789012345678901234567890123456789012345678901234567890123",
@@ -44,7 +44,7 @@ describe("v2 E2E Test Scenarios", () => {
       const recoverAddress = ethers.utils.verifyMessage(msg, proof.signature);
       expect(recoverAddress.toLowerCase()).toStrictEqual(options.verificationMethod.toLowerCase());
     });
-    test("should create a wrapped v2 document when issuer contains additional data", async () => {
+    test("should create a wrapped 2.0 document when issuer contains additional data", async () => {
       const wrappedDocument = await wrapDocument({
         ...openAttestationDatav2,
         issuers: [

@@ -7,7 +7,7 @@ import {
   Salt,
   SignatureAlgorithm
 } from "../shared/@types/document";
-import { digestDocument } from "../v3/digest";
+import { digestDocument } from "../3.0/digest";
 import { Base64 } from "js-base64";
 
 const deepMap = (value: any, path: string): Salt[] => {

@@ -1,8 +1,11 @@
 import * as utils from "./utils";
 import { wrapDocument } from "../../";
 import { OpenAttestationVerifiableCredential, SchemaId, WrappedDocument } from "../../shared/@types/document";
-import { IdentityProofType, OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schemaV2";
-import { OaProofType, Method, OpenAttestationCredential, TemplateType } from "../../__generated__/schemaV3";
+import {
+  IdentityProofType,
+  OpenAttestationDocument as v2OpenAttestationDocument
+} from "../../__generated__/schema.2.0";
+import { OaProofType, Method, OpenAttestationCredential, TemplateType } from "../../__generated__/schema.3.0";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -102,7 +105,7 @@ describe("Util Functions", () => {
   });
 
   describe("getIssuerAddress", () => {
-    test("should return all issuers address for v2 document using certificate store", async () => {
+    test("should return all issuers address for 2.0 document using certificate store", async () => {
       const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
@@ -120,7 +123,7 @@ describe("Util Functions", () => {
         "0x1234123412341234123412341234123412341234"
       ]);
     });
-    test("should return all issuers address for v2 document using document store", async () => {
+    test("should return all issuers address for 2.0 document using document store", async () => {
       const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
@@ -146,7 +149,7 @@ describe("Util Functions", () => {
         "0x1234123412341234123412341234123412341234"
       ]);
     });
-    test("should return all issuers address for v2 document using token registry", async () => {
+    test("should return all issuers address for 2.0 document using token registry", async () => {
       const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
@@ -172,7 +175,7 @@ describe("Util Functions", () => {
         "0x1234123412341234123412341234123412341234"
       ]);
     });
-    test("should return all issuers address for v3 document", async () => {
+    test("should return all issuers address for 3.0 document", async () => {
       // This test takes some time to run, so we set the timeout to 14s
       const document: OpenAttestationVerifiableCredential<OpenAttestationCredential> = await wrapDocument(
         {

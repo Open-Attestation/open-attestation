@@ -1,10 +1,10 @@
 import Ajv from "ajv";
-import { digestDocument as digestDocumentV2 } from "./v2/digest";
+import { digestDocument as digestDocumentV2 } from "./2.0/digest";
 import { getSchema, validateSchema as validate, validateW3C } from "./shared/validate";
-import { verify } from "./v2/verify";
-import { verify as verifyV3 } from "./v3/verify";
-import { wrap } from "./v2/wrap";
-import { wrap as wrapV3, wraps as wrapsV3 } from "./v3/wrap";
+import { verify } from "./2.0/verify";
+import { verify as verifyV3 } from "./3.0/verify";
+import { wrap } from "./2.0/wrap";
+import { wrap as wrapV3, wraps as wrapsV3 } from "./3.0/wrap";
 import {
   OpenAttestationVerifiableCredential,
   OpenAttestationVerifiableCredentialWithoutProof,
@@ -12,14 +12,14 @@ import {
   SchematisedDocument,
   WrappedDocument
 } from "./shared/@types/document";
-import { saltData } from "./v2/salt";
+import { saltData } from "./2.0/salt";
 import * as utils from "./shared/utils";
-import * as v2 from "./__generated__/schemaV2";
-import { OpenAttestationDocument } from "./__generated__/schemaV2";
-import * as v3 from "./__generated__/schemaV3";
-import { OpenAttestationCredential } from "./__generated__/schemaV3";
-import { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
-import { obfuscateDocument as obfuscateDocumentV3 } from "./v3/obfuscate";
+import * as v2 from "./__generated__/schema.2.0";
+import { OpenAttestationDocument } from "./__generated__/schema.2.0";
+import * as v3 from "./__generated__/schema.3.0";
+import { OpenAttestationCredential } from "./__generated__/schema.3.0";
+import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
+import { obfuscateDocument as obfuscateDocumentV3 } from "./3.0/obfuscate";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
@@ -148,13 +148,11 @@ export function obfuscate(document: any, fields: string[] | string) {
     : obfuscateDocumentV2(document, fields);
 }
 
-export { digestDocument as digestDocumentV2 } from "./v2/digest";
-export { digestDocument as digestDocumentV3 } from "./v3/digest";
+export { digestDocument as digestDocumentV2 } from "./2.0/digest";
+export { digestDocument as digestDocumentV3 } from "./3.0/digest";
 export { checkProof, MerkleTree } from "./shared/merkle";
-// export { obfuscateDocument as obfuscateDocumentV2 } from "./v2/obfuscate";
-// export { obfuscateDocument as obfuscateDocumentV3, validate as validateV3 } from "./v3/obfuscate";
 export { obfuscate as obfuscateDocument };
-export { sign } from "./v2/sign";
+export { sign } from "./2.0/sign";
 export { utils, isSchemaValidationError };
 export * from "./shared/@types/document";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
