@@ -420,7 +420,13 @@ describe("schema/v2.0", () => {
             keyword: "enum",
             message: "should be equal to one of the allowed values",
             params: {
-              allowedValues: ["application/pdf", "image/png", "image/jpeg"]
+              allowedValues: [
+                "application/pdf",
+                "image/png",
+                "image/jpeg",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              ]
             },
             schemaPath: "#/properties/attachments/items/properties/type/enum"
           }
