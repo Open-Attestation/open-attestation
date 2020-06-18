@@ -177,7 +177,7 @@
           "type": {
             "type": "string",
             "description": "Type of attachment",
-            "enum": ["application/pdf", "image/png", "image/jpeg"]
+            "enum": ["application/pdf", "image/png", "image/jpeg", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
           },
           "data": {
             "type": "string",
