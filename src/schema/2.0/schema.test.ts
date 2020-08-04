@@ -397,42 +397,7 @@ describe("schema/v2.0", () => {
       const wrappedDocument = wrapDocument(omit(cloneDeep(sampleDoc), "attachments"));
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
-    it("should not be valid with invalid file type", () => {
-      expect.assertions(2);
 
-      const document = {
-        ...sampleDoc,
-        attachments: [
-          {
-            filename: "sample.aac",
-            type: "audio/aac",
-            data: "BASE64_ENCODED_FILE"
-          }
-        ]
-      };
-      try {
-        wrapDocument(document);
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            dataPath: ".attachments[0].type",
-            keyword: "enum",
-            message: "should be equal to one of the allowed values",
-            params: {
-              allowedValues: [
-                "application/pdf",
-                "image/png",
-                "image/jpeg",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              ]
-            },
-            schemaPath: "#/properties/attachments/items/properties/type/enum"
-          }
-        ]);
-      }
-    });
     it("should not be valid without attachments filename", () => {
       expect.assertions(2);
 
