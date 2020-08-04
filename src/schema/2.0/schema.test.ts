@@ -2,10 +2,14 @@
 /* eslint-disable jest/no-try-expect */
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { cloneDeep, merge, omit } from "lodash";
-import sampleToken from "./sample-token.json";
-import sampleDoc from "./sample-document.json";
-import { wrapDocument } from "../../index";
+import sampleTokenJson from "./sample-token.json";
+import sampleDocJson from "./sample-document.json";
+import { v2, wrapDocument } from "../../index";
 import { SchemaId } from "../../@types/document";
+import { IdentityProofType } from "../../__generated__/schemaV2";
+
+const sampleDoc = sampleDocJson as v2.OpenAttestationDocument;
+const sampleToken = sampleTokenJson as v2.OpenAttestationDocument;
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", () => {
@@ -120,7 +124,7 @@ describe("schema/v2.0", () => {
             documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -155,7 +159,7 @@ describe("schema/v2.0", () => {
             certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -190,7 +194,7 @@ describe("schema/v2.0", () => {
             documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -224,7 +228,7 @@ describe("schema/v2.0", () => {
             name: "DEMO STORE",
             documentStore: "Invalid Address",
             identityProof: {
-              type: "DNS-TXT",
+              type: IdentityProofType.DNSTxt,
               location: "abc.com"
             }
           }
@@ -253,6 +257,7 @@ describe("schema/v2.0", () => {
 
       const document = omit(cloneDeep(sampleDoc), "issuers");
       try {
+        // @ts-expect-error issuers property is missing
         wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -298,7 +303,7 @@ describe("schema/v2.0", () => {
             {
               name: "ABC",
               identityProof: {
-                type: "DNS-TXT",
+                type: IdentityProofType.DNSTxt,
                 location: "abc.com"
               }
             }
@@ -372,6 +377,7 @@ describe("schema/v2.0", () => {
       };
 
       try {
+        // @ts-expect-error $template.type is invalid
         wrapDocument(document);
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");

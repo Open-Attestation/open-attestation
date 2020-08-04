@@ -3,7 +3,8 @@ import {
   ProofSigningOptions,
   SignedWrappedDocument,
   ProofPurpose,
-  ProofType
+  ProofType,
+  OpenAttestationDocument
 } from "../@types/document";
 import { ethers } from "ethers";
 const type = ProofType.EcdsaSecp256k1Signature2019;
@@ -14,7 +15,7 @@ const type = ProofType.EcdsaSecp256k1Signature2019;
  * @param document
  * @param options
  */
-export async function sign<T = any>(
+export async function sign<T extends OpenAttestationDocument = OpenAttestationDocument>(
   document: WrappedDocument<T>,
   options: ProofSigningOptions
 ): Promise<SignedWrappedDocument<T>> {

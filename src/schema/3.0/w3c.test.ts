@@ -1,10 +1,12 @@
-import wrappedDocument from "./wrapped-sample-document.json";
+import wrappedDocumentJson from "./wrapped-sample-document.json";
 import { __unsafe__mapToW3cVc as mapToW3cVc } from "./w3c";
-import { WrappedDocument } from "../../@types/document";
+import { v3, WrappedDocument } from "../../index";
+
+const wrappedDocument = wrappedDocumentJson as WrappedDocument<v3.OpenAttestationDocument>;
 
 describe("it should be correct", () => {
   it("should really be correct", () => {
-    expect(mapToW3cVc(wrappedDocument as WrappedDocument)).toStrictEqual({
+    expect(mapToW3cVc(wrappedDocument)).toStrictEqual({
       "@context": ["https://www.w3.org/2018/credentials/v1"],
       type: ["VerifiableCredential"],
       credentialSubject: {

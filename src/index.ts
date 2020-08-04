@@ -2,7 +2,7 @@ import Ajv from "ajv";
 import { digestDocument } from "./digest";
 import { getSchema, validateSchema as validate } from "./schema";
 import { wrap } from "./signature";
-import { SchematisedDocument, WrappedDocument, SchemaId } from "./@types/document";
+import { OpenAttestationDocument, SchemaId, SchematisedDocument, WrappedDocument } from "./@types/document";
 import { saltData } from "./privacy/salt";
 import * as utils from "./utils";
 import * as v2 from "./__generated__/schemaV2";
@@ -14,8 +14,11 @@ interface WrapDocumentOption {
 }
 const defaultVersion = SchemaId.v2;
 
-const createDocument = (data: any, option?: WrapDocumentOption) => {
-  const documentSchema: SchematisedDocument = {
+const createDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
+  data: any,
+  option?: WrapDocumentOption
+): SchematisedDocument<T> => {
+  const documentSchema: SchematisedDocument<T> = {
     version: option?.version ?? defaultVersion,
     data: saltData(data)
   };
@@ -34,8 +37,11 @@ const isSchemaValidationError = (error: any): error is SchemaValidationError => 
   return !!error.validationErrors;
 };
 
-export const wrapDocument = <T = unknown>(data: T, options?: WrapDocumentOption): WrappedDocument<T> => {
-  const document: SchematisedDocument = createDocument(data, options);
+export const wrapDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
+  data: T,
+  options?: WrapDocumentOption
+): WrappedDocument<T> => {
+  const document = createDocument<T>(data, options);
   const errors = validate(document, getSchema(options?.version ?? defaultVersion));
   if (errors.length > 0) {
     throw new SchemaValidationError("Invalid document", errors, document);
@@ -43,8 +49,11 @@ export const wrapDocument = <T = unknown>(data: T, options?: WrapDocumentOption)
   return wrap(document, [digestDocument(document)]);
 };
 
-export const wrapDocuments = <T = unknown>(dataArray: T[], options?: WrapDocumentOption): WrappedDocument<T>[] => {
-  const documents = dataArray.map(data => createDocument(data, options));
+export const wrapDocuments = <T extends OpenAttestationDocument = OpenAttestationDocument>(
+  dataArray: T[],
+  options?: WrapDocumentOption
+): WrappedDocument<T>[] => {
+  const documents = dataArray.map(data => createDocument<T>(data, options));
   documents.forEach(document => {
     const errors = validate(document, getSchema(options?.version ?? defaultVersion));
     if (errors.length > 0) {

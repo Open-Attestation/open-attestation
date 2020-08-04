@@ -1,9 +1,12 @@
 // disable to check error properties, tried with objectContaining but didnt work
-/* eslint-disable jest/no-try-expect */
-import { wrapDocument } from "../../index";
+/* eslint-disable jest/no-try-expect,@typescript-eslint/no-non-null-assertion */
+import { v3, wrapDocument } from "../../index";
 import { $id } from "./schema.json";
-import sampleDoc from "./sample-document.json";
+import sampleDocJson from "./sample-document.json";
 import { SchemaId } from "../../@types/document";
+import { IdentityProofType, Method, MIMEType, ProofType, TemplateType } from "../../__generated__/schemaV3";
+
+const sampleDoc = sampleDocJson as v3.OpenAttestationDocument;
 
 describe("schema/v3.0", () => {
   it("should be valid with sample document", () => {
@@ -95,6 +98,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, reference: undefined };
       try {
+        // @ts-expect-error reference is invalid
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -113,6 +117,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, reference: null };
       try {
+        // @ts-expect-error reference is invalid
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -153,6 +158,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, name: undefined };
       try {
+        // @ts-expect-error name is invalid
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -171,6 +177,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, name: null };
       try {
+        // @ts-expect-error name is invalid
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -221,6 +228,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, validFrom: undefined };
       try {
+        // @ts-expect-error validFrom is invalid
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -239,6 +247,7 @@ describe("schema/v3.0", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, validFrom: null };
       try {
+        // @ts-expect-error validFrom is invalid
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
@@ -304,7 +313,7 @@ describe("schema/v3.0", () => {
 
   describe("template", () => {
     it("should be valid when type is EMBEDDED_RENDERER", () => {
-      const document = { ...sampleDoc, template: { ...sampleDoc.template, type: "EMBEDDED_RENDERER" } };
+      const document = { ...sampleDoc, template: { ...sampleDoc.template, type: TemplateType.EmbeddedRenderer } };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -398,6 +407,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if template.type is not equal to EMBEDDED_RENDERER", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, template: { ...sampleDoc.template } };
+      // @ts-expect-error template.type is invalid
       document.template.type = "SOMETHING";
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -458,7 +468,10 @@ describe("schema/v3.0", () => {
     it("should be valid when type is DNS-TXT", () => {
       const document = {
         ...sampleDoc,
-        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "DNS-TXT" } }
+        issuer: {
+          ...sampleDoc.issuer,
+          identityProof: { ...sampleDoc.issuer.identityProof, type: IdentityProofType.DNSTxt }
+        }
       };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -466,7 +479,10 @@ describe("schema/v3.0", () => {
     it("should be valid when identityProof type is W3C-DID", () => {
       const document = {
         ...sampleDoc,
-        issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof, type: "W3C-DID" } }
+        issuer: {
+          ...sampleDoc.issuer,
+          identityProof: { ...sampleDoc.issuer.identityProof, type: IdentityProofType.W3CDid }
+        }
       };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -478,7 +494,7 @@ describe("schema/v3.0", () => {
           ...sampleDoc.issuer,
           identityProof: {
             ...sampleDoc.issuer.identityProof,
-            type: "W3C-DID",
+            type: IdentityProofType.W3CDid,
             location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
           }
         }
@@ -657,6 +673,7 @@ describe("schema/v3.0", () => {
         ...sampleDoc,
         issuer: { ...sampleDoc.issuer, identityProof: { ...sampleDoc.issuer.identityProof } }
       };
+      // @ts-expect-error identity proof type is invalid
       document.issuer.identityProof.type = "OTHER";
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -699,17 +716,17 @@ describe("schema/v3.0", () => {
 
   describe("proof", () => {
     it("should be valid when type is OpenAttestationSignature2018", () => {
-      const document = { ...sampleDoc, proof: { ...sampleDoc.proof, type: "OpenAttestationSignature2018" } };
+      const document = { ...sampleDoc, proof: { ...sampleDoc.proof, type: ProofType.OpenAttestationSignature2018 } };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is TOKEN_REGISTRY", () => {
-      const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: "TOKEN_REGISTRY" } };
+      const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: Method.TokenRegistry } };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is DOCUMENT_STORE", () => {
-      const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: "DOCUMENT_STORE" } };
+      const document = { ...sampleDoc, proof: { ...sampleDoc.proof, method: Method.DocumentStore } };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -773,6 +790,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not OpenAttestationSignature2018", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      // @ts-expect-error proof type is invalid
       document.proof.type = "Something";
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -811,6 +829,7 @@ describe("schema/v3.0", () => {
     it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", () => {
       expect.assertions(2);
       const document = { ...sampleDoc, proof: { ...sampleDoc.proof } };
+      // @ts-expect-error proof method is invalid
       document.proof.method = "Something";
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -850,24 +869,27 @@ describe("schema/v3.0", () => {
 
   describe("attachments", () => {
     it("should be valid when mimeType is application/pdf", () => {
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }] };
+      const document = {
+        ...sampleDoc,
+        attachments: [{ ...sampleDoc.attachments![0], mimeType: MIMEType.ApplicationPDF }]
+      };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/png", () => {
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0], mimeType: MIMEType.ImagePNG }] };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/jpeg", () => {
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0], mimeType: MIMEType.ImageJPEG }] };
       const wrappedDocument = wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
 
     it("should be invalid when adding additional data", () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0], key: "any" }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0], key: "any" }] };
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -885,7 +907,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if filename is missing", () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0] }] };
       delete document.attachments[0].filename;
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -904,7 +926,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if mimeType is missing", () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0] }] };
       delete document.attachments[0].mimeType;
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -923,7 +945,8 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if mimeType is not one of the specified enum value", () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0] }] };
+      // @ts-expect-error mime type is invalid
       document.attachments[0].mimeType = "Something";
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -942,7 +965,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if data is missing", () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0] }] };
       delete document.attachments[0].data;
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -961,7 +984,7 @@ describe("schema/v3.0", () => {
     });
     it("should be invalid if type is missing", () => {
       expect.assertions(2);
-      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments[0] }] };
+      const document = { ...sampleDoc, attachments: [{ ...sampleDoc.attachments![0] }] };
       delete document.attachments[0].type;
       try {
         wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });

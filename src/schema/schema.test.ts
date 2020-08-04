@@ -18,11 +18,10 @@ const schema = {
 describe("schema", () => {
   describe("validateSchema", () => {
     test("throws when the schema cannot be found/has not been added", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore ignore typescript for this test
       const document: SchematisedDocument = {
         schema: "http://example.com/schema.json",
         data: {
+          //@ts-expect-error it's not an open attestation document
           key1: 2
         }
       };
@@ -39,6 +38,7 @@ describe("schema", () => {
           version: SchemaId.v3,
           schema: "http://example.com/schema.json",
           data: {
+            //@ts-expect-error it's not an open attestation document
             key1: 2
           }
         };
@@ -51,6 +51,7 @@ describe("schema", () => {
           version: SchemaId.v3,
           schema: "http://example.com/schema.json",
           data: {
+            //@ts-expect-error it's not an open attestation document
             key: 2
           }
         };

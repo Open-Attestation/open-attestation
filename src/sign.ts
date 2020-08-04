@@ -1,7 +1,12 @@
-import { WrappedDocument, ProofSigningOptions, SignedWrappedDocument } from "./@types/document";
+import {
+  WrappedDocument,
+  ProofSigningOptions,
+  SignedWrappedDocument,
+  OpenAttestationDocument
+} from "./@types/document";
 import { sign as EcdsaSecp256k1Signature2019 } from "./sign/ecdsa-secp256k1-signature-2019";
 
-export async function sign<T = any>(
+export async function sign<T extends OpenAttestationDocument = OpenAttestationDocument>(
   document: WrappedDocument<T>,
   options: ProofSigningOptions
 ): Promise<SignedWrappedDocument<T>> {

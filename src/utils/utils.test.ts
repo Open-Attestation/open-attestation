@@ -1,7 +1,10 @@
 import * as utils from "./utils";
 import { wrapDocument } from "..";
 import { WrappedDocument, SchemaId } from "../@types/document";
-import { OpenAttestationDocument as v2OpenAttestationDocument } from "../__generated__/schemaV2";
+import {
+  OpenAttestationDocument as v2OpenAttestationDocument,
+  IdentityProofType as v2IdentityProofType
+} from "../__generated__/schemaV2";
 import {
   IdentityProofType,
   Method,
@@ -132,7 +135,7 @@ describe("Util Functions", () => {
           {
             documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -140,7 +143,7 @@ describe("Util Functions", () => {
           {
             documentStore: "0x1234123412341234123412341234123412341234",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -158,7 +161,7 @@ describe("Util Functions", () => {
           {
             tokenRegistry: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -166,7 +169,7 @@ describe("Util Functions", () => {
           {
             tokenRegistry: "0x1234123412341234123412341234123412341234",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"

@@ -1,7 +1,7 @@
 import { cloneDeep, pick, unset } from "lodash";
 import { flatten } from "../serialize/flatten";
 import { toBuffer } from "../utils";
-import { WrappedDocument } from "../@types/document";
+import { WrappedDocument, OpenAttestationDocument } from "../@types/document";
 
 export const obfuscateData = (_data: any, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -26,8 +26,8 @@ export const obfuscateData = (_data: any, fields: string[] | string) => {
   };
 };
 
-// TODO to improve user experience and provide better feedback on what's wrong for non typescript user we might consider performing validation on the object provided
-export const obfuscateDocument = <T = any>(
+// TODO the return type could be improve by using Exclude eventually to remove the obfuscated properties
+export const obfuscateDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   document: WrappedDocument<T>,
   fields: string[] | string
 ): WrappedDocument<T> => {

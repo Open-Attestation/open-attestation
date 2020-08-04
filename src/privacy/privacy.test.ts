@@ -129,6 +129,7 @@ describe("privacy", () => {
         version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
+          // @ts-expect-error the data is not an open attestation document
           key1: "test"
         },
         privacy: {},
@@ -143,6 +144,7 @@ describe("privacy", () => {
         version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
+          // @ts-expect-error the data is not an open attestation document
           key1: "test"
         },
         privacy: {},
@@ -162,6 +164,7 @@ describe("privacy", () => {
         version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
+          // @ts-expect-error the data is not an open attestation document
           key1: "item1",
           key2: "item4"
         },
@@ -187,6 +190,7 @@ describe("privacy", () => {
         version: SchemaId.v2,
         schema: "http://example.com/schema.json",
         data: {
+          // @ts-expect-error the data is not an open attestation document
           key1: "test"
         },
         privacy: {},
@@ -230,6 +234,7 @@ describe("privacy", () => {
           obfuscatedData: ["674afcc934fede83cbfef6361de969d520ec3f8aebacbc984b8d39b11dbdcd38"]
         },
         data: {
+          // @ts-expect-error the data is not an open attestation document
           key1: "f9ec69be-ab21-474d-b8d7-012424813dc3:string:value1",
           key2: {
             key21: "181e6794-45e4-4ecd-ac45-4c2aed0d757f:boolean:true"
