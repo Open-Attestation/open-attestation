@@ -2,11 +2,10 @@ import { get } from "lodash";
 import { keccak256 } from "js-sha3";
 import { digestDocument } from "../digest";
 import { MerkleTree } from "./merkle";
-import { hashToBuffer, bufSortJoin } from "../utils";
-import { SchematisedDocument, Signature, WrappedDocument } from "../@types/document";
-import { OpenAttestationDocument } from "../__generated__/schemaV3";
+import { bufSortJoin, hashToBuffer } from "../utils";
+import { SchematisedDocument, Signature, WrappedDocument, OpenAttestationDocument } from "../@types/document";
 
-export const wrap = <T = OpenAttestationDocument>(
+export const wrap = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   document: SchematisedDocument<T>,
   batch?: string[]
 ): WrappedDocument<T> => {
@@ -32,7 +31,9 @@ export const wrap = <T = OpenAttestationDocument>(
   return { ...document, signature };
 };
 
-export const verify = <T = any>(document: any): document is WrappedDocument<T> => {
+export const verify = <T extends OpenAttestationDocument = OpenAttestationDocument>(
+  document: any
+): document is WrappedDocument<T> => {
   const signature = get(document, "signature");
   if (!signature) {
     return false;

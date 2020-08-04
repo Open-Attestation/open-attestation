@@ -1,7 +1,7 @@
 import { get, omitBy, sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
 import { flatten } from "../serialize/flatten";
-import { SchematisedDocument } from "../@types/document";
+import { SchematisedDocument, OpenAttestationDocument } from "../@types/document";
 
 const isKeyOrValueUndefined = (value: any, key: any) => value === undefined || key === undefined;
 
@@ -14,7 +14,9 @@ export const flattenHashArray = (data: any) => {
   });
 };
 
-export const digestDocument = (document: SchematisedDocument) => {
+export const digestDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
+  document: SchematisedDocument<T>
+) => {
   // Prepare array of hashes from filtered data
   const hashedDataArray = get(document, "privacy.obfuscatedData", []);
 

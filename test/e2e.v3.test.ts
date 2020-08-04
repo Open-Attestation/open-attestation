@@ -76,6 +76,7 @@ describe("v3 E2E Test Scenarios", () => {
         ...document,
         issuer: undefined
       };
+      // @ts-expect-error issuer is not defined
       const action = () => wrapDocument(malformedData);
       expect(action).toThrow("Invalid document");
     });
@@ -170,6 +171,7 @@ describe("v3 E2E Test Scenarios", () => {
           cow: "moo"
         }
       ];
+      // @ts-expect-error malformed
       const action = () => wrapDocument(malformedDatum);
       expect(action).toThrow("Invalid document");
     });
@@ -235,6 +237,7 @@ describe("v3 E2E Test Scenarios", () => {
           version: "abababa" as SchemaId,
           schema: "http://example.com/schemaV3.json",
           data: {
+            // @ts-expect-error it's not a valid document
             key: 2
           },
           signature: {
@@ -252,6 +255,7 @@ describe("v3 E2E Test Scenarios", () => {
           version: SchemaId.v3,
           schema: "http://example.com/schemaV3.json",
           data: {
+            // @ts-expect-error it's not a valid document
             key: 2
           },
           signature: {
@@ -349,6 +353,7 @@ describe("v3 E2E Test Scenarios", () => {
             issuer: {
               id: "https://example.com",
               name: "issuer.name",
+              // @ts-expect-error location is missing
               identityProof: {
                 type: IdentityProofType.W3CDid
               }
