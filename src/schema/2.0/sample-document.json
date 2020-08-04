@@ -24,6 +24,11 @@
       "filename": "sample.pdf",
       "type": "application/pdf",
       "data": "BASE64_ENCODED_FILE"
+    },
+    {
+      "filename": "sample.opencert",
+      "type": "application/octet-stream",
+      "data": "BASE64_ENCODED_FILE"
     }
   ]
 }
