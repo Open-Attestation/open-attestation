@@ -69,7 +69,7 @@
     "ethers": "^4.0.47",
     "flatley": "^5.2.0",
     "js-sha3": "^0.8.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.17",
     "uuid": "^3.3.3",
     "validator": "^12.0.0",
     "verbal-expressions": "^1.0.2"
