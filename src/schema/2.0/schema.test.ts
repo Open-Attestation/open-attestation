@@ -4,12 +4,16 @@
 import { cloneDeep, merge, omit } from "lodash";
 import sampleTokenJson from "./sample-token.json";
 import sampleDocJson from "./sample-document.json";
+import sampleDnsDidDocJson from "./sample-dns-did-document.json";
+import sampleDidDocJson from "./sample-did-document.json";
 import { v2, wrapDocument } from "../../index";
 import { SchemaId } from "../../@types/document";
 import { IdentityProofType } from "../../__generated__/schemaV2";
 
 const sampleDoc = sampleDocJson as v2.OpenAttestationDocument;
 const sampleToken = sampleTokenJson as v2.OpenAttestationDocument;
+const sampleDnsDidDoc = sampleDnsDidDocJson as v2.OpenAttestationDocument;
+const sampleDidDoc = sampleDidDocJson as v2.OpenAttestationDocument;
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", () => {
@@ -43,7 +47,7 @@ describe("schema/v2.0", () => {
             keyword: "enum",
             message: "should be equal to one of the allowed values",
             params: {
-              allowedValues: ["DNS-TXT"]
+              allowedValues: ["DNS-TXT", "DID", "DNS-DID"]
             },
             schemaPath: "#/definitions/identityProof/properties/type/enum"
           }
@@ -83,6 +87,10 @@ describe("schema/v2.0", () => {
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
   it("should be valid with sample token", () => {
+    const wrappedDocument = wrapDocument(sampleToken);
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
+  });
+  it("should be valid with document issued using did signing", () => {
     const wrappedDocument = wrapDocument(sampleToken);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });

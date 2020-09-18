@@ -8,22 +8,38 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["DNS-TXT"]
+          "enum": ["DNS-TXT", "DID", "DNS-DID"]
         },
         "location": {
           "type": "string",
           "description": "Url of the website referencing to document store"
+        },
+        "key": {
+          "type": "string",
+          "description": "Public key associated"
         }
       },
-      "required": ["type", "location"],
-      "additionalProperties": false
+      "required": ["type"]
     },
     "issuer": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Issuer's id, DID can be used"
+        },
         "name": {
           "type": "string",
           "description": "Issuer's name"
+        },
+        "revocation": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["NONE"]
+            }
+          }
         },
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
