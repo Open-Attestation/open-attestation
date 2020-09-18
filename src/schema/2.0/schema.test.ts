@@ -91,7 +91,11 @@ describe("schema/v2.0", () => {
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
   it("should be valid with document issued using did signing", () => {
-    const wrappedDocument = wrapDocument(sampleToken);
+    const wrappedDocument = wrapDocument(sampleDidDoc);
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
+  });
+  it("should be valid with document issued using dns-did signing", () => {
+    const wrappedDocument = wrapDocument(sampleDnsDidDoc);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
