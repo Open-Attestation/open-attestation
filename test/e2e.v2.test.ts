@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IdentityProofType as v2IdentityProofType,
   OpenAttestationDocument as v2OpenAttestationDocument
 } from "../src/__generated__/schemaV2";
-import { obfuscateDocument, ProofType, SchemaId, sign, validateSchema, verifySignature, wrapDocument } from "../src";
+import { wrapDocument, sign, ProofType } from "../src";
 import { ethers } from "ethers";
 
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
@@ -61,60 +60,6 @@ describe("v2 E2E Test Scenarios", () => {
       expect(wrappedDocument.signature.merkleRoot).toBeDefined();
       expect(wrappedDocument.signature.proof).toEqual([]);
       expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
-    });
-  });
-  describe("obfuscation", () => {
-    test("obfuscate data when there is one field to obfuscate", async () => {
-      const newDocument = wrapDocument({ key1: "value1", ...openAttestationDatav2 }, { version: SchemaId.v2 });
-      const obfuscatedDocument = obfuscateDocument(newDocument, ["key1"]);
-
-      expect(verifySignature(obfuscatedDocument)).toBe(true);
-      expect(validateSchema(obfuscatedDocument)).toBe(true);
-      expect(obfuscatedDocument.data.key1).toBeUndefined();
-    });
-    test("obfuscate data when there are multiple fields to obfuscate", async () => {
-      const newDocument = wrapDocument(
-        { key1: "value1", key2: "value2", key3: "value3", ...openAttestationDatav2 },
-        { version: SchemaId.v2 }
-      );
-      const obfuscatedDocument = obfuscateDocument(newDocument, ["key2", "key3"]);
-
-      expect(verifySignature(obfuscatedDocument)).toBe(true);
-      expect(validateSchema(obfuscatedDocument)).toBe(true);
-      expect(obfuscatedDocument.data.key2).toBeUndefined();
-      expect(obfuscatedDocument.data.key3).toBeUndefined();
-    });
-    test("obfuscate data transistively", () => {
-      const newDocument = wrapDocument(
-        { key1: "value1", key2: "value2", key3: "value3", ...openAttestationDatav2 },
-        { version: SchemaId.v2 }
-      );
-      const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
-      const obfuscatedDocument = obfuscateDocument(intermediateDocument, ["key3"]);
-
-      const comparison = obfuscateDocument(intermediateDocument, ["key2", "key3"]);
-
-      expect(comparison).toEqual(obfuscatedDocument);
-    });
-
-    test("obfuscate data when the obfuscated field is the last element of an object", async () => {
-      const newDocument = wrapDocument(
-        { key1: "value1", key2: { key22: "value22" }, ...openAttestationDatav2 },
-        { version: SchemaId.v2 }
-      );
-      const firstObfuscatedDocument = obfuscateDocument(newDocument, ["key2.key22"]);
-      expect(verifySignature(firstObfuscatedDocument)).toBe(true);
-      expect(validateSchema(firstObfuscatedDocument)).toBe(true);
-      expect(firstObfuscatedDocument.data.key2).toStrictEqual({});
-
-      // let's make sure we can obfuscate the full object again after
-      const secondObfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
-      expect(verifySignature(secondObfuscatedDocument)).toBe(true);
-      expect(validateSchema(secondObfuscatedDocument)).toBe(true);
-      expect(secondObfuscatedDocument.data.key2).toBeUndefined();
-      expect(firstObfuscatedDocument.privacy!.obfuscatedData).toStrictEqual(
-        secondObfuscatedDocument.privacy!.obfuscatedData
-      );
     });
   });
 });
