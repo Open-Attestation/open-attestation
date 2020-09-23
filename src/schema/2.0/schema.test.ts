@@ -405,41 +405,6 @@ describe("schema/v2.0", () => {
         );
       }
     });
-    it("should be invalid with dns-did signing without key", () => {
-      const document: any = {
-        ...sampleDnsDidDoc,
-        issuers: [
-          {
-            id: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
-            name: "DEMO STORE",
-            revocation: { type: "NONE" },
-            identityProof: {
-              type: "DNS-DID",
-              location: "example.tradetrust.io"
-            }
-          }
-        ]
-      };
-      try {
-        wrapDocument(document);
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty(
-          "validationErrors",
-          expect.arrayContaining([
-            {
-              keyword: "required",
-              dataPath: ".issuers[0].identityProof",
-              schemaPath: "#/definitions/identityProofDnsDid/required",
-              params: {
-                missingProperty: "key"
-              },
-              message: "should have required property 'key'"
-            }
-          ])
-        );
-      }
-    });
     it("should be invalid with did signing without key", () => {
       const document: any = {
         ...sampleDidDoc,
