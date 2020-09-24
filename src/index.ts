@@ -71,7 +71,6 @@ export const validateSchema = (document: WrappedDocument): boolean => {
 
 export { digestDocument } from "./digest";
 export { obfuscateDocument } from "./privacy";
-export { sign } from "./sign";
 export { checkProof, MerkleTree, wrap, verify as verifySignature } from "./signature";
 export { utils, isSchemaValidationError };
 export * from "./@types/document";

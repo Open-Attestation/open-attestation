@@ -66,7 +66,6 @@
   "dependencies": {
     "ajv": "6.10.2",
     "debug": "^4.1.1",
-    "ethers": "^4.0.47",
     "flatley": "^5.2.0",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.15",

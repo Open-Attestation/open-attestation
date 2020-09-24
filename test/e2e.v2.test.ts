@@ -4,9 +4,7 @@ import {
   OpenAttestationDocument as v2OpenAttestationDocument,
   RevocationType
 } from "../src/__generated__/schemaV2";
-import { obfuscateDocument, ProofType, SchemaId, sign, validateSchema, verifySignature, wrapDocument } from "../src";
-import { ethers } from "ethers";
-import { isArray } from "lodash";
+import { obfuscateDocument, SchemaId, validateSchema, verifySignature, wrapDocument } from "../src";
 
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
   issuers: [
@@ -32,20 +30,6 @@ describe("v2 E2E Test Scenarios", () => {
       expect(wrappedDocument.signature.merkleRoot).toBeDefined();
       expect(wrappedDocument.signature.proof).toEqual([]);
       expect(wrappedDocument.signature.merkleRoot).toBe(wrappedDocument.signature.targetHash);
-    });
-    test("should create a wrapped v2 document with a signed proof block", async () => {
-      const wrappedDocument = wrapDocument(openAttestationDatav2);
-      const options = {
-        privateKey: "0x0123456789012345678901234567890123456789012345678901234567890123",
-        verificationMethod: "0x14791697260E4c9A71f18484C9f997B308e59325",
-        type: ProofType.EcdsaSecp256k1Signature2019
-      };
-      const signed = await sign(wrappedDocument, options);
-      const { proof } = signed;
-      if (!proof || isArray(proof)) throw new Error("No proof!");
-      const msg = wrappedDocument.signature.targetHash;
-      const recoverAddress = ethers.utils.verifyMessage(msg, proof.signature);
-      expect(recoverAddress.toLowerCase()).toStrictEqual(options.verificationMethod.toLowerCase());
     });
     test("should create a wrapped v2 document when issuer contains additional data", () => {
       const wrappedDocument = wrapDocument({
