@@ -6,6 +6,7 @@ import {
 } from "../src/__generated__/schemaV2";
 import { obfuscateDocument, ProofType, SchemaId, sign, validateSchema, verifySignature, wrapDocument } from "../src";
 import { ethers } from "ethers";
+import { isArray } from "lodash";
 
 const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
   issuers: [
@@ -41,7 +42,7 @@ describe("v2 E2E Test Scenarios", () => {
       };
       const signed = await sign(wrappedDocument, options);
       const { proof } = signed;
-      if (!proof) throw new Error("No proof!");
+      if (!proof || isArray(proof)) throw new Error("No proof!");
       const msg = wrappedDocument.signature.targetHash;
       const recoverAddress = ethers.utils.verifyMessage(msg, proof.signature);
       expect(recoverAddress.toLowerCase()).toStrictEqual(options.verificationMethod.toLowerCase());
@@ -128,6 +129,7 @@ describe("v2 E2E Test Scenarios", () => {
       expect(verifySignature(obfuscatedDocument)).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
       expect(obfuscatedDocument.data.key2).toBeUndefined();
+
       expect(obfuscatedDocument.data.key3).toBeUndefined();
     });
     test("obfuscate data transistively", () => {
