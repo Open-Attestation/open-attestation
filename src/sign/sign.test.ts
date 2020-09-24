@@ -2,6 +2,7 @@ import { sign as EcdsaSecp256k1Signature2019 } from "./ecdsa-secp256k1-signature
 import { ethers } from "ethers";
 import sampleDoc from "../schema/2.0/sample-document.json";
 import { ProofType, v2, wrapDocument } from "../index";
+import { isArray } from "lodash";
 const wrappedDocument = wrapDocument(sampleDoc as v2.OpenAttestationDocument);
 
 describe("proofs", () => {
@@ -14,7 +15,7 @@ describe("proofs", () => {
       };
       const signed = await EcdsaSecp256k1Signature2019(wrappedDocument, options);
       const { proof } = signed;
-      if (!proof) throw new Error("No proof!");
+      if (!proof || isArray(proof)) throw new Error("No proof!");
       const msg = wrappedDocument.signature.targetHash;
       const recoverAddress = ethers.utils.verifyMessage(msg, proof.signature);
       expect(recoverAddress.toLowerCase()).toStrictEqual(options.verificationMethod.toLowerCase());
