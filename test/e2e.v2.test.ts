@@ -96,25 +96,5 @@ describe("v2 E2E Test Scenarios", () => {
 
       expect(comparison).toEqual(obfuscatedDocument);
     });
-
-    test("obfuscate data when the obfuscated field is the last element of an object", async () => {
-      const newDocument = wrapDocument(
-        { key1: "value1", key2: { key22: "value22" }, ...openAttestationDatav2 },
-        { version: SchemaId.v2 }
-      );
-      const firstObfuscatedDocument = obfuscateDocument(newDocument, ["key2.key22"]);
-      expect(verifySignature(firstObfuscatedDocument)).toBe(true);
-      expect(validateSchema(firstObfuscatedDocument)).toBe(true);
-      expect(firstObfuscatedDocument.data.key2).toStrictEqual({});
-
-      // let's make sure we can obfuscate the full object again after
-      const secondObfuscatedDocument = obfuscateDocument(newDocument, ["key2"]);
-      expect(verifySignature(secondObfuscatedDocument)).toBe(true);
-      expect(validateSchema(secondObfuscatedDocument)).toBe(true);
-      expect(secondObfuscatedDocument.data.key2).toBeUndefined();
-      expect(firstObfuscatedDocument.privacy!.obfuscatedData).toStrictEqual(
-        secondObfuscatedDocument.privacy!.obfuscatedData
-      );
-    });
   });
 });

@@ -1,16 +1,12 @@
 import { get, omitBy, sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
 import { flatten } from "../serialize/flatten";
-import { OpenAttestationDocument, SchematisedDocument } from "../@types/document";
+import { SchematisedDocument, OpenAttestationDocument } from "../@types/document";
 
-const isEmptyObject = (value: any) => typeof value === "object" && Object.keys(value).length === 0;
+const isKeyOrValueUndefined = (value: any, key: any) => value === undefined || key === undefined;
 
 export const flattenHashArray = (data: any) => {
-  // remove values or keys if undefined and empty object (with no keys)
-  const flattenedData = omitBy(
-    flatten(data),
-    (value: any, key: any) => value === undefined || key === undefined || isEmptyObject(value)
-  );
+  const flattenedData = omitBy(flatten(data), isKeyOrValueUndefined);
   return Object.keys(flattenedData).map(k => {
     const obj: any = {};
     obj[k] = flattenedData[k];
