@@ -3,7 +3,7 @@
   "$id": "https://schema.openattestation.com/2.0/schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "identityProof": {
+    "identityProofDns": {
       "type": "object",
       "properties": {
         "type": {
@@ -15,15 +15,67 @@
           "description": "Url of the website referencing to document store"
         }
       },
-      "required": ["type", "location"],
-      "additionalProperties": false
+      "required": ["type", "location"]
+    },
+    "identityProofDid": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["DID"]
+        },
+        "key": {
+          "type": "string",
+          "description": "Public key associated"
+        }
+      },
+      "required": ["type", "key"]
+    },
+    "identityProofDnsDid": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["DNS-DID"]
+        },
+        "key": {
+          "type": "string",
+          "description": "Public key associated"
+        },
+        "location": {
+          "type": "string",
+          "description": "Url of the website referencing to document store"
+        }
+      },
+      "required": ["type", "key", "location"]
+    },
+    "identityProof": {
+      "type": "object",
+      "oneOf": [
+        { "$ref": "#/definitions/identityProofDns" },
+        { "$ref": "#/definitions/identityProofDnsDid" },
+        { "$ref": "#/definitions/identityProofDid" }
+      ]
     },
     "issuer": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Issuer's id, DID can be used"
+        },
         "name": {
           "type": "string",
           "description": "Issuer's name"
+        },
+        "revocation": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["NONE"]
+            }
+          }
         },
         "identityProof": { "$ref": "#/definitions/identityProof" }
       },
@@ -76,6 +128,26 @@
             }
           },
           "required": ["tokenRegistry"]
+        }
+      ]
+    },
+    "revocationStore": {
+      "allOf": [
+        { "$ref": "#/definitions/issuer" },
+        {
+          "type": "object",
+          "properties": {
+            "revocationStore": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["NONE"]
+                }
+              }
+            }
+          },
+          "required": ["revocationStore"]
         }
       ]
     }
@@ -132,6 +204,9 @@
             "$ref": "#/definitions/certificateStore"
           },
           {
+            "$ref": "#/definitions/revocationStore"
+          },
+          {
             "allOf": [
               { "$ref": "#/definitions/issuer" },
               {
@@ -145,6 +220,9 @@
                     },
                     {
                       "required": ["documentStore"]
+                    },
+                    {
+                      "required": ["revocationStore"]
                     }
                   ]
                 }

@@ -1,0 +1,32 @@
+{
+  "id": "SGCNM21566325",
+  "$template": {
+    "name": "CERTIFICATE_OF_NON_MANIPULATION",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://demo-cnm.openattestation.com"
+  },
+  "issuers": [
+    {
+      "id": "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+      "name": "DEMO STORE",
+      "revocation": { "type": "NONE" },
+      "identityProof": {
+        "type": "DNS-DID",
+        "key": "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+        "location": "example.tradetrust.io"
+      }
+    }
+  ],
+  "recipient": { "name": "SG FREIGHT", "address": { "street": "101 ORCHARD ROAD", "country": "SINGAPORE" } },
+  "consignment": {
+    "description": "16667 CARTONS OF RED WINE",
+    "quantity": { "value": 5000, "unit": "LITRES" },
+    "countryOfOrigin": "AUSTRALIA",
+    "outwardBillNo": "AQSIQ170923130",
+    "dateOfDischarge": "2018-01-26",
+    "dateOfDeparture": "2018-01-30",
+    "countryOfFinalDestination": "CHINA",
+    "outgoingVehicleNo": "COSCO JAPAN 074E/30-JAN"
+  },
+  "declaration": { "name": "PETER LEE", "designation": "SHIPPING MANAGER", "date": "2018-01-28" }
+}

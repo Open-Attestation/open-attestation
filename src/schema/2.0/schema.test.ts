@@ -4,12 +4,16 @@
 import { cloneDeep, merge, omit } from "lodash";
 import sampleTokenJson from "./sample-token.json";
 import sampleDocJson from "./sample-document.json";
+import sampleDnsDidDocJson from "./sample-dns-did-document.json";
+import sampleDidDocJson from "./sample-did-document.json";
 import { v2, wrapDocument } from "../../index";
 import { SchemaId } from "../../@types/document";
 import { IdentityProofType } from "../../__generated__/schemaV2";
 
 const sampleDoc = sampleDocJson as v2.OpenAttestationDocument;
 const sampleToken = sampleTokenJson as v2.OpenAttestationDocument;
+const sampleDnsDidDoc = sampleDnsDidDocJson as v2.OpenAttestationDocument;
+const sampleDidDoc = sampleDidDocJson as v2.OpenAttestationDocument;
 
 describe("schema/v2.0", () => {
   it("should be valid with sample document", () => {
@@ -17,7 +21,7 @@ describe("schema/v2.0", () => {
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
-  it("should be invalid if identity type is other than DNS-TXT", () => {
+  it("should be invalid if identity type is other than DNS-TXT, DNS-DID or DID", () => {
     expect.assertions(2);
     const document = merge(sampleDoc, {
       issuers: [
@@ -42,10 +46,22 @@ describe("schema/v2.0", () => {
             dataPath: ".issuers[0].identityProof.type",
             keyword: "enum",
             message: "should be equal to one of the allowed values",
-            params: {
-              allowedValues: ["DNS-TXT"]
-            },
-            schemaPath: "#/definitions/identityProof/properties/type/enum"
+            params: { allowedValues: ["DNS-TXT"] },
+            schemaPath: "#/definitions/identityProofDns/properties/type/enum"
+          },
+          {
+            dataPath: ".issuers[0].identityProof.type",
+            keyword: "enum",
+            message: "should be equal to one of the allowed values",
+            params: { allowedValues: ["DNS-DID"] },
+            schemaPath: "#/definitions/identityProofDnsDid/properties/type/enum"
+          },
+          {
+            dataPath: ".issuers[0].identityProof.type",
+            keyword: "enum",
+            message: "should be equal to one of the allowed values",
+            params: { allowedValues: ["DID"] },
+            schemaPath: "#/definitions/identityProofDid/properties/type/enum"
           }
         ])
       );
@@ -84,6 +100,14 @@ describe("schema/v2.0", () => {
   });
   it("should be valid with sample token", () => {
     const wrappedDocument = wrapDocument(sampleToken);
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
+  });
+  it("should be valid with document issued using did signing", () => {
+    const wrappedDocument = wrapDocument(sampleDidDoc);
+    expect(wrappedDocument.version).toBe(SchemaId.v2);
+  });
+  it("should be valid with document issued using dns-did signing", () => {
+    const wrappedDocument = wrapDocument(sampleDnsDidDoc);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
   });
 
@@ -310,6 +334,110 @@ describe("schema/v2.0", () => {
           ]
         }).version
       ).toBe(SchemaId.v2);
+    });
+    it("should be invalid with dns-did signing without location", () => {
+      const document: any = {
+        ...sampleDnsDidDoc,
+        issuers: [
+          {
+            id: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+            name: "DEMO STORE",
+            revocation: { type: "NONE" },
+            identityProof: {
+              type: "DNS-DID",
+              key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller"
+            }
+          }
+        ]
+      };
+      try {
+        wrapDocument(document);
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "required",
+              dataPath: ".issuers[0].identityProof",
+              schemaPath: "#/definitions/identityProofDnsDid/required",
+              params: {
+                missingProperty: "location"
+              },
+              message: "should have required property 'location'"
+            }
+          ])
+        );
+      }
+    });
+    it("should be invalid with dns-did signing without key", () => {
+      const document: any = {
+        ...sampleDnsDidDoc,
+        issuers: [
+          {
+            id: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+            name: "DEMO STORE",
+            revocation: { type: "NONE" },
+            identityProof: {
+              type: "DNS-DID",
+              location: "example.tradetrust.io"
+            }
+          }
+        ]
+      };
+      try {
+        wrapDocument(document);
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "required",
+              dataPath: ".issuers[0].identityProof",
+              schemaPath: "#/definitions/identityProofDnsDid/required",
+              params: {
+                missingProperty: "key"
+              },
+              message: "should have required property 'key'"
+            }
+          ])
+        );
+      }
+    });
+    it("should be invalid with did signing without key", () => {
+      const document: any = {
+        ...sampleDidDoc,
+        issuers: [
+          {
+            id: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+            name: "DEMO STORE",
+            revocation: { type: "NONE" },
+            identityProof: {
+              type: "DID"
+            }
+          }
+        ]
+      };
+      try {
+        wrapDocument(document);
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty(
+          "validationErrors",
+          expect.arrayContaining([
+            {
+              keyword: "required",
+              dataPath: ".issuers[0].identityProof",
+              schemaPath: "#/definitions/identityProofDnsDid/required",
+              params: {
+                missingProperty: "key"
+              },
+              message: "should have required property 'key'"
+            }
+          ])
+        );
+      }
     });
   });
   describe("template", () => {
