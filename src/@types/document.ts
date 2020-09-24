@@ -42,7 +42,9 @@ export interface WrappedDocument<T extends OpenAttestationDocument = OpenAttesta
   schema?: string;
   privacy?: ObfuscationMetadata;
 }
+
 export enum ProofType {
+  OpenAttestationSignature2018 = "OpenAttestationSignature2018",
   EcdsaSecp256k1Signature2019 = "EcdsaSecp256k1Signature2019"
 }
 export enum ProofPurpose {
@@ -57,7 +59,7 @@ export interface Proof {
 }
 export interface SignedWrappedDocument<T extends OpenAttestationDocument = OpenAttestationDocument>
   extends WrappedDocument<T> {
-  proof: Proof;
+  proof: Proof | Proof[]; // TODO deprecate single Proof after deprecating original signing method
 }
 
 // feel free to improve, as long as this project compile without changes :)
