@@ -23,12 +23,7 @@ const openAttestationDatav2: v2OpenAttestationDocument & { foo: string } = {
 describe("v2 E2E Test Scenarios", () => {
   describe("Issuing a single documents", () => {
     test("should create a wrapped v2 document", () => {
-      const wrappedDocument = wrapDocument(openAttestationDatav2, {
-        externalSchemaId: "schema/8.0",
-        externalSchemaUrl: "http://example.com/schema.json"
-      });
-      expect(wrappedDocument.schema).toBe("schema/8.0");
-      expect(wrappedDocument.schemaUrl).toBe("http://example.com/schema.json");
+      const wrappedDocument = wrapDocument(openAttestationDatav2);
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
       expect(wrappedDocument.signature.targetHash).toBeDefined();

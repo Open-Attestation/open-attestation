@@ -32,7 +32,6 @@ export interface SchematisedDocument<T extends OpenAttestationDocument = OpenAtt
   version: SchemaId;
   data: DeepStringify<T>;
   schema?: string;
-  schemaUrl?: string;
   privacy?: ObfuscationMetadata;
 }
 
@@ -41,7 +40,6 @@ export interface WrappedDocument<T extends OpenAttestationDocument = OpenAttesta
   signature: Signature;
   data: DeepStringify<T>;
   schema?: string;
-  schemaUrl?: string;
   privacy?: ObfuscationMetadata;
 }
 
