@@ -10,6 +10,7 @@ import * as v3 from "./__generated__/schemaV3";
 
 interface WrapDocumentOption {
   externalSchemaId?: string;
+  externalSchemaUrl?: string;
   version?: SchemaId;
 }
 const defaultVersion = SchemaId.v2;
@@ -24,6 +25,9 @@ const createDocument = <T extends OpenAttestationDocument = OpenAttestationDocum
   };
   if (option?.externalSchemaId) {
     documentSchema.schema = option.externalSchemaId;
+  }
+  if (option?.externalSchemaUrl) {
+    documentSchema.schemaUrl = option.externalSchemaUrl;
   }
   return documentSchema;
 };
