@@ -1,0 +1,6 @@
+{
+  "generator": "./node_modules/.bin/open-attestation wrap",
+  "presentationGenerator": "/bin/cat",
+  "generatorOptions": "--document-store 0xabcd --template-url https://some.org --dns-txt example.com --oav3 true --silent true",
+  "sectionsNotSupported": ["ldp", "jwt", "zkp"]
+}
