@@ -7,3 +7,4 @@ yarn.lock
 /.idea
 *.iml
 /public
+/vc-test-suite
