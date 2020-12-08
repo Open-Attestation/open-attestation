@@ -98,6 +98,22 @@
         }
       ]
     },
+    "credentialStatus": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "examples": ["https://example.edu/status/24"]
+        },
+        "type": {
+          "type": "string",
+          "examples": ["CredentialStatusList2017"],
+          "description": "Express the credential status type (also referred to as the credential status method). It is expected that the value will provide enough information to determine the current status of the credential. For example, the object could contain a link to an external document noting whether or not the credential is suspended or revoked."
+        }
+      },
+      "required": ["id", "type"]
+    },
     "issuer": {
       "oneOf": [
         {
@@ -172,35 +188,25 @@
       },
       "required": ["proof", "identityProof"]
     },
-    "evidence": {
+    "attachments": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uri",
-            "description": "The id property is optional, but if present, SHOULD contain a URL that points to where more information about this instance of evidence can be found"
-          },
           "fileName": {
             "type": "string",
             "description": "Name of this attachment, with appropriate extensions"
           },
-          "type": {
-            "$ref": "#/definitions/type",
-            "description": "Specific evidence type as explained by https://www.w3.org/TR/vc-data-model/#types"
-          },
           "mimeType": {
             "type": "string",
-            "description": "Media type (or MIME type) of this attachment",
-            "enum": ["application/pdf", "image/png", "image/jpeg"]
+            "description": "Media type (or MIME type) of this attachment"
           },
           "data": {
             "type": "string",
             "description": "Base64 encoding of this attachment"
           }
         },
-        "required": ["fileName", "mimeType", "data", "type"],
+        "required": ["fileName", "mimeType", "data"],
         "additionalProperties": false
       }
     }

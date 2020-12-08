@@ -923,29 +923,95 @@ describe("schema/3.0", () => {
     });
   });
 
+  describe("credentialStatus", () => {
+    it("should be valid with credentialStatus", async () => {
+      const document = {
+        ...cloneDeep(sampleDoc),
+        credentialStatus: {
+          id: "https://example.edu/status/24",
+          type: "CredentialStatusList2017"
+        }
+      };
+      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
+    });
+    it("should be invalid if id is missing", async () => {
+      expect.assertions(2);
+      const document = {
+        ...cloneDeep(sampleDoc),
+        credentialStatus: {
+          type: "CredentialStatusList2017"
+        }
+      };
+
+      try {
+        // @ts-expect-error credentialStatus.id is missing
+        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".credentialStatus",
+            schemaPath: "#/properties/credentialStatus/required",
+            params: { missingProperty: "id" },
+            message: "should have required property 'id'"
+          }
+        ]);
+      }
+    });
+    it("should be invalid if type is missing", async () => {
+      expect.assertions(2);
+      const document = {
+        ...cloneDeep(sampleDoc),
+        credentialStatus: {
+          id: "https://example.edu/status/24"
+        }
+      };
+
+      try {
+        // @ts-expect-error credentialStatus.type is missing
+        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      } catch (e) {
+        expect(e).toHaveProperty("message", "Invalid document");
+        expect(e).toHaveProperty("validationErrors", [
+          {
+            keyword: "required",
+            dataPath: ".credentialStatus",
+            schemaPath: "#/properties/credentialStatus/required",
+            params: { missingProperty: "type" },
+            message: "should have required property 'type'"
+          }
+        ]);
+      }
+    });
+  });
+
   describe("evidence", () => {
     it("should be valid when mimeType is application/pdf", async () => {
       const document = {
         ...cloneDeep(sampleDoc),
-
-        // @ts-expect-error evidence is possibly undefined
-        evidence: [{ ...sampleDoc.evidence[0], mimeType: "application/pdf" }]
+        // @ts-expect-error attachments is possibly undefined
+        attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }]
       };
-      // @ts-expect-error mimeType cannot be a string "application/pdf"
       const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/png", async () => {
-      // @ts-expect-error evidence is possibly undefined
-      const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/png" }] };
-      // @ts-expect-error mimeType cannot be a string "image/png"
+      const document = {
+        ...cloneDeep(sampleDoc),
+        // @ts-expect-error attachments is possibly undefined
+        attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }]
+      };
       const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/jpeg", async () => {
-      // @ts-expect-error evidence is possibly undefined
-      const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], mimeType: "image/jpeg" }] };
-      // @ts-expect-error mimeType cannot be a string "image/jpeg"
+      const document = {
+        ...cloneDeep(sampleDoc),
+        // @ts-expect-error attachments is possibly undefined
+        attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }]
+      };
       const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -953,8 +1019,8 @@ describe("schema/3.0", () => {
     it("should be invalid when adding additional data", async () => {
       expect.assertions(2);
 
-      // @ts-expect-error evidence is possibly undefined
-      const document = { ...cloneDeep(sampleDoc), evidence: [{ ...sampleDoc.evidence[0], key: "any" }] };
+      // @ts-expect-error attachments is possibly undefined
+      const document = { ...cloneDeep(sampleDoc), attachments: [{ ...sampleDoc.attachments[0], key: "any" }] };
       try {
         await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -962,8 +1028,8 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "additionalProperties",
-            dataPath: ".evidence[0]",
-            schemaPath: "#/properties/evidence/items/additionalProperties",
+            dataPath: ".attachments[0]",
+            schemaPath: "#/properties/attachments/items/additionalProperties",
             params: { additionalProperty: "key" },
             message: "should NOT have additional properties"
           }
@@ -974,8 +1040,8 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
-      // @ts-expect-error
-      delete document.evidence[0].fileName;
+      // @ts-expect-error attachments is possibly undefined
+      delete document.attachments[0].fileName;
       try {
         await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -983,8 +1049,8 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".evidence[0]",
-            schemaPath: "#/properties/evidence/items/required",
+            dataPath: ".attachments[0]",
+            schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "fileName" },
             message: "should have required property 'fileName'"
           }
@@ -995,8 +1061,8 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
-      // @ts-expect-error
-      delete document.evidence[0].mimeType;
+      // @ts-expect-error attachments is possibly undefined
+      delete document.attachments[0].mimeType;
       try {
         await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -1004,31 +1070,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".evidence[0]",
-            schemaPath: "#/properties/evidence/items/required",
+            dataPath: ".attachments[0]",
+            schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "mimeType" },
             message: "should have required property 'mimeType'"
-          }
-        ]);
-      }
-    });
-    it("should be invalid if mimeType is not one of the specified enum value", async () => {
-      expect.assertions(2);
-      const document = cloneDeep(sampleDoc);
-
-      // @ts-expect-error
-      document.evidence[0].mimeType = "Something";
-      try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "enum",
-            dataPath: ".evidence[0].mimeType",
-            schemaPath: "#/properties/evidence/items/properties/mimeType/enum",
-            params: { allowedValues: ["application/pdf", "image/png", "image/jpeg"] },
-            message: "should be equal to one of the allowed values"
           }
         ]);
       }
@@ -1037,8 +1082,8 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
-      // @ts-expect-error
-      delete document.evidence[0].data;
+      // @ts-expect-error attachments is possibly undefined
+      delete document.attachments[0].data;
       try {
         await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -1046,31 +1091,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".evidence[0]",
-            schemaPath: "#/properties/evidence/items/required",
+            dataPath: ".attachments[0]",
+            schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "data" },
             message: "should have required property 'data'"
-          }
-        ]);
-      }
-    });
-    it("should be invalid if type is missing", async () => {
-      expect.assertions(2);
-      const document = cloneDeep(sampleDoc);
-
-      // @ts-expect-error
-      delete document.evidence[0].type;
-      try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "required",
-            dataPath: ".evidence[0]",
-            schemaPath: "#/properties/evidence/items/required",
-            params: { missingProperty: "type" },
-            message: "should have required property 'type'"
           }
         ]);
       }

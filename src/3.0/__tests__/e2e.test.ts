@@ -9,7 +9,7 @@ import {
   validateSchema,
   verifySignature
 } from "../..";
-import { IdentityProofType, Method, MIMEType, ProofType, TemplateType } from "../../__generated__/schema.3.0";
+import { IdentityProofType, Method, ProofType, TemplateType } from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
 
 const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
@@ -275,11 +275,10 @@ describe("3.0 E2E Test Scenarios", () => {
             location: "tradetrust.io"
           }
         },
-        evidence: [
+        attachments: [
           {
-            type: "DocumentVerification2018",
             fileName: "sample.pdf",
-            mimeType: MIMEType.ApplicationPDF,
+            mimeType: "application/pdf",
             data: "BASE64_ENCODED_FILE"
           }
         ],

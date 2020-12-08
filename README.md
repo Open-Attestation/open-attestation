@@ -51,7 +51,7 @@ const document = {
 
 wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]); // will ensure document is valid regarding open-attestation 2.0 schema
 console.log(wrappedDocuments);
-wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }], { version: 'open-attestation/3.0' }); // will ensure document is valid regarding open-attestation 3.0 schema
+wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }], { version: "open-attestation/3.0" }); // will ensure document is valid regarding open-attestation 3.0 schema
 console.log(wrappedDocuments);
 ```
 
@@ -98,3 +98,21 @@ console.log(newData);
 ```
 npm run test
 ```
+
+## vc-test-suite
+
+You can run the vc-test-suite against `open-attestation` by running `npm run test:vc`. This command will:
+
+- clone https://github.com/w3c/vc-test-suite.git
+- copy the local configuration (`vc-test-suite-config.json`) into the cloned repository
+- install the latest version of `@govtechsg/open-attestation-cli`
+- monkey patch `open-attestation` in `@govtechsg/open-attestation-cli`. That means that the current version of the project will be built and replace the one installed with `@govtechsg/open-attestation-cli`.
+
+### Local debug
+
+In the event you face a problem with one test and want to debug locally:
+
+1. Ensure the folder `vc-test-suite` is available from the root of the project. If that's not the case, run `npm run test:vc` first.
+1. Open `runVcTest.sh` and update `install_vc_test_suite=true` to `install_vc_test_suite=false`. This line will help to preserve the `vc-test-suite` folder untouched.
+
+You can now debug from the `vc-test-suite` folder the way you need it.

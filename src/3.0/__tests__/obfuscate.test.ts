@@ -9,7 +9,7 @@ import { get } from "lodash";
 import { decodeSalt } from "../salt";
 
 import { SchemaId } from "../../shared/@types/document";
-import { Method, MIMEType, ProofType, OpenAttestationCredential } from "../../__generated__/schema.3.0";
+import { Method, ProofType, OpenAttestationCredential } from "../../__generated__/schema.3.0";
 import { toBuffer } from "../../shared/utils";
 import * as v3 from "../../__generated__/schema.3.0";
 
@@ -39,16 +39,14 @@ const openAttestationData: OpenAttestationCredential = {
       type: v3.IdentityProofType.DNSTxt
     }
   },
-  evidence: [
+  attachments: [
     {
-      type: "aaa",
-      mimeType: MIMEType.ImagePNG,
+      mimeType: "image/png",
       fileName: "aaa",
       data: "abcd"
     },
     {
-      type: "bbb",
-      mimeType: MIMEType.ImagePNG,
+      mimeType: "image/png",
       fileName: "bbb",
       data: "abcd"
     }
@@ -114,7 +112,7 @@ describe("privacy", () => {
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(2);
     });
     test("removes one key of an object from an array", async () => {
-      const field = "evidence[0].mimeType";
+      const field = "attachments[0].mimeType";
       const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
 
@@ -129,17 +127,12 @@ describe("privacy", () => {
       );
       expect(findSaltByPath(obfuscatedDocument.proof.salts, field)).toBeUndefined();
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(obfuscatedDocument.evidence![0]).toStrictEqual({ data: "abcd", fileName: "aaa", type: "aaa" });
+      expect(obfuscatedDocument.attachments![0]).toStrictEqual({ data: "abcd", fileName: "aaa" });
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(1);
     });
     test("removes one object from an array", async () => {
-      const field = "evidence[0]";
-      const expectedFieldsToBeRemoved = [
-        "evidence[0].mimeType",
-        "evidence[0].type",
-        "evidence[0].fileName",
-        "evidence[0].data"
-      ];
+      const field = "attachments[0]";
+      const expectedFieldsToBeRemoved = ["attachments[0].mimeType", "attachments[0].fileName", "attachments[0].data"];
       const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
 
@@ -156,22 +149,20 @@ describe("privacy", () => {
         expect(findSaltByPath(obfuscatedDocument.proof.salts, field)).toBeUndefined();
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(obfuscatedDocument.evidence![0]).toBeUndefined();
+      expect(obfuscatedDocument.attachments![0]).toBeUndefined();
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(obfuscatedDocument.evidence![1]).not.toBeUndefined(); // let's make sure only the first item has been removed
-      expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(4);
+      expect(obfuscatedDocument.attachments![1]).not.toBeUndefined(); // let's make sure only the first item has been removed
+      expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(3);
     });
     test("removes an array of object", async () => {
-      const field = "evidence";
+      const field = "attachments";
       const expectedFieldsToBeRemoved = [
-        "evidence[0].mimeType",
-        "evidence[0].type",
-        "evidence[0].fileName",
-        "evidence[0].data",
-        "evidence[1].mimeType",
-        "evidence[1].type",
-        "evidence[1].fileName",
-        "evidence[1].data"
+        "attachments[0].mimeType",
+        "attachments[0].fileName",
+        "attachments[0].data",
+        "attachments[1].mimeType",
+        "attachments[1].fileName",
+        "attachments[1].data"
       ];
       const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
@@ -188,8 +179,8 @@ describe("privacy", () => {
         );
         expect(findSaltByPath(obfuscatedDocument.proof.salts, field)).toBeUndefined();
       });
-      expect(obfuscatedDocument.evidence).toBeUndefined();
-      expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(8);
+      expect(obfuscatedDocument.attachments).toBeUndefined();
+      expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(6);
     });
 
     test("removes multiple fields", async () => {

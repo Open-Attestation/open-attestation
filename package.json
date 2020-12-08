@@ -18,7 +18,7 @@
     "test": "npm run build && jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:vc": "./scripts/test.sh",
+    "test:vc": "scripts/runVcTest.sh",
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "publish:schema": "./scripts/publishSchema.sh",
