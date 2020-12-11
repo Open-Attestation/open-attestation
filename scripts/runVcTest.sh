@@ -4,12 +4,18 @@ install_vc_test_suite=true
 patch_open_attestation_cli=true # maybe it should be false by default
 vc_path=vc-test-suite
 
+if [ "$vc_path" = "" ]; then
+  echo "No vc_path provided. Panic"
+  exit 1
+fi
+
 if [ "$install_vc_test_suite" = true ] ; then
   echo "clean vc-test-suite"
   rm -rf $vc_path
 
   echo "clone vc-test-suite repo"
   git clone --depth 1 https://github.com/w3c/vc-test-suite.git $vc_path
+  rm -rf $vc_path/.git
 
   echo "copy configuration into $vc_path"
   cp ./vc-test-suite-config.json $vc_path/config.json
