@@ -37,4 +37,3 @@ export interface Proof {
   verificationMethod: string;
   signature: string;
 }
-
