@@ -1,9 +1,9 @@
 import { cloneDeep } from "lodash";
-import { Method, ProofType, OpenAttestationCredential, TemplateType } from "../../__generated__/schema.3.0";
+import { Method, ProofType, OpenAttestationDocument, TemplateType } from "../../__generated__/schema.3.0";
 import { salt } from "../salt";
 import * as v3 from "../../__generated__/schema.3.0";
 
-const sampleDoc: OpenAttestationCredential = {
+const sampleDoc: OpenAttestationDocument = {
   "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
   id: "http://example.edu/credentials/58473",
   type: ["VerifiableCredential", "AlumniCredential"],

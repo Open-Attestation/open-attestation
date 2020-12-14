@@ -1,6 +1,6 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schema.2.0";
-import { OpenAttestationCredential } from "../../__generated__/schema.3.0";
+import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import {
   WrappedDocument,
   SchemaId,
@@ -72,7 +72,7 @@ export function combineHashString(first?: string, second?: string): string {
 
 export const isWrappedV3Document = (
   document: any
-): document is OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
+): document is OpenAttestationVerifiableCredential<OpenAttestationDocument> => {
   return document && document.version === SchemaId.v3;
 };
 export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
@@ -85,7 +85,7 @@ export const isSignedWrappedV2Document = (
 };
 
 export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
-export function getIssuerAddress(param: OpenAttestationVerifiableCredential<OpenAttestationCredential>): string;
+export function getIssuerAddress(param: OpenAttestationVerifiableCredential<OpenAttestationDocument>): string;
 export function getIssuerAddress(document: any): any {
   if (isWrappedV2Document(document)) {
     const data = getData(document);

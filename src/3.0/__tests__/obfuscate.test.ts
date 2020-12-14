@@ -9,11 +9,11 @@ import { get } from "lodash";
 import { decodeSalt } from "../salt";
 
 import { SchemaId } from "../../shared/@types/document";
-import { Method, ProofType, OpenAttestationCredential } from "../../__generated__/schema.3.0";
+import { Method, ProofType, OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import { toBuffer } from "../../shared/utils";
 import * as v3 from "../../__generated__/schema.3.0";
 
-const openAttestationData: OpenAttestationCredential = {
+const openAttestationData: OpenAttestationDocument = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",

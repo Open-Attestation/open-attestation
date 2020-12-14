@@ -1,4 +1,4 @@
-import { OpenAttestationCredential } from "../__generated__/schema.3.0";
+import { OpenAttestationDocument } from "../__generated__/schema.3.0";
 import { toBuffer } from "../shared/utils";
 import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
 import { cloneDeep, get, unset, pick } from "lodash";
@@ -6,7 +6,7 @@ import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
 
 const obfuscate = (
-  _data: OpenAttestationVerifiableCredential<OpenAttestationCredential>,
+  _data: OpenAttestationVerifiableCredential<OpenAttestationDocument>,
   fields: string[] | string
 ) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -41,9 +41,9 @@ const obfuscate = (
 };
 
 export const obfuscateVerifiableCredential = (
-  document: OpenAttestationVerifiableCredential<OpenAttestationCredential>,
+  document: OpenAttestationVerifiableCredential<OpenAttestationDocument>,
   fields: string[] | string
-): OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
+): OpenAttestationVerifiableCredential<OpenAttestationDocument> => {
   const { data, obfuscatedData } = obfuscate(document, fields);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);

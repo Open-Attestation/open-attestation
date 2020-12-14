@@ -8,14 +8,14 @@ import * as utils from "./shared/utils";
 import * as v2 from "./__generated__/schema.2.0";
 import { OpenAttestationDocument } from "./__generated__/schema.2.0";
 import * as v3 from "./__generated__/schema.3.0";
-import { OpenAttestationCredential } from "./__generated__/schema.3.0";
+import { OpenAttestationDocument } from "./__generated__/schema.3.0";
 import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
 import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
 import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SchemaValidationError } from "./shared/utils";
 
 // eslint-disable-next-line @typescript-eslint/camelcase
-export function __unsafe__use__it__at__your__own__risks__wrapCredential<T extends OpenAttestationCredential>(
+export function __unsafe__use__it__at__your__own__risks__wrapCredential<T extends OpenAttestationDocument>(
   data: T,
   options?: WrapDocumentOptionV3
 ): Promise<OpenAttestationVerifiableCredential<T>> {
@@ -23,7 +23,7 @@ export function __unsafe__use__it__at__your__own__risks__wrapCredential<T extend
 }
 
 // eslint-disable-next-line @typescript-eslint/camelcase
-export function __unsafe__use__it__at__your__own__risks__wrapCredentials<T extends OpenAttestationCredential>(
+export function __unsafe__use__it__at__your__own__risks__wrapCredentials<T extends OpenAttestationDocument>(
   dataArray: T[],
   options?: WrapDocumentOptionV3
 ): Promise<OpenAttestationVerifiableCredential<T>[]> {
@@ -51,7 +51,7 @@ export const validateSchema = (document: WrappedDocument | OpenAttestationVerifi
 export function verifySignature<T extends OpenAttestationDocument>(
   document: WrappedDocument<T>
 ): document is WrappedDocument<T>;
-export function verifySignature<T extends OpenAttestationCredential>(
+export function verifySignature<T extends OpenAttestationDocument>(
   document: OpenAttestationVerifiableCredential<T>
 ): document is OpenAttestationVerifiableCredential<T>;
 export function verifySignature(document: any) {
@@ -62,7 +62,7 @@ export function obfuscate<T extends OpenAttestationDocument>(
   document: WrappedDocument<T>,
   fields: string[] | string
 ): WrappedDocument<T>;
-export function obfuscate<T extends OpenAttestationCredential>(
+export function obfuscate<T extends OpenAttestationDocument>(
   document: OpenAttestationVerifiableCredential<T>,
   fields: string[] | string
 ): OpenAttestationVerifiableCredential<T>;

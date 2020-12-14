@@ -2,7 +2,7 @@ import {
   __unsafe__use__it__at__your__own__risks__wrapCredential as wrapCredential,
   __unsafe__use__it__at__your__own__risks__wrapCredentials as wrapCredentials,
   obfuscate,
-  OpenAttestationCredentialWithInnerIssuer,
+  OpenAttestationDocumentWithInnerIssuer,
   OpenAttestationVerifiableCredential,
   SchemaId,
   SignatureAlgorithm,
@@ -12,7 +12,7 @@ import {
 import { IdentityProofType, Method, ProofType, TemplateType } from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
 
-const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationData: OpenAttestationDocumentWithInnerIssuer = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -53,7 +53,7 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
   }
 };
 
-const openAttestationDataWithW3CDID: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationDataWithW3CDID: OpenAttestationDocumentWithInnerIssuer = {
   ...openAttestationData,
   openAttestationMetadata: {
     ...openAttestationData.openAttestationMetadata,
@@ -178,7 +178,7 @@ describe("3.0 E2E Test Scenarios", () => {
     test("fails if there is a malformed document", async () => {
       const malformedDatum = [
         ...datum,
-        // @ts-expect-error missing properties from OpenAttestationCredential: "@context", credentialSubject, issuanceDate, issuer, and 2 more.
+        // @ts-expect-error missing properties from OpenAttestationDocument: "@context", credentialSubject, issuanceDate, issuer, and 2 more.
         {
           laurent: "task force, assemble!!"
         } as OpenAttestationVerifiableCredential

@@ -178,7 +178,7 @@ describe("Util Functions", () => {
     });
     test("should return all issuers address for 3.0 document", async () => {
       // This test takes some time to run, so we set the timeout to 14s
-      const document: OpenAttestationVerifiableCredential<v3.OpenAttestationCredential> = await __unsafe__use__it__at__your__own__risks__wrapCredential(
+      const document: OpenAttestationVerifiableCredential<v3.OpenAttestationDocument> = await __unsafe__use__it__at__your__own__risks__wrapCredential(
         {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",

@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-try-expect */
 import { cloneDeep, omit, set } from "lodash";
 import {
-  OpenAttestationCredentialWithInnerIssuer,
+  OpenAttestationDocumentWithInnerIssuer,
   __unsafe__use__it__at__your__own__risks__wrapCredential as wrapCredential
 } from "../../index";
 import { $id } from "./schema.json";
@@ -15,7 +15,7 @@ import {
   TemplateType
 } from "../../__generated__/schema.3.0";
 
-const sampleDoc = sample as OpenAttestationCredentialWithInnerIssuer & {
+const sampleDoc = sample as OpenAttestationDocumentWithInnerIssuer & {
   openAttestationMetadata: OpenAttestationMetadata & { template: Template };
 };
 
