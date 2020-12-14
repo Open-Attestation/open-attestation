@@ -1,17 +1,15 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schema.2.0";
-import { OpenAttestationCredential } from "../../__generated__/schema.3.0";
-import {
-  WrappedDocument,
-  SchemaId,
-  OpenAttestationVerifiableCredential,
-  SignedWrappedDocument
-} from "../../shared/@types/document";
+import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
+import { SchemaId } from "../../shared/@types/document";
+import { OpenAttestationVerifiableCredential } from "../../3.0/types";
+import { WrappedDocument, SignedWrappedDocument } from "../../2.0/types";
 import { unsaltData } from "../../2.0/salt";
 import Ajv from "ajv";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
+// TODO add v3 support
 export const getData = <T extends { data: any }>(document: T): Extract<T> => {
   return unsaltData(document.data);
 };
@@ -72,7 +70,7 @@ export function combineHashString(first?: string, second?: string): string {
 
 export const isWrappedV3Document = (
   document: any
-): document is OpenAttestationVerifiableCredential<OpenAttestationCredential> => {
+): document is OpenAttestationVerifiableCredential<OpenAttestationDocument> => {
   return document && document.version === SchemaId.v3;
 };
 export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
@@ -84,8 +82,9 @@ export const isSignedWrappedV2Document = (
   return document.proof && isWrappedV2Document(document);
 };
 
+// TODO Remove overloading
 export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
-export function getIssuerAddress(param: OpenAttestationVerifiableCredential<OpenAttestationCredential>): string;
+export function getIssuerAddress(param: OpenAttestationVerifiableCredential<OpenAttestationDocument>): string;
 export function getIssuerAddress(document: any): any {
   if (isWrappedV2Document(document)) {
     const data = getData(document);

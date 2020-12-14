@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import { validateSchema } from "./validate";
-import { SchematisedDocument } from "../@types/document";
+import { SchematisedDocument } from "../../2.0/types";
 
 const schema = {
   $id: "http://example.com/schema.json",

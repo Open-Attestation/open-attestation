@@ -2,17 +2,22 @@ import {
   __unsafe__use__it__at__your__own__risks__wrapCredential as wrapCredential,
   __unsafe__use__it__at__your__own__risks__wrapCredentials as wrapCredentials,
   obfuscate,
-  OpenAttestationCredentialWithInnerIssuer,
-  OpenAttestationVerifiableCredential,
   SchemaId,
   SignatureAlgorithm,
   validateSchema,
   verifySignature
 } from "../..";
-import { IdentityProofType, Method, ProofType, TemplateType } from "../../__generated__/schema.3.0";
+import { OpenAttestationVerifiableCredential } from "../../3.0/types";
+import {
+  IdentityProofType,
+  Method,
+  ProofType,
+  TemplateType,
+  OpenAttestationDocument
+} from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
 
-const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationData: OpenAttestationDocument = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -53,7 +58,7 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
   }
 };
 
-const openAttestationDataWithW3CDID: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationDataWithW3CDID: OpenAttestationDocument = {
   ...openAttestationData,
   openAttestationMetadata: {
     ...openAttestationData.openAttestationMetadata,

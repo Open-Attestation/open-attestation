@@ -1,15 +1,16 @@
 import { hashToBuffer, SchemaValidationError } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { OpenAttestationVerifiableCredential, SchemaId, SignatureAlgorithm } from "../shared/@types/document";
+import { SchemaId, SignatureAlgorithm } from "../shared/@types/document";
+import { OpenAttestationVerifiableCredential } from "./types";
 import { digestCredential } from "../3.0/digest";
 import { getSchema, validateSchema as validate, validateW3C } from "../shared/validate";
 import { WrapDocumentOptionV3 } from "../shared/@types/wrap";
-import { OpenAttestationCredential } from "../__generated__/schema.3.0";
+import { OpenAttestationDocument } from "../__generated__/schema.3.0";
 import { encodeSalt, salt } from "./salt";
 
 const getExternalSchema = (schema?: string) => (schema ? { schema } : {});
 
-export const wrapCredential = async <T extends OpenAttestationCredential>(
+export const wrapCredential = async <T extends OpenAttestationDocument>(
   credential: T,
   options: WrapDocumentOptionV3
 ): Promise<OpenAttestationVerifiableCredential<T>> => {
@@ -61,7 +62,7 @@ export const wrapCredential = async <T extends OpenAttestationCredential>(
   return verifiableCredential;
 };
 
-export const wrapCredentials = async <T extends OpenAttestationCredential>(
+export const wrapCredentials = async <T extends OpenAttestationDocument>(
   documents: T[],
   options: WrapDocumentOptionV3
 ): Promise<OpenAttestationVerifiableCredential<T>[]> => {

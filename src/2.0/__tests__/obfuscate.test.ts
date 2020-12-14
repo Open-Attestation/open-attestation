@@ -1,5 +1,6 @@
 import { obfuscateData, obfuscateDocument } from "../obfuscate";
-import { WrappedDocument, SchemaId } from "../../shared/@types/document";
+import { SchemaId } from "../../shared/@types/document";
+import { WrappedDocument } from "../../2.0/types";
 import { getData } from "../../shared/utils";
 
 describe("privacy", () => {

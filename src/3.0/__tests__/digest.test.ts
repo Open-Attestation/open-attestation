@@ -1,6 +1,7 @@
 import { cloneDeep } from "lodash";
 import { digestCredential } from "../digest";
-import { OpenAttestationVerifiableCredential, SchemaId, SignatureAlgorithm } from "../..";
+import { SchemaId, SignatureAlgorithm } from "../..";
+import { OpenAttestationVerifiableCredential } from "../../3.0/types";
 import { obfuscateVerifiableCredential } from "../obfuscate";
 import { decodeSalt } from "../salt";
 import * as v3 from "../../__generated__/schema.3.0";

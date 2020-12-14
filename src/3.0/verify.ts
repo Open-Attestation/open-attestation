@@ -1,4 +1,4 @@
-import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
+import { OpenAttestationVerifiableCredential } from "./types";
 import { digestCredential } from "./digest";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt, salt } from "./salt";

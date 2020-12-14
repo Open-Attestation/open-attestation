@@ -1,9 +1,9 @@
 import { get, sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
-import { Salt } from "../shared/@types/document";
-import { OpenAttestationCredential } from "../__generated__/schema.3.0";
+import { Salt } from "./types";
+import { OpenAttestationDocument } from "../__generated__/schema.3.0";
 
-export const digestCredential = (document: OpenAttestationCredential, salts: Salt[], obfuscatedData: string[]) => {
+export const digestCredential = (document: OpenAttestationDocument, salts: Salt[], obfuscatedData: string[]) => {
   // Prepare array of hashes from visible data
   const hashedUnhashedDataArray = salts
     .filter(salt => get(document, salt.path))
