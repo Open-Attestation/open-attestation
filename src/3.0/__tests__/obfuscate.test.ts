@@ -1,19 +1,15 @@
 import { obfuscateVerifiableCredential } from "../obfuscate";
-import {
-  OpenAttestationVerifiableCredential,
-  Salt,
-  verifySignature,
-  __unsafe__use__it__at__your__own__risks__wrapCredential as wrapCredential
-} from "../..";
+import { verifySignature, __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument } from "../..";
+import { WrappedDocument, Salt } from "../../3.0/types";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
 
 import { SchemaId } from "../../shared/@types/document";
-import { Method, ProofType, OpenAttestationCredential } from "../../__generated__/schema.3.0";
+import { Method, ProofType, OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import { toBuffer } from "../../shared/utils";
 import * as v3 from "../../__generated__/schema.3.0";
 
-const openAttestationData: OpenAttestationCredential = {
+const openAttestationData: OpenAttestationDocument = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -72,8 +68,8 @@ const findSaltByPath = (salts: string, path: string): Salt | undefined => {
  */
 const expectRemovedFieldsWithoutArrayNotation = (
   field: string,
-  document: OpenAttestationVerifiableCredential,
-  obfuscatedDocument: OpenAttestationVerifiableCredential
+  document: WrappedDocument,
+  obfuscatedDocument: WrappedDocument
 ) => {
   const value = get(document, field);
   const salt = findSaltByPath(document.proof.salts, field);
@@ -89,7 +85,7 @@ describe("privacy", () => {
   describe("obfuscateDocument", () => {
     test("removes one field from the root object", async () => {
       const field = "key1";
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -100,7 +96,7 @@ describe("privacy", () => {
     test("removes one object from the root object", async () => {
       const field = "credentialSubject";
       const expectedFieldsToBeRemoved = ["credentialSubject.id", "credentialSubject.alumniOf"];
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
 
       const verified = verifySignature(obfuscatedDocument);
@@ -113,7 +109,7 @@ describe("privacy", () => {
     });
     test("removes one key of an object from an array", async () => {
       const field = "attachments[0].mimeType";
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
 
       const verified = verifySignature(obfuscatedDocument);
@@ -133,7 +129,7 @@ describe("privacy", () => {
     test("removes one object from an array", async () => {
       const field = "attachments[0]";
       const expectedFieldsToBeRemoved = ["attachments[0].mimeType", "attachments[0].fileName", "attachments[0].data"];
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
 
       const verified = verifySignature(obfuscatedDocument);
@@ -164,7 +160,7 @@ describe("privacy", () => {
         "attachments[1].fileName",
         "attachments[1].data"
       ];
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
 
       const verified = verifySignature(obfuscatedDocument);
@@ -185,7 +181,7 @@ describe("privacy", () => {
 
     test("removes multiple fields", async () => {
       const fields = ["key1", "key2"];
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, fields);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -198,7 +194,7 @@ describe("privacy", () => {
 
     test("removes values from nested object", async () => {
       const field = "openAttestationMetadata.proof.type";
-      const newDocument = await wrapCredential(openAttestationData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -209,7 +205,7 @@ describe("privacy", () => {
 
     test("removes values from arrays", async () => {
       const fields = ["@context[2]", "@context[3]"];
-      const newDocument = await wrapCredential(openAttestationData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(openAttestationData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, fields);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -233,7 +229,7 @@ describe("privacy", () => {
     });
 
     test("is transitive", async () => {
-      const newDocument = await wrapCredential(testData, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const intermediateDoc = obfuscateVerifiableCredential(newDocument, "key1");
       const finalDoc1 = obfuscateVerifiableCredential(intermediateDoc, "key2");
       const finalDoc2 = obfuscateVerifiableCredential(newDocument, ["key1", "key2"]);

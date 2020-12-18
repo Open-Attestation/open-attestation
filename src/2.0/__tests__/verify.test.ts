@@ -1,6 +1,7 @@
 import { verify } from "../verify";
 
-import { SchemaId, SchematisedDocument } from "../../shared/@types/document";
+import { SchemaId } from "../../shared/@types/document";
+import { SchematisedDocument } from "../../2.0/types";
 
 const rawDocument: SchematisedDocument = {
   version: SchemaId.v2,

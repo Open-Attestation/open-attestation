@@ -1,11 +1,9 @@
-import { OpenAttestationVerifiableCredential } from "../shared/@types/document";
+import { WrappedDocument } from "./types";
 import { digestCredential } from "./digest";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt, salt } from "./salt";
 
-export const verify = <T extends OpenAttestationVerifiableCredential>(
-  document: T
-): document is OpenAttestationVerifiableCredential<T> => {
+export const verify = <T extends WrappedDocument>(document: T): document is WrappedDocument<T> => {
   if (!document.proof) {
     return false;
   }

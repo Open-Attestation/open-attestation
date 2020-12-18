@@ -1,12 +1,13 @@
 import { cloneDeep } from "lodash";
 import { digestCredential } from "../digest";
-import { OpenAttestationVerifiableCredential, SchemaId, SignatureAlgorithm } from "../..";
+import { SchemaId, SignatureAlgorithm } from "../..";
+import { WrappedDocument } from "../../3.0/types";
 import { obfuscateVerifiableCredential } from "../obfuscate";
 import { decodeSalt } from "../salt";
 import * as v3 from "../../__generated__/schema.3.0";
 import { Method, ProofType, TemplateType } from "../../__generated__/schema.3.0";
 
-const verifiableCredential: OpenAttestationVerifiableCredential = {
+const verifiableCredential: WrappedDocument = {
   version: SchemaId.v3,
   "@context": [
     "https://www.w3.org/2018/credentials/v1",

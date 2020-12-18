@@ -1,7 +1,8 @@
 import { digestDocument } from "./digest";
 import { MerkleTree } from "../shared/merkle";
 import { hashToBuffer, SchemaValidationError } from "../shared/utils";
-import { SchemaId, SchematisedDocument, Signature, WrappedDocument } from "../shared/@types/document";
+import { SchemaId } from "../shared/@types/document";
+import { SchematisedDocument, Signature, WrappedDocument } from "./types";
 import { OpenAttestationDocument } from "../__generated__/schema.2.0";
 import { getSchema, validateSchema as validate } from "../shared/validate";
 import { saltData } from "./salt";

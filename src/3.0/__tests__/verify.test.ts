@@ -1,13 +1,13 @@
 import { verify } from "../verify";
 import sample from "../schema/sample-verifiable-credential.json";
 import batched from "../schema/batched-verifiable-credential-1.json";
-import { OpenAttestationVerifiableCredentialWithInnerIssuer } from "../../shared/@types/document";
+import { WrappedDocument } from "../../3.0/types";
 
 // sample1: unwrapped (aka credential), sample2: only 1 doc is wrapped (aka verifiable credential/VC)
-const sampleVerifiableCredential = sample as OpenAttestationVerifiableCredentialWithInnerIssuer;
+const sampleVerifiableCredential = sample as WrappedDocument;
 
 // sample3 & sample4: more than 1 doc wrapped (aka batched VC, where 'proofs' has values)
-const sampleBatchedVC = batched as OpenAttestationVerifiableCredentialWithInnerIssuer;
+const sampleBatchedVC = batched as WrappedDocument;
 
 describe("signature", () => {
   describe("verify", () => {
@@ -20,7 +20,7 @@ describe("signature", () => {
         const verifiableCredential = {
           ...sampleVerifiableCredential,
           issuer: {
-            ...sampleVerifiableCredential.issuer,
+            id: "https://example.com",
             name: "Fake Name" // Value was originally "DEMO STORE"
           }
         };
@@ -31,13 +31,12 @@ describe("signature", () => {
         const verifiableCredential = {
           ...sampleVerifiableCredential,
           issuer: {
-            ...sampleVerifiableCredential.issuer,
+            id: "https://example.com",
             fakename: "DEMO STORE" // Key was originally "name"
           }
         };
-        delete verifiableCredential.issuer.name;
 
-        expect(verify(verifiableCredential)).toBe(false);
+        expect(verify(verifiableCredential as any)).toBe(false);
       });
       test("returns false for documents with additional data not part of salt", () => {
         // In this test case, we added the Class 2A licence which is not found in the original salts
@@ -95,7 +94,7 @@ describe("signature", () => {
         const verifiableCredential = {
           ...sampleBatchedVC,
           issuer: {
-            ...sampleVerifiableCredential.issuer,
+            id: "https://example.com",
             name: "Fake Name" // Value was originally "DEMO STORE"
           }
         };
@@ -106,13 +105,12 @@ describe("signature", () => {
         const verifiableCredential = {
           ...sampleBatchedVC,
           issuer: {
-            ...sampleVerifiableCredential.issuer,
+            id: "https://example.com",
             fakename: "DEMO STORE" // Key was originally "name"
           }
         };
-        delete verifiableCredential.issuer.name;
 
-        expect(verify(verifiableCredential)).toBe(false);
+        expect(verify(verifiableCredential as any)).toBe(false);
       });
       test("returns false for documents with additional data not part of salt", () => {
         // In this test case, we added the Class 2A licence which is not found in the original salts

@@ -1,18 +1,20 @@
 import { hashToBuffer, SchemaValidationError } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { OpenAttestationVerifiableCredential, SchemaId, SignatureAlgorithm } from "../shared/@types/document";
+import { SchemaId, SignatureAlgorithm } from "../shared/@types/document";
+import { WrappedDocument } from "./types";
 import { digestCredential } from "../3.0/digest";
-import { getSchema, validateSchema as validate, validateW3C } from "../shared/validate";
+import { getSchema, validateSchema as validate } from "../shared/validate";
 import { WrapDocumentOptionV3 } from "../shared/@types/wrap";
-import { OpenAttestationCredential } from "../__generated__/schema.3.0";
+import { OpenAttestationDocument } from "../__generated__/schema.3.0";
 import { encodeSalt, salt } from "./salt";
+import { validateW3C } from "./validate";
 
 const getExternalSchema = (schema?: string) => (schema ? { schema } : {});
 
-export const wrapCredential = async <T extends OpenAttestationCredential>(
+export const wrapDocument = async <T extends OpenAttestationDocument>(
   credential: T,
   options: WrapDocumentOptionV3
-): Promise<OpenAttestationVerifiableCredential<T>> => {
+): Promise<WrappedDocument<T>> => {
   const document = {
     version: SchemaId.v3 as SchemaId.v3,
     ...getExternalSchema(options.externalSchemaId),
@@ -40,7 +42,7 @@ export const wrapCredential = async <T extends OpenAttestationCredential>(
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
-  const verifiableCredential: OpenAttestationVerifiableCredential<T> = {
+  const verifiableCredential: WrappedDocument<T> = {
     ...document,
     proof: {
       type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018,
@@ -61,12 +63,12 @@ export const wrapCredential = async <T extends OpenAttestationCredential>(
   return verifiableCredential;
 };
 
-export const wrapCredentials = async <T extends OpenAttestationCredential>(
+export const wrapDocuments = async <T extends OpenAttestationDocument>(
   documents: T[],
   options: WrapDocumentOptionV3
-): Promise<OpenAttestationVerifiableCredential<T>[]> => {
+): Promise<WrappedDocument<T>[]> => {
   // create individual verifiable credential
-  const verifiableCredentials = await Promise.all(documents.map(document => wrapCredential(document, options)));
+  const verifiableCredentials = await Promise.all(documents.map(document => wrapDocument(document, options)));
 
   // get all the target hashes to compute the merkle tree and the merkle root
   const merkleTree = new MerkleTree(

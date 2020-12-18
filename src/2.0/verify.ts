@@ -1,8 +1,8 @@
 import { get } from "lodash";
 import { digestDocument } from "./digest";
-import { WrappedDocument } from "../shared/@types/document";
-import { checkProof } from "../shared/merkle";
 import { OpenAttestationDocument } from "../__generated__/schema.2.0";
+import { WrappedDocument } from "./types";
+import { checkProof } from "../shared/merkle";
 
 export const verify = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   document: any

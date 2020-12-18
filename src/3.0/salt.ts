@@ -1,4 +1,4 @@
-import { Salt } from "..";
+import { Salt } from "./types";
 import { v4 as uuid } from "uuid";
 import { Base64 } from "js-base64";
 import { traverseAndFlatten } from "./traverseAndFlatten";

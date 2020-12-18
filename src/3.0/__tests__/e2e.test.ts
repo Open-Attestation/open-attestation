@@ -1,18 +1,23 @@
 import {
-  __unsafe__use__it__at__your__own__risks__wrapCredential as wrapCredential,
-  __unsafe__use__it__at__your__own__risks__wrapCredentials as wrapCredentials,
+  __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument,
+  __unsafe__use__it__at__your__own__risks__wrapDocuments as wrapDocuments,
   obfuscate,
-  OpenAttestationCredentialWithInnerIssuer,
-  OpenAttestationVerifiableCredential,
   SchemaId,
   SignatureAlgorithm,
   validateSchema,
   verifySignature
 } from "../..";
-import { IdentityProofType, Method, ProofType, TemplateType } from "../../__generated__/schema.3.0";
+import { WrappedDocument } from "../../3.0/types";
+import {
+  IdentityProofType,
+  Method,
+  ProofType,
+  TemplateType,
+  OpenAttestationDocument
+} from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
 
-const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationData: OpenAttestationDocument = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -53,7 +58,7 @@ const openAttestationData: OpenAttestationCredentialWithInnerIssuer = {
   }
 };
 
-const openAttestationDataWithW3CDID: OpenAttestationCredentialWithInnerIssuer = {
+const openAttestationDataWithW3CDID: OpenAttestationDocument = {
   ...openAttestationData,
   openAttestationMetadata: {
     ...openAttestationData.openAttestationMetadata,
@@ -98,14 +103,14 @@ describe("3.0 E2E Test Scenarios", () => {
       await expect(
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        wrapCredential(missingData, {
+        wrapDocument(missingData, {
           externalSchemaId: "http://example.com/schema.json",
           version: SchemaId.v3
         })
       ).rejects.toThrow("Invalid document");
     });
     test("creates a wrapped document", async () => {
-      const wrappedDocument = await wrapCredential(
+      const wrappedDocument = await wrapDocument(
         {
           ...openAttestationData,
           key1: "test"
@@ -124,7 +129,7 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(wrappedDocument.proof.merkleRoot).toBe(wrappedDocument.proof.targetHash);
     });
     test("creates a wrapped document with W3C-DID IdentityProof", async () => {
-      const wrappedDocumentWithW3CDID = await wrapCredential(openAttestationDataWithW3CDID, {
+      const wrappedDocumentWithW3CDID = await wrapDocument(openAttestationDataWithW3CDID, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -140,7 +145,7 @@ describe("3.0 E2E Test Scenarios", () => {
       );
     });
     test("checks that document is wrapped correctly", async () => {
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -148,7 +153,7 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(verified).toBe(true);
     });
     test("checks that document conforms to the schema", async () => {
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -156,18 +161,18 @@ describe("3.0 E2E Test Scenarios", () => {
     });
     test("does not allow for the same merkle root to be generated", async () => {
       // This test takes some time to run, so we set the timeout to 14s
-      const wrappedDocument = await wrapCredential(document, { version: SchemaId.v3 });
-      const newDocument = await wrapCredential(document, { version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(document, { version: SchemaId.v3 });
       expect(wrappedDocument.proof.merkleRoot).not.toBe(newDocument.proof.merkleRoot);
     }, 14000);
     test("obfuscate data correctly", async () => {
-      const newDocument = await wrapCredential(datum[2], { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscate(newDocument, ["key2"]);
       expect(verifySignature(obfuscatedDocument)).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
     });
     test("obfuscate data transistively", async () => {
-      const newDocument = await wrapCredential(datum[2], { version: SchemaId.v3 });
+      const newDocument = await wrapDocument(datum[2], { version: SchemaId.v3 });
       const intermediateDocument = obfuscate(newDocument, ["key2"]);
       const obfuscatedDocument = obfuscate(intermediateDocument, ["key3"]);
       expect(obfuscate(newDocument, ["key2", "key3"])).toEqual(obfuscatedDocument);
@@ -181,12 +186,12 @@ describe("3.0 E2E Test Scenarios", () => {
         // @ts-expect-error missing properties from OpenAttestationCredential: "@context", credentialSubject, issuanceDate, issuer, and 2 more.
         {
           laurent: "task force, assemble!!"
-        } as OpenAttestationVerifiableCredential
+        } as WrappedDocument
       ];
-      await expect(wrapCredentials(malformedDatum)).rejects.toStrictEqual(new Error("Invalid document"));
+      await expect(wrapDocuments(malformedDatum)).rejects.toStrictEqual(new Error("Invalid document"));
     });
     test("creates a batch of documents if all are in the right format", async () => {
-      const wrappedDocuments = await wrapCredentials(datum, {
+      const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -200,7 +205,7 @@ describe("3.0 E2E Test Scenarios", () => {
       });
     });
     test("checks that documents are wrapped correctly", async () => {
-      const wrappedDocuments = await wrapCredentials(datum, {
+      const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -208,7 +213,7 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(verified).toBe(true);
     });
     test("checks that documents conforms to the schema", async () => {
-      const wrappedDocuments = await wrapCredentials(datum, {
+      const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
@@ -216,11 +221,11 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(validatedSchema).toBe(true);
     });
     test("does not allow for same merkle root to be generated", async () => {
-      const wrappedDocuments = await wrapCredentials(datum, {
+      const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
-      const newWrappedDocuments = await wrapCredentials(datum, {
+      const newWrappedDocuments = await wrapDocuments(datum, {
         version: SchemaId.v3
       });
       expect(wrappedDocuments[0].proof.merkleRoot).not.toBe(newWrappedDocuments[0].proof.merkleRoot);
@@ -229,7 +234,7 @@ describe("3.0 E2E Test Scenarios", () => {
 
   describe("validate", () => {
     test("should return true when document is valid and version is 3.0", () => {
-      const credential: OpenAttestationVerifiableCredential = {
+      const credential: WrappedDocument = {
         version: SchemaId.v3,
         "@context": [
           "https://www.w3.org/2018/credentials/v1",
@@ -296,7 +301,7 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(validateSchema(credential)).toStrictEqual(true);
     });
     test("should return true when document is valid and version is 3.0 and identityProof is W3C-DID", () => {
-      const credential: OpenAttestationVerifiableCredential = {
+      const credential: WrappedDocument = {
         version: SchemaId.v3,
         schema: "http://example.com/schemaV3.json",
         "@context": [

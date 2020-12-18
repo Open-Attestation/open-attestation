@@ -1,7 +1,8 @@
 import { get, omitBy, sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
 import { flatten } from "../shared/serialize/flatten";
-import { OpenAttestationDocument, SchematisedDocument } from "../shared/@types/document";
+import { OpenAttestationDocument } from "../__generated__/schema.2.0";
+import { SchematisedDocument } from "./types";
 
 const isKeyOrValueUndefined = (value: any, key: any) => value === undefined || key === undefined;
 
