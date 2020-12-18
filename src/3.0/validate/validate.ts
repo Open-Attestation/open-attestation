@@ -86,7 +86,6 @@ const contextLoader = () => {
 };
 const documentLoader = contextLoader();
 
-// TODO move to v3 since its not shared between v2 and v3
 export async function validateW3C<T extends OpenAttestationDocument>(credential: WrappedDocument<T>): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (
