@@ -7,7 +7,6 @@ export interface Salt {
   path: string;
 }
 
-// TODO rename to something else that is not proof?
 export interface VerifiableCredentialProof {
   type: SignatureAlgorithm;
   targetHash: string;
@@ -17,8 +16,9 @@ export interface VerifiableCredentialProof {
   privacy: { obfuscated: string[] };
 }
 
-// TODO rename to wrapped
-export type OpenAttestationVerifiableCredential<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> = T & {
+// TODO rename to something else that is not proof to allow for did-signed documents
+// Also it makes sense to use `proof` to denote a document that has been issued
+export type WrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> = T & {
   version: SchemaId.v3;
   schema?: string;
   proof: VerifiableCredentialProof;

@@ -1,6 +1,6 @@
 /* eslint-disable jest/no-try-expect */
 import { cloneDeep, omit, set } from "lodash";
-import { __unsafe__use__it__at__your__own__risks__wrapCredential as wrapCredential } from "../../index";
+import { __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument } from "../../index";
 import { $id } from "./schema.json";
 import sample from "./sample-credential.json";
 import { SchemaId } from "../../shared/@types/document";
@@ -12,7 +12,7 @@ const sampleDoc = sample as OpenAttestationDocument;
 describe("schema/3.0", () => {
   it("should be valid with sample document", async () => {
     const document = cloneDeep(sampleDoc);
-    const wrappedDocument = await wrapCredential(document, {
+    const wrappedDocument = await wrapDocument(document, {
       externalSchemaId: $id,
       version: SchemaId.v3
     });
@@ -20,7 +20,7 @@ describe("schema/3.0", () => {
   });
   it("should be valid when adding any additional data", async () => {
     const document = { ...cloneDeep(sampleDoc), key1: "some" };
-    const wrappedDocument = await wrapCredential(document, {
+    const wrappedDocument = await wrapDocument(document, {
       externalSchemaId: $id,
       version: SchemaId.v3
     });
@@ -31,7 +31,7 @@ describe("schema/3.0", () => {
     it("should be invalid when @context contains valid URI but is not https://www.w3.org/2018/credentials/v1", async () => {
       // This should not have AJV validation errors as it's only caught after
       const document = { ...cloneDeep(sampleDoc), "@context": ["https://example.com"] };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
         "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
       );
     });
@@ -40,7 +40,7 @@ describe("schema/3.0", () => {
       // @context MUST be an ordered set in W3C VC data model, see https://www.w3.org/TR/vc-data-model/#contexts
       const document = { ...cloneDeep(sampleDoc), "@context": "https://www.w3.org/2018/credentials/v1" };
       // @ts-expect-error
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -59,7 +59,7 @@ describe("schema/3.0", () => {
         ...cloneDeep(sampleDoc),
         "@context": ["https://www.w3.org/2018/credentials/examples/v1", "https://www.w3.org/2018/credentials/v1"]
       };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
         "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
       );
     });
@@ -67,7 +67,7 @@ describe("schema/3.0", () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), "@context": ["https://www.w3.org/2018/credentials/v1", "any"] };
 
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -86,7 +86,7 @@ describe("schema/3.0", () => {
     it("should be valid when id is missing", async () => {
       // id can be optional, see https://www.w3.org/TR/vc-data-model/#identifiers
       const document = { ...omit(cloneDeep(sampleDoc), "id") };
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3
       });
@@ -94,7 +94,7 @@ describe("schema/3.0", () => {
     });
     it("should be valid when id contains a valid URI", async () => {
       // id can be optional, but if present, it has to be a URI, see https://www.w3.org/TR/vc-data-model/#identifiers
-      const wrappedDocument = await wrapCredential(
+      const wrappedDocument = await wrapDocument(
         { ...cloneDeep(sampleDoc), id: "https://example.com" },
         { externalSchemaId: $id, version: SchemaId.v3 }
       );
@@ -104,7 +104,7 @@ describe("schema/3.0", () => {
       // id can be optional, but if present, it has to be a URI, see https://www.w3.org/TR/vc-data-model/#identifiers
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), id: "any123" };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -124,7 +124,7 @@ describe("schema/3.0", () => {
       // For now, reference is not compulsory
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "reference") };
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3
       });
@@ -134,7 +134,7 @@ describe("schema/3.0", () => {
       // But if reference is given, it should not be undefined as we cannot salt undefined values
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), reference: undefined };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Unexpected data 'undefined' in 'reference'"
       );
@@ -145,7 +145,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), reference: null };
 
       // @ts-expect-error reference cannot be undefined or null
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -165,7 +165,7 @@ describe("schema/3.0", () => {
       // For now, it's not compulsory
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "name") };
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3
       });
@@ -174,7 +174,7 @@ describe("schema/3.0", () => {
     it("should be invalid if name is undefined", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), name: undefined };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Unexpected data 'undefined' in 'name'"
       );
@@ -184,7 +184,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), name: null };
 
       // @ts-expect-error name cannot be undefined or null
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -205,7 +205,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), type: null };
 
       // @ts-expect-error type cannot be undefined or null
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -239,7 +239,7 @@ describe("schema/3.0", () => {
     it("should be invalid if type is a string", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: "VerifiableCredential" };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Property 'type' must exist and be an array"
       );
@@ -247,7 +247,7 @@ describe("schema/3.0", () => {
     it("should be invalid if type is an array, but does not have VerifiableCredential", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), type: ["DrivingLicenceCredential"] };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Property 'type' must have VerifiableCredential as one of the items"
       );
@@ -259,7 +259,7 @@ describe("schema/3.0", () => {
       // For now, it's not compulsory and is reserved for a later version of W3C VC Data Model, see https://www.w3.org/TR/vc-data-model/#issuance-date
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "validFrom") };
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3
       });
@@ -269,7 +269,7 @@ describe("schema/3.0", () => {
       // If validFrom is present, it should be an RFC3339 date and time string
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validFrom: undefined };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Unexpected data 'undefined' in 'validFrom'"
       );
@@ -279,7 +279,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), validFrom: null };
 
       // @ts-expect-error validFrom cannot be undefined or null
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -296,7 +296,7 @@ describe("schema/3.0", () => {
     it("should be invalid if validFrom is not in the RFC3339 date and time format", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validFrom: "some" };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -316,7 +316,7 @@ describe("schema/3.0", () => {
       // validUntil does not exist in our sample document anyways
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "validUntil") };
-      const wrappedDocument = await wrapCredential(document, {
+      const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3
       });
@@ -325,7 +325,7 @@ describe("schema/3.0", () => {
     it("should be invalid when validUntil is undefined", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validUntil: undefined };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
         "Unexpected data 'undefined' in 'validUntil'"
       );
@@ -335,7 +335,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), validUntil: null };
 
       // @ts-expect-error validUntil cannot be undefined or null
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -351,7 +351,7 @@ describe("schema/3.0", () => {
     it("should be invalid if validUntil exists and is not in the RFC3339 date and time format", async () => {
       expect.assertions(1);
       const document = { ...cloneDeep(sampleDoc), validUntil: "some" };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -374,25 +374,25 @@ describe("schema/3.0", () => {
         "openAttestationMetadata.template.type",
         TemplateType.EmbeddedRenderer
       );
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when url starts with http", async () => {
       expect.assertions(1);
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.template.url", "http://some.example.com");
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when url starts with https", async () => {
       expect.assertions(1);
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.template.url", "https://some.example.com");
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be invalid when adding additional data", async () => {
       expect.assertions(1);
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.template.key", "any");
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -408,7 +408,7 @@ describe("schema/3.0", () => {
     it("should be invalid if template.name is missing", async () => {
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "openAttestationMetadata.template.name") };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -424,7 +424,7 @@ describe("schema/3.0", () => {
     it("should be invalid if template.type is missing", async () => {
       expect.assertions(1);
       const document = { ...omit(cloneDeep(sampleDoc), "openAttestationMetadata.template.type") };
-      await expect(wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
+      await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
           {
@@ -441,7 +441,7 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.template.type", "SOMETHING");
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -460,7 +460,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       if (document.openAttestationMetadata.template) delete document.openAttestationMetadata.template.url;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -479,7 +479,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       if (document.openAttestationMetadata.template) document.openAttestationMetadata.template.url = "ftp://some";
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -502,7 +502,7 @@ describe("schema/3.0", () => {
 
         issuer: { ...sample.issuer, id: "http://example.com" }
       };
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be invalid when adding additional data", async () => {
@@ -510,7 +510,7 @@ describe("schema/3.0", () => {
 
       const document = { ...cloneDeep(sampleDoc), issuer: { ...sample.issuer, key: "any" } };
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -543,7 +543,7 @@ describe("schema/3.0", () => {
 
       const document = { ...cloneDeep(sampleDoc), issuer: { ...sample.issuer, id: "" } };
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -576,7 +576,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.issuer;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -596,7 +596,7 @@ describe("schema/3.0", () => {
 
       if (typeof document.issuer !== "string") delete document.issuer.name;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -631,7 +631,7 @@ describe("schema/3.0", () => {
       // TODO seemed like there will be lots of hassle dealing with string|Issuer
       if (typeof document.issuer !== "string") delete document.issuer.id;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -664,7 +664,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.openAttestationMetadata.identityProof?.type;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -687,7 +687,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error OTHER cannot be assigned to issuer.identityProof.type
       document.openAttestationMetadata.identityProof.type = "OTHER";
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -709,7 +709,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.openAttestationMetadata.identityProof?.location;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -731,7 +731,7 @@ describe("schema/3.0", () => {
   describe("proof", () => {
     it("should be valid when type is DNS-TXT", async () => {
       const document = cloneDeep(sampleDoc);
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when identity proof type is W3C-DID", async () => {
@@ -740,7 +740,7 @@ describe("schema/3.0", () => {
         "openAttestationMetadata.identityProof.type",
         IdentityProofType.W3CDid
       );
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when type is W3C-DID and location is a valid DID", async () => {
@@ -749,23 +749,23 @@ describe("schema/3.0", () => {
         type: IdentityProofType.W3CDid,
         location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
       };
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when type is OpenAttestationProofMethod", async () => {
       const document = cloneDeep(sampleDoc);
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is TOKEN_REGISTRY", async () => {
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.proof.method", Method.TokenRegistry);
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when method is DOCUMENT_STORE", async () => {
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.proof.method", Method.DocumentStore);
 
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
 
@@ -773,7 +773,7 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = set(cloneDeep(sampleDoc), "openAttestationMetadata.identityProof.key", "any");
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -795,7 +795,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.openAttestationMetadata.identityProof;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty(
@@ -817,7 +817,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.openAttestationMetadata.proof.type;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -838,7 +838,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error Something cannot be assigned to openAttestationMetadata.proof.type
       document.openAttestationMetadata.proof.type = "Something";
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -857,7 +857,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.openAttestationMetadata.proof.method;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -878,7 +878,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error Something cannot be assigned to proof.method
       document.openAttestationMetadata.proof.method = "Something";
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -897,7 +897,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       delete document.openAttestationMetadata.proof.value;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -922,7 +922,7 @@ describe("schema/3.0", () => {
           type: "CredentialStatusList2017"
         }
       };
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be invalid if id is missing", async () => {
@@ -936,7 +936,7 @@ describe("schema/3.0", () => {
 
       try {
         // @ts-expect-error credentialStatus.id is missing
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -961,7 +961,7 @@ describe("schema/3.0", () => {
 
       try {
         // @ts-expect-error credentialStatus.type is missing
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -984,7 +984,7 @@ describe("schema/3.0", () => {
         // @ts-expect-error attachments is possibly undefined
         attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }]
       };
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/png", async () => {
@@ -993,7 +993,7 @@ describe("schema/3.0", () => {
         // @ts-expect-error attachments is possibly undefined
         attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }]
       };
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
     it("should be valid when mimeType is image/jpeg", async () => {
@@ -1002,7 +1002,7 @@ describe("schema/3.0", () => {
         // @ts-expect-error attachments is possibly undefined
         attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }]
       };
-      const wrappedDocument = await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+      const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
 
@@ -1012,7 +1012,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error attachments is possibly undefined
       const document = { ...cloneDeep(sampleDoc), attachments: [{ ...sampleDoc.attachments[0], key: "any" }] };
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -1033,7 +1033,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error attachments is possibly undefined
       delete document.attachments[0].fileName;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -1054,7 +1054,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error attachments is possibly undefined
       delete document.attachments[0].mimeType;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
@@ -1075,7 +1075,7 @@ describe("schema/3.0", () => {
       // @ts-expect-error attachments is possibly undefined
       delete document.attachments[0].data;
       try {
-        await wrapCredential(document, { externalSchemaId: $id, version: SchemaId.v3 });
+        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [

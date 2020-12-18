@@ -1,13 +1,13 @@
 import { verify } from "../verify";
 import sample from "../schema/sample-verifiable-credential.json";
 import batched from "../schema/batched-verifiable-credential-1.json";
-import { OpenAttestationVerifiableCredential } from "../../3.0/types";
+import { WrappedDocument } from "../../3.0/types";
 
 // sample1: unwrapped (aka credential), sample2: only 1 doc is wrapped (aka verifiable credential/VC)
-const sampleVerifiableCredential = sample as OpenAttestationVerifiableCredential;
+const sampleVerifiableCredential = sample as WrappedDocument;
 
 // sample3 & sample4: more than 1 doc wrapped (aka batched VC, where 'proofs' has values)
-const sampleBatchedVC = batched as OpenAttestationVerifiableCredential;
+const sampleBatchedVC = batched as WrappedDocument;
 
 describe("signature", () => {
   describe("verify", () => {

@@ -1,16 +1,15 @@
 import { keccak256 } from "js-sha3";
-import { OpenAttestationDocument as v2OpenAttestationDocument } from "../../__generated__/schema.2.0";
-import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
-import { SchemaId } from "../../shared/@types/document";
-import { OpenAttestationVerifiableCredential } from "../../3.0/types";
-import { WrappedDocument, SignedWrappedDocument } from "../../2.0/types";
+import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
+import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
+import { SchemaId, WrappedDocument, OpenAttestationDocument } from "../../shared/@types/document";
+import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
+import { WrappedDocument as WrappedDocumentV2, SignedWrappedDocument } from "../../2.0/types";
 import { unsaltData } from "../../2.0/salt";
 import Ajv from "ajv";
 
 export type Hash = string | Buffer;
-type Extract<P> = P extends WrappedDocument<infer T> ? T : never;
-// TODO add v3 support
-export const getData = <T extends { data: any }>(document: T): Extract<T> => {
+type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
+export const getData = <T extends WrappedDocumentV2<OpenAttestationDocumentV2>>(document: T): Extract<T> => {
   return unsaltData(document.data);
 };
 
@@ -69,22 +68,21 @@ export function combineHashString(first?: string, second?: string): string {
 }
 
 export const isWrappedV3Document = (
-  document: any
-): document is OpenAttestationVerifiableCredential<OpenAttestationDocument> => {
+  document: WrappedDocument<OpenAttestationDocument>
+): document is WrappedDocumentV3<OpenAttestationDocumentV3> => {
   return document && document.version === SchemaId.v3;
 };
-export const isWrappedV2Document = (document: any): document is WrappedDocument<v2OpenAttestationDocument> => {
+export const isWrappedV2Document = (
+  document: WrappedDocument<OpenAttestationDocument>
+): document is WrappedDocumentV2<OpenAttestationDocumentV2> => {
   return !isWrappedV3Document(document);
 };
 export const isSignedWrappedV2Document = (
   document: any
-): document is SignedWrappedDocument<v2OpenAttestationDocument> => {
+): document is SignedWrappedDocument<OpenAttestationDocumentV2> => {
   return document.proof && isWrappedV2Document(document);
 };
 
-// TODO Remove overloading
-export function getIssuerAddress(param: WrappedDocument<v2OpenAttestationDocument>): string[];
-export function getIssuerAddress(param: OpenAttestationVerifiableCredential<OpenAttestationDocument>): string;
 export function getIssuerAddress(document: any): any {
   if (isWrappedV2Document(document)) {
     const data = getData(document);
