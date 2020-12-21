@@ -8,8 +8,10 @@ import { wrapDocument as wrapDocumentV3, wrapDocuments as wrapDocumentsV3 } from
 import { SchemaId, WrappedDocument, OpenAttestationDocument } from "./shared/@types/document";
 import * as utils from "./shared/utils";
 import * as v2 from "./__generated__/schema.2.0";
+import * as v2Wrapped from "./2.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "./__generated__/schema.2.0";
 import * as v3 from "./__generated__/schema.3.0";
+import * as v3Wrapped from "./3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
 import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
 import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
@@ -81,3 +83,5 @@ export * from "./shared/@types/document";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
+export { v2Wrapped };
+export { v3Wrapped };
