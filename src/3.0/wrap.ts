@@ -28,7 +28,9 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
   // Since our wrapper adds in OA-specific properties, we should push our OA context. This is also to pass W3C VC test suite.
   if (
     Array.isArray(document["@context"]) &&
-    !document["@context"].includes("https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json")
+    !document["@context"].includes(
+      "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
+    )
   ) {
     document["@context"].push("https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json");
   }

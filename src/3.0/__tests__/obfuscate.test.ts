@@ -227,7 +227,9 @@ describe("privacy", () => {
       expect(obfuscatedDocument["@context"]).not.toContain(
         "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
       );
-      expect(obfuscatedDocument["@context"]).not.toContain("https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json");
+      expect(obfuscatedDocument["@context"]).not.toContain(
+        "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
+      );
     });
 
     test("is transitive", async () => {

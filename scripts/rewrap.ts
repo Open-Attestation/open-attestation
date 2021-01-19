@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import {
   __unsafe__use__it__at__your__own__risks__wrapDocuments,
   __unsafe__use__it__at__your__own__risks__wrapDocument
