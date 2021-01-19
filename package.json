@@ -15,7 +15,7 @@
     "clean": "rm -rf dist/",
     "commit": "git-cz",
     "commit:retry": "npm run commit -- --retry",
-    "test": "jest",
+    "test": "npm run build && jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "test:vc": "scripts/runVcTest.sh",

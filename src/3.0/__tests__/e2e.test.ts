@@ -354,7 +354,7 @@ describe("3.0 E2E Test Scenarios", () => {
     //   };
     //   expect(validateSchema(credential)).toStrictEqual(true);
     // });
-    test("should return false when document is invalid due to no W3C-DID location", () => {
+    test("should return false when document is invalid due to no DNS-DID location", () => {
       expect(
         validateSchema({
           version: SchemaId.v3,
@@ -367,7 +367,7 @@ describe("3.0 E2E Test Scenarios", () => {
               id: "https://example.com",
               name: "issuer.name",
               identityProof: {
-                type: IdentityProofType.W3CDid
+                type: IdentityProofType.DNSDid
               }
             },
             template: {

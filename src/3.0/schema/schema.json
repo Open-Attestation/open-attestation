@@ -175,7 +175,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["DNS-TXT", "W3C-DID"]
+              "enum": ["DNS-TXT", "DNS-DID", "DID"]
             },
             "location": {
               "type": "string",
