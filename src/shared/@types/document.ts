@@ -21,13 +21,6 @@ export enum SchemaId {
   v3 = "https://schema.openattestation.com/3.0/schema.json"
 }
 
-export interface ProofSigningOptions {
-  privateKey: string;
-  verificationMethod: string;
-  type: ProofType;
-  proofPurpose?: ProofPurpose;
-}
-
 export interface ObfuscationMetadata {
   obfuscatedData?: string[];
 }
@@ -37,11 +30,4 @@ export enum ProofType {
 }
 export enum ProofPurpose {
   AssertionMethod = "assertionMethod"
-}
-export interface Proof {
-  type: ProofType;
-  created: string;
-  proofPurpose: ProofPurpose;
-  verificationMethod: string;
-  signature: string;
 }

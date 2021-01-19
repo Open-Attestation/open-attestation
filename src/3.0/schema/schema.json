@@ -160,10 +160,10 @@
             "method": {
               "type": "string",
               "description": "Proof Open Attestation method",
-              "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE"]
+              "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE", "DID"]
             },
             "value": {
-              "description": "Proof value of issuer(s)",
+              "description": "Proof value of issuer(s). Smart contract address for TOKEN_REGISTRY & DOCUMENT_STORE, did for DID method",
               "type": "string"
             }
           },
