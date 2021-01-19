@@ -1,6 +1,6 @@
 import { hashToBuffer, SchemaValidationError } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { SchemaId, SignatureAlgorithm } from "../shared/@types/document";
+import { SchemaId, SignatureAlgorithm, ProofPurpose } from "../shared/@types/document";
 import { WrappedDocument } from "./types";
 import { digestCredential } from "../3.0/digest";
 import { getSchema, validateSchema as validate } from "../shared/validate";
@@ -28,9 +28,9 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
   // Since our wrapper adds in OA-specific properties, we should push our OA context. This is also to pass W3C VC test suite.
   if (
     Array.isArray(document["@context"]) &&
-    !document["@context"].includes("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld")
+    !document["@context"].includes("https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json")
   ) {
-    document["@context"].push("https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld");
+    document["@context"].push("https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json");
   }
 
   const salts = salt(document);
@@ -46,6 +46,7 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
     ...document,
     proof: {
       type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018,
+      proofPurpose: ProofPurpose.AssertionMethod,
       targetHash: digest,
       proofs: merkleProof,
       merkleRoot,

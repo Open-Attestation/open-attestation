@@ -871,7 +871,7 @@ describe("schema/3.0", () => {
         ]);
       }
     });
-    it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
+    it("should be invalid if proof type is not TOKEN_REGISTRY, DOCUMENT_STORE or DID", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
@@ -886,7 +886,7 @@ describe("schema/3.0", () => {
             keyword: "enum",
             dataPath: ".openAttestationMetadata.proof.method",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/properties/method/enum",
-            params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE"] },
+            params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE", "DID"] },
             message: "should be equal to one of the allowed values"
           }
         ]);

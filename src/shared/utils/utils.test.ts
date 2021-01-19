@@ -8,6 +8,8 @@ import {
 } from "../../__generated__/schema.2.0";
 import * as v3 from "../../__generated__/schema.3.0";
 
+jest.mock("../../3.0/validate"); // Skipping schema verification while wrapping
+
 describe("Util Functions", () => {
   describe("hashArray", () => {
     test("should work", () => {
@@ -183,7 +185,7 @@ describe("Util Functions", () => {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
             "https://www.w3.org/2018/credentials/examples/v1",
-            "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
+            "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
           ],
           issuer: {
             name: "name",
