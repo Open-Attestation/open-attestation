@@ -17,6 +17,9 @@ import {
 } from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
 import { ProofPurpose } from "../../shared/@types/document";
+import sampleDid from "../schema/sample-credential-did.json";
+
+const openAttestationDataWithDid = sampleDid as OpenAttestationDocument;
 
 const openAttestationData: OpenAttestationDocument = {
   "@context": [
@@ -58,17 +61,6 @@ const openAttestationData: OpenAttestationDocument = {
     name: "DEMO STORE"
   }
 };
-
-// const openAttestationDataWithW3CDID: OpenAttestationDocument = {
-//   ...openAttestationData,
-//   openAttestationMetadata: {
-//     ...openAttestationData.openAttestationMetadata,
-//     identityProof: {
-//       type: IdentityProofType.W3CDid,
-//       location: "did:ethr:0x0xE6Fe788d8ca214A080b0f6aC7F48480b2AEfa9a6"
-//     }
-//   }
-// };
 
 const datum = [
   {
@@ -129,22 +121,22 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(wrappedDocument.proof.proofs).toEqual([]);
       expect(wrappedDocument.proof.merkleRoot).toBe(wrappedDocument.proof.targetHash);
     });
-    // test("creates a wrapped document with W3C-DID IdentityProof", async () => {
-    //   const wrappedDocumentWithW3CDID = await wrapDocument(openAttestationDataWithW3CDID, {
-    //     externalSchemaId: "http://example.com/schema.json",
-    //     version: SchemaId.v3
-    //   });
-    //   expect(wrappedDocumentWithW3CDID.schema).toBe("http://example.com/schema.json");
-    //   expect(wrappedDocumentWithW3CDID.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
-    //   expect(wrappedDocumentWithW3CDID.proof.targetHash).toBeDefined();
-    //   expect(wrappedDocumentWithW3CDID.proof.merkleRoot).toBeDefined();
-    //   expect(wrappedDocumentWithW3CDID.proof.proofs).toEqual([]);
-    //   expect(wrappedDocumentWithW3CDID.proof.merkleRoot).toBe(wrappedDocumentWithW3CDID.proof.targetHash);
-    //   expect(wrappedDocumentWithW3CDID.openAttestationMetadata.identityProof?.type).toContain(IdentityProofType.W3CDid);
-    //   expect(wrappedDocumentWithW3CDID.openAttestationMetadata.identityProof?.location).toContain(
-    //     openAttestationDataWithW3CDID.openAttestationMetadata.identityProof?.location
-    //   );
-    // });
+    test("creates a wrapped document with W3C-DID IdentityProof", async () => {
+      const wrappedDocumentWithW3CDID = await wrapDocument(openAttestationDataWithDid, {
+        externalSchemaId: "http://example.com/schema.json",
+        version: SchemaId.v3
+      });
+      expect(wrappedDocumentWithW3CDID.schema).toBe("http://example.com/schema.json");
+      expect(wrappedDocumentWithW3CDID.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
+      expect(wrappedDocumentWithW3CDID.proof.targetHash).toBeDefined();
+      expect(wrappedDocumentWithW3CDID.proof.merkleRoot).toBeDefined();
+      expect(wrappedDocumentWithW3CDID.proof.proofs).toEqual([]);
+      expect(wrappedDocumentWithW3CDID.proof.merkleRoot).toBe(wrappedDocumentWithW3CDID.proof.targetHash);
+      expect(wrappedDocumentWithW3CDID.openAttestationMetadata.identityProof?.type).toContain(IdentityProofType.DNSDid);
+      expect(wrappedDocumentWithW3CDID.openAttestationMetadata.identityProof?.location).toContain(
+        openAttestationDataWithDid.openAttestationMetadata.identityProof?.location
+      );
+    });
     test("checks that document is wrapped correctly", async () => {
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
@@ -302,58 +294,24 @@ describe("3.0 E2E Test Scenarios", () => {
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
-    // test("should return true when document is valid and version is 3.0 and identityProof is W3C-DID", () => {
-    //   const credential: WrappedDocument = {
-    //     version: SchemaId.v3,
-    //     schema: "http://example.com/schemaV3.json",
-    //     "@context": [
-    //       "https://www.w3.org/2018/credentials/v1",
-    //       "https://www.w3.org/2018/credentials/examples/v1",
-    //       "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
-    //     ],
-    //     reference: "reference",
-    //     name: "name",
-    //     issuanceDate: "2010-01-01T19:23:24Z",
-    //     validFrom: "2010-01-01T19:23:24Z",
-    //     type: ["VerifiableCredential", "UniversityDegreeCredential"],
-    //     issuer: {
-    //       id: "https://example.com",
-    //       name: "issuer.name"
-    //     },
-    //     credentialSubject: {
-    //       id: "did:example:1234",
-    //       name: "Example Name"
-    //     },
-    //     openAttestationMetadata: {
-    //       template: {
-    //         name: "template.name",
-    //         type: TemplateType.EmbeddedRenderer,
-    //         url: "https://example.com"
-    //       },
-    //       proof: {
-    //         type: ProofType.OpenAttestationProofMethod,
-    //         method: Method.TokenRegistry,
-    //         value: "proof.value"
-    //       },
-    //       identityProof: {
-    //         type: IdentityProofType.W3CDid,
-    //         location: openAttestationDataWithW3CDID.openAttestationMetadata.identityProof?.location
-    //       }
-    //     },
-    //     proof: {
-    //       proofPurpose: ProofPurpose.AssertionMethod,
-    //       salts: "",
-    //       merkleRoot: "",
-    //       privacy: {
-    //         obfuscated: []
-    //       },
-    //       proofs: [],
-    //       targetHash: "",
-    //       type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018
-    //     }
-    //   };
-    //   expect(validateSchema(credential)).toStrictEqual(true);
-    // });
+    test("should return true when document is valid and version is 3.0 and identityProof is DNS-DID", () => {
+      const credential: WrappedDocument = {
+        ...openAttestationDataWithDid,
+        version: SchemaId.v3,
+        proof: {
+          proofPurpose: ProofPurpose.AssertionMethod,
+          salts: "",
+          merkleRoot: "",
+          privacy: {
+            obfuscated: []
+          },
+          proofs: [],
+          targetHash: "",
+          type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018
+        }
+      };
+      expect(validateSchema(credential)).toStrictEqual(true);
+    });
     test("should return false when document is invalid due to no DNS-DID location", () => {
       expect(
         validateSchema({
