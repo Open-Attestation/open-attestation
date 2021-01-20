@@ -35,3 +35,5 @@ export type SignedWrappedDocument<T extends OpenAttestationDocumentV3 = OpenAtte
 > & {
   proof: VerifiableCredentialProofSigned;
 };
+
+export * from "../__generated__/schema.3.0";

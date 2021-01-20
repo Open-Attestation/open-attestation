@@ -52,3 +52,5 @@ export type DeepStringify<T> = {
     ? string // make it a string
     : DeepStringify<T[P]>; // unknown case => apply stringify, known use case: union (Issuer | string)
 };
+
+export * from "../__generated__/schema.2.0";
