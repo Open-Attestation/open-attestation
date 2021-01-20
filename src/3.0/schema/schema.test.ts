@@ -2,7 +2,7 @@
 import { cloneDeep, omit, set } from "lodash";
 import { __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument } from "../../index";
 import { $id } from "./schema.json";
-import sample from "./sample-credential.json";
+import sample from "./sample-credential-document-store.json";
 import { SchemaId } from "../../shared/@types/document";
 import { IdentityProofType, Method, OpenAttestationDocument, TemplateType } from "../../__generated__/schema.3.0";
 
