@@ -1,9 +1,14 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
-import { SchemaId, WrappedDocument, OpenAttestationDocument } from "../../shared/@types/document";
+import {
+  SchemaId,
+  WrappedDocument,
+  OpenAttestationDocument,
+  SignedWrappedDocument
+} from "../../shared/@types/document";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
-import { WrappedDocument as WrappedDocumentV2, SignedWrappedDocument } from "../../2.0/types";
+import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
 import { unsaltData } from "../../2.0/salt";
 import Ajv from "ajv";
 
@@ -81,6 +86,11 @@ export const isSignedWrappedV2Document = (
   document: any
 ): document is SignedWrappedDocument<OpenAttestationDocumentV2> => {
   return document.proof && isWrappedV2Document(document);
+};
+export const isSignedWrappedV3Document = (
+  document: any
+): document is SignedWrappedDocument<OpenAttestationDocumentV3> => {
+  return document.proof.signature && document.proof.key && isWrappedV3Document(document);
 };
 
 export function getIssuerAddress(document: any): any {

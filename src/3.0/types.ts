@@ -29,3 +29,9 @@ export type WrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestatio
   schema?: string;
   proof: VerifiableCredentialProofBase | VerifiableCredentialProofSigned;
 };
+
+export type SignedWrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> = WrappedDocument<
+  T
+> & {
+  proof: VerifiableCredentialProofSigned;
+};

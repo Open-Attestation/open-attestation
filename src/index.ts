@@ -2,8 +2,8 @@ import { getSchema, validateSchema as validate } from "./shared/validate";
 import { verify } from "./2.0/verify";
 import { verify as verifyV3 } from "./3.0/verify";
 import { wrapDocument as wrapDocumentV2, wrapDocuments as wrapDocumentsV2 } from "./2.0/wrap";
-import { WrappedDocument as WrappedDocumentV2 } from "./2.0/types";
-import { WrappedDocument as WrappedDocumentV3 } from "./3.0/types";
+import { WrappedDocument as WrappedDocumentV2, SignedWrappedDocument as SignedWrappedDocumentV2 } from "./2.0/types";
+import { WrappedDocument as WrappedDocumentV3, SignedWrappedDocument as SignedWrappedDocumentV3 } from "./3.0/types";
 import { wrapDocument as wrapDocumentV3, wrapDocuments as wrapDocumentsV3 } from "./3.0/wrap";
 import { SchemaId, WrappedDocument, OpenAttestationDocument } from "./shared/@types/document";
 import * as utils from "./shared/utils";
@@ -77,6 +77,7 @@ export { digestCredential } from "./3.0/digest";
 export { checkProof, MerkleTree } from "./shared/merkle";
 export { obfuscate as obfuscateDocument };
 export { utils };
+export { WrappedDocumentV2, WrappedDocumentV3, SignedWrappedDocumentV2, SignedWrappedDocumentV3 };
 export * from "./shared/@types/document";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
