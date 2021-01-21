@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { Method, ProofType, OpenAttestationDocument, TemplateType } from "../../__generated__/schema.3.0";
-import { salt } from "../salt";
+import { salt, decodeSalt, encodeSalt } from "../salt";
 import * as v3 from "../../__generated__/schema.3.0";
 
 const sampleDoc: OpenAttestationDocument = {
@@ -134,6 +134,30 @@ describe("digest v3.0", () => {
       expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[2]" }));
       expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[3]" }));
       expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[4]" }));
+    });
+  });
+
+  describe("decodeSalt", () => {
+    it("should throw when salt is of wrong length to prevent attack on value ", () => {
+      const encodedSalt = Base64.encode(
+        JSON.stringify([{ path: "foo", value: "123456789012345678901234567890123456789012345678901234567890" }])
+      );
+      expect(() => decodeSalt(encodedSalt)).toThrowError("Salt must be 32 bytes");
+    });
+
+    it("should decode salt correctly", () => {
+      const encodedSalt = Base64.encode(
+        JSON.stringify([{ path: "foo", value: "1234567890123456789012345678901234567890123456789012345678901234" }])
+      );
+      const decoded = decodeSalt(encodedSalt);
+      expect(decoded).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "path": "foo",
+            "value": "1234567890123456789012345678901234567890123456789012345678901234",
+          },
+        ]
+      `);
     });
   });
 });
