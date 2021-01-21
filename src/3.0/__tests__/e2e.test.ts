@@ -384,7 +384,7 @@ describe("3.0 E2E Test Scenarios", () => {
   });
 
   describe("unicode", () => {
-    test("should work with unicode document", async () => {
+    test("should not corrupt unicode document", async () => {
       const extraData = {
         key1: "哦喷啊特特是他题哦你",
         key2: "นยำืฟะะำหะฟะรนื",
