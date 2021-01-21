@@ -382,4 +382,25 @@ describe("3.0 E2E Test Scenarios", () => {
       ).toStrictEqual(true);
     });
   });
+
+  describe("unicode", () => {
+    test("should work with unicode document", async () => {
+      const extraData = {
+        key1: "哦喷啊特特是他题哦你",
+        key2: "นยำืฟะะำหะฟะรนื",
+        key3: "おぺなってsたちおn",
+        key4: "خحثىشففثسفشفهخى"
+      };
+      const document = {
+        ...openAttestationData,
+        ...extraData
+      };
+      const wrapped = await wrapDocument(document);
+      expect(wrapped.proof.merkleRoot).toBeTruthy();
+      expect(wrapped.key1).toBe(extraData.key1);
+      expect(wrapped.key2).toBe(extraData.key2);
+      expect(wrapped.key3).toBe(extraData.key3);
+      expect(wrapped.key4).toBe(extraData.key4);
+    });
+  });
 });
