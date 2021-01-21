@@ -6,6 +6,8 @@ import { decodeSalt } from "../salt";
 import sample from "../../3.0/schema/sample-verifiable-credential.json";
 
 const verifiableCredential = sample as WrappedDocument;
+// Digest will change whenever sample document is regenerated
+const credentialRoot = "74b174eb458bffdd7315417c76d982c2e5ed6577a75b13b58876d4d7e0325088";
 
 const { proof, ...credential } = verifiableCredential;
 
@@ -15,8 +17,7 @@ describe("digest v3.0", () => {
       const clonedCredential = cloneDeep(credential);
 
       const digest = digestCredential(clonedCredential, decodeSalt(proof.salts), []);
-      // Digest will change whenever sample document is regenerated
-      expect(digest).toMatchInlineSnapshot(`"74b174eb458bffdd7315417c76d982c2e5ed6577a75b13b58876d4d7e0325088"`);
+      expect(digest).toBe(credentialRoot);
     });
     test("digests a document when one single element is obfuscated", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, "issuer.id");
@@ -32,7 +33,7 @@ describe("digest v3.0", () => {
         ]
       `);
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(1);
-      expect(digest).toMatchInlineSnapshot(`"74b174eb458bffdd7315417c76d982c2e5ed6577a75b13b58876d4d7e0325088"`);
+      expect(digest).toBe(credentialRoot);
     });
     test("digests a document when multiple element are obfuscated", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, [
@@ -56,7 +57,7 @@ describe("digest v3.0", () => {
         ]
       `);
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(6);
-      expect(digest).toMatchInlineSnapshot(`"74b174eb458bffdd7315417c76d982c2e5ed6577a75b13b58876d4d7e0325088"`);
+      expect(digest).toBe(credentialRoot);
     });
     test("digests a document with no visible content correctly", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(
@@ -104,7 +105,7 @@ describe("digest v3.0", () => {
         ]
       `);
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(29);
-      expect(digest).toMatchInlineSnapshot(`"74b174eb458bffdd7315417c76d982c2e5ed6577a75b13b58876d4d7e0325088"`);
+      expect(digest).toBe(credentialRoot);
     });
   });
 });
