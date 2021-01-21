@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { Method, ProofType, OpenAttestationDocument, TemplateType } from "../../__generated__/schema.3.0";
-import { salt, decodeSalt, encodeSalt } from "../salt";
+import { salt, decodeSalt } from "../salt";
 import * as v3 from "../../__generated__/schema.3.0";
 
 const sampleDoc: OpenAttestationDocument = {
