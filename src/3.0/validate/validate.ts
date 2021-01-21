@@ -50,9 +50,9 @@ const isValidRFC3986 = (str: any) => {
 const preloadedContextList = [
   "https://www.w3.org/2018/credentials/v1",
   "https://www.w3.org/2018/credentials/examples/v1",
-  "https://nebulis.github.io/tmp-jsonld/DrivingLicenceCredential.jsonld",
-  "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
-  "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
+  "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json",
+  "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
+  "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
 ];
 const contexts: Map<string, Promise<any>> = new Map();
 const nodeDocumentLoader = documentLoaders.node();

@@ -160,11 +160,22 @@
             "method": {
               "type": "string",
               "description": "Proof Open Attestation method",
-              "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE"]
+              "enum": ["TOKEN_REGISTRY", "DOCUMENT_STORE", "DID"]
             },
             "value": {
-              "description": "Proof value of issuer(s)",
+              "description": "Proof value of issuer(s). Smart contract address for TOKEN_REGISTRY & DOCUMENT_STORE, did for DID method",
               "type": "string"
+            },
+            "revocation": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Revocation method (if required by proof method)",
+                  "enum": ["NONE"]
+                }
+              },
+              "required": ["type"]
             }
           },
           "required": ["type", "method", "value"],
@@ -175,7 +186,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["DNS-TXT", "W3C-DID"]
+              "enum": ["DNS-TXT", "DNS-DID", "DID"]
             },
             "location": {
               "type": "string",

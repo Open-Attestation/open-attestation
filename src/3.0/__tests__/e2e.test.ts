@@ -16,13 +16,17 @@ import {
   OpenAttestationDocument
 } from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
+import { ProofPurpose } from "../../shared/@types/document";
+import sampleDid from "../schema/sample-credential-did.json";
+
+const openAttestationDataWithDid = sampleDid as OpenAttestationDocument;
 
 const openAttestationData: OpenAttestationDocument = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
-    "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
+    "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
+    "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
   ],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
@@ -55,17 +59,6 @@ const openAttestationData: OpenAttestationDocument = {
   issuer: {
     id: "http://some.example.com",
     name: "DEMO STORE"
-  }
-};
-
-const openAttestationDataWithW3CDID: OpenAttestationDocument = {
-  ...openAttestationData,
-  openAttestationMetadata: {
-    ...openAttestationData.openAttestationMetadata,
-    identityProof: {
-      type: IdentityProofType.W3CDid,
-      location: "did:ethr:0x0xE6Fe788d8ca214A080b0f6aC7F48480b2AEfa9a6"
-    }
   }
 };
 
@@ -128,20 +121,20 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(wrappedDocument.proof.proofs).toEqual([]);
       expect(wrappedDocument.proof.merkleRoot).toBe(wrappedDocument.proof.targetHash);
     });
-    test("creates a wrapped document with W3C-DID IdentityProof", async () => {
-      const wrappedDocumentWithW3CDID = await wrapDocument(openAttestationDataWithW3CDID, {
+    test("creates a wrapped document with DNS-DID IdentityProof", async () => {
+      const wrappedDocumentWithDnsDID = await wrapDocument(openAttestationDataWithDid, {
         externalSchemaId: "http://example.com/schema.json",
         version: SchemaId.v3
       });
-      expect(wrappedDocumentWithW3CDID.schema).toBe("http://example.com/schema.json");
-      expect(wrappedDocumentWithW3CDID.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
-      expect(wrappedDocumentWithW3CDID.proof.targetHash).toBeDefined();
-      expect(wrappedDocumentWithW3CDID.proof.merkleRoot).toBeDefined();
-      expect(wrappedDocumentWithW3CDID.proof.proofs).toEqual([]);
-      expect(wrappedDocumentWithW3CDID.proof.merkleRoot).toBe(wrappedDocumentWithW3CDID.proof.targetHash);
-      expect(wrappedDocumentWithW3CDID.openAttestationMetadata.identityProof?.type).toContain(IdentityProofType.W3CDid);
-      expect(wrappedDocumentWithW3CDID.openAttestationMetadata.identityProof?.location).toContain(
-        openAttestationDataWithW3CDID.openAttestationMetadata.identityProof?.location
+      expect(wrappedDocumentWithDnsDID.schema).toBe("http://example.com/schema.json");
+      expect(wrappedDocumentWithDnsDID.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
+      expect(wrappedDocumentWithDnsDID.proof.targetHash).toBeDefined();
+      expect(wrappedDocumentWithDnsDID.proof.merkleRoot).toBeDefined();
+      expect(wrappedDocumentWithDnsDID.proof.proofs).toEqual([]);
+      expect(wrappedDocumentWithDnsDID.proof.merkleRoot).toBe(wrappedDocumentWithDnsDID.proof.targetHash);
+      expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.type).toContain(IdentityProofType.DNSDid);
+      expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.location).toContain(
+        openAttestationDataWithDid.openAttestationMetadata.identityProof?.location
       );
     });
     test("checks that document is wrapped correctly", async () => {
@@ -238,9 +231,9 @@ describe("3.0 E2E Test Scenarios", () => {
         version: SchemaId.v3,
         "@context": [
           "https://www.w3.org/2018/credentials/v1",
-          "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
-          "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld",
-          "https://nebulis.github.io/tmp-jsonld/DrivingLicenceCredential.jsonld"
+          "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
+          "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
+          "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json"
         ],
         reference: "SERIAL_NUMBER_123",
         name: "Republic of Singapore Driving Licence",
@@ -288,6 +281,7 @@ describe("3.0 E2E Test Scenarios", () => {
           }
         ],
         proof: {
+          proofPurpose: ProofPurpose.AssertionMethod,
           salts: "",
           merkleRoot: "",
           privacy: {
@@ -300,45 +294,12 @@ describe("3.0 E2E Test Scenarios", () => {
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
-    test("should return true when document is valid and version is 3.0 and identityProof is W3C-DID", () => {
+    test("should return true when document is valid and version is 3.0 and identityProof is DNS-DID", () => {
       const credential: WrappedDocument = {
+        ...openAttestationDataWithDid,
         version: SchemaId.v3,
-        schema: "http://example.com/schemaV3.json",
-        "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          "https://www.w3.org/2018/credentials/examples/v1",
-          "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
-        ],
-        reference: "reference",
-        name: "name",
-        issuanceDate: "2010-01-01T19:23:24Z",
-        validFrom: "2010-01-01T19:23:24Z",
-        type: ["VerifiableCredential", "UniversityDegreeCredential"],
-        issuer: {
-          id: "https://example.com",
-          name: "issuer.name"
-        },
-        credentialSubject: {
-          id: "did:example:1234",
-          name: "Example Name"
-        },
-        openAttestationMetadata: {
-          template: {
-            name: "template.name",
-            type: TemplateType.EmbeddedRenderer,
-            url: "https://example.com"
-          },
-          proof: {
-            type: ProofType.OpenAttestationProofMethod,
-            method: Method.TokenRegistry,
-            value: "proof.value"
-          },
-          identityProof: {
-            type: IdentityProofType.W3CDid,
-            location: openAttestationDataWithW3CDID.openAttestationMetadata.identityProof?.location
-          }
-        },
         proof: {
+          proofPurpose: ProofPurpose.AssertionMethod,
           salts: "",
           merkleRoot: "",
           privacy: {
@@ -351,41 +312,51 @@ describe("3.0 E2E Test Scenarios", () => {
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
-    test("should return false when document is invalid due to no W3C-DID location", () => {
-      expect(
-        validateSchema({
-          version: SchemaId.v3,
-          schema: "http://example.com/schemaV3.json",
-          data: {
-            reference: "reference",
-            name: "name",
-            validFrom: "2010-01-01T19:23:24Z",
-            issuer: {
-              id: "https://example.com",
-              name: "issuer.name",
-              identityProof: {
-                type: IdentityProofType.W3CDid
-              }
-            },
-            template: {
-              name: "template.name",
-              type: "EMBEDDED_RENDERER",
-              url: "https://example.com"
-            },
-            proof: {
-              type: ProofType.OpenAttestationProofMethod,
-              method: "TOKEN_REGISTRY",
-              value: "proof.value"
-            }
+    test("should return true when signed document is valid and version is 3.0 and identityProof is DNS-DID", () => {
+      const credential: WrappedDocument = {
+        ...openAttestationDataWithDid,
+        version: SchemaId.v3,
+        proof: {
+          proofPurpose: ProofPurpose.AssertionMethod,
+          salts: "",
+          merkleRoot: "",
+          privacy: {
+            obfuscated: []
           },
-          signature: {
-            merkleRoot: "0xabc",
-            proof: [],
-            targetHash: "0xabc",
-            type: "SHA3MerkleProof"
+          proofs: [],
+          targetHash: "",
+          signature: "",
+          key: "",
+          type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018
+        }
+      };
+      expect(validateSchema(credential)).toStrictEqual(true);
+    });
+    test("should return false when document is invalid due to no DNS-DID location", () => {
+      const credential: any = {
+        ...openAttestationDataWithDid,
+        openAttestationMetadata: {
+          ...openAttestationDataWithDid.openAttestationMetadata,
+          identityProof: {
+            location: "tradetrust.io"
           }
-        })
-      ).toStrictEqual(false);
+        },
+        version: SchemaId.v3,
+        proof: {
+          proofPurpose: ProofPurpose.AssertionMethod,
+          salts: "",
+          merkleRoot: "",
+          privacy: {
+            obfuscated: []
+          },
+          proofs: [],
+          targetHash: "",
+          signature: "",
+          key: "",
+          type: SignatureAlgorithm.OpenAttestationMerkleProofSignature2018
+        }
+      };
+      expect(validateSchema(credential)).toStrictEqual(false);
     });
     test("should default to 2.0 when document is valid and version is undefined", () => {
       expect(
@@ -409,6 +380,27 @@ describe("3.0 E2E Test Scenarios", () => {
           }
         })
       ).toStrictEqual(true);
+    });
+  });
+
+  describe("unicode", () => {
+    test("should not corrupt unicode document", async () => {
+      const extraData = {
+        key1: "哦喷啊特特是他题哦你",
+        key2: "นยำืฟะะำหะฟะรนื",
+        key3: "おぺなってsたちおn",
+        key4: "خحثىشففثسفشفهخى"
+      };
+      const document = {
+        ...openAttestationData,
+        ...extraData
+      };
+      const wrapped = await wrapDocument(document);
+      expect(wrapped.proof.merkleRoot).toBeTruthy();
+      expect(wrapped.key1).toBe(extraData.key1);
+      expect(wrapped.key2).toBe(extraData.key2);
+      expect(wrapped.key3).toBe(extraData.key3);
+      expect(wrapped.key4).toBe(extraData.key4);
     });
   });
 });

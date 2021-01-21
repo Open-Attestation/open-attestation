@@ -9,12 +9,14 @@ import { Method, ProofType, OpenAttestationDocument } from "../../__generated__/
 import { toBuffer } from "../../shared/utils";
 import * as v3 from "../../__generated__/schema.3.0";
 
+jest.mock("../../3.0/validate"); // Skipping schema verification while wrapping
+
 const openAttestationData: OpenAttestationDocument = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld",
-    "https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld"
+    "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
+    "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
   ],
   issuanceDate: "2010-01-01T19:23:24Z",
   name: "document owner name",
@@ -223,9 +225,11 @@ describe("privacy", () => {
       expect(findSaltByPath(obfuscatedDocument.proof.salts, fields[0])).toBeUndefined();
       expect(findSaltByPath(obfuscatedDocument.proof.salts, fields[1])).toBeUndefined();
       expect(obfuscatedDocument["@context"]).not.toContain(
-        "https://nebulis.github.io/tmp-jsonld/OpenAttestation.v3.jsonld"
+        "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
       );
-      expect(obfuscatedDocument["@context"]).not.toContain("https://nebulis.github.io/tmp-jsonld/CustomContext.jsonld");
+      expect(obfuscatedDocument["@context"]).not.toContain(
+        "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
+      );
     });
 
     test("is transitive", async () => {

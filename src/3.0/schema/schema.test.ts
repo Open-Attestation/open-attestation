@@ -2,7 +2,7 @@
 import { cloneDeep, omit, set } from "lodash";
 import { __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument } from "../../index";
 import { $id } from "./schema.json";
-import sample from "./sample-credential.json";
+import sample from "./sample-credential-document-store.json";
 import { SchemaId } from "../../shared/@types/document";
 import { IdentityProofType, Method, OpenAttestationDocument, TemplateType } from "../../__generated__/schema.3.0";
 
@@ -697,7 +697,7 @@ describe("schema/3.0", () => {
               keyword: "enum",
               dataPath: ".openAttestationMetadata.identityProof.type",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/properties/type/enum",
-              params: { allowedValues: ["DNS-TXT", "W3C-DID"] },
+              params: { allowedValues: ["DNS-TXT", "DNS-DID", "DID"] },
               message: "should be equal to one of the allowed values"
             }
           ])
@@ -734,19 +734,19 @@ describe("schema/3.0", () => {
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
-    it("should be valid when identity proof type is W3C-DID", async () => {
+    it("should be valid when identity proof type is DNS-DID", async () => {
       const document = set(
         cloneDeep(sampleDoc),
         "openAttestationMetadata.identityProof.type",
-        IdentityProofType.W3CDid
+        IdentityProofType.DNSDid
       );
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
-    it("should be valid when type is W3C-DID and location is a valid DID", async () => {
+    it("should be valid when type is DNS-DID and location is a valid DID", async () => {
       const document = cloneDeep(sampleDoc);
       document.openAttestationMetadata.identityProof = {
-        type: IdentityProofType.W3CDid,
+        type: IdentityProofType.DNSDid,
         location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -871,7 +871,7 @@ describe("schema/3.0", () => {
         ]);
       }
     });
-    it("should be invalid if proof type is not TOKEN_REGISTRY or DOCUMENT_STORE", async () => {
+    it("should be invalid if proof type is not TOKEN_REGISTRY, DOCUMENT_STORE or DID", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
@@ -886,7 +886,7 @@ describe("schema/3.0", () => {
             keyword: "enum",
             dataPath: ".openAttestationMetadata.proof.method",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/properties/method/enum",
-            params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE"] },
+            params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE", "DID"] },
             message: "should be equal to one of the allowed values"
           }
         ]);
