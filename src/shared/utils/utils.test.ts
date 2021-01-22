@@ -207,7 +207,7 @@ describe("Util Functions", () => {
               method: v3.Method.DocumentStore
             },
             identityProof: {
-              location: "whatever",
+              identifier: "whatever",
               type: v3.IdentityProofType.DNSTxt
             }
           },

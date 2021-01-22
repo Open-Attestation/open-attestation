@@ -53,7 +53,7 @@ const openAttestationData: OpenAttestationDocument = {
     },
     identityProof: {
       type: IdentityProofType.DNSTxt,
-      location: "tradetrust.io"
+      identifier: "tradetrust.io"
     }
   },
   issuer: {
@@ -133,8 +133,8 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(wrappedDocumentWithDnsDID.proof.proofs).toEqual([]);
       expect(wrappedDocumentWithDnsDID.proof.merkleRoot).toBe(wrappedDocumentWithDnsDID.proof.targetHash);
       expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.type).toContain(IdentityProofType.DNSDid);
-      expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.location).toContain(
-        openAttestationDataWithDid.openAttestationMetadata.identityProof?.location
+      expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.identifier).toContain(
+        openAttestationDataWithDid.openAttestationMetadata.identityProof?.identifier
       );
     });
     test("checks that document is wrapped correctly", async () => {
@@ -270,7 +270,7 @@ describe("3.0 E2E Test Scenarios", () => {
           },
           identityProof: {
             type: IdentityProofType.DNSTxt,
-            location: "tradetrust.io"
+            identifier: "tradetrust.io"
           }
         },
         attachments: [
@@ -332,13 +332,13 @@ describe("3.0 E2E Test Scenarios", () => {
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
-    test("should return false when document is invalid due to no DNS-DID location", () => {
+    test("should return false when document is invalid due to no DNS-DID identifier", () => {
       const credential: any = {
         ...openAttestationDataWithDid,
         openAttestationMetadata: {
           ...openAttestationDataWithDid.openAttestationMetadata,
           identityProof: {
-            location: "tradetrust.io"
+            identifier: "tradetrust.io"
           }
         },
         version: SchemaId.v3,

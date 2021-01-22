@@ -25,7 +25,7 @@ const sampleDoc: OpenAttestationDocument = {
       value: "0xED2E50434Ac3623bAD763a35213DAD79b43208E4"
     },
     identityProof: {
-      location: "some.example",
+      identifier: "some.example",
       type: v3.IdentityProofType.DNSTxt
     }
   }

@@ -188,13 +188,13 @@
               "type": "string",
               "enum": ["DNS-TXT", "DNS-DID", "DID"]
             },
-            "location": {
+            "identifier": {
               "type": "string",
-              "description": "URL of the website referencing to document store OR a valid DID as defined by W3C in https://www.w3.org/TR/did-core/"
+              "description": "Identifier to be shown to end user upon verifying the identity"
             }
           },
           "additionalProperties": false,
-          "required": ["type", "location"]
+          "required": ["type", "identifier"]
         }
       },
       "required": ["proof", "identityProof"]
