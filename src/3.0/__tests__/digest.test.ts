@@ -7,7 +7,7 @@ import sample from "../../3.0/schema/sample-verifiable-credential.json";
 
 const verifiableCredential = sample as WrappedDocument;
 // Digest will change whenever sample document is regenerated
-const credentialRoot = "74b174eb458bffdd7315417c76d982c2e5ed6577a75b13b58876d4d7e0325088";
+const credentialRoot = "e06520d98a1ab8bfe52d4c9905652a6ac096f0c726b4ecc97084f77bf3263f03";
 
 const { proof, ...credential } = verifiableCredential;
 
@@ -29,7 +29,7 @@ describe("digest v3.0", () => {
 
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
         Array [
-          "c2e9eca805a1bcd7e1a1ceaa55226c560b2d2fe835df0bb391fe93d37fbe7a27",
+          "014bcf2fecaae61a904a8624e22925e4dfdcad743921e0e67d81867fe5c23172",
         ]
       `);
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(1);
@@ -48,12 +48,12 @@ describe("digest v3.0", () => {
 
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
         Array [
-          "c2e9eca805a1bcd7e1a1ceaa55226c560b2d2fe835df0bb391fe93d37fbe7a27",
-          "7a1c8e6eb21cbd59f9d4d4802cc5a4f74c25572066b74d6ccdf69eea1a35124d",
-          "96d9333289023bd6b1d4fa9e4870fd9542c071ad0667424b1bd9e7b6ad774fe3",
-          "7ba89ed60abb3d73a03f4f6a4e60df3950fe371b0f52af95ab629c4532bdd991",
-          "61330f5e659c8ebb03bef64e4e7f3e1f52abfadf31b83c60dd8896026d1340bd",
-          "4a3ef1ac924fdb6b614c561d381e2411b51bcc8d25268db5106fa2146f5236a5",
+          "014bcf2fecaae61a904a8624e22925e4dfdcad743921e0e67d81867fe5c23172",
+          "4c4866737f19e5e1d5e9411a9792111647cc9b27fc6726bad7825613d0c2e9d1",
+          "4914057f46973c65a950797b1e7cb9ecdd62d0764aada14c26f81afb76b3040e",
+          "2150a2f1354cdcc797fe255d504f3e396c3ed48d661cb37b2aa40bacaf214fec",
+          "74fa2e4d36a60d0b9679842e0c08d69b3af8f02e6ecedc69d87bcd0c7f57856a",
+          "a1c01d431c00e2499812a491a57f2296276d0a7f841cbb8dae8e92d309658ca0",
         ]
       `);
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(6);
@@ -73,35 +73,35 @@ describe("digest v3.0", () => {
       expect(obfuscatedVerifiableCredential).toStrictEqual({ proof: obfuscatedVerifiableCredential.proof });
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
         Array [
-          "0d51b3018f7b04dd8404fae119271227471278cac34a50f397e39243277389e8",
-          "ce168d4babfeb85a532d7fc0788d46f3bd52e7cfcd203444ff67c36c8c41a638",
-          "3ec476a2ccdfea1b12daf56a9e1cfc26fd977fe183ec39c907ee61d9c860dc79",
-          "e13d32bc48e055514ba3c756cfd9e4c5e75a6cbe9840e951914526f6345c3441",
-          "42ac04b488e37d96c6dddebb961cbc4c8486bde78b47f11db6bc85664b7f17f0",
-          "42fe9a306f1db9ccc6c92fb47cd23aa562f1ac6608de7c700b69a697b69a9a98",
-          "d5fc0f563295d2850c5a466f89e4bc205f286f5ccd8b850e663b36029d22f5cd",
-          "a4abe16675c776240013710d3b078ee0ebc3737cd484577f4510d8458f29ca4c",
-          "8271e4d1098644bced222704611ac0c75a12fb678a281bacc1fe2c6cfb9dfd82",
-          "c2e9eca805a1bcd7e1a1ceaa55226c560b2d2fe835df0bb391fe93d37fbe7a27",
-          "65e1d2bee003aecf7275a4fe5434d9559e22e793c7bf5522df803f0acb2ce486",
-          "2bcb64dd8812bcd2779c5550a323e49efb589f1be750e41e7a656fd388edbe4f",
-          "09c5eecc2fb9b58e05b09891c09d9f29d3b35373df942f13bac66263f9c53652",
-          "7a1c8e6eb21cbd59f9d4d4802cc5a4f74c25572066b74d6ccdf69eea1a35124d",
-          "96d9333289023bd6b1d4fa9e4870fd9542c071ad0667424b1bd9e7b6ad774fe3",
-          "7ba89ed60abb3d73a03f4f6a4e60df3950fe371b0f52af95ab629c4532bdd991",
-          "61330f5e659c8ebb03bef64e4e7f3e1f52abfadf31b83c60dd8896026d1340bd",
-          "4a3ef1ac924fdb6b614c561d381e2411b51bcc8d25268db5106fa2146f5236a5",
-          "cc4ce66d03297e004291dbf84c1241d39a6549cb47f0b3d82f4c95e390faee26",
-          "e141439ca7a8223de06505168cf18e7a65bf48a72ed425200ecece266d07ed1d",
-          "c50f4eb78cb5993a1e443fa56d11afc16744a1e0d1de3eae61e0b1ded168ca5a",
-          "284fd0d7399ba4b999f22d0dafe12f82cbe870be9e93c76299f4d07255d3079d",
-          "460f637988e3567728165d0b595db61f9767cafb021f75d91c98c76def4f2b0e",
-          "a019119815846eb0344044f2e3e9a261176e9740f178ee8be9c5e5d50c6a8489",
-          "931f59a67e68890e4a88e1d902f68e793a766a35013f4660d5c08a99082872c9",
-          "eda31fd03d5772ff56b36f184c1b5e764b20c6fbcc788f939761937f1ba924df",
-          "1d7e762c3ad929d8a5ab6ce16531c1e544538eb2e6678a09220647806f6099cf",
-          "399873e5619db39e7cb437f312ba21e8e19879f2e321676367e1200b5e5593ff",
-          "5abb8da6912be21d880f0834666394c17a4781def21868971bf04b7e650ed642",
+          "ee7bd33dd33cc5ee221a72c8aa981c2fa5a20066811c960234058b7c1f327f30",
+          "ff85488133f76785e52b18ce71ddc955593e16eaabe58c627b4897185c14ed40",
+          "615c7a6c7d911b68eaf67dd4db28a9d1e6cae24a695bc14e16b8a91ab74b2eff",
+          "cf10103db0b480b009d8b90cb809670c5531e81f73ead29e0d2bbf84ca7a1cad",
+          "f5d74ad3c41e39df3bdc41e93d734ca2174037cc488ede0f0daa0e0af4aadf18",
+          "dbb6c079e2f9692b10493982138cdf77cab9ab750a564c8bd079e8703250f747",
+          "0896dce15c8160b83e60788cac12e1a336ad23da46762f9ed3caade78e284ccb",
+          "551a6d3b05c148685c33de1c0c406abe8d0ea04c4a95c61a904a43c9d984b89e",
+          "7fd878f15f7d7ab748aa95dd135a2aa81f25d3f4c7ba7c16782c45fa12cee376",
+          "014bcf2fecaae61a904a8624e22925e4dfdcad743921e0e67d81867fe5c23172",
+          "bca7238eb011916009d86d21c1b4835d69666b4243bfabb2c523bd683ef6ab8e",
+          "8b85ab096f2d677c6fa3796794373b4e8d0744955a65f226e9200c7e2112f29a",
+          "e4e4c6ddfc79b87300c81708edbfb2aef8643b74176e5b6df331af966092a823",
+          "4c4866737f19e5e1d5e9411a9792111647cc9b27fc6726bad7825613d0c2e9d1",
+          "4914057f46973c65a950797b1e7cb9ecdd62d0764aada14c26f81afb76b3040e",
+          "2150a2f1354cdcc797fe255d504f3e396c3ed48d661cb37b2aa40bacaf214fec",
+          "74fa2e4d36a60d0b9679842e0c08d69b3af8f02e6ecedc69d87bcd0c7f57856a",
+          "a1c01d431c00e2499812a491a57f2296276d0a7f841cbb8dae8e92d309658ca0",
+          "e6cf5080b264299b0aa4606c63912cced8e48572ba8391970932b1a09f3bb04b",
+          "5ae3264388dd798ce7fc2726c720cc666c0ae61e58b29a9a3c4f23cc5e20095a",
+          "08899b64f8b149b8805595ef2ac8d89b8b5b25012ef75ec82859dddb27dec973",
+          "857dbf3249693e433339407c280e00f099f01f4dcb920de39089cddff2996e90",
+          "aa8d7cf040cafff4ec6938ba9cdf5e7dcf46f5a21f142b7b33a6da2eb273d298",
+          "75c91a74a1fc25de8b95dedb2721cdc61d43309ca4205cff7d66d84f804b67c0",
+          "b553f0ad7b528f245ad061079794a55fc0d96da8a671fd67e403a9ca79e20434",
+          "869c52318cc293583b6dfd8dbc7f4cde26ab70f8ca738b26c3c832adf7597ea1",
+          "3a3830fd90a5539cae36f7aa704223eeb3836fb5b3ea12fd731c2eacdddb0d82",
+          "c0b9d5ea65cf76a18be9d86324797c8971356aa8e8505d688b4c437bd8ea686e",
+          "51164905a7627777a55f5c8a34470f41dfc7a4210f31f4830df89456ae8dd990",
         ]
       `);
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(29);

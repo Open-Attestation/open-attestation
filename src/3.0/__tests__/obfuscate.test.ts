@@ -33,7 +33,7 @@ const openAttestationData: OpenAttestationDocument = {
       method: Method.TokenRegistry
     },
     identityProof: {
-      location: "some.example",
+      identifier: "some.example",
       type: v3.IdentityProofType.DNSTxt
     }
   },

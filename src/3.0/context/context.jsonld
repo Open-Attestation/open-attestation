@@ -9,7 +9,7 @@
         "@protected": true,
         "id": "@id",
         "type": "@type",
-        "location": "xsd:string",
+        "identifier": "xsd:string",
         "DNS-TXT": "xsd:string"
       }
     },

@@ -704,10 +704,10 @@ describe("schema/3.0", () => {
         );
       }
     });
-    it("should be invalid if identity proof has no location", async () => {
+    it("should be invalid if identity proof has no identifier", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
-      delete document.openAttestationMetadata.identityProof?.location;
+      delete document.openAttestationMetadata.identityProof?.identifier;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -719,8 +719,8 @@ describe("schema/3.0", () => {
               keyword: "required",
               dataPath: ".openAttestationMetadata.identityProof",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/required",
-              params: { missingProperty: "location" },
-              message: "should have required property 'location'"
+              params: { missingProperty: "identifier" },
+              message: "should have required property 'identifier'"
             }
           ])
         );
@@ -743,11 +743,11 @@ describe("schema/3.0", () => {
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
-    it("should be valid when type is DNS-DID and location is a valid DID", async () => {
+    it("should be valid when type is DNS-DID and identifier is a valid DID", async () => {
       const document = cloneDeep(sampleDoc);
       document.openAttestationMetadata.identityProof = {
         type: IdentityProofType.DNSDid,
-        location: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
+        identifier: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
