@@ -90,7 +90,7 @@ export const isSignedWrappedV2Document = (
 export const isSignedWrappedV3Document = (
   document: any
 ): document is SignedWrappedDocument<OpenAttestationDocumentV3> => {
-  return document.proof.signature && document.proof.key && isWrappedV3Document(document);
+  return document.proof?.signature && document.proof?.key && isWrappedV3Document(document);
 };
 
 export function getIssuerAddress(document: any): any {
