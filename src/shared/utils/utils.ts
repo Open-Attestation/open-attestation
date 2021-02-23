@@ -103,6 +103,19 @@ export function getIssuerAddress(document: any): any {
   throw new Error("");
 }
 
+export const getMerkleRoot = (document: any): string => {
+  switch (true) {
+    case isWrappedV2Document(document):
+      return document.signature.merkleRoot;
+    case isWrappedV3Document(document):
+      return document.proof.merkleRoot;
+    default:
+      throw new Error(
+        "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2 & v3 documents."
+      );
+  }
+};
+
 export class SchemaValidationError extends Error {
   constructor(message: string, public validationErrors: Ajv.ErrorObject[], public document: any) {
     super(message);
