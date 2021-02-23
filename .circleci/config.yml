@@ -16,7 +16,9 @@ jobs:
           command: npm run lint
       - run:
           name: test
-          command: npm run test
+          command: npm run test -- --runInBand # https://jestjs.io/docs/uk/troubleshooting#tests-are-extremely-slow-on-docker-andor-continuous-integration-ci-server
+          environment:
+            NODE_OPTIONS: --max_old_space_size=4096
       - run:
           name: build
           command: npm run build
