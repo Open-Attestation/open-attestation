@@ -17,7 +17,8 @@ import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
 import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
 import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SchemaValidationError } from "./shared/utils";
-import { SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
+import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
+import { ethers, Signer } from "ethers";
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
@@ -78,26 +79,27 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
 export async function signDocument<T extends v3.OpenAttestationDocument>(
   document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  publicKey: string,
-  privateKey: string
+  keyOrSigner: SigningKey | ethers.Signer
 ): Promise<v3.SignedWrappedDocument<T>>;
 export async function signDocument<T extends v2.OpenAttestationDocument>(
   document: v2.SignedWrappedDocument<T> | v2.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  publicKey: string,
-  privateKey: string
+  keyOrSigner: SigningKey | ethers.Signer
 ): Promise<v2.SignedWrappedDocument<T>>;
 export async function signDocument(
   document: any,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  publicKey: string,
-  privateKey: string
+  keyOrSigner: SigningKey | ethers.Signer
 ) {
+  // rj was worried it could happen deep in the code, so I moved it to the boundaries
+  if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {
+    throw new Error(`Either a keypair or ethers.js Signer must be provided`);
+  }
   switch (true) {
     case utils.isWrappedV2Document(document):
-      return signV2Document(document, algorithm, publicKey, privateKey);
+      return signV2Document(document, algorithm, keyOrSigner);
     case utils.isWrappedV3Document(document):
-      return signV3Document(document, algorithm, publicKey, privateKey);
+      return signV3Document(document, algorithm, keyOrSigner);
     default:
       // Unreachable code atm until utils.isWrappedV2Document & utils.isWrappedV3Document becomes more strict
       throw new Error("Unsupported document type: Only OpenAttestation v2 & v3 documents can be signed");
