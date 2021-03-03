@@ -1,16 +1,9 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
-import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
-import {
-  SchemaId,
-  WrappedDocument,
-  OpenAttestationDocument,
-  SignedWrappedDocument
-} from "../../shared/@types/document";
-import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
 import { unsaltData } from "../../2.0/salt";
 import Ajv from "ajv";
+import { isWrappedV2Document, isWrappedV3Document } from "./guard";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -71,27 +64,6 @@ export function combineHashString(first?: string, second?: string): string {
     : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       (first || second)!; // this should always return a value right ? :)
 }
-
-export const isWrappedV3Document = (
-  document: WrappedDocument<OpenAttestationDocument>
-): document is WrappedDocumentV3<OpenAttestationDocumentV3> => {
-  return document && document.version === SchemaId.v3;
-};
-export const isWrappedV2Document = (
-  document: WrappedDocument<OpenAttestationDocument>
-): document is WrappedDocumentV2<OpenAttestationDocumentV2> => {
-  return !isWrappedV3Document(document);
-};
-export const isSignedWrappedV2Document = (
-  document: any
-): document is SignedWrappedDocument<OpenAttestationDocumentV2> => {
-  return document.proof && isWrappedV2Document(document);
-};
-export const isSignedWrappedV3Document = (
-  document: any
-): document is SignedWrappedDocument<OpenAttestationDocumentV3> => {
-  return document.proof.signature && document.proof.key && isWrappedV3Document(document);
-};
 
 export function getIssuerAddress(document: any): any {
   if (isWrappedV2Document(document)) {

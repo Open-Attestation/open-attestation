@@ -2,13 +2,15 @@
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 import {
-  WrappedDocument as WrappedDocumentV2,
-  SignedWrappedDocument as SignedWrappedDocumentV2
+  SignedWrappedDocument as SignedWrappedDocumentV2,
+  WrappedDocument as WrappedDocumentV2
 } from "../../2.0/types";
 import {
-  WrappedDocument as WrappedDocumentV3,
-  SignedWrappedDocument as SignedWrappedDocumentV3
+  SignedWrappedDocument as SignedWrappedDocumentV3,
+  WrappedDocument as WrappedDocumentV3
 } from "../../3.0/types";
+import { Literal, Static, String } from "runtypes";
+import { ethers } from "ethers";
 
 export type OpenAttestationDocument = OpenAttestationDocumentV2 | OpenAttestationDocumentV3;
 export type WrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
@@ -22,23 +24,18 @@ export type SignedWrappedDocument<T extends OpenAttestationDocument> = T extends
   ? SignedWrappedDocumentV3<T>
   : unknown;
 
-export type SignatureProofAlgorithm = "SHA3MerkleProof";
-export enum SignatureAlgorithm {
-  OpenAttestationMerkleProofSignature2018 = "OpenAttestationMerkleProofSignature2018"
-}
-
 export enum SchemaId {
   v2 = "https://schema.openattestation.com/2.0/schema.json",
   v3 = "https://schema.openattestation.com/3.0/schema.json"
 }
 
-export interface ObfuscationMetadata {
-  obfuscatedData?: string[];
-}
+export const OpenAttestationHexString = String.withConstraint(
+  value => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
+);
 
-export enum ProofType {
-  OpenAttestationSignature2018 = "OpenAttestationSignature2018"
-}
-export enum ProofPurpose {
-  AssertionMethod = "assertionMethod"
-}
+export const SignatureAlgorithm = Literal("OpenAttestationMerkleProofSignature2018");
+export type SignatureAlgorithm = Static<typeof SignatureAlgorithm>;
+export const ProofType = Literal("OpenAttestationSignature2018");
+export type ProofType = Static<typeof ProofType>;
+export const ProofPurpose = Literal("assertionMethod");
+export type ProofPurpose = Static<typeof ProofPurpose>;

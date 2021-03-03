@@ -1,7 +1,7 @@
 import {
   OpenAttestationDocument,
   SignedWrappedDocument,
-  VerifiableCredentialProofSigned,
+  VerifiableCredentialSignedProof,
   WrappedDocument
 } from "./types";
 import { sign } from "../shared/signer";
@@ -17,7 +17,7 @@ export const signDocument = async <T extends OpenAttestationDocument>(
   if (isSignedWrappedV3Document(document)) throw new Error("Document has been signed");
   const merkleRoot = `0x${document.proof.merkleRoot}`;
   const signature = await sign(algorithm, merkleRoot, keyOrSigner);
-  const proof: VerifiableCredentialProofSigned = {
+  const proof: VerifiableCredentialSignedProof = {
     ...document.proof,
     key: SigningKey.guard(keyOrSigner) ? keyOrSigner.public : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
     signature
