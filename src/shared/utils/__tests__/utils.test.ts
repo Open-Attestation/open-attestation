@@ -1,16 +1,69 @@
-import * as utils from "./utils";
+import * as utils from "../utils";
 // eslint-disable-next-line @typescript-eslint/camelcase
-import { wrapDocument, __unsafe__use__it__at__your__own__risks__wrapDocument } from "../../";
-import { SchemaId, WrappedDocument } from "../../shared/@types/document";
-import {
-  IdentityProofType,
-  OpenAttestationDocument as v2OpenAttestationDocument
-} from "../../__generated__/schema.2.0";
-import * as v3 from "../../__generated__/schema.3.0";
-
-jest.mock("../../3.0/validate"); // Skipping schema verification while wrapping
+import { __unsafe__use__it__at__your__own__risks__wrapDocument, wrapDocument } from "../../..";
+import { SchemaId, WrappedDocument } from "../../../shared/@types/document";
+import * as v2 from "../../../__generated__/schema.2.0";
+import * as v3 from "../../../__generated__/schema.3.0";
 
 describe("Util Functions", () => {
+  let wrappedV3Document: WrappedDocument<v3.OpenAttestationDocument>;
+  const wrappedV2Document: WrappedDocument<v2.OpenAttestationDocument> = wrapDocument({
+    issuers: [
+      {
+        name: "John",
+        documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+        identityProof: {
+          type: v2.IdentityProofType.DNSTxt,
+          location: "example.com"
+        }
+      }
+    ]
+  });
+  beforeAll(async () => {
+    wrappedV3Document = await __unsafe__use__it__at__your__own__risks__wrapDocument(
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://www.w3.org/2018/credentials/examples/v1",
+          "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
+        ],
+        issuer: {
+          name: "name",
+          id: "https://example.com"
+        },
+        issuanceDate: "2010-01-01T19:23:24Z",
+        type: ["VerifiableCredential", "UniversityDegreeCredential"],
+        credentialSubject: {
+          id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+          degree: {
+            type: "BachelorDegree",
+            name: "Bachelor of Science and Arts"
+          }
+        },
+        openAttestationMetadata: {
+          proof: {
+            value: "0xabcf",
+            type: v3.ProofType.OpenAttestationProofMethod,
+            method: v3.Method.DocumentStore
+          },
+          identityProof: {
+            identifier: "whatever",
+            type: v2.IdentityProofType.DNSTxt
+          }
+        },
+        name: "",
+        reference: "",
+        template: {
+          url: "https://",
+          name: "",
+          type: v3.TemplateType.EmbeddedRenderer
+        },
+        validFrom: "2010-01-01T19:23:24Z"
+      },
+      { version: SchemaId.v3 }
+    );
+  });
+
   describe("hashArray", () => {
     test("should work", () => {
       const res = utils.hashArray(["a", "b", "1", 5]);
@@ -109,7 +162,7 @@ describe("Util Functions", () => {
 
   describe("getIssuerAddress", () => {
     test("should return all issuers address for 2.0 document using certificate store", async () => {
-      const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
+      const document: WrappedDocument<v2.OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
             certificateStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
@@ -127,12 +180,12 @@ describe("Util Functions", () => {
       ]);
     });
     test("should return all issuers address for 2.0 document using document store", async () => {
-      const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
+      const document: WrappedDocument<v2.OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
             documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2.IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -140,7 +193,7 @@ describe("Util Functions", () => {
           {
             documentStore: "0x1234123412341234123412341234123412341234",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2.IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -153,12 +206,12 @@ describe("Util Functions", () => {
       ]);
     });
     test("should return all issuers address for 2.0 document using token registry", async () => {
-      const document: WrappedDocument<v2OpenAttestationDocument> = await wrapDocument({
+      const document: WrappedDocument<v2.OpenAttestationDocument> = await wrapDocument({
         issuers: [
           {
             tokenRegistry: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2.IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -166,7 +219,7 @@ describe("Util Functions", () => {
           {
             tokenRegistry: "0x1234123412341234123412341234123412341234",
             identityProof: {
-              type: IdentityProofType.DNSTxt,
+              type: v2.IdentityProofType.DNSTxt,
               location: ""
             },
             name: "nameA"
@@ -180,49 +233,7 @@ describe("Util Functions", () => {
     });
     test("should return all issuers address for 3.0 document", async () => {
       // This test takes some time to run, so we set the timeout to 14s
-      const document: WrappedDocument<v3.OpenAttestationDocument> = await __unsafe__use__it__at__your__own__risks__wrapDocument(
-        {
-          "@context": [
-            "https://www.w3.org/2018/credentials/v1",
-            "https://www.w3.org/2018/credentials/examples/v1",
-            "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
-          ],
-          issuer: {
-            name: "name",
-            id: "https://example.com"
-          },
-          issuanceDate: "2010-01-01T19:23:24Z",
-          type: ["VerifiableCredential", "UniversityDegreeCredential"],
-          credentialSubject: {
-            id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
-            degree: {
-              type: "BachelorDegree",
-              name: "Bachelor of Science and Arts"
-            }
-          },
-          openAttestationMetadata: {
-            proof: {
-              value: "0xabcf",
-              type: v3.ProofType.OpenAttestationProofMethod,
-              method: v3.Method.DocumentStore
-            },
-            identityProof: {
-              identifier: "whatever",
-              type: v3.IdentityProofType.DNSTxt
-            }
-          },
-          name: "",
-          reference: "",
-          template: {
-            url: "https://",
-            name: "",
-            type: v3.TemplateType.EmbeddedRenderer
-          },
-          validFrom: "2010-01-01T19:23:24Z"
-        },
-        { version: SchemaId.v3 }
-      );
-      expect(utils.getIssuerAddress(document)).toStrictEqual("0xabcf");
+      expect(utils.getIssuerAddress(wrappedV3Document)).toStrictEqual("0xabcf");
     });
   });
 
@@ -230,6 +241,7 @@ describe("Util Functions", () => {
     test("should return merkleroot for v2.0 document", async () => {
       const document: WrappedDocument<any> = {
         version: SchemaId.v2,
+        data: wrappedV2Document.data,
         signature: {
           type: "SHA3MerkleProof",
           targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
@@ -243,8 +255,8 @@ describe("Util Functions", () => {
     });
 
     test("should return merkleroot for v3.0 document", async () => {
-      const document: WrappedDocument<any> = {
-        version: SchemaId.v3,
+      const document: WrappedDocument<v3.OpenAttestationDocument> = {
+        ...wrappedV3Document,
         proof: {
           type: "OpenAttestationMerkleProofSignature2018",
           proofPurpose: "assertionMethod",
