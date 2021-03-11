@@ -77,7 +77,7 @@
     "flatley": "^5.2.0",
     "js-base64": "^2.5.2",
     "js-sha3": "^0.8.0",
-    "jsonld": "^3.1.0",
+    "jsonld": "^4.0.0",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0",
     "runtypes": "^5.0.1",
