@@ -100,7 +100,9 @@ export function getIssuerAddress(document: any): any {
   } else if (isWrappedV3Document(document)) {
     return document.openAttestationMetadata.proof.value;
   }
-  throw new Error("");
+  throw new Error(
+    "Unsupported document type: Only can retrieve issuer address from wrapped OpenAttestation v2 & v3 documents."
+  );
 }
 
 export const getMerkleRoot = (document: any): string => {
