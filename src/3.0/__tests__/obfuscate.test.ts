@@ -4,11 +4,12 @@ import { __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument, 
 import { Salt, WrappedDocument } from "../../3.0/types";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
-
 import { SchemaId } from "../../shared/@types/document";
 import * as v3 from "../../__generated__/schema.3.0";
 import { Method, OpenAttestationDocument, ProofType } from "../../__generated__/schema.3.0";
-import { toBuffer } from "../../shared/utils";
+import { toBuffer, isObfuscated, getObfuscatedData } from "../../shared/utils";
+import ObfuscatedWrapped from "../../../test/fixtures/v3/obfuscated-wrapped.json";
+import NotObfuscatedWrapped from "../../../test/fixtures/v3/not-obfuscated-wrapped.json";
 
 jest.mock("../../3.0/validate"); // Skipping schema verification while wrapping
 
@@ -257,6 +258,34 @@ describe("privacy", () => {
       expect(finalDoc1).not.toHaveProperty("key2");
       expect(finalDoc2).not.toHaveProperty("key1");
       expect(finalDoc2).not.toHaveProperty("key2");
+    });
+  });
+
+  describe("getObfuscated", () => {
+    const documentObfuscatedV3 = ObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+    const documentNotObfuscatedV3 = NotObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+
+    test("should return empty array when there is no obfuscated data in document v3", () => {
+      expect(getObfuscatedData(documentNotObfuscatedV3)).toHaveLength(0);
+    });
+
+    test("should return array of hashes when there is obfuscated data in document v3", () => {
+      const obfuscatedData = getObfuscatedData(documentObfuscatedV3);
+      expect(obfuscatedData.length).toBe(1);
+      expect(obfuscatedData?.[0]).toBe("e411260249d681968bdde76246350f7ca1c9bf1fae59b6bbf147692961b12e26");
+    });
+  });
+
+  describe("isObfuscated", () => {
+    const documentObfuscatedV3 = ObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+    const documentNotObfuscatedV3 = NotObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+
+    test("should return false when there is no obfuscated data in document v3", () => {
+      expect(isObfuscated(documentNotObfuscatedV3)).toBe(false);
+    });
+
+    test("should return true where there is obfuscated data in document v3", () => {
+      expect(isObfuscated(documentObfuscatedV3)).toBe(true);
     });
   });
 });
