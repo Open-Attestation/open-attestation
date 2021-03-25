@@ -1,6 +1,8 @@
 import { keccak256 } from "js-sha3";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
+import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
+import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { unsaltData } from "../../2.0/salt";
 import Ajv from "ajv";
 import { isWrappedV2Document, isWrappedV3Document } from "./guard";
@@ -101,3 +103,35 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
 
 // make it available for consumers
 export { keccak256 } from "js-sha3";
+
+export const isObfuscated = (
+  document: WrappedDocumentV3<OpenAttestationDocumentV3> | WrappedDocumentV2<OpenAttestationDocumentV2>
+): boolean => {
+  if (isWrappedV3Document(document)) {
+    return !!document.proof.privacy?.obfuscated?.length;
+  }
+
+  if (isWrappedV2Document(document)) {
+    return !!document.privacy?.obfuscatedData?.length;
+  }
+
+  throw new Error(
+    "Unsupported document type: Can only check if there are obfuscated data from wrapped OpenAttestation v2 & v3 documents."
+  );
+};
+
+export const getObfuscatedData = (
+  document: WrappedDocumentV3<OpenAttestationDocumentV3> | WrappedDocumentV2<OpenAttestationDocumentV2>
+): string[] => {
+  if (isWrappedV3Document(document)) {
+    return document.proof.privacy?.obfuscated;
+  }
+
+  if (isWrappedV2Document(document)) {
+    return document.privacy?.obfuscatedData || [];
+  }
+
+  throw new Error(
+    "Unsupported document type: Can only retrieve obfuscated data from wrapped OpenAttestation v2 & v3 documents."
+  );
+};

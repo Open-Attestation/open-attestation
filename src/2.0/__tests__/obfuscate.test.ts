@@ -1,7 +1,10 @@
 import { obfuscateData, obfuscateDocument } from "../obfuscate";
 import { SchemaId } from "../../shared/@types/document";
+import { OpenAttestationDocument } from "../../__generated__/schema.2.0";
 import { WrappedDocument } from "../../2.0/types";
-import { getData } from "../../shared/utils";
+import { getData, isObfuscated, getObfuscatedData } from "../../shared/utils";
+import ObfuscatedWrapped from "../../../test/fixtures/v2/obfuscated-wrapped.json";
+import NotObfuscatedWrapped from "../../../test/fixtures/v2/not-obfuscated-wrapped.json";
 
 describe("privacy", () => {
   describe("obfuscateData", () => {
@@ -249,6 +252,34 @@ describe("privacy", () => {
           key21: true
         }
       });
+    });
+  });
+
+  describe("getObfuscated", () => {
+    const documentObfuscatedV2 = ObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+    const documentNotObfuscatedV2 = NotObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+
+    test("should return empty array when there is no obfuscated data in document v2", () => {
+      expect(getObfuscatedData(documentNotObfuscatedV2)).toHaveLength(0);
+    });
+
+    test("should return array of hashes when there is obfuscated data in document v2", () => {
+      const obfuscatedData = getObfuscatedData(documentObfuscatedV2);
+      expect(obfuscatedData.length).toBe(1);
+      expect(obfuscatedData?.[0]).toBe("45c49a0e6efbde83c602cf6bbe4aa356d495feaf78a9a309cc1bad101f5c52f4");
+    });
+  });
+
+  describe("isObfuscated", () => {
+    const documentObfuscatedV2 = ObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+    const documentNotObfuscatedV2 = NotObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+
+    test("should return false when there is no obfuscated data in document v2", () => {
+      expect(isObfuscated(documentNotObfuscatedV2)).toBe(false);
+    });
+
+    test("should return true where there is obfuscated data in document v2", () => {
+      expect(isObfuscated(documentObfuscatedV2)).toBe(true);
     });
   });
 });
