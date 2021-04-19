@@ -1,24 +1,24 @@
-import { ethers, Signer } from "ethers";
-import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
-import { signDocument as signV2Document } from "./2.0/sign";
-import * as v2 from "./2.0/types";
-import { WrappedDocument as WrappedDocumentV2 } from "./2.0/types";
-import { verify } from "./2.0/verify";
-import { wrapDocument as wrapV2Document, wrapDocuments as wrapV2Documents } from "./2.0/wrap";
-import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
-import { signDocument as signV3Document } from "./3.0/sign";
-import * as v3 from "./3.0/types";
-import { WrappedDocument as WrappedDocumentV3 } from "./3.0/types";
-import { verify as verifyV3 } from "./3.0/verify";
-import { wrapDocument as wrapV3Document, wrapDocuments as wrapV3Documents } from "./3.0/wrap";
-import { OpenAttestationDocument, SchemaId, WrappedDocument } from "./shared/@types/document";
-import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
-import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
-import * as utils from "./shared/utils";
-import { SchemaValidationError } from "./shared/utils";
 import { getSchema, validateSchema as validate } from "./shared/validate";
+import { verify } from "./2.0/verify";
+import { verify as verifyV3 } from "./3.0/verify";
+import { wrapDocument as wrapV2Document, wrapDocuments as wrapV2Documents } from "./2.0/wrap";
+import { signDocument as signV2Document } from "./2.0/sign";
+import { WrappedDocument as WrappedDocumentV2 } from "./2.0/types";
+import { WrappedDocument as WrappedDocumentV3 } from "./3.0/types";
+import { wrapDocument as wrapV3Document, wrapDocuments as wrapV3Documents } from "./3.0/wrap";
+import { signDocument as signV3Document } from "./3.0/sign";
+import { SchemaId, WrappedDocument, OpenAttestationDocument } from "./shared/@types/document";
+import * as utils from "./shared/utils";
+import * as v2 from "./2.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "./__generated__/schema.2.0";
+import * as v3 from "./3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
+import { obfuscateDocument as obfuscateDocumentV2 } from "./2.0/obfuscate";
+import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
+import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
+import { SchemaValidationError } from "./shared/utils";
+import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
+import { ethers, Signer } from "ethers";
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
@@ -108,12 +108,12 @@ export async function signDocument(
 
 export { digestDocument } from "./2.0/digest";
 export { digestCredential } from "./3.0/digest";
-export * from "./shared/@types/document";
-export * from "./shared/@types/sign";
 export { checkProof, MerkleTree } from "./shared/merkle";
-export * from "./shared/signer";
-export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { obfuscate as obfuscateDocument };
 export { utils };
+export * from "./shared/@types/document";
+export * from "./shared/@types/sign";
+export * from "./shared/signer";
+export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
