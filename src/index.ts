@@ -113,6 +113,7 @@ export { obfuscate as obfuscateDocument };
 export { utils };
 export * from "./shared/@types/document";
 export * from "./shared/@types/sign";
+export * from "./shared/signer";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
