@@ -73,7 +73,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "ajv": "6.10.2",
+    "ajv": "6.12.3",
     "debug": "^4.1.1",
     "did-resolver": "^2.1.2",
     "ethers": "^5.0.31",
@@ -82,7 +82,7 @@
     "js-base64": "^2.5.2",
     "js-sha3": "^0.8.0",
     "jsonld": "^5.2.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "node-fetch": "^2.6.0",
     "runtypes": "^5.0.1",
     "uuid": "^3.3.3",
