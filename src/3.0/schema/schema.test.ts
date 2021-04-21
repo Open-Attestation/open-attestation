@@ -458,7 +458,8 @@ describe("schema/3.0", () => {
     it("should be invalid if template.url is missing", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
-      if (document.openAttestationMetadata.template) delete document.openAttestationMetadata.template.url;
+      // @ts-expect-error want to delete for the test
+      delete document.openAttestationMetadata.template.url;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -574,6 +575,7 @@ describe("schema/3.0", () => {
     it("should be invalid if issuer is missing", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.issuer;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -594,7 +596,8 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
-      if (typeof document.issuer !== "string") delete document.issuer.name;
+      // @ts-expect-error want to delete for the test
+      delete document.issuer.name;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -628,8 +631,8 @@ describe("schema/3.0", () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
 
-      // TODO seemed like there will be lots of hassle dealing with string|Issuer
-      if (typeof document.issuer !== "string") delete document.issuer.id;
+      // @ts-expect-error want to delete for the test
+      delete document.issuer.id;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       } catch (e) {
@@ -662,6 +665,7 @@ describe("schema/3.0", () => {
     it("should be invalid if identity proof has no type", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.openAttestationMetadata.identityProof?.type;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -707,6 +711,7 @@ describe("schema/3.0", () => {
     it("should be invalid if identity proof has no identifier", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.openAttestationMetadata.identityProof?.identifier;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -793,6 +798,7 @@ describe("schema/3.0", () => {
     it("should be invalid if issuer has no identity proof", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.openAttestationMetadata.identityProof;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -815,6 +821,7 @@ describe("schema/3.0", () => {
     it("should be invalid if proof type is missing", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.openAttestationMetadata.proof.type;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -855,6 +862,7 @@ describe("schema/3.0", () => {
     it("should be invalid if proof method is missing", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.openAttestationMetadata.proof.method;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
@@ -895,6 +903,7 @@ describe("schema/3.0", () => {
     it("should be invalid if proof value is missing", async () => {
       expect.assertions(2);
       const document = cloneDeep(sampleDoc);
+      // @ts-expect-error want to delete for the test
       delete document.openAttestationMetadata.proof.value;
       try {
         await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
