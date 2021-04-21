@@ -1,6 +1,5 @@
 // disable to check error properties, tried with objectContaining but didnt work
-/* eslint-disable jest/no-try-expect */
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable jest/no-try-expect,jest/no-conditional-expect */
 import { cloneDeep, merge, omit } from "lodash";
 import sampleTokenJson from "./sample-token.json";
 import sampleDocumentJson from "./sample-document.json";
@@ -29,10 +28,10 @@ describe("schema/2.0", () => {
           ...openAttestationDocument.issuers[0],
           identityProof: {
             type: "ABC",
-            location: "abc.com"
-          }
-        }
-      ]
+            location: "abc.com",
+          },
+        },
+      ],
     });
 
     try {
@@ -47,22 +46,22 @@ describe("schema/2.0", () => {
             keyword: "enum",
             message: "should be equal to one of the allowed values",
             params: { allowedValues: ["DNS-TXT"] },
-            schemaPath: "#/definitions/identityProofDns/properties/type/enum"
+            schemaPath: "#/definitions/identityProofDns/properties/type/enum",
           },
           {
             dataPath: ".issuers[0].identityProof.type",
             keyword: "enum",
             message: "should be equal to one of the allowed values",
             params: { allowedValues: ["DNS-DID"] },
-            schemaPath: "#/definitions/identityProofDnsDid/properties/type/enum"
+            schemaPath: "#/definitions/identityProofDnsDid/properties/type/enum",
           },
           {
             dataPath: ".issuers[0].identityProof.type",
             keyword: "enum",
             message: "should be equal to one of the allowed values",
             params: { allowedValues: ["DID"] },
-            schemaPath: "#/definitions/identityProofDid/properties/type/enum"
-          }
+            schemaPath: "#/definitions/identityProofDid/properties/type/enum",
+          },
         ])
       );
     }
@@ -74,10 +73,10 @@ describe("schema/2.0", () => {
           ...openAttestationDocument.issuers[0],
           identityProof: {
             type: "DNS-TXT",
-            location: "abc.com"
-          }
-        }
-      ]
+            location: "abc.com",
+          },
+        },
+      ],
     });
     const wrappedDocument = wrapDocument(document);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
@@ -89,11 +88,11 @@ describe("schema/2.0", () => {
           ...openAttestationDocument.issuers[0],
           identityProof: {
             type: "DNS-TXT",
-            location: "abc.com"
+            location: "abc.com",
           },
-          url: "https://example.com"
-        }
-      ]
+          url: "https://example.com",
+        },
+      ],
     });
     const wrappedDocument = wrapDocument(document);
     expect(wrappedDocument.version).toBe(SchemaId.v2);
@@ -129,10 +128,10 @@ describe("schema/2.0", () => {
               keyword: "required",
               message: "should have required property 'identityProof'",
               params: {
-                missingProperty: "identityProof"
+                missingProperty: "identityProof",
               },
-              schemaPath: "#/required"
-            }
+              schemaPath: "#/required",
+            },
           ])
         );
       }
@@ -149,10 +148,10 @@ describe("schema/2.0", () => {
             tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
               type: IdentityProofType.DNSTxt,
-              location: "abc.com"
-            }
-          }
-        ]
+              location: "abc.com",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -166,8 +165,8 @@ describe("schema/2.0", () => {
               keyword: "oneOf",
               message: "should match exactly one schema in oneOf",
               params: { passingSchemas: [0, 1] },
-              schemaPath: "#/properties/issuers/items/oneOf"
-            }
+              schemaPath: "#/properties/issuers/items/oneOf",
+            },
           ])
         );
       }
@@ -184,10 +183,10 @@ describe("schema/2.0", () => {
             tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
               type: IdentityProofType.DNSTxt,
-              location: "abc.com"
-            }
-          }
-        ]
+              location: "abc.com",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -201,8 +200,8 @@ describe("schema/2.0", () => {
               keyword: "oneOf",
               message: "should match exactly one schema in oneOf",
               params: { passingSchemas: [0, 2] },
-              schemaPath: "#/properties/issuers/items/oneOf"
-            }
+              schemaPath: "#/properties/issuers/items/oneOf",
+            },
           ])
         );
       }
@@ -219,10 +218,10 @@ describe("schema/2.0", () => {
             certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
             identityProof: {
               type: IdentityProofType.DNSTxt,
-              location: "abc.com"
-            }
-          }
-        ]
+              location: "abc.com",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -236,8 +235,8 @@ describe("schema/2.0", () => {
               keyword: "oneOf",
               message: "should match exactly one schema in oneOf",
               params: { passingSchemas: [1, 2] },
-              schemaPath: "#/properties/issuers/items/oneOf"
-            }
+              schemaPath: "#/properties/issuers/items/oneOf",
+            },
           ])
         );
       }
@@ -253,10 +252,10 @@ describe("schema/2.0", () => {
             documentStore: "Invalid Address",
             identityProof: {
               type: IdentityProofType.DNSTxt,
-              location: "abc.com"
-            }
-          }
-        ]
+              location: "abc.com",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -270,8 +269,8 @@ describe("schema/2.0", () => {
               keyword: "pattern",
               message: 'should match pattern "^0x[a-fA-F0-9]{40}$"',
               params: { pattern: "^0x[a-fA-F0-9]{40}$" },
-              schemaPath: "#/allOf/1/properties/documentStore/pattern"
-            }
+              schemaPath: "#/allOf/1/properties/documentStore/pattern",
+            },
           ])
         );
       }
@@ -291,10 +290,10 @@ describe("schema/2.0", () => {
             keyword: "required",
             message: "should have required property 'issuers'",
             params: {
-              missingProperty: "issuers"
+              missingProperty: "issuers",
             },
-            schemaPath: "#/required"
-          }
+            schemaPath: "#/required",
+          },
         ]);
       }
     });
@@ -312,10 +311,10 @@ describe("schema/2.0", () => {
             keyword: "minItems",
             message: "should NOT have fewer than 1 items",
             params: {
-              limit: 1
+              limit: 1,
             },
-            schemaPath: "#/properties/issuers/minItems"
-          }
+            schemaPath: "#/properties/issuers/minItems",
+          },
         ]);
       }
     });
@@ -327,10 +326,10 @@ describe("schema/2.0", () => {
             name: "ABC",
             identityProof: {
               type: IdentityProofType.DNSTxt,
-              location: "abc.com"
-            }
-          }
-        ]
+              location: "abc.com",
+            },
+          },
+        ],
       });
       expect(wrappedDocument.version).toBe(SchemaId.v2);
     });
@@ -345,10 +344,10 @@ describe("schema/2.0", () => {
             revocation: { type: "NONE" },
             identityProof: {
               type: "DNS-DID",
-              key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller"
-            }
-          }
-        ]
+              key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -362,10 +361,10 @@ describe("schema/2.0", () => {
               dataPath: ".issuers[0].identityProof",
               schemaPath: "#/definitions/identityProofDnsDid/required",
               params: {
-                missingProperty: "location"
+                missingProperty: "location",
               },
-              message: "should have required property 'location'"
-            }
+              message: "should have required property 'location'",
+            },
           ])
         );
       }
@@ -380,10 +379,10 @@ describe("schema/2.0", () => {
             revocation: { type: "NONE" },
             identityProof: {
               type: "DNS-DID",
-              location: "example.tradetrust.io"
-            }
-          }
-        ]
+              location: "example.tradetrust.io",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -397,10 +396,10 @@ describe("schema/2.0", () => {
               dataPath: ".issuers[0].identityProof",
               schemaPath: "#/definitions/identityProofDnsDid/required",
               params: {
-                missingProperty: "key"
+                missingProperty: "key",
               },
-              message: "should have required property 'key'"
-            }
+              message: "should have required property 'key'",
+            },
           ])
         );
       }
@@ -414,10 +413,10 @@ describe("schema/2.0", () => {
             name: "DEMO STORE",
             revocation: { type: "NONE" },
             identityProof: {
-              type: "DID"
-            }
-          }
-        ]
+              type: "DID",
+            },
+          },
+        ],
       };
       try {
         wrapDocument(document);
@@ -431,10 +430,10 @@ describe("schema/2.0", () => {
               dataPath: ".issuers[0].identityProof",
               schemaPath: "#/definitions/identityProofDnsDid/required",
               params: {
-                missingProperty: "key"
+                missingProperty: "key",
               },
-              message: "should have required property 'key'"
-            }
+              message: "should have required property 'key'",
+            },
           ])
         );
       }
@@ -461,10 +460,10 @@ describe("schema/2.0", () => {
               keyword: "required",
               message: "should have required property 'name'",
               params: {
-                missingProperty: "name"
+                missingProperty: "name",
               },
-              schemaPath: "#/properties/%24template/oneOf/1/required"
-            }
+              schemaPath: "#/properties/%24template/oneOf/1/required",
+            },
           ])
         );
       }
@@ -485,10 +484,10 @@ describe("schema/2.0", () => {
               keyword: "required",
               message: "should have required property 'type'",
               params: {
-                missingProperty: "type"
+                missingProperty: "type",
               },
-              schemaPath: "#/properties/%24template/oneOf/1/required"
-            }
+              schemaPath: "#/properties/%24template/oneOf/1/required",
+            },
           ])
         );
       }
@@ -500,8 +499,8 @@ describe("schema/2.0", () => {
         ...openAttestationDocument,
         $template: {
           name: "CUSTOM_TEMPLATE",
-          type: "INVALID_RENDERER"
-        }
+          type: "INVALID_RENDERER",
+        },
       };
 
       try {
@@ -517,10 +516,10 @@ describe("schema/2.0", () => {
               keyword: "enum",
               message: "should be equal to one of the allowed values",
               params: {
-                allowedValues: ["EMBEDDED_RENDERER"]
+                allowedValues: ["EMBEDDED_RENDERER"],
               },
-              schemaPath: "#/properties/%24template/oneOf/1/properties/type/enum"
-            }
+              schemaPath: "#/properties/%24template/oneOf/1/properties/type/enum",
+            },
           ])
         );
       }
@@ -545,10 +544,10 @@ describe("schema/2.0", () => {
             keyword: "required",
             message: "should have required property 'filename'",
             params: {
-              missingProperty: "filename"
+              missingProperty: "filename",
             },
-            schemaPath: "#/properties/attachments/items/required"
-          }
+            schemaPath: "#/properties/attachments/items/required",
+          },
         ]);
       }
     });
@@ -566,10 +565,10 @@ describe("schema/2.0", () => {
             keyword: "required",
             message: "should have required property 'data'",
             params: {
-              missingProperty: "data"
+              missingProperty: "data",
             },
-            schemaPath: "#/properties/attachments/items/required"
-          }
+            schemaPath: "#/properties/attachments/items/required",
+          },
         ]);
       }
     });
@@ -587,10 +586,10 @@ describe("schema/2.0", () => {
             keyword: "required",
             message: "should have required property 'type'",
             params: {
-              missingProperty: "type"
+              missingProperty: "type",
             },
-            schemaPath: "#/properties/attachments/items/required"
-          }
+            schemaPath: "#/properties/attachments/items/required",
+          },
         ]);
       }
     });

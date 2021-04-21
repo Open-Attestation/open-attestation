@@ -20,7 +20,6 @@ import { SchemaValidationError } from "./shared/utils";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
 import { ethers, Signer } from "ethers";
 
-// eslint-disable-next-line @typescript-eslint/camelcase
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
   data: T,
   options?: WrapDocumentOptionV3
@@ -28,7 +27,6 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends 
   return wrapV3Document(data, options ?? { version: SchemaId.v3 });
 }
 
-// eslint-disable-next-line @typescript-eslint/camelcase
 export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends OpenAttestationDocumentV3>(
   dataArray: T[],
   options?: WrapDocumentOptionV3

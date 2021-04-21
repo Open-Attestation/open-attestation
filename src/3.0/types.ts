@@ -8,7 +8,7 @@ export interface Salt {
   path: string;
 }
 export const ObfuscationMetadata = RunTypesRecord({
-  obfuscated: RunTypesArray(OpenAttestationHexString)
+  obfuscated: RunTypesArray(OpenAttestationHexString),
 });
 export type ObfuscationMetadata = Static<typeof ObfuscationMetadata>;
 
@@ -19,14 +19,14 @@ export const VerifiableCredentialWrappedProof = RunTypesRecord({
   proofs: RunTypesArray(OpenAttestationHexString),
   salts: String,
   privacy: ObfuscationMetadata,
-  proofPurpose: ProofPurpose
+  proofPurpose: ProofPurpose,
 });
 export type VerifiableCredentialWrappedProof = Static<typeof VerifiableCredentialWrappedProof>;
 
 export const VerifiableCredentialSignedProof = VerifiableCredentialWrappedProof.And(
   RunTypesRecord({
     key: String,
-    signature: String
+    signature: String,
   })
 );
 export type VerifiableCredentialSignedProof = Static<typeof VerifiableCredentialSignedProof>;
@@ -39,9 +39,9 @@ export type WrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestatio
   proof: VerifiableCredentialWrappedProof;
 };
 
-export type SignedWrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> = WrappedDocument<
-  T
-> & {
+export type SignedWrappedDocument<
+  T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3
+> = WrappedDocument<T> & {
   proof: VerifiableCredentialSignedProof;
 };
 

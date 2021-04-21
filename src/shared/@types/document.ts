@@ -3,11 +3,11 @@ import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__ge
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 import {
   SignedWrappedDocument as SignedWrappedDocumentV2,
-  WrappedDocument as WrappedDocumentV2
+  WrappedDocument as WrappedDocumentV2,
 } from "../../2.0/types";
 import {
   SignedWrappedDocument as SignedWrappedDocumentV3,
-  WrappedDocument as WrappedDocumentV3
+  WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
 import { Literal, Static, String } from "runtypes";
 import { ethers } from "ethers";
@@ -26,11 +26,11 @@ export type SignedWrappedDocument<T extends OpenAttestationDocument> = T extends
 
 export enum SchemaId {
   v2 = "https://schema.openattestation.com/2.0/schema.json",
-  v3 = "https://schema.openattestation.com/3.0/schema.json"
+  v3 = "https://schema.openattestation.com/3.0/schema.json",
 }
 
 export const OpenAttestationHexString = String.withConstraint(
-  value => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
+  (value) => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
 );
 
 export const SignatureAlgorithm = Literal("OpenAttestationMerkleProofSignature2018");

@@ -12,7 +12,7 @@ type IOverload = {
  * otherwise return the default value
  */
 const getArgument: IOverload = (field: string, defaultValue: any): any => {
-  const index = process.argv.findIndex(value => value === `--${field}`);
+  const index = process.argv.findIndex((value) => value === `--${field}`);
   if (index !== -1) {
     const value = process.argv[index + 1];
     if (typeof defaultValue === "number") return parseFloat(value);
@@ -44,7 +44,7 @@ const data: any = {
   $template: {
     name: "CUSTOM_TEMPLATE",
     type: "EMBEDDED_RENDERER",
-    url: "https://localhost:3000/renderer"
+    url: "https://localhost:3000/renderer",
   },
   issuers: [
     {
@@ -52,10 +52,10 @@ const data: any = {
       documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
       identityProof: {
         type: "DNS-TXT",
-        location: "tradetrust.io"
-      }
-    }
-  ]
+        location: "tradetrust.io",
+      },
+    },
+  ],
 };
 
 /**
@@ -78,26 +78,26 @@ const wrap = (fields: number, characters: string) => {
  */
 type Method = {
   name: string;
-  transformer: (doc: object) => Buffer;
+  transformer: (doc: Record<string, any>) => Buffer;
   result?: { content: Buffer; fields: number; done: boolean };
 };
 const methods: Method[] = [
   {
     name: "stringify",
-    transformer: doc => Buffer.from(JSON.stringify(doc), "utf8")
+    transformer: (doc) => Buffer.from(JSON.stringify(doc), "utf8"),
   },
   {
     name: "cbor",
-    transformer: doc => cborEncode(doc)
+    transformer: (doc) => cborEncode(doc),
   },
   {
     name: "gzip",
-    transformer: doc => gzipSync(JSON.stringify(doc))
+    transformer: (doc) => gzipSync(JSON.stringify(doc)),
   },
   {
     name: "cbor + gzip",
-    transformer: doc => gzipSync(cborEncode(doc))
-  }
+    transformer: (doc) => gzipSync(cborEncode(doc)),
+  },
 ];
 
 // maximum number of byte that a Medium QR code can hold (https://www.npmjs.com/package/qrcode#error-correction-level)
@@ -108,12 +108,12 @@ let fields = 1;
  * let's run the method and gather the results
  */
 // my code, my mutation. I do what I want :)
-methods.map(method => (method.result = { content: Buffer.from([]), fields, done: false }));
-while (methods.find(method => !method.result?.done)) {
+methods.map((method) => (method.result = { content: Buffer.from([]), fields, done: false }));
+while (methods.find((method) => !method.result?.done)) {
   const doc = wrap(fields, getArgument("set", "latin") === "chinese" ? chineseCharacters : latinCharacters);
   methods
-    .filter(method => !method.result?.done)
-    .forEach(method => {
+    .filter((method) => !method.result?.done)
+    .forEach((method) => {
       const result = method.transformer(doc);
       if (result.byteLength <= maxByteLength) {
         method.result = { content: result, fields, done: false };
@@ -127,10 +127,10 @@ while (methods.find(method => !method.result?.done)) {
 }
 
 console.table(
-  methods.map(method => {
+  methods.map((method) => {
     return {
       name: method.name,
-      additionalFields: method.result?.fields
+      additionalFields: method.result?.fields,
     };
   })
 );
@@ -148,12 +148,12 @@ console.log(
 // make sure it works :)
 for (const method of methods) {
   QrCode.toString(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain,@typescript-eslint/no-non-null-assertion
     [{ data: method.result?.content!, mode: "byte" }],
     {
-      errorCorrectionLevel: "M"
+      errorCorrectionLevel: "M",
     },
-    err => {
+    (err) => {
       if (err) throw err;
       console.log(`qr code for ${method.name} generated successfully`);
     }

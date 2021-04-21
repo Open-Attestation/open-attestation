@@ -1,17 +1,13 @@
 {
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-    "prettier/@typescript-eslint",
-    "plugin:jest/recommended"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:jest/recommended"],
   "env": {
     "jest": true
   },
   "parser": "@typescript-eslint/parser",
   "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
-    "no-unused-vars": [
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
       "error",
       {
         "argsIgnorePattern": "^_"
@@ -21,7 +17,7 @@
     "prettier/prettier": "error",
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "no-unused-expressions": "off",
     "@typescript-eslint/no-unused-expressions": ["error"]

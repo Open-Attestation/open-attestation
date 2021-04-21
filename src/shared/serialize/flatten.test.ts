@@ -3,14 +3,14 @@ import { flatten } from "./flatten";
 describe("flattenWithGlobalFilters", () => {
   const document = {
     foo: {
-      bar: "qux"
-    }
+      bar: "qux",
+    },
   };
   const flattenedDocument = {
-    "foo.bar": "qux"
+    "foo.bar": "qux",
   };
   const documentWithPeriodKey = {
-    "foo.bar": "lod"
+    "foo.bar": "lod",
   };
 
   const existingOptions = {
@@ -19,9 +19,9 @@ describe("flattenWithGlobalFilters", () => {
         test: (_: any, value: any) => {
           if (value === "qux") throw new Error("was called");
           else return false;
-        }
-      }
-    ]
+        },
+      },
+    ],
   };
 
   it("should work without additional options", () => {
@@ -42,7 +42,7 @@ describe("flattenWithGlobalFilters", () => {
 
   it("should not clobber existing options", () => {
     expect(flatten(document, { delimiter: "|" })).toStrictEqual({
-      "foo|bar": "qux"
+      "foo|bar": "qux",
     });
   });
 });

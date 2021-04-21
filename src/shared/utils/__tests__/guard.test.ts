@@ -3,16 +3,15 @@ import {
   isSignedWrappedV2Document,
   isWrappedV2Document,
   isWrappedV3Document,
-  isSignedWrappedV3Document
+  isSignedWrappedV3Document,
 } from "../guard";
 import {
-  // eslint-disable-next-line @typescript-eslint/camelcase
   __unsafe__use__it__at__your__own__risks__wrapDocument,
   SchemaId,
   signDocument,
   SUPPORTED_SIGNING_ALGORITHM,
   wrapDocument,
-  WrappedDocument
+  WrappedDocument,
 } from "../../..";
 import * as v3 from "../../../3.0/types";
 import * as v2 from "../../../2.0/types";
@@ -28,10 +27,10 @@ describe("guard", () => {
         documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
         identityProof: {
           type: v2.IdentityProofType.DNSTxt,
-          location: "example.com"
-        }
-      }
-    ]
+          location: "example.com",
+        },
+      },
+    ],
   });
   beforeAll(async () => {
     wrappedV3Document = await __unsafe__use__it__at__your__own__risks__wrapDocument(
@@ -39,11 +38,11 @@ describe("guard", () => {
         "@context": [
           "https://www.w3.org/2018/credentials/v1",
           "https://www.w3.org/2018/credentials/examples/v1",
-          "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
+          "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
         ],
         issuer: {
           name: "name",
-          id: "https://example.com"
+          id: "https://example.com",
         },
         issuanceDate: "2010-01-01T19:23:24Z",
         type: ["VerifiableCredential", "UniversityDegreeCredential"],
@@ -51,38 +50,38 @@ describe("guard", () => {
           id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
           degree: {
             type: "BachelorDegree",
-            name: "Bachelor of Science and Arts"
-          }
+            name: "Bachelor of Science and Arts",
+          },
         },
         openAttestationMetadata: {
           proof: {
             value: "0xabcf",
             type: v3.ProofType.OpenAttestationProofMethod,
-            method: v3.Method.DocumentStore
+            method: v3.Method.DocumentStore,
           },
           identityProof: {
             identifier: "whatever",
-            type: v2.IdentityProofType.DNSTxt
-          }
+            type: v2.IdentityProofType.DNSTxt,
+          },
         },
         name: "",
         reference: "",
         template: {
           url: "https://",
           name: "",
-          type: v3.TemplateType.EmbeddedRenderer
+          type: v3.TemplateType.EmbeddedRenderer,
         },
-        validFrom: "2010-01-01T19:23:24Z"
+        validFrom: "2010-01-01T19:23:24Z",
       },
       { version: SchemaId.v3 }
     );
     signedV2Document = await signDocument(wrappedV2Document, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
       public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655"
+      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
     });
     signedV3Document = await signDocument(wrappedV3Document, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
       public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655"
+      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
     });
   });
   describe("isWrappedV2Document", () => {
@@ -142,7 +141,7 @@ describe("guard", () => {
       expect(
         isWrappedV2Document(
           set(cloneDeep(wrappedV2Document), "signature.proof", [
-            "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82"
+            "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82",
           ])
         )
       ).toBe(true);
@@ -191,7 +190,7 @@ describe("guard", () => {
         SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
         {
           public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-          private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655"
+          private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
         }
       );
       // make sure the document is valid first
@@ -252,7 +251,7 @@ describe("guard", () => {
       expect(
         isWrappedV3Document(
           set(cloneDeep(wrappedV3Document), "proof.proofs", [
-            "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82"
+            "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82",
           ])
         )
       ).toBe(true);
@@ -276,7 +275,7 @@ describe("guard", () => {
       expect(
         isWrappedV3Document(
           set(cloneDeep(wrappedV3Document), "proof.privacy.obfuscated", [
-            "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82"
+            "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82",
           ])
         )
       ).toBe(true);

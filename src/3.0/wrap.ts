@@ -18,7 +18,7 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
   const document = {
     version: SchemaId.v3 as SchemaId.v3,
     ...getExternalSchema(options.externalSchemaId),
-    ...credential
+    ...credential,
   };
   // To ensure that base @context exists, but this also means some of our validateW3C errors may be unreachable
   if (!document["@context"]) {
@@ -54,9 +54,9 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
       merkleRoot,
       salts: encodeSalt(salts),
       privacy: {
-        obfuscated: []
-      }
-    }
+        obfuscated: [],
+      },
+    },
   };
   const errors = validate(verifiableCredential, getSchema(SchemaId.v3));
   if (errors.length > 0) {
@@ -71,16 +71,16 @@ export const wrapDocuments = async <T extends OpenAttestationDocument>(
   options: WrapDocumentOptionV3
 ): Promise<WrappedDocument<T>[]> => {
   // create individual verifiable credential
-  const verifiableCredentials = await Promise.all(documents.map(document => wrapDocument(document, options)));
+  const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document, options)));
 
   // get all the target hashes to compute the merkle tree and the merkle root
   const merkleTree = new MerkleTree(
-    verifiableCredentials.map(verifiableCredential => verifiableCredential.proof.targetHash).map(hashToBuffer)
+    verifiableCredentials.map((verifiableCredential) => verifiableCredential.proof.targetHash).map(hashToBuffer)
   );
   const merkleRoot = merkleTree.getRoot().toString("hex");
 
   // for each document, update the merkle root and add the proofs needed
-  return verifiableCredentials.map(verifiableCredential => {
+  return verifiableCredentials.map((verifiableCredential) => {
     const digest = verifiableCredential.proof.targetHash;
     const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
@@ -89,8 +89,8 @@ export const wrapDocuments = async <T extends OpenAttestationDocument>(
       proof: {
         ...verifiableCredential.proof,
         proofs: merkleProof,
-        merkleRoot
-      }
+        merkleRoot,
+      },
     };
   });
 };

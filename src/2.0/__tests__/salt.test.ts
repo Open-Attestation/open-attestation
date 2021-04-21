@@ -5,7 +5,7 @@ import {
   typedStringToPrimitive,
   unsalt,
   unsaltData,
-  uuidSalt
+  uuidSalt,
 } from "../salt";
 
 const someObj = {
@@ -24,22 +24,22 @@ const someObj = {
         arrayObject1KeyH: "undefined",
         arrayObject1KeyI: "null",
         arrayObject1KeyJ: undefined,
-        arrayObject1KeyK: null
+        arrayObject1KeyK: null,
       },
       {
         arrayObject2KeyA: {
           arrayObject2NestedObjectA: "array object nested object value 1",
           arrayObject2NestedObjectB: 5,
-          arrayObject2NestedObjectC: true
-        }
-      }
+          arrayObject2NestedObjectC: true,
+        },
+      },
     ],
     nestedKeyC: {
-      doubleNestedKeyA: "value 5"
-    }
+      doubleNestedKeyA: "value 5",
+    },
   },
   keyWithNumberArray: [123, 321],
-  keyWithStringArray: ["foo", "bar"]
+  keyWithStringArray: ["foo", "bar"],
 };
 
 describe("salt", () => {
@@ -73,20 +73,20 @@ describe("salt", () => {
             arrayObject1KeyH: "fakesalt: undefined",
             arrayObject1KeyI: "fakesalt: null",
             arrayObject1KeyJ: "fakesalt: undefined",
-            arrayObject1KeyK: "fakesalt: null"
+            arrayObject1KeyK: "fakesalt: null",
           },
           {
             arrayObject2KeyA: {
               arrayObject2NestedObjectA: "fakesalt: array object nested object value 1",
               arrayObject2NestedObjectB: "fakesalt: 5",
-              arrayObject2NestedObjectC: "fakesalt: true"
-            }
-          }
+              arrayObject2NestedObjectC: "fakesalt: true",
+            },
+          },
         ],
-        nestedKeyC: { doubleNestedKeyA: "fakesalt: value 5" }
+        nestedKeyC: { doubleNestedKeyA: "fakesalt: value 5" },
       },
       keyWithNumberArray: ["fakesalt: 123", "fakesalt: 321"],
-      keyWithStringArray: ["fakesalt: foo", "fakesalt: bar"]
+      keyWithStringArray: ["fakesalt: foo", "fakesalt: bar"],
     };
 
     test("traverses copys if no function is supplied", () => {

@@ -5,7 +5,7 @@ import { traverseAndFlatten } from "./traverseAndFlatten";
 
 const ENTROPY_IN_BYTES = 32;
 
-const illegalCharactersCheck = (data: object) => {
+const illegalCharactersCheck = (data: Record<string, any>) => {
   Object.entries(data).forEach(([key, value]) => {
     if (key.includes(".")) {
       throw new Error("Key names must not have . in them");
@@ -32,7 +32,7 @@ export const salt = (data: any): Salt[] => {
 export const encodeSalt = (salts: Salt[]): string => Base64.encode(JSON.stringify(salts));
 export const decodeSalt = (salts: string): Salt[] => {
   const decoded: Salt[] = JSON.parse(Base64.decode(salts));
-  decoded.forEach(salt => {
+  decoded.forEach((salt) => {
     if (salt.value.length !== ENTROPY_IN_BYTES * 2) throw new Error(`Salt must be ${ENTROPY_IN_BYTES} bytes`);
   });
   return decoded;

@@ -4,7 +4,7 @@ import { OpenAttestationHexString, ProofPurpose, ProofType, SchemaId } from "../
 import { Array as RunTypesArray, Literal, Partial, Record as RunTypesRecord, Static, String } from "runtypes";
 
 export const ObfuscationMetadata = Partial({
-  obfuscatedData: RunTypesArray(OpenAttestationHexString)
+  obfuscatedData: RunTypesArray(OpenAttestationHexString),
 });
 export type ObfuscationMetadata = Static<typeof ObfuscationMetadata>;
 
@@ -13,7 +13,7 @@ export const Proof = RunTypesRecord({
   created: String,
   proofPurpose: ProofPurpose,
   verificationMethod: String,
-  signature: String
+  signature: String,
 });
 export type Proof = Static<typeof Proof>;
 export const ArrayProof = RunTypesArray(Proof);
@@ -23,7 +23,7 @@ export const Signature = RunTypesRecord({
   type: Literal("SHA3MerkleProof"),
   targetHash: OpenAttestationHexString,
   merkleRoot: OpenAttestationHexString,
-  proof: RunTypesArray(OpenAttestationHexString)
+  proof: RunTypesArray(OpenAttestationHexString),
 });
 export type Signature = Static<typeof Signature>;
 
