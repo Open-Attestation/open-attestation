@@ -15,5 +15,5 @@ export const getLogger = (namespace: string): Logger => ({
   debug: logger.extend(`debug:${namespace}`),
   info: logger.extend(`info:${namespace}`),
   warn: logger.extend(`warn:${namespace}`),
-  error: logger.extend(`error:${namespace}`)
+  error: logger.extend(`error:${namespace}`),
 });

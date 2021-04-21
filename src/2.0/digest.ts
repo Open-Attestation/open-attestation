@@ -8,7 +8,7 @@ const isKeyOrValueUndefined = (value: any, key: any) => value === undefined || k
 
 export const flattenHashArray = (data: any) => {
   const flattenedData = omitBy(flatten(data), isKeyOrValueUndefined);
-  return Object.keys(flattenedData).map(k => {
+  return Object.keys(flattenedData).map((k) => {
     const obj: any = {};
     obj[k] = flattenedData[k];
     return keccak256(JSON.stringify(obj));

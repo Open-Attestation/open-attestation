@@ -9,7 +9,7 @@ describe("v2", () => {
   it("should sign a document", async () => {
     const { proof } = await signDocument(wrappedDocumentV2, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
       public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655"
+      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
     });
     expect(proof.length).toBe(1);
     expect(proof[0].proofPurpose).toBe("assertionMethod");
@@ -43,12 +43,12 @@ describe("v2", () => {
       SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
       {
         public: "did:ethr:0xb6De3744E1259e1aB692f5a277f053B79429c5a2#controller",
-        private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5"
+        private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5",
       }
     );
     const { proof } = await signDocument(signedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
       public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655"
+      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
     });
     expect(proof.length).toBe(2);
     expect(proof[1].proofPurpose).toBe("assertionMethod");
@@ -61,7 +61,7 @@ describe("v2", () => {
 
   it("should throw error if a key or signer is invalid", async () => {
     await expect(
-      // @ts-expect-error
+      // @ts-expect-error invalid call
       signDocument(wrappedDocumentV2, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {})
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"Either a keypair or ethers.js Signer must be provided"`);
   });

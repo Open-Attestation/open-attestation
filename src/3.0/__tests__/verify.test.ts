@@ -21,8 +21,8 @@ describe("signature", () => {
           ...sampleVerifiableCredential,
           issuer: {
             id: "https://example.com",
-            name: "Fake Name" // Value was originally "DEMO STORE"
-          }
+            name: "Fake Name", // Value was originally "DEMO STORE"
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -32,8 +32,8 @@ describe("signature", () => {
           ...sampleVerifiableCredential,
           issuer: {
             id: "https://example.com",
-            fakename: "DEMO STORE" // Key was originally "name"
-          }
+            fakename: "DEMO STORE", // Key was originally "name"
+          },
         };
 
         expect(verify(verifiableCredential as any)).toBe(false);
@@ -47,19 +47,19 @@ describe("signature", () => {
             class: [
               {
                 type: "3",
-                effectiveDate: "2010-01-01T19:23:24Z"
+                effectiveDate: "2010-01-01T19:23:24Z",
               },
               {
                 type: "3A",
-                effectiveDate: "2010-01-01T19:23:24Z"
+                effectiveDate: "2010-01-01T19:23:24Z",
               },
               {
                 // This was added in after it has been wrapped
                 type: "2A",
-                effectiveDate: "2020-06-05T00:00:00Z"
-              }
-            ]
-          }
+                effectiveDate: "2020-06-05T00:00:00Z",
+              },
+            ],
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -73,11 +73,11 @@ describe("signature", () => {
             class: [
               {
                 type: "3",
-                effectiveDate: "2010-01-01T19:23:24Z"
-              }
+                effectiveDate: "2010-01-01T19:23:24Z",
+              },
               // Class 3A was removed
-            ]
-          }
+            ],
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -95,8 +95,8 @@ describe("signature", () => {
           ...sampleBatchedVC,
           issuer: {
             id: "https://example.com",
-            name: "Fake Name" // Value was originally "DEMO STORE"
-          }
+            name: "Fake Name", // Value was originally "DEMO STORE"
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -106,8 +106,8 @@ describe("signature", () => {
           ...sampleBatchedVC,
           issuer: {
             id: "https://example.com",
-            fakename: "DEMO STORE" // Key was originally "name"
-          }
+            fakename: "DEMO STORE", // Key was originally "name"
+          },
         };
 
         expect(verify(verifiableCredential as any)).toBe(false);
@@ -121,19 +121,19 @@ describe("signature", () => {
             class: [
               {
                 type: "3",
-                effectiveDate: "2010-01-01T19:23:24Z"
+                effectiveDate: "2010-01-01T19:23:24Z",
               },
               {
                 type: "3A",
-                effectiveDate: "2010-01-01T19:23:24Z"
+                effectiveDate: "2010-01-01T19:23:24Z",
               },
               {
                 // This was added in after it has been wrapped
                 type: "2A",
-                effectiveDate: "2020-06-05T00:00:00Z"
-              }
-            ]
-          }
+                effectiveDate: "2020-06-05T00:00:00Z",
+              },
+            ],
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -147,11 +147,11 @@ describe("signature", () => {
             class: [
               {
                 type: "3",
-                effectiveDate: "2010-01-01T19:23:24Z"
-              }
+                effectiveDate: "2010-01-01T19:23:24Z",
+              },
               // Class 3A was removed
-            ]
-          }
+            ],
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -161,8 +161,8 @@ describe("signature", () => {
           ...sampleBatchedVC,
           proof: {
             ...sampleBatchedVC.proof,
-            targetHash: "81859d00caadd33f4100b7d37230684b953195786426a1be2c3bfea32b3c2a53" // Was "76eee8fc36924975c00420e463aab1a2e6b24fb8cfb81e8c789b2534da4b59a4"
-          }
+            targetHash: "81859d00caadd33f4100b7d37230684b953195786426a1be2c3bfea32b3c2a53", // Was "76eee8fc36924975c00420e463aab1a2e6b24fb8cfb81e8c789b2534da4b59a4"
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -173,8 +173,8 @@ describe("signature", () => {
           ...sampleBatchedVC,
           proof: {
             ...sampleBatchedVC.proof,
-            proofs: ["964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5531"] // Was "964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5530"
-          }
+            proofs: ["964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5531"], // Was "964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5530"
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -184,8 +184,8 @@ describe("signature", () => {
           ...sampleBatchedVC,
           proof: {
             ...sampleBatchedVC.proof,
-            proofs: [] // Was "964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5530"
-          }
+            proofs: [], // Was "964b066a78bfec3701760893090fa41bd0c86fb1328f2ba07293252a1a7d5530"
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);
@@ -195,8 +195,8 @@ describe("signature", () => {
           ...sampleBatchedVC,
           proof: {
             ...sampleBatchedVC.proof,
-            merkleRoot: "76eee8fc36924975c00420e463aab1a2e6b24fb8cfb81e8c789b2534da4b59a4" // Was "8505f27ea43ca3720b419ab96b80039eb4b2a1126acc9cb90f2a31349c110137"
-          }
+            merkleRoot: "76eee8fc36924975c00420e463aab1a2e6b24fb8cfb81e8c789b2534da4b59a4", // Was "8505f27ea43ca3720b419ab96b80039eb4b2a1126acc9cb90f2a31349c110137"
+          },
         };
 
         expect(verify(verifiableCredential)).toBe(false);

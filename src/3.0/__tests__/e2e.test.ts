@@ -4,7 +4,7 @@ import {
   obfuscate,
   SchemaId,
   validateSchema,
-  verifySignature
+  verifySignature,
 } from "../..";
 import { SignedWrappedDocument, WrappedDocument } from "../../3.0/types";
 import {
@@ -12,7 +12,7 @@ import {
   Method,
   OpenAttestationDocument,
   ProofType,
-  TemplateType
+  TemplateType,
 } from "../../__generated__/schema.3.0";
 import { cloneDeep, omit } from "lodash";
 import sampleDid from "../schema/sample-credential-did.json";
@@ -24,7 +24,7 @@ const openAttestationData: OpenAttestationDocument = {
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
     "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
-    "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
+    "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
   ],
   reference: "document identifier",
   validFrom: "2010-01-01T19:23:24Z",
@@ -35,52 +35,52 @@ const openAttestationData: OpenAttestationDocument = {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     degree: {
       type: "BachelorDegree",
-      name: "Bachelor of Science in Mechanical Engineering"
-    }
+      name: "Bachelor of Science in Mechanical Engineering",
+    },
   },
   openAttestationMetadata: {
     template: {
       name: "any",
       type: TemplateType.EmbeddedRenderer,
-      url: "http://some.example.com"
+      url: "http://some.example.com",
     },
     proof: {
       type: ProofType.OpenAttestationProofMethod,
       value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-      method: Method.TokenRegistry
+      method: Method.TokenRegistry,
     },
     identityProof: {
       type: IdentityProofType.DNSTxt,
-      identifier: "tradetrust.io"
-    }
+      identifier: "tradetrust.io",
+    },
   },
   issuer: {
     id: "http://some.example.com",
-    name: "DEMO STORE"
-  }
+    name: "DEMO STORE",
+  },
 };
 
 const datum = [
   {
     key1: "test",
-    ...openAttestationData
+    ...openAttestationData,
   },
   {
     key1: "hello",
     key2: "item2",
-    ...openAttestationData
+    ...openAttestationData,
   },
   {
     key1: "item1",
     key2: "true",
     key3: 3.14159,
     key4: false,
-    ...openAttestationData
+    ...openAttestationData,
   },
   {
     key1: "item2",
-    ...openAttestationData
-  }
+    ...openAttestationData,
+  },
 ];
 
 describe("3.0 E2E Test Scenarios", () => {
@@ -89,14 +89,14 @@ describe("3.0 E2E Test Scenarios", () => {
 
     test("fails for missing data", async () => {
       const missingData = {
-        ...omit(cloneDeep(document), "issuer")
+        ...omit(cloneDeep(document), "issuer"),
       };
       await expect(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         wrapDocument(missingData, {
           externalSchemaId: "http://example.com/schema.json",
-          version: SchemaId.v3
+          version: SchemaId.v3,
         })
       ).rejects.toThrow("Invalid document");
     });
@@ -104,11 +104,11 @@ describe("3.0 E2E Test Scenarios", () => {
       const wrappedDocument = await wrapDocument(
         {
           ...openAttestationData,
-          key1: "test"
+          key1: "test",
         },
         {
           externalSchemaId: "http://example.com/schema.json",
-          version: SchemaId.v3
+          version: SchemaId.v3,
         }
       );
       expect(wrappedDocument.schema).toBe("http://example.com/schema.json");
@@ -122,7 +122,7 @@ describe("3.0 E2E Test Scenarios", () => {
     test("creates a wrapped document with DNS-DID IdentityProof", async () => {
       const wrappedDocumentWithDnsDID = await wrapDocument(openAttestationDataWithDid, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocumentWithDnsDID.schema).toBe("http://example.com/schema.json");
       expect(wrappedDocumentWithDnsDID.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
@@ -138,7 +138,7 @@ describe("3.0 E2E Test Scenarios", () => {
     test("checks that document is wrapped correctly", async () => {
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       const verified = verifySignature(wrappedDocument);
       expect(verified).toBe(true);
@@ -146,7 +146,7 @@ describe("3.0 E2E Test Scenarios", () => {
     test("checks that document conforms to the schema", async () => {
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(validateSchema(wrappedDocument)).toBe(true);
     });
@@ -176,15 +176,15 @@ describe("3.0 E2E Test Scenarios", () => {
         ...datum,
         // @ts-expect-error missing properties from OpenAttestationCredential: "@context", credentialSubject, issuanceDate, issuer, and 2 more.
         {
-          laurent: "task force, assemble!!"
-        } as WrappedDocument
+          laurent: "task force, assemble!!",
+        } as WrappedDocument,
       ];
       await expect(wrapDocuments(malformedDatum)).rejects.toStrictEqual(new Error("Invalid document"));
     });
     test("creates a batch of documents if all are in the right format", async () => {
       const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       wrappedDocuments.forEach((doc, i: number) => {
         expect(doc.schema).toBe("http://example.com/schema.json");
@@ -198,7 +198,7 @@ describe("3.0 E2E Test Scenarios", () => {
     test("checks that documents are wrapped correctly", async () => {
       const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       const verified = wrappedDocuments.reduce((prev, curr) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
@@ -206,7 +206,7 @@ describe("3.0 E2E Test Scenarios", () => {
     test("checks that documents conforms to the schema", async () => {
       const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       const validatedSchema = wrappedDocuments.reduce((prev: boolean, curr: any) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
@@ -214,10 +214,10 @@ describe("3.0 E2E Test Scenarios", () => {
     test("does not allow for same merkle root to be generated", async () => {
       const wrappedDocuments = await wrapDocuments(datum, {
         externalSchemaId: "http://example.com/schema.json",
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       const newWrappedDocuments = await wrapDocuments(datum, {
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocuments[0].proof.merkleRoot).not.toBe(newWrappedDocuments[0].proof.merkleRoot);
     });
@@ -231,7 +231,7 @@ describe("3.0 E2E Test Scenarios", () => {
           "https://www.w3.org/2018/credentials/v1",
           "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
           "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
-          "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json"
+          "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json",
         ],
         reference: "SERIAL_NUMBER_123",
         name: "Republic of Singapore Driving Licence",
@@ -239,7 +239,7 @@ describe("3.0 E2E Test Scenarios", () => {
         validFrom: "2010-01-01T19:23:24Z",
         issuer: {
           id: "https://example.com",
-          name: "DEMO STORE"
+          name: "DEMO STORE",
         },
         type: ["VerifiableCredential", "DrivingLicenceCredential"],
         credentialSubject: {
@@ -247,48 +247,48 @@ describe("3.0 E2E Test Scenarios", () => {
           class: [
             {
               type: "3",
-              effectiveDate: "2010-01-01T19:23:24Z"
+              effectiveDate: "2010-01-01T19:23:24Z",
             },
             {
               type: "3A",
-              effectiveDate: "2010-01-01T19:23:24Z"
-            }
-          ]
+              effectiveDate: "2010-01-01T19:23:24Z",
+            },
+          ],
         },
         openAttestationMetadata: {
           template: {
             name: "CUSTOM_TEMPLATE",
             type: TemplateType.EmbeddedRenderer,
-            url: "https://localhost:3000/renderer"
+            url: "https://localhost:3000/renderer",
           },
           proof: {
             type: ProofType.OpenAttestationProofMethod,
             method: Method.DocumentStore,
-            value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
+            value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
           },
           identityProof: {
             type: IdentityProofType.DNSTxt,
-            identifier: "tradetrust.io"
-          }
+            identifier: "tradetrust.io",
+          },
         },
         attachments: [
           {
             fileName: "sample.pdf",
             mimeType: "application/pdf",
-            data: "BASE64_ENCODED_FILE"
-          }
+            data: "BASE64_ENCODED_FILE",
+          },
         ],
         proof: {
           proofPurpose: "assertionMethod",
           salts: "",
           merkleRoot: "",
           privacy: {
-            obfuscated: []
+            obfuscated: [],
           },
           proofs: [],
           targetHash: "",
-          type: "OpenAttestationMerkleProofSignature2018"
-        }
+          type: "OpenAttestationMerkleProofSignature2018",
+        },
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
@@ -301,12 +301,12 @@ describe("3.0 E2E Test Scenarios", () => {
           salts: "",
           merkleRoot: "",
           privacy: {
-            obfuscated: []
+            obfuscated: [],
           },
           proofs: [],
           targetHash: "",
-          type: "OpenAttestationMerkleProofSignature2018"
-        }
+          type: "OpenAttestationMerkleProofSignature2018",
+        },
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
@@ -319,14 +319,14 @@ describe("3.0 E2E Test Scenarios", () => {
           salts: "",
           merkleRoot: "",
           privacy: {
-            obfuscated: []
+            obfuscated: [],
           },
           proofs: [],
           targetHash: "",
           signature: "",
           key: "",
-          type: "OpenAttestationMerkleProofSignature2018"
-        }
+          type: "OpenAttestationMerkleProofSignature2018",
+        },
       };
       expect(validateSchema(credential)).toStrictEqual(true);
     });
@@ -336,8 +336,8 @@ describe("3.0 E2E Test Scenarios", () => {
         openAttestationMetadata: {
           ...openAttestationDataWithDid.openAttestationMetadata,
           identityProof: {
-            identifier: "tradetrust.io"
-          }
+            identifier: "tradetrust.io",
+          },
         },
         version: SchemaId.v3,
         proof: {
@@ -345,37 +345,37 @@ describe("3.0 E2E Test Scenarios", () => {
           salts: "",
           merkleRoot: "",
           privacy: {
-            obfuscated: []
+            obfuscated: [],
           },
           proofs: [],
           targetHash: "",
           signature: "",
           key: "",
-          type: "OpenAttestationMerkleProofSignature2018"
-        }
+          type: "OpenAttestationMerkleProofSignature2018",
+        },
       };
       expect(validateSchema(credential)).toStrictEqual(false);
     });
     test("should default to 2.0 when document is valid and version is undefined", () => {
       expect(
         validateSchema({
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore run test with version being undefined to only ignore that part
           version: undefined,
           data: {
             issuers: [
               {
                 name: "issuer.name",
-                certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
-              }
-            ]
+                certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+              },
+            ],
           },
           signature: {
             merkleRoot: "0xabc",
             proof: [],
             targetHash: "0xabc",
-            type: "SHA3MerkleProof"
-          }
+            type: "SHA3MerkleProof",
+          },
         })
       ).toStrictEqual(true);
     });
@@ -387,11 +387,11 @@ describe("3.0 E2E Test Scenarios", () => {
         key1: "哦喷啊特特是他题哦你",
         key2: "นยำืฟะะำหะฟะรนื",
         key3: "おぺなってsたちおn",
-        key4: "خحثىشففثسفشفهخى"
+        key4: "خحثىشففثسفشفهخى",
       };
       const document = {
         ...openAttestationData,
-        ...extraData
+        ...extraData,
       };
       const wrapped = await wrapDocument(document);
       expect(wrapped.proof.merkleRoot).toBeTruthy();

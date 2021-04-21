@@ -2,6 +2,7 @@ import { cloneDeep } from "lodash";
 import { Method, ProofType, OpenAttestationDocument, TemplateType } from "../../__generated__/schema.3.0";
 import { salt, decodeSalt } from "../salt";
 import * as v3 from "../../__generated__/schema.3.0";
+import { Base64 } from "js-base64";
 
 const sampleDoc: OpenAttestationDocument = {
   "@context": ["https://www.w3.org/2018/credentials/v1", "https://www.w3.org/2018/credentials/examples/v1"],
@@ -11,24 +12,24 @@ const sampleDoc: OpenAttestationDocument = {
   issuanceDate: "2010-01-01T19:23:24Z",
   credentialSubject: {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    alumniOf: "Example University"
+    alumniOf: "Example University",
   },
   openAttestationMetadata: {
     template: {
       name: "EXAMPLE_RENDERER",
       type: TemplateType.EmbeddedRenderer,
-      url: "https://renderer.openattestation.com/"
+      url: "https://renderer.openattestation.com/",
     },
     proof: {
       type: ProofType.OpenAttestationProofMethod,
       method: Method.DocumentStore,
-      value: "0xED2E50434Ac3623bAD763a35213DAD79b43208E4"
+      value: "0xED2E50434Ac3623bAD763a35213DAD79b43208E4",
     },
     identityProof: {
       identifier: "some.example",
-      type: v3.IdentityProofType.DNSTxt
-    }
-  }
+      type: v3.IdentityProofType.DNSTxt,
+    },
+  },
 };
 
 describe("digest v3.0", () => {
@@ -37,7 +38,7 @@ describe("digest v3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         "credentialSubject.alumniOf":
-          "0xSomeMaliciousDocumentStore, this would be at credentialSubject.alumniOf after flatMap if uncaught"
+          "0xSomeMaliciousDocumentStore, this would be at credentialSubject.alumniOf after flatMap if uncaught",
       };
       expect(() => {
         salt(document);
@@ -46,7 +47,7 @@ describe("digest v3.0", () => {
     test("handles shadowed keys correctly (type 2: root, array index)", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        "type[1]": "MaliciousCredential, this would be at type[1] after flatMap if uncaught"
+        "type[1]": "MaliciousCredential, this would be at type[1] after flatMap if uncaught",
       };
       expect(() => {
         salt(document);
@@ -57,8 +58,8 @@ describe("digest v3.0", () => {
         ...cloneDeep(sampleDoc),
         nested: {
           "credentialSubject.alumniOf":
-            "0xSomeMaliciousDocumentStore, this would be at nested.credentialSubject.alumniOf after flatMap if uncaught"
-        }
+            "0xSomeMaliciousDocumentStore, this would be at nested.credentialSubject.alumniOf after flatMap if uncaught",
+        },
       };
       expect(() => {
         salt(document);
@@ -67,7 +68,7 @@ describe("digest v3.0", () => {
     test("handles shadowed keys correctly (type 4: nested as object, array index)", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        nested: { "type[1]": "this would be at nested.type[1] after flatMap if uncaught" }
+        nested: { "type[1]": "this would be at nested.type[1] after flatMap if uncaught" },
       };
       expect(() => {
         salt(document);
@@ -76,7 +77,7 @@ describe("digest v3.0", () => {
     test("handles shadowed keys correctly (type 5: nested as array, dot notation)", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        nested: [{ "shadowed.key": "this would be at nested[0].shadowed.key after flatMap if uncaught" }]
+        nested: [{ "shadowed.key": "this would be at nested[0].shadowed.key after flatMap if uncaught" }],
       };
       expect(() => {
         salt(document);
@@ -85,7 +86,7 @@ describe("digest v3.0", () => {
     test("handles shadowed keys correctly (type 6: nested as array, array index)", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        nested: [{ "type[1]": "this would be at nested[0].type[1] after flatMap if uncaught" }]
+        nested: [{ "type[1]": "this would be at nested[0].type[1] after flatMap if uncaught" }],
       };
       expect(() => {
         salt(document);
@@ -95,7 +96,7 @@ describe("digest v3.0", () => {
     test("handles null values correctly", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        grades: null
+        grades: null,
       };
       const salted = salt(document);
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades" }));
@@ -103,7 +104,7 @@ describe("digest v3.0", () => {
     test("handles undefined values correctly", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        grades: undefined
+        grades: undefined,
       };
       expect(() => {
         salt(document);
@@ -112,7 +113,7 @@ describe("digest v3.0", () => {
     test("handles numbers and booleans correctly", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        grades: ["A+", 100, 50.28, true, "B+"]
+        grades: ["A+", 100, 50.28, true, "B+"],
       };
       const salted = salt(document);
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[0]" }));
@@ -124,7 +125,7 @@ describe("digest v3.0", () => {
     test("handles sparse arrays correctly", () => {
       const document = {
         ...cloneDeep(sampleDoc),
-        grades: ["A+", 100, , , , true, "B+"]
+        grades: ["A+", 100, , , , true, "B+"],
       };
       const salted = salt(document);
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[0]" }));
@@ -138,7 +139,7 @@ describe("digest v3.0", () => {
   });
 
   describe("decodeSalt", () => {
-    it("should throw when salt is of wrong length to prevent attack on value ", () => {
+    it("should throw when salt is of wrong length to prevent attack on value", () => {
       const encodedSalt = Base64.encode(
         JSON.stringify([{ path: "foo", value: "123456789012345678901234567890123456789012345678901234567890" }])
       );

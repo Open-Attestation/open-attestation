@@ -8,12 +8,12 @@ const openAttestationDatav2: OpenAttestationDocument & { foo: string } = {
       name: "John",
       identityProof: {
         type: IdentityProofType.DNSTxt,
-        location: "tradetrust.io"
+        location: "tradetrust.io",
       },
-      documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
-    }
+      documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+    },
   ],
-  foo: "bar"
+  foo: "bar",
 };
 
 describe("2.0 E2E Test Scenarios", () => {
@@ -33,9 +33,9 @@ describe("2.0 E2E Test Scenarios", () => {
         issuers: [
           {
             ...openAttestationDatav2.issuers[0],
-            url: "https://some.example.io"
-          }
-        ]
+            url: "https://some.example.io",
+          },
+        ],
       });
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
@@ -54,10 +54,10 @@ describe("2.0 E2E Test Scenarios", () => {
             revocation: { type: RevocationType.None },
             identityProof: {
               type: IdentityProofType.Did,
-              key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller"
-            }
-          }
-        ]
+              key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+            },
+          },
+        ],
       });
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
@@ -77,10 +77,10 @@ describe("2.0 E2E Test Scenarios", () => {
             identityProof: {
               type: IdentityProofType.DNSDid,
               key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-              location: "example.tradetrust.io"
-            }
-          }
-        ]
+              location: "example.tradetrust.io",
+            },
+          },
+        ],
       });
       expect(wrappedDocument.data.foo).toEqual(expect.stringContaining("bar"));
       expect(wrappedDocument.signature.type).toBe("SHA3MerkleProof");
@@ -96,8 +96,8 @@ describe("2.0 E2E Test Scenarios", () => {
         openAttestationDatav2,
         // @ts-expect-error not a valid OpenAttestationDocument
         {
-          laurent: "task force, assemble!!"
-        } as OpenAttestationDocument
+          laurent: "task force, assemble!!",
+        } as OpenAttestationDocument,
       ];
       const action = () => wrapDocuments(malformedDatum);
       expect(action).toThrow("Invalid document");
@@ -105,9 +105,9 @@ describe("2.0 E2E Test Scenarios", () => {
 
     test("creates a batch of documents if all are in the right format", () => {
       const wrappedDocuments = wrapDocuments([openAttestationDatav2, openAttestationDatav2], {
-        externalSchemaId: "http://example.com/schema.json"
+        externalSchemaId: "http://example.com/schema.json",
       });
-      wrappedDocuments.forEach(doc => {
+      wrappedDocuments.forEach((doc) => {
         expect(doc.schema).toBe("http://example.com/schema.json");
         expect(doc.signature.type).toBe("SHA3MerkleProof");
         expect(doc.signature.targetHash).toBeDefined();
@@ -118,24 +118,24 @@ describe("2.0 E2E Test Scenarios", () => {
     });
     test("checks that documents are wrapped correctly", () => {
       const wrappedDocuments = wrapDocuments([openAttestationDatav2, openAttestationDatav2], {
-        externalSchemaId: "http://example.com/schema.json"
+        externalSchemaId: "http://example.com/schema.json",
       });
       const verified = wrappedDocuments.reduce((prev, curr) => verifySignature(curr) && prev, true);
       expect(verified).toBe(true);
     });
     test("checks that documents conforms to the schema", () => {
       const wrappedDocuments = wrapDocuments([openAttestationDatav2, openAttestationDatav2], {
-        externalSchemaId: "http://example.com/schema.json"
+        externalSchemaId: "http://example.com/schema.json",
       });
       const validatedSchema = wrappedDocuments.reduce((prev: boolean, curr: any) => validateSchema(curr) && prev, true);
       expect(validatedSchema).toBe(true);
     });
     test("does not allow for same merkle root to be generated", () => {
       const wrappedDocuments = wrapDocuments([openAttestationDatav2, openAttestationDatav2], {
-        externalSchemaId: "http://example.com/schema.json"
+        externalSchemaId: "http://example.com/schema.json",
       });
       const newWrappedDocuments = wrapDocuments([openAttestationDatav2, openAttestationDatav2], {
-        externalSchemaId: "http://example.com/schema.json"
+        externalSchemaId: "http://example.com/schema.json",
       });
       expect(wrappedDocuments[0].signature.merkleRoot).not.toBe(newWrappedDocuments[0].signature.merkleRoot);
     });
@@ -148,14 +148,14 @@ describe("2.0 E2E Test Scenarios", () => {
           version: "abababa" as SchemaId,
           schema: "http://example.com/schemaV3.json",
           data: {
-            key: 2
+            key: 2,
           },
           signature: {
             merkleRoot: "0xabc",
             proofs: [],
             targetHash: "0xabc",
-            type: "SHA3MerkleProof"
-          }
+            type: "SHA3MerkleProof",
+          },
         });
       expect(action).toThrow("No schema validator provided");
     });
@@ -170,41 +170,41 @@ describe("2.0 E2E Test Scenarios", () => {
                 documentStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
                 identityProof: {
                   location: "aa.com",
-                  type: "DNS-TXT"
-                }
-              }
+                  type: "DNS-TXT",
+                },
+              },
             ],
-            key: 2
+            key: 2,
           },
           signature: {
             type: "SHA3MerkleProof",
             targetHash: "0xabcd",
             proof: [],
-            merkleRoot: "0xabcd"
-          }
+            merkleRoot: "0xabcd",
+          },
         })
       ).toStrictEqual(true);
     });
     test("should default to 2.0 when document is valid and version is undefined", () => {
       expect(
         validateSchema({
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore run test with version being undefined to only ignore that part
           version: undefined,
           data: {
             issuers: [
               {
                 name: "issuer.name",
-                certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
-              }
-            ]
+                certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+              },
+            ],
           },
           signature: {
             merkleRoot: "0xabc",
             proof: [],
             targetHash: "0xabc",
-            type: "SHA3MerkleProof"
-          }
+            type: "SHA3MerkleProof",
+          },
         })
       ).toStrictEqual(true);
     });

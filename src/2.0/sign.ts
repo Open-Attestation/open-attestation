@@ -19,10 +19,10 @@ export const signDocument = async <T extends OpenAttestationDocument>(
     verificationMethod: SigningKey.guard(keyOrSigner)
       ? keyOrSigner.public
       : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
-    signature
+    signature,
   };
   return {
     ...document,
-    proof: isSignedWrappedV2Document(document) ? [...document.proof, proof] : [proof]
+    proof: isSignedWrappedV2Document(document) ? [...document.proof, proof] : [proof],
   };
 };

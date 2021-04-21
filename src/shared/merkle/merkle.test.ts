@@ -26,7 +26,7 @@ describe("merkle", () => {
     });
 
     test("check if proof is valid for all items", () => {
-      arr.forEach(i => {
+      arr.forEach((i) => {
         const hash = keccak256(JSON.stringify(i));
         const proof = tree.getProof(i);
         const checkResults = checkProof(proof, tree.getRoot(), hash);

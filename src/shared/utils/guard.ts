@@ -3,13 +3,13 @@ import {
   OpenAttestationDocument as OpenAttestationDocumentV3,
   VerifiableCredentialWrappedProof,
   VerifiableCredentialSignedProof,
-  WrappedDocument as WrappedDocumentV3
+  WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
 import {
   ArrayProof,
   OpenAttestationDocument as OpenAttestationDocumentV2,
   Signature,
-  WrappedDocument as WrappedDocumentV2
+  WrappedDocument as WrappedDocumentV2,
 } from "../../2.0/types";
 import { getSchema, validateSchema as validate } from "../validate";
 

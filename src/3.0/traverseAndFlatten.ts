@@ -16,7 +16,7 @@ export function traverseAndFlatten<T>(data: any, { iteratee, path = "" }: Option
   }
   // Since null datas are allowed but typeof null === "object", the "&& data" is used to skip this
   if (typeof data === "object" && data) {
-    return Object.keys(data).flatMap(key =>
+    return Object.keys(data).flatMap((key) =>
       traverseAndFlatten(data[key], { iteratee, path: path ? `${path}.${key}` : key })
     );
   }

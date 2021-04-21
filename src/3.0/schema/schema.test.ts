@@ -1,4 +1,4 @@
-/* eslint-disable jest/no-try-expect */
+/* eslint-disable jest/no-try-expect,jest/no-conditional-expect */
 import { cloneDeep, omit, set } from "lodash";
 import { __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument } from "../../index";
 import { $id } from "./schema.json";
@@ -14,7 +14,7 @@ describe("schema/3.0", () => {
     const document = cloneDeep(sampleDoc);
     const wrappedDocument = await wrapDocument(document, {
       externalSchemaId: $id,
-      version: SchemaId.v3
+      version: SchemaId.v3,
     });
     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
   });
@@ -22,7 +22,7 @@ describe("schema/3.0", () => {
     const document = { ...cloneDeep(sampleDoc), key1: "some" };
     const wrappedDocument = await wrapDocument(document, {
       externalSchemaId: $id,
-      version: SchemaId.v3
+      version: SchemaId.v3,
     });
     expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
   });
@@ -39,7 +39,7 @@ describe("schema/3.0", () => {
     it("should be invalid when @context is a string", async () => {
       // @context MUST be an ordered set in W3C VC data model, see https://www.w3.org/TR/vc-data-model/#contexts
       const document = { ...cloneDeep(sampleDoc), "@context": "https://www.w3.org/2018/credentials/v1" };
-      // @ts-expect-error
+      // @ts-expect-error object is not valid
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
@@ -48,8 +48,8 @@ describe("schema/3.0", () => {
             dataPath: "['@context']",
             schemaPath: "#/properties/%40context/type",
             params: { type: "array" },
-            message: "should be array"
-          }
+            message: "should be array",
+          },
         ]
       );
     });
@@ -57,7 +57,7 @@ describe("schema/3.0", () => {
       // This should not have AJV validation errors as it's only caught during validateW3C
       const document = {
         ...cloneDeep(sampleDoc),
-        "@context": ["https://www.w3.org/2018/credentials/examples/v1", "https://www.w3.org/2018/credentials/v1"]
+        "@context": ["https://www.w3.org/2018/credentials/examples/v1", "https://www.w3.org/2018/credentials/v1"],
       };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
         "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
@@ -75,8 +75,8 @@ describe("schema/3.0", () => {
             dataPath: "['@context'][1]",
             schemaPath: "#/properties/%40context/items/format",
             params: { format: "uri" },
-            message: 'should match format "uri"'
-          }
+            message: 'should match format "uri"',
+          },
         ]
       );
     });
@@ -88,7 +88,7 @@ describe("schema/3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "id") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -112,8 +112,8 @@ describe("schema/3.0", () => {
             dataPath: ".id",
             schemaPath: "#/properties/id/format",
             params: { format: "uri" },
-            message: 'should match format "uri"'
-          }
+            message: 'should match format "uri"',
+          },
         ]
       );
     });
@@ -126,7 +126,7 @@ describe("schema/3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "reference") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -153,8 +153,8 @@ describe("schema/3.0", () => {
             keyword: "type",
             message: "should be string",
             params: { type: "string" },
-            schemaPath: "#/properties/reference/type"
-          }
+            schemaPath: "#/properties/reference/type",
+          },
         ]
       );
     });
@@ -167,7 +167,7 @@ describe("schema/3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "name") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -192,8 +192,8 @@ describe("schema/3.0", () => {
             keyword: "type",
             message: "should be string",
             params: { type: "string" },
-            schemaPath: "#/properties/name/type"
-          }
+            schemaPath: "#/properties/name/type",
+          },
         ]
       );
     });
@@ -213,26 +213,26 @@ describe("schema/3.0", () => {
             keyword: "type",
             message: "should be array",
             params: { type: "array" },
-            schemaPath: "#/definitions/type/oneOf/0/type"
+            schemaPath: "#/definitions/type/oneOf/0/type",
           },
           {
             dataPath: ".type",
             keyword: "type",
             message: "should be string",
             params: {
-              type: "string"
+              type: "string",
             },
-            schemaPath: "#/definitions/type/oneOf/1/type"
+            schemaPath: "#/definitions/type/oneOf/1/type",
           },
           {
             dataPath: ".type",
             keyword: "oneOf",
             message: "should match exactly one schema in oneOf",
             params: {
-              passingSchemas: null
+              passingSchemas: null,
             },
-            schemaPath: "#/definitions/type/oneOf"
-          }
+            schemaPath: "#/definitions/type/oneOf",
+          },
         ]
       );
     });
@@ -261,7 +261,7 @@ describe("schema/3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "validFrom") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -287,8 +287,8 @@ describe("schema/3.0", () => {
             keyword: "type",
             message: "should be string",
             params: { type: "string" },
-            schemaPath: "#/properties/validFrom/type"
-          }
+            schemaPath: "#/properties/validFrom/type",
+          },
         ]
       );
     });
@@ -304,8 +304,8 @@ describe("schema/3.0", () => {
             dataPath: ".validFrom",
             schemaPath: "#/properties/validFrom/format",
             params: { format: "date-time" },
-            message: 'should match format "date-time"'
-          }
+            message: 'should match format "date-time"',
+          },
         ]
       );
     });
@@ -318,7 +318,7 @@ describe("schema/3.0", () => {
       const document = { ...omit(cloneDeep(sampleDoc), "validUntil") };
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
-        version: SchemaId.v3
+        version: SchemaId.v3,
       });
       expect(wrappedDocument.schema).toBe(SchemaId.v3);
     });
@@ -343,8 +343,8 @@ describe("schema/3.0", () => {
             keyword: "type",
             message: "should be string",
             params: { type: "string" },
-            schemaPath: "#/properties/validUntil/type"
-          }
+            schemaPath: "#/properties/validUntil/type",
+          },
         ]
       );
     });
@@ -359,8 +359,8 @@ describe("schema/3.0", () => {
             dataPath: ".validUntil",
             schemaPath: "#/properties/validUntil/format",
             params: { format: "date-time" },
-            message: 'should match format "date-time"'
-          }
+            message: 'should match format "date-time"',
+          },
         ]
       );
     });
@@ -400,8 +400,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/additionalProperties",
             params: { additionalProperty: "key" },
-            message: "should NOT have additional properties"
-          }
+            message: "should NOT have additional properties",
+          },
         ]
       );
     });
@@ -416,8 +416,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/required",
             params: { missingProperty: "name" },
-            message: "should have required property 'name'"
-          }
+            message: "should have required property 'name'",
+          },
         ]
       );
     });
@@ -432,8 +432,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/required",
             params: { missingProperty: "type" },
-            message: "should have required property 'type'"
-          }
+            message: "should have required property 'type'",
+          },
         ]
       );
     });
@@ -450,8 +450,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.template.type",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/properties/type/enum",
             params: { allowedValues: ["EMBEDDED_RENDERER"] },
-            message: "should be equal to one of the allowed values"
-          }
+            message: "should be equal to one of the allowed values",
+          },
         ]);
       }
     });
@@ -470,8 +470,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/required",
             params: { missingProperty: "url" },
-            message: "should have required property 'url'"
-          }
+            message: "should have required property 'url'",
+          },
         ]);
       }
     });
@@ -489,8 +489,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.template.url",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/properties/url/pattern",
             params: { pattern: "^(https?)://" },
-            message: 'should match pattern "^(https?)://"'
-          }
+            message: 'should match pattern "^(https?)://"',
+          },
         ]);
       }
     });
@@ -501,7 +501,7 @@ describe("schema/3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
 
-        issuer: { ...sample.issuer, id: "http://example.com" }
+        issuer: { ...sample.issuer, id: "http://example.com" },
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -520,22 +520,22 @@ describe("schema/3.0", () => {
             dataPath: ".issuer",
             schemaPath: "#/definitions/issuer/additionalProperties",
             params: { additionalProperty: "key" },
-            message: "should NOT have additional properties"
+            message: "should NOT have additional properties",
           },
           {
             keyword: "type",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string"
+            message: "should be string",
           },
           {
             keyword: "oneOf",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf"
-          }
+            message: "should match exactly one schema in oneOf",
+          },
         ]);
       }
     });
@@ -553,22 +553,22 @@ describe("schema/3.0", () => {
             dataPath: ".issuer.id",
             schemaPath: "#/definitions/issuer/properties/id/format",
             params: { format: "uri" },
-            message: 'should match format "uri"'
+            message: 'should match format "uri"',
           },
           {
             keyword: "type",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string"
+            message: "should be string",
           },
           {
             keyword: "oneOf",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf"
-          }
+            message: "should match exactly one schema in oneOf",
+          },
         ]);
       }
     });
@@ -587,8 +587,8 @@ describe("schema/3.0", () => {
             dataPath: "",
             schemaPath: "#/required",
             params: { missingProperty: "issuer" },
-            message: "should have required property 'issuer'"
-          }
+            message: "should have required property 'issuer'",
+          },
         ]);
       }
     });
@@ -608,22 +608,22 @@ describe("schema/3.0", () => {
             dataPath: ".issuer",
             schemaPath: "#/definitions/issuer/required",
             params: { missingProperty: "name" },
-            message: "should have required property 'name'"
+            message: "should have required property 'name'",
           },
           {
             keyword: "type",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string"
+            message: "should be string",
           },
           {
             keyword: "oneOf",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf"
-          }
+            message: "should match exactly one schema in oneOf",
+          },
         ]);
       }
     });
@@ -643,22 +643,22 @@ describe("schema/3.0", () => {
             dataPath: ".issuer",
             schemaPath: "#/definitions/issuer/required",
             params: { missingProperty: "id" },
-            message: "should have required property 'id'"
+            message: "should have required property 'id'",
           },
           {
             keyword: "type",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string"
+            message: "should be string",
           },
           {
             keyword: "oneOf",
             dataPath: ".issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf"
-          }
+            message: "should match exactly one schema in oneOf",
+          },
         ]);
       }
     });
@@ -679,8 +679,8 @@ describe("schema/3.0", () => {
               dataPath: ".openAttestationMetadata.identityProof",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/required",
               params: { missingProperty: "type" },
-              message: "should have required property 'type'"
-            }
+              message: "should have required property 'type'",
+            },
           ])
         );
       }
@@ -702,8 +702,8 @@ describe("schema/3.0", () => {
               dataPath: ".openAttestationMetadata.identityProof.type",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/properties/type/enum",
               params: { allowedValues: ["DNS-TXT", "DNS-DID", "DID"] },
-              message: "should be equal to one of the allowed values"
-            }
+              message: "should be equal to one of the allowed values",
+            },
           ])
         );
       }
@@ -725,8 +725,8 @@ describe("schema/3.0", () => {
               dataPath: ".openAttestationMetadata.identityProof",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/required",
               params: { missingProperty: "identifier" },
-              message: "should have required property 'identifier'"
-            }
+              message: "should have required property 'identifier'",
+            },
           ])
         );
       }
@@ -752,7 +752,7 @@ describe("schema/3.0", () => {
       const document = cloneDeep(sampleDoc);
       document.openAttestationMetadata.identityProof = {
         type: IdentityProofType.DNSDid,
-        identifier: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a"
+        identifier: "did:ethr:0xb9c5714089478a327f09197987f16f9e5d936e8a",
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -789,8 +789,8 @@ describe("schema/3.0", () => {
               keyword: "additionalProperties",
               message: "should NOT have additional properties",
               params: { additionalProperty: "key" },
-              schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/additionalProperties"
-            }
+              schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/additionalProperties",
+            },
           ])
         );
       }
@@ -812,8 +812,8 @@ describe("schema/3.0", () => {
               keyword: "required",
               message: "should have required property 'identityProof'",
               params: { missingProperty: "identityProof" },
-              schemaPath: "#/properties/openAttestationMetadata/required"
-            }
+              schemaPath: "#/properties/openAttestationMetadata/required",
+            },
           ])
         );
       }
@@ -833,8 +833,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.proof",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/required",
             params: { missingProperty: "type" },
-            message: "should have required property 'type'"
-          }
+            message: "should have required property 'type'",
+          },
         ]);
       }
     });
@@ -854,8 +854,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.proof.type",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/properties/type/enum",
             params: { allowedValues: ["OpenAttestationProofMethod"] },
-            message: "should be equal to one of the allowed values"
-          }
+            message: "should be equal to one of the allowed values",
+          },
         ]);
       }
     });
@@ -874,8 +874,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.proof",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/required",
             params: { missingProperty: "method" },
-            message: "should have required property 'method'"
-          }
+            message: "should have required property 'method'",
+          },
         ]);
       }
     });
@@ -895,8 +895,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.proof.method",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/properties/method/enum",
             params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE", "DID"] },
-            message: "should be equal to one of the allowed values"
-          }
+            message: "should be equal to one of the allowed values",
+          },
         ]);
       }
     });
@@ -915,8 +915,8 @@ describe("schema/3.0", () => {
             dataPath: ".openAttestationMetadata.proof",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/required",
             params: { missingProperty: "value" },
-            message: "should have required property 'value'"
-          }
+            message: "should have required property 'value'",
+          },
         ]);
       }
     });
@@ -928,8 +928,8 @@ describe("schema/3.0", () => {
         ...cloneDeep(sampleDoc),
         credentialStatus: {
           id: "https://example.edu/status/24",
-          type: "CredentialStatusList2017"
-        }
+          type: "CredentialStatusList2017",
+        },
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -939,8 +939,8 @@ describe("schema/3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         credentialStatus: {
-          type: "CredentialStatusList2017"
-        }
+          type: "CredentialStatusList2017",
+        },
       };
 
       try {
@@ -954,8 +954,8 @@ describe("schema/3.0", () => {
             dataPath: ".credentialStatus",
             schemaPath: "#/properties/credentialStatus/required",
             params: { missingProperty: "id" },
-            message: "should have required property 'id'"
-          }
+            message: "should have required property 'id'",
+          },
         ]);
       }
     });
@@ -964,8 +964,8 @@ describe("schema/3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         credentialStatus: {
-          id: "https://example.edu/status/24"
-        }
+          id: "https://example.edu/status/24",
+        },
       };
 
       try {
@@ -979,8 +979,8 @@ describe("schema/3.0", () => {
             dataPath: ".credentialStatus",
             schemaPath: "#/properties/credentialStatus/required",
             params: { missingProperty: "type" },
-            message: "should have required property 'type'"
-          }
+            message: "should have required property 'type'",
+          },
         ]);
       }
     });
@@ -991,7 +991,7 @@ describe("schema/3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         // @ts-expect-error attachments is possibly undefined
-        attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }]
+        attachments: [{ ...sampleDoc.attachments[0], mimeType: "application/pdf" }],
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -1000,7 +1000,7 @@ describe("schema/3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         // @ts-expect-error attachments is possibly undefined
-        attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }]
+        attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/png" }],
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -1009,7 +1009,7 @@ describe("schema/3.0", () => {
       const document = {
         ...cloneDeep(sampleDoc),
         // @ts-expect-error attachments is possibly undefined
-        attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }]
+        attachments: [{ ...sampleDoc.attachments[0], mimeType: "image/jpeg" }],
       };
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -1030,8 +1030,8 @@ describe("schema/3.0", () => {
             dataPath: ".attachments[0]",
             schemaPath: "#/properties/attachments/items/additionalProperties",
             params: { additionalProperty: "key" },
-            message: "should NOT have additional properties"
-          }
+            message: "should NOT have additional properties",
+          },
         ]);
       }
     });
@@ -1051,8 +1051,8 @@ describe("schema/3.0", () => {
             dataPath: ".attachments[0]",
             schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "fileName" },
-            message: "should have required property 'fileName'"
-          }
+            message: "should have required property 'fileName'",
+          },
         ]);
       }
     });
@@ -1072,8 +1072,8 @@ describe("schema/3.0", () => {
             dataPath: ".attachments[0]",
             schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "mimeType" },
-            message: "should have required property 'mimeType'"
-          }
+            message: "should have required property 'mimeType'",
+          },
         ]);
       }
     });
@@ -1093,8 +1093,8 @@ describe("schema/3.0", () => {
             dataPath: ".attachments[0]",
             schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "data" },
-            message: "should have required property 'data'"
-          }
+            message: "should have required property 'data'",
+          },
         ]);
       }
     });

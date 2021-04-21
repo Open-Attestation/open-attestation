@@ -20,18 +20,9 @@ const timeSecFrac = /(\.[0-9]+)?/;
 const timeNumOffset = new RegExp("[-+]".concat(timeHour.source, ":").concat(timeMinute.source));
 const timeOffset = new RegExp("([zZ]|".concat(timeNumOffset.source, ")"));
 const partialTime = new RegExp(
-  ""
-    .concat(timeHour.source, ":")
-    .concat(timeMinute.source, ":")
-    .concat(timeSecond.source)
-    .concat(timeSecFrac.source)
+  "".concat(timeHour.source, ":").concat(timeMinute.source, ":").concat(timeSecond.source).concat(timeSecFrac.source)
 );
-const fullDate = new RegExp(
-  ""
-    .concat(dateFullYear.source, "-")
-    .concat(dateMonth.source, "-")
-    .concat(dateMDay.source)
-);
+const fullDate = new RegExp("".concat(dateFullYear.source, "-").concat(dateMonth.source, "-").concat(dateMDay.source));
 const fullTime = new RegExp("".concat(partialTime.source).concat(timeOffset.source));
 const rfc3339 = new RegExp("".concat(fullDate.source, "[ tT]").concat(fullTime.source));
 
@@ -52,7 +43,7 @@ const preloadedContextList = [
   "https://www.w3.org/2018/credentials/examples/v1",
   "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json",
   "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
-  "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
+  "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
 ];
 const contexts: Map<string, Promise<any>> = new Map();
 const nodeDocumentLoader = documentLoaders.node();
@@ -72,7 +63,7 @@ const contextLoader = () => {
       return {
         contextUrl: undefined, // this is for a context via a link header
         document: await promise, // this is the actual document that was loaded
-        documentUrl: url // this is the actual context URL after redirects
+        documentUrl: url, // this is the actual context URL after redirects
       };
     } else {
       const promise = nodeDocumentLoader(url);
@@ -119,11 +110,11 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
   }
 
   await expand(credential, {
-    expansionMap: info => {
+    expansionMap: (info) => {
       if (info.unmappedProperty) {
         throw new Error("The property '" + info.unmappedProperty + "' in the input was not defined in the context");
       }
     },
-    documentLoader
+    documentLoader,
   });
 }

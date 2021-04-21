@@ -22,7 +22,7 @@ export function bufSortJoin(...args: Buffer[]): Buffer {
 
 // If hash is not a buffer, convert it to buffer (without hashing it)
 export function hashToBuffer(hash: Hash): Buffer {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore https://github.com/Microsoft/TypeScript/issues/23155
   return Buffer.isBuffer(hash) && hash.length === 32 ? hash : Buffer.from(hash, "hex");
 }
@@ -35,7 +35,7 @@ export function toBuffer(element: any): Buffer {
  * Turns array of data into sorted array of hashes
  */
 export function hashArray(arr: any[]) {
-  return arr.map(i => toBuffer(i)).sort(Buffer.compare);
+  return arr.map((i) => toBuffer(i)).sort(Buffer.compare);
 }
 
 /**
@@ -70,7 +70,7 @@ export function combineHashString(first?: string, second?: string): string {
 export function getIssuerAddress(document: any): any {
   if (isWrappedV2Document(document)) {
     const data = getData(document);
-    return data.issuers.map(issuer => issuer.certificateStore || issuer.documentStore || issuer.tokenRegistry);
+    return data.issuers.map((issuer) => issuer.certificateStore || issuer.documentStore || issuer.tokenRegistry);
   } else if (isWrappedV3Document(document)) {
     return document.openAttestationMetadata.proof.value;
   }

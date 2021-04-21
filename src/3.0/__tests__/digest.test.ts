@@ -38,7 +38,7 @@ describe("digest v3.0", () => {
     test("digests a document when multiple element are obfuscated", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, [
         "issuer.id",
-        "credentialSubject"
+        "credentialSubject",
       ]);
       const digest = digestCredential(
         obfuscatedVerifiableCredential,
@@ -62,7 +62,7 @@ describe("digest v3.0", () => {
     test("digests a document with no visible content correctly", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(
         verifiableCredential,
-        Object.keys(verifiableCredential).filter(k => k != "proof")
+        Object.keys(verifiableCredential).filter((k) => k != "proof")
       );
       const digest = digestCredential(
         obfuscatedVerifiableCredential,

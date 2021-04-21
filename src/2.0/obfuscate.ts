@@ -10,19 +10,19 @@ export const obfuscateData = (_data: any, fields: string[] | string) => {
 
   // Obfuscate data by hashing them with the key
   const dataToObfuscate: any = flatten(pick(data, fieldsToRemove));
-  const obfuscatedData = Object.keys(dataToObfuscate).map(k => {
+  const obfuscatedData = Object.keys(dataToObfuscate).map((k) => {
     const obj: any = {};
     obj[k] = dataToObfuscate[k];
     return toBuffer(obj).toString("hex");
   });
 
   // Return remaining data
-  fieldsToRemove.forEach(path => {
+  fieldsToRemove.forEach((path) => {
     unset(data, path);
   });
   return {
     data,
-    obfuscatedData
+    obfuscatedData,
   };
 };
 
@@ -41,7 +41,7 @@ export const obfuscateDocument = <T extends OpenAttestationDocument = OpenAttest
     data,
     privacy: {
       ...document.privacy,
-      obfuscatedData: newObfuscatedData
-    }
+      obfuscatedData: newObfuscatedData,
+    },
   };
 };

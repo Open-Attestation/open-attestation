@@ -12,14 +12,14 @@ const obfuscate = (_data: WrappedDocument<OpenAttestationDocument>, fields: stri
   // fields to remove will contain the list of each expanded keys from the fields passed in parameter, it's for instance useful in case of
   // object obfuscation, where the object itself is not part of the salts, but each individual keys are
   const fieldsToRemove: string[] = traverseAndFlatten(pick(data, fieldsAsArray), {
-    iteratee: ({ path }) => path
+    iteratee: ({ path }) => path,
   });
   const salts = decodeSalt(data.proof.salts);
 
   // Obfuscate data by hashing them with the key
-  const obfuscatedData = fieldsToRemove.map(field => {
+  const obfuscatedData = fieldsToRemove.map((field) => {
     const value = get(data, field);
-    const salt = salts.find(s => s.path === field);
+    const salt = salts.find((s) => s.path === field);
 
     if (!salt) {
       throw new Error(`Salt not found for ${field}`);
@@ -28,12 +28,12 @@ const obfuscate = (_data: WrappedDocument<OpenAttestationDocument>, fields: stri
     return toBuffer({ [salt.path]: `${salt.value}:${value}` }).toString("hex");
   });
   // remove fields from the object
-  fieldsAsArray.forEach(field => unset(data, field));
+  fieldsAsArray.forEach((field) => unset(data, field));
 
-  data.proof.salts = encodeSalt(salts.filter(s => !fieldsToRemove.includes(s.path)));
+  data.proof.salts = encodeSalt(salts.filter((s) => !fieldsToRemove.includes(s.path)));
   return {
     data,
-    obfuscatedData
+    obfuscatedData,
   };
 };
 
@@ -50,8 +50,8 @@ export const obfuscateVerifiableCredential = (
       ...data.proof,
       privacy: {
         ...data.proof.privacy,
-        obfuscated: newObfuscatedData
-      }
-    }
+        obfuscated: newObfuscatedData,
+      },
+    },
   };
 };

@@ -2,7 +2,7 @@ import {
   OpenAttestationDocument,
   SignedWrappedDocument,
   VerifiableCredentialSignedProof,
-  WrappedDocument
+  WrappedDocument,
 } from "./types";
 import { sign } from "../shared/signer";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "../shared/@types/sign";
@@ -20,7 +20,7 @@ export const signDocument = async <T extends OpenAttestationDocument>(
   const proof: VerifiableCredentialSignedProof = {
     ...document.proof,
     key: SigningKey.guard(keyOrSigner) ? keyOrSigner.public : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
-    signature
+    signature,
   };
   return { ...document, proof };
 };

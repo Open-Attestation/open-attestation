@@ -14,7 +14,7 @@ const createDocument = <T extends OpenAttestationDocument = OpenAttestationDocum
 ): SchematisedDocument<T> => {
   const documentSchema: SchematisedDocument<T> = {
     version: SchemaId.v2,
-    data: saltData(data)
+    data: saltData(data),
   };
   if (option?.externalSchemaId) {
     documentSchema.schema = option.externalSchemaId;
@@ -37,7 +37,7 @@ export const wrapDocument = <T extends OpenAttestationDocument = OpenAttestation
     type: "SHA3MerkleProof",
     targetHash: digest,
     proof: [],
-    merkleRoot: digest
+    merkleRoot: digest,
   };
 
   return { ...document, signature };
@@ -48,14 +48,14 @@ export const wrapDocuments = <T extends OpenAttestationDocument = OpenAttestatio
   options?: WrapDocumentOptionV2
 ): WrappedDocument<T>[] => {
   // wrap documents individually
-  const documents = data.map(d => wrapDocument(d, options));
+  const documents = data.map((d) => wrapDocument(d, options));
 
   // get all the target hashes to compute the merkle tree and the merkle root
-  const merkleTree = new MerkleTree(documents.map(document => document.signature.targetHash).map(hashToBuffer));
+  const merkleTree = new MerkleTree(documents.map((document) => document.signature.targetHash).map(hashToBuffer));
   const merkleRoot = merkleTree.getRoot().toString("hex");
 
   // for each document, update the merkle root and add the proofs needed
-  return documents.map(document => {
+  return documents.map((document) => {
     const merkleProof = merkleTree
       .getProof(hashToBuffer(document.signature.targetHash))
       .map((buffer: Buffer) => buffer.toString("hex"));
@@ -64,8 +64,8 @@ export const wrapDocuments = <T extends OpenAttestationDocument = OpenAttestatio
       signature: {
         ...document.signature,
         proof: merkleProof,
-        merkleRoot
-      }
+        merkleRoot,
+      },
     };
   });
 };

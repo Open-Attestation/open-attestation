@@ -18,7 +18,7 @@ const openAttestationData: OpenAttestationDocument = {
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
     "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
-    "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json"
+    "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
   ],
   issuanceDate: "2010-01-01T19:23:24Z",
   name: "document owner name",
@@ -29,44 +29,44 @@ const openAttestationData: OpenAttestationDocument = {
     array: ["one", "two", "three", "four"],
     arrayOfObject: [
       { foo: "bar", doo: "foo" },
-      { foo: "baz", doo: "faz" }
-    ]
+      { foo: "baz", doo: "faz" },
+    ],
   },
   issuer: "https://example.edu/issuers/14",
   openAttestationMetadata: {
     proof: {
       type: ProofType.OpenAttestationProofMethod,
       value: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-      method: Method.TokenRegistry
+      method: Method.TokenRegistry,
     },
     identityProof: {
       identifier: "some.example",
-      type: v3.IdentityProofType.DNSTxt
-    }
+      type: v3.IdentityProofType.DNSTxt,
+    },
   },
   attachments: [
     {
       mimeType: "image/png",
       fileName: "aaa",
-      data: "abcd"
+      data: "abcd",
     },
     {
       mimeType: "image/png",
       fileName: "bbb",
-      data: "abcd"
-    }
-  ]
+      data: "abcd",
+    },
+  ],
 };
 
 const testData = {
   key1: "value1",
   key2: "value2",
   keyObject: { foo: "bar", bar: "dod" },
-  ...openAttestationData
+  ...openAttestationData,
 };
 
 const findSaltByPath = (salts: string, path: string): Salt | undefined => {
-  return decodeSalt(salts).find(salt => salt.path === path);
+  return decodeSalt(salts).find((salt) => salt.path === path);
 };
 
 /**
@@ -112,7 +112,7 @@ describe("privacy", () => {
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
-      expectedFieldsToBeRemoved.forEach(field => {
+      expectedFieldsToBeRemoved.forEach((field) => {
         expectRemovedFieldsWithoutArrayNotation(field, newDocument, obfuscatedDocument);
       });
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(2);
@@ -132,7 +132,7 @@ describe("privacy", () => {
         toBuffer({ [field]: `${salt?.value}:${value}` }).toString("hex")
       );
       expect(findSaltByPath(obfuscatedDocument.proof.salts, field)).toBeUndefined();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       expect(obfuscatedDocument.credentialSubject.arrayOfObject![0]).toStrictEqual({ doo: "foo" });
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(1);
@@ -141,7 +141,7 @@ describe("privacy", () => {
       const field = "credentialSubject.arrayOfObject[0]";
       const expectedFieldsToBeRemoved = [
         "credentialSubject.arrayOfObject[0].foo",
-        "credentialSubject.arrayOfObject[0].doo"
+        "credentialSubject.arrayOfObject[0].doo",
       ];
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
@@ -149,7 +149,7 @@ describe("privacy", () => {
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
-      expectedFieldsToBeRemoved.forEach(field => {
+      expectedFieldsToBeRemoved.forEach((field) => {
         const value = get(newDocument, field);
         const salt = findSaltByPath(newDocument.proof.salts, field);
 
@@ -158,10 +158,10 @@ describe("privacy", () => {
         );
         expect(findSaltByPath(obfuscatedDocument.proof.salts, field)).toBeUndefined();
       });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       expect(obfuscatedDocument.credentialSubject.arrayOfObject![0]).toBeUndefined();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       expect(obfuscatedDocument.credentialSubject.arrayOfObject![1]).not.toBeUndefined(); // let's make sure only the first item has been removed
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(2);
@@ -174,7 +174,7 @@ describe("privacy", () => {
         "attachments[0].data",
         "attachments[1].mimeType",
         "attachments[1].fileName",
-        "attachments[1].data"
+        "attachments[1].data",
       ];
       const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
       const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, field);
@@ -182,7 +182,7 @@ describe("privacy", () => {
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
-      expectedFieldsToBeRemoved.forEach(field => {
+      expectedFieldsToBeRemoved.forEach((field) => {
         const value = get(newDocument, field);
         const salt = findSaltByPath(newDocument.proof.salts, field);
 
@@ -202,7 +202,7 @@ describe("privacy", () => {
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
-      fields.forEach(field => {
+      fields.forEach((field) => {
         expectRemovedFieldsWithoutArrayNotation(field, newDocument, obfuscatedDocument);
       });
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(2);
@@ -227,21 +227,21 @@ describe("privacy", () => {
       expect(verified).toBe(true);
 
       const salts = decodeSalt(newDocument.proof.salts);
-      const salt1 = salts.find(s => s.path === fields[0]);
+      const salt1 = salts.find((s) => s.path === fields[0]);
       const value1 = get(newDocument, fields[0]);
-      const salt2 = salts.find(s => s.path === fields[1]);
+      const salt2 = salts.find((s) => s.path === fields[1]);
       const value2 = get(newDocument, fields[1]);
 
       expect(obfuscatedDocument.proof.privacy.obfuscated).toEqual([
         toBuffer({ [fields[0]]: `${salt1?.value}:${value1}` }).toString("hex"),
-        toBuffer({ [fields[1]]: `${salt2?.value}:${value2}` }).toString("hex")
+        toBuffer({ [fields[1]]: `${salt2?.value}:${value2}` }).toString("hex"),
       ]);
       expect(findSaltByPath(obfuscatedDocument.proof.salts, fields[0])).toBeUndefined();
       expect(findSaltByPath(obfuscatedDocument.proof.salts, fields[1])).toBeUndefined();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore not typable
       expect(obfuscatedDocument.credentialSubject.array).not.toContain("three");
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore not typable
       expect(obfuscatedDocument.credentialSubject.array).not.toContain("four");
     });

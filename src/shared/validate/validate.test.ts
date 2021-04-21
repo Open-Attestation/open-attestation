@@ -8,11 +8,11 @@ const schema = {
   type: "object",
   properties: {
     key1: {
-      type: "number"
-    }
+      type: "number",
+    },
   },
   required: ["key1"],
-  additionalProperties: true
+  additionalProperties: true,
 };
 
 describe("validate", () => {
@@ -22,10 +22,10 @@ describe("validate", () => {
         schema: "http://example.com/schema.json",
         data: {
           //@ts-expect-error it's not an open attestation document
-          key1: 2
-        }
+          key1: 2,
+        },
       };
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore ignore typescript for this test
       const valid = () => validateSchema(document);
       expect(valid).toThrow("No schema validator provided");
@@ -37,8 +37,8 @@ describe("validate", () => {
         const document = {
           schema: "http://example.com/schema.json",
           data: {
-            key1: 2
-          }
+            key1: 2,
+          },
         };
         expect(validateSchema(document, ajv.compile(schema))).toStrictEqual([]);
       });
@@ -48,8 +48,8 @@ describe("validate", () => {
         const document = {
           schema: "http://example.com/schema.json",
           data: {
-            key: 2
-          }
+            key: 2,
+          },
         };
         expect(validateSchema(document, ajv.compile(schema))).toMatchInlineSnapshot(`
           Array [
