@@ -4,7 +4,7 @@ import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__ge
 import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { unsaltData } from "../../2.0/salt";
-import Ajv from "ajv";
+import { ErrorObject } from "ajv";
 import { isWrappedV2Document, isWrappedV3Document } from "./guard";
 
 export type Hash = string | Buffer;
@@ -93,7 +93,7 @@ export const getMerkleRoot = (document: any): string => {
 };
 
 export class SchemaValidationError extends Error {
-  constructor(message: string, public validationErrors: Ajv.ErrorObject[], public document: any) {
+  constructor(message: string, public validationErrors: ErrorObject[], public document: any) {
     super(message);
   }
 }

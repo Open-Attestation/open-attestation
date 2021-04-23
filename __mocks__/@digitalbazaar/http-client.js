@@ -1,4 +1,6 @@
 /* eslint-disable */
+// add mock to fix https://github.com/digitalbazaar/jsonld.js/issues/451
+// this is just a copy of the content of https://github.com/digitalbazaar/http-client/blob/master/main.js
 /*!
  * Copyright (c) 2020 Digital Bazaar, Inc. All rights reserved.
  */

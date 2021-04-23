@@ -1,6 +1,5 @@
 import { includes, mapValues, map, identity } from "lodash";
-// @ts-ignore
-import { isUUID } from "validator";
+import isUUID from "validator/lib/isUUID";
 import { v4 as uuid } from "uuid";
 
 const UUIDV4_LENGTH = 37;

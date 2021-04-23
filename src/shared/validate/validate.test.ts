@@ -54,9 +54,9 @@ describe("validate", () => {
         expect(validateSchema(document, ajv.compile(schema))).toMatchInlineSnapshot(`
           Array [
             Object {
-              "dataPath": "",
+              "instancePath": "",
               "keyword": "required",
-              "message": "should have required property 'key1'",
+              "message": "must have required property 'key1'",
               "params": Object {
                 "missingProperty": "key1",
               },
