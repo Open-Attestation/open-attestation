@@ -6,7 +6,7 @@ export default {
   output: {
     file: "./dist/index.umd.js",
     format: "umd",
-    name: "openAttestation"
+    name: "openAttestation",
   },
-  plugins: [commonjs(), json()]
+  plugins: [commonjs(), json()],
 };

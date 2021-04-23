@@ -45,10 +45,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "type",
-            dataPath: "['@context']",
+            instancePath: "/@context",
             schemaPath: "#/properties/%40context/type",
             params: { type: "array" },
-            message: "should be array",
+            message: "must be array",
           },
         ]
       );
@@ -72,10 +72,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "format",
-            dataPath: "['@context'][1]",
+            instancePath: "/@context/1",
             schemaPath: "#/properties/%40context/items/format",
             params: { format: "uri" },
-            message: 'should match format "uri"',
+            message: 'must match format "uri"',
           },
         ]
       );
@@ -109,10 +109,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "format",
-            dataPath: ".id",
+            instancePath: "/id",
             schemaPath: "#/properties/id/format",
             params: { format: "uri" },
-            message: 'should match format "uri"',
+            message: 'must match format "uri"',
           },
         ]
       );
@@ -149,9 +149,9 @@ describe("schema/3.0", () => {
         "validationErrors",
         [
           {
-            dataPath: ".reference",
+            instancePath: "/reference",
             keyword: "type",
-            message: "should be string",
+            message: "must be string",
             params: { type: "string" },
             schemaPath: "#/properties/reference/type",
           },
@@ -188,9 +188,9 @@ describe("schema/3.0", () => {
         "validationErrors",
         [
           {
-            dataPath: ".name",
+            instancePath: "/name",
             keyword: "type",
-            message: "should be string",
+            message: "must be string",
             params: { type: "string" },
             schemaPath: "#/properties/name/type",
           },
@@ -209,25 +209,25 @@ describe("schema/3.0", () => {
         "validationErrors",
         [
           {
-            dataPath: ".type",
+            instancePath: "/type",
             keyword: "type",
-            message: "should be array",
+            message: "must be array",
             params: { type: "array" },
             schemaPath: "#/definitions/type/oneOf/0/type",
           },
           {
-            dataPath: ".type",
+            instancePath: "/type",
             keyword: "type",
-            message: "should be string",
+            message: "must be string",
             params: {
               type: "string",
             },
             schemaPath: "#/definitions/type/oneOf/1/type",
           },
           {
-            dataPath: ".type",
+            instancePath: "/type",
             keyword: "oneOf",
-            message: "should match exactly one schema in oneOf",
+            message: "must match exactly one schema in oneOf",
             params: {
               passingSchemas: null,
             },
@@ -283,9 +283,9 @@ describe("schema/3.0", () => {
         "validationErrors",
         [
           {
-            dataPath: ".validFrom",
+            instancePath: "/validFrom",
             keyword: "type",
-            message: "should be string",
+            message: "must be string",
             params: { type: "string" },
             schemaPath: "#/properties/validFrom/type",
           },
@@ -301,10 +301,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "format",
-            dataPath: ".validFrom",
+            instancePath: "/validFrom",
             schemaPath: "#/properties/validFrom/format",
             params: { format: "date-time" },
-            message: 'should match format "date-time"',
+            message: 'must match format "date-time"',
           },
         ]
       );
@@ -339,9 +339,9 @@ describe("schema/3.0", () => {
         "validationErrors",
         [
           {
-            dataPath: ".validUntil",
+            instancePath: "/validUntil",
             keyword: "type",
-            message: "should be string",
+            message: "must be string",
             params: { type: "string" },
             schemaPath: "#/properties/validUntil/type",
           },
@@ -356,10 +356,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "format",
-            dataPath: ".validUntil",
+            instancePath: "/validUntil",
             schemaPath: "#/properties/validUntil/format",
             params: { format: "date-time" },
-            message: 'should match format "date-time"',
+            message: 'must match format "date-time"',
           },
         ]
       );
@@ -397,10 +397,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "additionalProperties",
-            dataPath: ".openAttestationMetadata.template",
+            instancePath: "/openAttestationMetadata/template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/additionalProperties",
             params: { additionalProperty: "key" },
-            message: "should NOT have additional properties",
+            message: "must NOT have additional properties",
           },
         ]
       );
@@ -413,10 +413,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "required",
-            dataPath: ".openAttestationMetadata.template",
+            instancePath: "/openAttestationMetadata/template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/required",
             params: { missingProperty: "name" },
-            message: "should have required property 'name'",
+            message: "must have required property 'name'",
           },
         ]
       );
@@ -429,10 +429,10 @@ describe("schema/3.0", () => {
         [
           {
             keyword: "required",
-            dataPath: ".openAttestationMetadata.template",
+            instancePath: "/openAttestationMetadata/template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/required",
             params: { missingProperty: "type" },
-            message: "should have required property 'type'",
+            message: "must have required property 'type'",
           },
         ]
       );
@@ -447,10 +447,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".openAttestationMetadata.template.type",
+            instancePath: "/openAttestationMetadata/template/type",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/properties/type/enum",
             params: { allowedValues: ["EMBEDDED_RENDERER"] },
-            message: "should be equal to one of the allowed values",
+            message: "must be equal to one of the allowed values",
           },
         ]);
       }
@@ -467,10 +467,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".openAttestationMetadata.template",
+            instancePath: "/openAttestationMetadata/template",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/required",
             params: { missingProperty: "url" },
-            message: "should have required property 'url'",
+            message: "must have required property 'url'",
           },
         ]);
       }
@@ -486,10 +486,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "pattern",
-            dataPath: ".openAttestationMetadata.template.url",
+            instancePath: "/openAttestationMetadata/template/url",
             schemaPath: "#/properties/openAttestationMetadata/properties/template/properties/url/pattern",
             params: { pattern: "^(https?)://" },
-            message: 'should match pattern "^(https?)://"',
+            message: 'must match pattern "^(https?)://"',
           },
         ]);
       }
@@ -517,24 +517,24 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "additionalProperties",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/definitions/issuer/additionalProperties",
             params: { additionalProperty: "key" },
-            message: "should NOT have additional properties",
+            message: "must NOT have additional properties",
           },
           {
             keyword: "type",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string",
+            message: "must be string",
           },
           {
             keyword: "oneOf",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf",
+            message: "must match exactly one schema in oneOf",
           },
         ]);
       }
@@ -550,24 +550,24 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "format",
-            dataPath: ".issuer.id",
+            instancePath: "/issuer/id",
             schemaPath: "#/definitions/issuer/properties/id/format",
             params: { format: "uri" },
-            message: 'should match format "uri"',
+            message: 'must match format "uri"',
           },
           {
             keyword: "type",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string",
+            message: "must be string",
           },
           {
             keyword: "oneOf",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf",
+            message: "must match exactly one schema in oneOf",
           },
         ]);
       }
@@ -584,10 +584,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: "",
+            instancePath: "",
             schemaPath: "#/required",
             params: { missingProperty: "issuer" },
-            message: "should have required property 'issuer'",
+            message: "must have required property 'issuer'",
           },
         ]);
       }
@@ -605,24 +605,24 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/definitions/issuer/required",
             params: { missingProperty: "name" },
-            message: "should have required property 'name'",
+            message: "must have required property 'name'",
           },
           {
             keyword: "type",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string",
+            message: "must be string",
           },
           {
             keyword: "oneOf",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf",
+            message: "must match exactly one schema in oneOf",
           },
         ]);
       }
@@ -640,24 +640,24 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/definitions/issuer/required",
             params: { missingProperty: "id" },
-            message: "should have required property 'id'",
+            message: "must have required property 'id'",
           },
           {
             keyword: "type",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf/1/type",
             params: { type: "string" },
-            message: "should be string",
+            message: "must be string",
           },
           {
             keyword: "oneOf",
-            dataPath: ".issuer",
+            instancePath: "/issuer",
             schemaPath: "#/properties/issuer/oneOf",
             params: { passingSchemas: null },
-            message: "should match exactly one schema in oneOf",
+            message: "must match exactly one schema in oneOf",
           },
         ]);
       }
@@ -676,10 +676,10 @@ describe("schema/3.0", () => {
           expect.arrayContaining([
             {
               keyword: "required",
-              dataPath: ".openAttestationMetadata.identityProof",
+              instancePath: "/openAttestationMetadata/identityProof",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/required",
               params: { missingProperty: "type" },
-              message: "should have required property 'type'",
+              message: "must have required property 'type'",
             },
           ])
         );
@@ -699,10 +699,10 @@ describe("schema/3.0", () => {
           expect.arrayContaining([
             {
               keyword: "enum",
-              dataPath: ".openAttestationMetadata.identityProof.type",
+              instancePath: "/openAttestationMetadata/identityProof/type",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/properties/type/enum",
               params: { allowedValues: ["DNS-TXT", "DNS-DID", "DID"] },
-              message: "should be equal to one of the allowed values",
+              message: "must be equal to one of the allowed values",
             },
           ])
         );
@@ -722,10 +722,10 @@ describe("schema/3.0", () => {
           expect.arrayContaining([
             {
               keyword: "required",
-              dataPath: ".openAttestationMetadata.identityProof",
+              instancePath: "/openAttestationMetadata/identityProof",
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/required",
               params: { missingProperty: "identifier" },
-              message: "should have required property 'identifier'",
+              message: "must have required property 'identifier'",
             },
           ])
         );
@@ -785,9 +785,9 @@ describe("schema/3.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".openAttestationMetadata.identityProof",
+              instancePath: "/openAttestationMetadata/identityProof",
               keyword: "additionalProperties",
-              message: "should NOT have additional properties",
+              message: "must NOT have additional properties",
               params: { additionalProperty: "key" },
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/additionalProperties",
             },
@@ -808,9 +808,9 @@ describe("schema/3.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".openAttestationMetadata",
+              instancePath: "/openAttestationMetadata",
               keyword: "required",
-              message: "should have required property 'identityProof'",
+              message: "must have required property 'identityProof'",
               params: { missingProperty: "identityProof" },
               schemaPath: "#/properties/openAttestationMetadata/required",
             },
@@ -830,10 +830,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".openAttestationMetadata.proof",
+            instancePath: "/openAttestationMetadata/proof",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/required",
             params: { missingProperty: "type" },
-            message: "should have required property 'type'",
+            message: "must have required property 'type'",
           },
         ]);
       }
@@ -851,10 +851,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".openAttestationMetadata.proof.type",
+            instancePath: "/openAttestationMetadata/proof/type",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/properties/type/enum",
             params: { allowedValues: ["OpenAttestationProofMethod"] },
-            message: "should be equal to one of the allowed values",
+            message: "must be equal to one of the allowed values",
           },
         ]);
       }
@@ -871,10 +871,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".openAttestationMetadata.proof",
+            instancePath: "/openAttestationMetadata/proof",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/required",
             params: { missingProperty: "method" },
-            message: "should have required property 'method'",
+            message: "must have required property 'method'",
           },
         ]);
       }
@@ -892,10 +892,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "enum",
-            dataPath: ".openAttestationMetadata.proof.method",
+            instancePath: "/openAttestationMetadata/proof/method",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/properties/method/enum",
             params: { allowedValues: ["TOKEN_REGISTRY", "DOCUMENT_STORE", "DID"] },
-            message: "should be equal to one of the allowed values",
+            message: "must be equal to one of the allowed values",
           },
         ]);
       }
@@ -912,10 +912,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".openAttestationMetadata.proof",
+            instancePath: "/openAttestationMetadata/proof",
             schemaPath: "#/properties/openAttestationMetadata/properties/proof/required",
             params: { missingProperty: "value" },
-            message: "should have required property 'value'",
+            message: "must have required property 'value'",
           },
         ]);
       }
@@ -951,10 +951,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".credentialStatus",
+            instancePath: "/credentialStatus",
             schemaPath: "#/properties/credentialStatus/required",
             params: { missingProperty: "id" },
-            message: "should have required property 'id'",
+            message: "must have required property 'id'",
           },
         ]);
       }
@@ -976,10 +976,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".credentialStatus",
+            instancePath: "/credentialStatus",
             schemaPath: "#/properties/credentialStatus/required",
             params: { missingProperty: "type" },
-            message: "should have required property 'type'",
+            message: "must have required property 'type'",
           },
         ]);
       }
@@ -1027,10 +1027,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "additionalProperties",
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             schemaPath: "#/properties/attachments/items/additionalProperties",
             params: { additionalProperty: "key" },
-            message: "should NOT have additional properties",
+            message: "must NOT have additional properties",
           },
         ]);
       }
@@ -1048,10 +1048,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "fileName" },
-            message: "should have required property 'fileName'",
+            message: "must have required property 'fileName'",
           },
         ]);
       }
@@ -1069,10 +1069,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "mimeType" },
-            message: "should have required property 'mimeType'",
+            message: "must have required property 'mimeType'",
           },
         ]);
       }
@@ -1090,10 +1090,10 @@ describe("schema/3.0", () => {
         expect(e).toHaveProperty("validationErrors", [
           {
             keyword: "required",
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             schemaPath: "#/properties/attachments/items/required",
             params: { missingProperty: "data" },
-            message: "should have required property 'data'",
+            message: "must have required property 'data'",
           },
         ]);
       }

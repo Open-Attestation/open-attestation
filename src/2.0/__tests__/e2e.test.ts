@@ -157,7 +157,7 @@ describe("2.0 E2E Test Scenarios", () => {
             type: "SHA3MerkleProof",
           },
         });
-      expect(action).toThrow("No schema validator provided");
+      expect(action).toThrow("Could not find abababa schema");
     });
     test("should return true when document is valid and version is 2.0", () => {
       expect(

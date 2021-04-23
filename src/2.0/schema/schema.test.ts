@@ -42,23 +42,23 @@ describe("schema/2.0", () => {
         "validationErrors",
         expect.arrayContaining([
           {
-            dataPath: ".issuers[0].identityProof.type",
+            instancePath: "/issuers/0/identityProof/type",
             keyword: "enum",
-            message: "should be equal to one of the allowed values",
+            message: "must be equal to one of the allowed values",
             params: { allowedValues: ["DNS-TXT"] },
             schemaPath: "#/definitions/identityProofDns/properties/type/enum",
           },
           {
-            dataPath: ".issuers[0].identityProof.type",
+            instancePath: "/issuers/0/identityProof/type",
             keyword: "enum",
-            message: "should be equal to one of the allowed values",
+            message: "must be equal to one of the allowed values",
             params: { allowedValues: ["DNS-DID"] },
             schemaPath: "#/definitions/identityProofDnsDid/properties/type/enum",
           },
           {
-            dataPath: ".issuers[0].identityProof.type",
+            instancePath: "/issuers/0/identityProof/type",
             keyword: "enum",
-            message: "should be equal to one of the allowed values",
+            message: "must be equal to one of the allowed values",
             params: { allowedValues: ["DID"] },
             schemaPath: "#/definitions/identityProofDid/properties/type/enum",
           },
@@ -124,9 +124,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".issuers[0]",
+              instancePath: "/issuers/0",
               keyword: "required",
-              message: "should have required property 'identityProof'",
+              message: "must have required property 'identityProof'",
               params: {
                 missingProperty: "identityProof",
               },
@@ -161,9 +161,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".issuers[0]",
+              instancePath: "/issuers/0",
               keyword: "oneOf",
-              message: "should match exactly one schema in oneOf",
+              message: "must match exactly one schema in oneOf",
               params: { passingSchemas: [0, 1] },
               schemaPath: "#/properties/issuers/items/oneOf",
             },
@@ -196,9 +196,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".issuers[0]",
+              instancePath: "/issuers/0",
               keyword: "oneOf",
-              message: "should match exactly one schema in oneOf",
+              message: "must match exactly one schema in oneOf",
               params: { passingSchemas: [0, 2] },
               schemaPath: "#/properties/issuers/items/oneOf",
             },
@@ -231,9 +231,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".issuers[0]",
+              instancePath: "/issuers/0",
               keyword: "oneOf",
-              message: "should match exactly one schema in oneOf",
+              message: "must match exactly one schema in oneOf",
               params: { passingSchemas: [1, 2] },
               schemaPath: "#/properties/issuers/items/oneOf",
             },
@@ -265,9 +265,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".issuers[0].documentStore",
+              instancePath: "/issuers/0/documentStore",
               keyword: "pattern",
-              message: 'should match pattern "^0x[a-fA-F0-9]{40}$"',
+              message: 'must match pattern "^0x[a-fA-F0-9]{40}$"',
               params: { pattern: "^0x[a-fA-F0-9]{40}$" },
               schemaPath: "#/allOf/1/properties/documentStore/pattern",
             },
@@ -286,9 +286,9 @@ describe("schema/2.0", () => {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
           {
-            dataPath: "",
+            instancePath: "",
             keyword: "required",
-            message: "should have required property 'issuers'",
+            message: "must have required property 'issuers'",
             params: {
               missingProperty: "issuers",
             },
@@ -307,9 +307,9 @@ describe("schema/2.0", () => {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
           {
-            dataPath: ".issuers",
+            instancePath: "/issuers",
             keyword: "minItems",
-            message: "should NOT have fewer than 1 items",
+            message: "must NOT have fewer than 1 items",
             params: {
               limit: 1,
             },
@@ -358,12 +358,12 @@ describe("schema/2.0", () => {
           expect.arrayContaining([
             {
               keyword: "required",
-              dataPath: ".issuers[0].identityProof",
+              instancePath: "/issuers/0/identityProof",
               schemaPath: "#/definitions/identityProofDnsDid/required",
               params: {
                 missingProperty: "location",
               },
-              message: "should have required property 'location'",
+              message: "must have required property 'location'",
             },
           ])
         );
@@ -393,12 +393,12 @@ describe("schema/2.0", () => {
           expect.arrayContaining([
             {
               keyword: "required",
-              dataPath: ".issuers[0].identityProof",
+              instancePath: "/issuers/0/identityProof",
               schemaPath: "#/definitions/identityProofDnsDid/required",
               params: {
                 missingProperty: "key",
               },
-              message: "should have required property 'key'",
+              message: "must have required property 'key'",
             },
           ])
         );
@@ -427,12 +427,12 @@ describe("schema/2.0", () => {
           expect.arrayContaining([
             {
               keyword: "required",
-              dataPath: ".issuers[0].identityProof",
+              instancePath: "/issuers/0/identityProof",
               schemaPath: "#/definitions/identityProofDnsDid/required",
               params: {
                 missingProperty: "key",
               },
-              message: "should have required property 'key'",
+              message: "must have required property 'key'",
             },
           ])
         );
@@ -456,9 +456,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".$template",
+              instancePath: "/$template",
               keyword: "required",
-              message: "should have required property 'name'",
+              message: "must have required property 'name'",
               params: {
                 missingProperty: "name",
               },
@@ -480,9 +480,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".$template",
+              instancePath: "/$template",
               keyword: "required",
-              message: "should have required property 'type'",
+              message: "must have required property 'type'",
               params: {
                 missingProperty: "type",
               },
@@ -512,9 +512,9 @@ describe("schema/2.0", () => {
           "validationErrors",
           expect.arrayContaining([
             {
-              dataPath: ".$template.type",
+              instancePath: "/$template/type",
               keyword: "enum",
-              message: "should be equal to one of the allowed values",
+              message: "must be equal to one of the allowed values",
               params: {
                 allowedValues: ["EMBEDDED_RENDERER"],
               },
@@ -540,9 +540,9 @@ describe("schema/2.0", () => {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
           {
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             keyword: "required",
-            message: "should have required property 'filename'",
+            message: "must have required property 'filename'",
             params: {
               missingProperty: "filename",
             },
@@ -561,9 +561,9 @@ describe("schema/2.0", () => {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
           {
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             keyword: "required",
-            message: "should have required property 'data'",
+            message: "must have required property 'data'",
             params: {
               missingProperty: "data",
             },
@@ -582,9 +582,9 @@ describe("schema/2.0", () => {
         expect(e).toHaveProperty("message", "Invalid document");
         expect(e).toHaveProperty("validationErrors", [
           {
-            dataPath: ".attachments[0]",
+            instancePath: "/attachments/0",
             keyword: "required",
-            message: "should have required property 'type'",
+            message: "must have required property 'type'",
             params: {
               missingProperty: "type",
             },
