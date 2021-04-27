@@ -1,9 +1,9 @@
 import { cloneDeep, omit, set } from "lodash";
 import {
   isSignedWrappedV2Document,
+  isSignedWrappedV3Document,
   isWrappedV2Document,
   isWrappedV3Document,
-  isSignedWrappedV3Document,
 } from "../guard";
 import {
   __unsafe__use__it__at__your__own__risks__wrapDocument,
@@ -119,14 +119,24 @@ describe("guard", () => {
     test("should not be valid when document.signature.targetHash is missing", () => {
       expect(isWrappedV2Document(omit(cloneDeep(wrappedV2Document), "signature.targetHash"))).toBe(false);
     });
-    test("should not be valid when document.signature.targetHash is invalid", () => {
-      expect(isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.targetHash", "oops"))).toBe(false);
+    test("should be valid when document.signature.targetHash is a string", () => {
+      expect(isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.targetHash", "oops"))).toBe(true);
+    });
+    test("should not be valid when document.signature.targetHash is a string (not hex) in strict mode", () => {
+      expect(
+        isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.targetHash", "oops"), { mode: "strict" })
+      ).toBe(false);
     });
     test("should not be valid when document.signature.merkleRoot is missing", () => {
       expect(isWrappedV2Document(omit(cloneDeep(wrappedV2Document), "signature.merkleRoot"))).toBe(false);
     });
-    test("should not be valid when document.signature.merkleRoot is invalid", () => {
-      expect(isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.merkleRoot", "oops"))).toBe(false);
+    test("should be valid when document.signature.merkleRoot is a string", () => {
+      expect(isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.merkleRoot", "oops"))).toBe(true);
+    });
+    test("should not be valid when document.signature.merkleRoot is a string (not hex) in strict mode", () => {
+      expect(
+        isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.merkleRoot", "oops"), { mode: "strict" })
+      ).toBe(false);
     });
     test("should not be valid when document.signature.proof is missing", () => {
       expect(isWrappedV2Document(omit(cloneDeep(wrappedV2Document), "signature.proof"))).toBe(false);
@@ -229,14 +239,26 @@ describe("guard", () => {
     test("should not be valid when document.proof.targetHash is missing", () => {
       expect(isWrappedV3Document(omit(cloneDeep(wrappedV3Document), "proof.targetHash"))).toBe(false);
     });
-    test("should not be valid when document.proof.targetHash is invalid", () => {
-      expect(isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.targetHash", "oops"))).toBe(false);
+    test("should be valid when document.proof.targetHash is a string", () => {
+      expect(isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.targetHash", "oops"))).toBe(true);
+    });
+    test("should be invalid when document.proof.targetHash is a string (not hex) in strict mode", () => {
+      expect(
+        isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.targetHash", "oops"), { mode: "strict" })
+      ).toBe(false);
     });
     test("should not be valid when document.proof.merkleRoot is missing", () => {
       expect(isWrappedV3Document(omit(cloneDeep(wrappedV3Document), "proof.merkleRoot"))).toBe(false);
     });
-    test("should not be valid when document.proof.merkleRoot is invalid", () => {
-      expect(isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.merkleRoot", "oops"))).toBe(false);
+    test("should be valid when document.proof.merkleRoot is a string", () => {
+      expect(isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.merkleRoot", "oops"))).toBe(true);
+    });
+    test("should not be valid when document.proof.merkleRoot is a string (not hex) on strict mode", () => {
+      expect(
+        isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.merkleRoot", "oops"), {
+          mode: "strict",
+        })
+      ).toBe(false);
     });
     test("should not be valid when document.proof.proofs is missing", () => {
       expect(isWrappedV3Document(omit(cloneDeep(wrappedV3Document), "proof.proofs"))).toBe(false);
