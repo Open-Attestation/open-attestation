@@ -14,14 +14,22 @@ export type ObfuscationMetadata = Static<typeof ObfuscationMetadata>;
 
 export const VerifiableCredentialWrappedProof = RunTypesRecord({
   type: SignatureAlgorithm,
-  targetHash: OpenAttestationHexString,
-  merkleRoot: OpenAttestationHexString,
-  proofs: RunTypesArray(OpenAttestationHexString),
+  targetHash: String,
+  merkleRoot: String,
+  proofs: RunTypesArray(String),
   salts: String,
   privacy: ObfuscationMetadata,
   proofPurpose: ProofPurpose,
 });
 export type VerifiableCredentialWrappedProof = Static<typeof VerifiableCredentialWrappedProof>;
+export const VerifiableCredentialWrappedProofStrict = VerifiableCredentialWrappedProof.And(
+  RunTypesRecord({
+    targetHash: OpenAttestationHexString,
+    merkleRoot: OpenAttestationHexString,
+    proofs: RunTypesArray(OpenAttestationHexString),
+  })
+);
+export type VerifiableCredentialWrappedProofStrict = Static<typeof VerifiableCredentialWrappedProofStrict>;
 
 export const VerifiableCredentialSignedProof = VerifiableCredentialWrappedProof.And(
   RunTypesRecord({

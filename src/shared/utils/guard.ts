@@ -1,43 +1,58 @@
-import { SchemaId, SignedWrappedDocument } from "../..";
+import { SignedWrappedDocument } from "../..";
 import {
   OpenAttestationDocument as OpenAttestationDocumentV3,
-  VerifiableCredentialWrappedProof,
-  VerifiableCredentialSignedProof,
   WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
 import {
-  ArrayProof,
   OpenAttestationDocument as OpenAttestationDocumentV2,
-  Signature,
   WrappedDocument as WrappedDocumentV2,
 } from "../../2.0/types";
-import { getSchema, validateSchema as validate } from "../validate";
+import { diagnose, Mode } from "./diagnose";
 
-export const isWrappedV3Document = (document: any): document is WrappedDocumentV3<OpenAttestationDocumentV3> => {
-  if (!document || typeof document !== "object" || document.version !== SchemaId.v3) return false;
-  const validateSchema = () => validate(document, getSchema(SchemaId.v3)).length === 0;
-  const validateProof = () => VerifiableCredentialWrappedProof.guard(document.proof);
-  return validateSchema() && validateProof();
+/**
+ *
+ * @param document
+ * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
+ */
+export const isWrappedV3Document = (
+  document: any,
+  { mode }: { mode: Mode } = { mode: "non-strict" }
+): document is WrappedDocumentV3<OpenAttestationDocumentV3> => {
+  return diagnose({ version: "3.0", kind: "wrapped", document, debug: false, mode }).length === 0;
 };
 
-export const isWrappedV2Document = (document: any): document is WrappedDocumentV2<OpenAttestationDocumentV2> => {
-  if (!document || typeof document !== "object") return false;
-  const validateSchema = () => validate(document, getSchema(SchemaId.v2)).length === 0;
-  const validateSignature = () => Signature.guard(document.signature);
-  return validateSchema() && validateSignature();
+/**
+ *
+ * @param document
+ * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
+ */
+export const isWrappedV2Document = (
+  document: any,
+  { mode }: { mode: Mode } = { mode: "non-strict" }
+): document is WrappedDocumentV2<OpenAttestationDocumentV2> => {
+  return diagnose({ version: "2.0", kind: "wrapped", document, debug: false, mode }).length === 0;
 };
 
+/**
+ *
+ * @param document
+ * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
+ */
 export const isSignedWrappedV2Document = (
-  document: any
+  document: any,
+  { mode }: { mode: Mode } = { mode: "non-strict" }
 ): document is SignedWrappedDocument<OpenAttestationDocumentV2> => {
-  const validateWrappedDocument = () => isWrappedV2Document(document);
-  const validateProof = () => !!(document.proof && ArrayProof.guard(document.proof) && document.proof.length > 0);
-  return validateWrappedDocument() && validateProof();
+  return diagnose({ version: "2.0", kind: "signed", document, debug: false, mode }).length === 0;
 };
+
+/**
+ *
+ * @param document
+ * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
+ */
 export const isSignedWrappedV3Document = (
-  document: any
+  document: any,
+  { mode }: { mode: Mode } = { mode: "non-strict" }
 ): document is SignedWrappedDocument<OpenAttestationDocumentV3> => {
-  const validateWrappedDocument = () => isWrappedV3Document(document);
-  const validateProof = () => !!(document.proof && VerifiableCredentialSignedProof.guard(document.proof));
-  return validateWrappedDocument() && validateProof();
+  return diagnose({ version: "3.0", kind: "signed", document, debug: false, mode }).length === 0;
 };

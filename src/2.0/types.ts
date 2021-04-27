@@ -21,11 +21,19 @@ export type ArrayProof = Static<typeof ArrayProof>;
 
 export const Signature = RunTypesRecord({
   type: Literal("SHA3MerkleProof"),
-  targetHash: OpenAttestationHexString,
-  merkleRoot: OpenAttestationHexString,
-  proof: RunTypesArray(OpenAttestationHexString),
+  targetHash: String,
+  merkleRoot: String,
+  proof: RunTypesArray(String),
 });
 export type Signature = Static<typeof Signature>;
+export const SignatureStrict = Signature.And(
+  RunTypesRecord({
+    targetHash: OpenAttestationHexString,
+    merkleRoot: OpenAttestationHexString,
+    proof: RunTypesArray(OpenAttestationHexString),
+  })
+);
+export type SignatureStrict = Static<typeof SignatureStrict>;
 
 export interface SchematisedDocument<T extends OpenAttestationDocumentV2 = OpenAttestationDocumentV2> {
   version: SchemaId;

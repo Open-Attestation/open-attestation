@@ -8,6 +8,12 @@ OpenAttestation allows any entity to proof the existence of a document or a batc
 
 This repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature of the document wrapped using the OpenAttestation framework.
 
+## Installation
+
+```bash
+npm i @govtechsg/open-attestation
+```
+
 ## API References
 
 ### Wrapping documents
@@ -19,12 +25,13 @@ This function accept a second optional parameter to specify the version of open-
 The `wrapDocument` function is identical but accept only one document.
 
 ```js
+import { wrapDocuments } from "@govtechsg/open-attestation";
 const document = {
   id: "SERIAL_NUMBER_123",
   $template: {
     name: "CUSTOM_TEMPLATE",
     type: "EMBEDDED_RENDERER",
-    url: "https://localhost:3000/renderer"
+    url: "https://localhost:3000/renderer",
   },
   issuers: [
     {
@@ -32,21 +39,21 @@ const document = {
       tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
       identityProof: {
         type: "DNS-TXT",
-        location: "tradetrust.io"
-      }
-    }
+        location: "tradetrust.io",
+      },
+    },
   ],
   recipient: {
-    name: "Recipient Name"
+    name: "Recipient Name",
   },
   unknownKey: "unknownValue",
   attachments: [
     {
       filename: "sample.pdf",
       type: "application/pdf",
-      data: "BASE64_ENCODED_FILE"
-    }
-  ]
+      data: "BASE64_ENCODED_FILE",
+    },
+  ],
 };
 
 wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]); // will ensure document is valid regarding open-attestation 2.0 schema
@@ -55,11 +62,42 @@ wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]
 console.log(wrappedDocuments);
 ```
 
+### Sign a document
+
+`signDocument` takes a wrapped document, as well as a public/private key pair or an [Ethers.js Signer](https://docs.ethers.io/v5/api/signer/). The method will sign the merkle root from the wrapped document, happened the signature to the document and return it. Currently, it supports the following sign algorithm:
+
+- `Secp256k1VerificationKey2018`
+
+#### Example with public/private key pair
+
+```js
+import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/open-attestation";
+await signDocument(wrappedV2Document, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+  public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+  private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
+});
+```
+
+#### Example with signer
+
+```js
+import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/open-attestation";
+import { Wallet } from "ethers";
+
+const wallet = Wallet.fromMnemonic("tourist quality multiply denial diary height funny calm disease buddy speed gold");
+const { proof } = await signDocument(
+  wrappedDocumentV2,
+  SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
+  wallet
+);
+```
+
 ### Validate schema of document
 
 `validateSchema` checks that the document conforms to open attestation data structure.
 
 ```js
+import { validateSchema } from "@govtechsg/open-attestation";
 const validatedSchema = validateSchema(wrappedDocument);
 console.log(validatedSchema);
 ```
@@ -71,6 +109,7 @@ console.log(validatedSchema);
 Note that this method does not check against the blockchain or any registry if this document has been published. The merkle root of this document need to be checked against a publicly accessible document store (can be a smart contract on the blockchain).
 
 ```js
+import { verifySignature } from "@govtechsg/open-attestation";
 const verified = verifySignature(wrappedDocument);
 console.log(verified);
 ```
@@ -80,9 +119,23 @@ console.log(verified);
 `getData` returns the original data stored in the document, in a readable format.
 
 ```js
+import { getData } from "@govtechsg/open-attestation";
 const data = getData(wrappedDocument);
 console.log(data);
 ```
+
+### Utils
+
+```js
+import { utils } from "@govtechsg/open-attestation";
+utils.isWrappedV3Document(document);
+```
+
+- `isWrappedV2Document` type guard for wrapped v2 document
+- `isSignedWrappedV2Document` type guard for signed v2 document
+- `isSignedWrappedV3Document` type guard for signed v3 document
+- `isWrappedV3Document` type guard for wrapped v3 document
+- `diagnose` tool to find out why a document is not a valid open attestation file (wrapped or signed document)
 
 ### Obfuscating data
 
@@ -92,6 +145,8 @@ console.log(data);
 const newData = obfuscateDocument(wrappedDocument, "key1");
 console.log(newData);
 ```
+
+###
 
 ## Test
 
