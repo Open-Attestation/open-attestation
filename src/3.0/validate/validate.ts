@@ -46,7 +46,8 @@ const preloadedContextList = [
   "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
 ];
 const contexts: Map<string, Promise<any>> = new Map();
-const nodeDocumentLoader = documentLoaders.node();
+const nodeDocumentLoader = documentLoaders.xhr ? documentLoaders.xhr() : documentLoaders.node();
+
 // this function will be directly run and pre-load and cache in memory the list of context available in preloadedContextList
 // it will also cache in memory any context not in the list that needs to be retrieved
 const contextLoader = () => {
