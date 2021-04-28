@@ -2,6 +2,7 @@ import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import { WrappedDocument } from "../../3.0/types";
 import { documentLoaders, expand } from "jsonld";
 import fetch from "node-fetch";
+import { RemoteDocument } from "jsonld/jsonld-spec";
 
 const getId = (objectOrString: string | { id: string }): string => {
   if (typeof objectOrString === "string") {
@@ -46,7 +47,13 @@ const preloadedContextList = [
   "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
 ];
 const contexts: Map<string, Promise<any>> = new Map();
-const nodeDocumentLoader = documentLoaders.node();
+let nodeDocumentLoader: { (arg0: string): any; (url: string): Promise<RemoteDocument> };
+if (documentLoaders.hasOwnProperty("xhr")) {
+  nodeDocumentLoader = documentLoaders.xhr();
+} else {
+  nodeDocumentLoader = documentLoaders.node();
+}
+
 // this function will be directly run and pre-load and cache in memory the list of context available in preloadedContextList
 // it will also cache in memory any context not in the list that needs to be retrieved
 const contextLoader = () => {
@@ -69,7 +76,7 @@ const contextLoader = () => {
       const promise = nodeDocumentLoader(url);
       contexts.set(
         url,
-        promise.then(({ document }) => document)
+        promise.then(({ document }: { document: any }) => document)
       );
       return promise;
     }
