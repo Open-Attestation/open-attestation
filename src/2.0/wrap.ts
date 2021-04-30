@@ -4,9 +4,10 @@ import { hashToBuffer, SchemaValidationError } from "../shared/utils";
 import { SchemaId } from "../shared/@types/document";
 import { SchematisedDocument, Signature, WrappedDocument } from "./types";
 import { OpenAttestationDocument } from "../__generated__/schema.2.0";
-import { getSchema, validateSchema as validate } from "../shared/validate";
+import { validateSchema as validate } from "../shared/validate";
 import { saltData } from "./salt";
 import { WrapDocumentOption, WrapDocumentOptionV2 } from "../shared/@types/wrap";
+import { getSchema } from "../shared/ajv";
 
 const createDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   data: any,
