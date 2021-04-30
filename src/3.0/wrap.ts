@@ -3,11 +3,12 @@ import { MerkleTree } from "../shared/merkle";
 import { SchemaId } from "../shared/@types/document";
 import { WrappedDocument } from "./types";
 import { digestCredential } from "../3.0/digest";
-import { getSchema, validateSchema as validate } from "../shared/validate";
+import { validateSchema as validate } from "../shared/validate";
 import { WrapDocumentOptionV3 } from "../shared/@types/wrap";
 import { OpenAttestationDocument } from "../__generated__/schema.3.0";
 import { encodeSalt, salt } from "./salt";
 import { validateW3C } from "./validate";
+import { getSchema } from "../shared/ajv";
 
 const getExternalSchema = (schema?: string) => (schema ? { schema } : {});
 

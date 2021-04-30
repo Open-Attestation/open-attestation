@@ -1,4 +1,4 @@
-import { getSchema, validateSchema as validate } from "./shared/validate";
+import { validateSchema as validate } from "./shared/validate";
 import { verify } from "./2.0/verify";
 import { verify as verifyV3 } from "./3.0/verify";
 import { wrapDocument as wrapV2Document, wrapDocuments as wrapV2Documents } from "./2.0/wrap";
@@ -19,6 +19,7 @@ import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap
 import { SchemaValidationError } from "./shared/utils";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
 import { ethers, Signer } from "ethers";
+import { getSchema } from "./shared/ajv";
 
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
   data: T,
