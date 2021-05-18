@@ -95,9 +95,9 @@ export const getMerkleRoot = (document: any): string => {
 export const getTargetHash = (document: any): string => {
   switch (true) {
     case isWrappedV2Document(document):
-      return `0x${document.signature.targetHash}`;
+      return document.signature.targetHash;
     case isWrappedV3Document(document):
-      return `0x${document.proof.targetHash}`;
+      return document.proof.targetHash;
     default:
       throw new Error(
         "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
@@ -106,20 +106,15 @@ export const getTargetHash = (document: any): string => {
 };
 
 export const getAssetId = (document: any): string => {
-  if (getData(document).issuers[0].tokenRegistry) {
-    switch (true) {
-      case isWrappedV2Document(document):
-        return `0x${document.signature.targetHash}`;
-      case isWrappedV3Document(document):
-        return `0x${document.proof.targetHash}`;
-      default:
-        throw new Error(
-          "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 documents."
-        );
-    }
+  if (isWrappedV2Document(document) && getData(document).issuers[0].tokenRegistry) {
+    return document.signature.targetHash;
+  } else if (isWrappedV3Document(document) && document.openAttestationMetadata.proof.method === "TOKEN_REGISTRY") {
+    return document.proof.targetHash;
   }
 
-  throw new Error("Unsupported document type: Only can retrueve asset id from transferable documents.");
+  throw new Error(
+    "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+  );
 };
 
 export class SchemaValidationError extends Error {
