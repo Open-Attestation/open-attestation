@@ -105,11 +105,16 @@ export const getTargetHash = (document: any): string => {
   }
 };
 
+export const isTransferableAsset = (document: any): boolean => {
+  return (
+    !!getData(document)?.issuers[0]?.tokenRegistry ||
+    document?.openAttestationMetadata?.proof?.method === "TOKEN_REGISTRY"
+  );
+};
+
 export const getAssetId = (document: any): string => {
-  if (isWrappedV2Document(document) && getData(document).issuers[0].tokenRegistry) {
-    return document.signature.targetHash;
-  } else if (isWrappedV3Document(document) && document.openAttestationMetadata.proof.method === "TOKEN_REGISTRY") {
-    return document.proof.targetHash;
+  if (isTransferableAsset(document)) {
+    return getTargetHash(document);
   }
 
   throw new Error(
