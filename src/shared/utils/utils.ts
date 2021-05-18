@@ -92,6 +92,36 @@ export const getMerkleRoot = (document: any): string => {
   }
 };
 
+export const getTargetHash = (document: any): string => {
+  switch (true) {
+    case isWrappedV2Document(document):
+      return document.signature.targetHash;
+    case isWrappedV3Document(document):
+      return document.proof.targetHash;
+    default:
+      throw new Error(
+        "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+      );
+  }
+};
+
+export const isTransferableAsset = (document: any): boolean => {
+  return (
+    !!getData(document)?.issuers[0]?.tokenRegistry ||
+    document?.openAttestationMetadata?.proof?.method === "TOKEN_REGISTRY"
+  );
+};
+
+export const getAssetId = (document: any): string => {
+  if (isTransferableAsset(document)) {
+    return getTargetHash(document);
+  }
+
+  throw new Error(
+    "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+  );
+};
+
 export class SchemaValidationError extends Error {
   constructor(message: string, public validationErrors: ErrorObject[], public document: any) {
     super(message);

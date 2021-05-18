@@ -6,11 +6,24 @@ import * as v3 from "../../../__generated__/schema.3.0";
 
 describe("Util Functions", () => {
   let wrappedV3Document: WrappedDocument<v3.OpenAttestationDocument>;
+  let wrappedTransferableV3Document: WrappedDocument<v3.OpenAttestationDocument>;
   const wrappedV2Document: WrappedDocument<v2.OpenAttestationDocument> = wrapDocument({
     issuers: [
       {
         name: "John",
         documentStore: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+        identityProof: {
+          type: v2.IdentityProofType.DNSTxt,
+          location: "example.com",
+        },
+      },
+    ],
+  });
+  const wrappedTransferableV2Document: WrappedDocument<v2.OpenAttestationDocument> = wrapDocument({
+    issuers: [
+      {
+        name: "John",
+        tokenRegistry: "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
         identityProof: {
           type: v2.IdentityProofType.DNSTxt,
           location: "example.com",
@@ -44,6 +57,48 @@ describe("Util Functions", () => {
             value: "0xabcf",
             type: v3.ProofType.OpenAttestationProofMethod,
             method: v3.Method.DocumentStore,
+          },
+          identityProof: {
+            identifier: "whatever",
+            type: v2.IdentityProofType.DNSTxt,
+          },
+        },
+        name: "",
+        reference: "",
+        template: {
+          url: "https://",
+          name: "",
+          type: v3.TemplateType.EmbeddedRenderer,
+        },
+        validFrom: "2010-01-01T19:23:24Z",
+      },
+      { version: SchemaId.v3 }
+    );
+    wrappedTransferableV3Document = await __unsafe__use__it__at__your__own__risks__wrapDocument(
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://www.w3.org/2018/credentials/examples/v1",
+          "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
+        ],
+        issuer: {
+          name: "name",
+          id: "https://example.com",
+        },
+        issuanceDate: "2010-01-01T19:23:24Z",
+        type: ["VerifiableCredential", "UniversityDegreeCredential"],
+        credentialSubject: {
+          id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+          degree: {
+            type: "BachelorDegree",
+            name: "Bachelor of Science and Arts",
+          },
+        },
+        openAttestationMetadata: {
+          proof: {
+            value: "0xabcf",
+            type: v3.ProofType.OpenAttestationProofMethod,
+            method: v3.Method.TokenRegistry,
           },
           identityProof: {
             identifier: "whatever",
@@ -272,6 +327,197 @@ describe("Util Functions", () => {
       expect(utils.getMerkleRoot(document)).toStrictEqual(
         "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e"
       );
+    });
+  });
+
+  describe("getTargetHash", () => {
+    test("should return target hash for v2 document", async () => {
+      const document: WrappedDocument<any> = {
+        version: SchemaId.v2,
+        data: wrappedV2Document.data,
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+          proof: [],
+          merkleRoot: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+        },
+      };
+      expect(utils.getTargetHash(document)).toStrictEqual(
+        "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc"
+      );
+    });
+    test("should return target hash for v3 document", async () => {
+      const document: WrappedDocument<v3.OpenAttestationDocument> = {
+        ...wrappedV3Document,
+        proof: {
+          type: "OpenAttestationMerkleProofSignature2018",
+          proofPurpose: "assertionMethod",
+          targetHash: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          proofs: [],
+          merkleRoot: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          salts:
+            "W3sidmFsdWUiOiJjNzEzMjQ0MTg4Y2VlNjE0ZmY4YmI5YjM1M2Y0ZTAzNTVkYWE4OTc1MzQ4ZWMzYjM0MGQ1ZTM2YTI1NjM1NjBiIiwicGF0aCI6InZlcnNpb24ifSx7InZhbHVlIjoiMzcxOTRiZmJhYzdjNGQ1NjcyYzFlMGM5OGVjNGE3OWFlYmZiZDczZTUwOTQ5MTJhY2IxN2Q1YjRkZjMwZmYzNiIsInBhdGgiOiJAY29udGV4dFswXSJ9LHsidmFsdWUiOiI4YWI1MGRjMWJlYTgzNzk0NmJjOTU2OTU2NGRmOGMxYTY2NjU1YTAwMzA3ZmQ4NGZlZmI3ZGEyMDZmZjUzNmY2IiwicGF0aCI6IkBjb250ZXh0WzFdIn0seyJ2YWx1ZSI6IjdlMjgzMTVhYzVkYzZlMDExNTRmNjhkZDQ1YmNmZWZlNzViYWU2NzhjM2Q3NTM4YTE0MTRkNTdlZDcwZjBjOTEiLCJwYXRoIjoiQGNvbnRleHRbMl0ifSx7InZhbHVlIjoiNGQzYzExODdiOWE4ODMyZWU3OGY2ZThhZWI4MzAxODU1OWM0ZTE2NDA3MDYxYTQ0NjBmMDliM2RhNDI3NTI1MSIsInBhdGgiOiJAY29udGV4dFszXSJ9LHsidmFsdWUiOiJhOGViNzdjNmEyMzk4OWM2ZjAzN2Q5Nzg2MzE2YzIwZWI5YjI0OTRlN2YwMzM0ODAyZTUxYzRjMWQ4OGRiYjlhIiwicGF0aCI6InJlZmVyZW5jZSJ9LHsidmFsdWUiOiJmMTgzNzE4MGUzZjU1NWY3NzgxODExM2FiYTU3NGZjMDdlOWVmZWUzZGMxZjUwYzMyMWExNDI4YjAzMWJiZTQ1IiwicGF0aCI6Im5hbWUifSx7InZhbHVlIjoiMjZjNWZiZTZmYmM4MDhmY2JhMzBlYmMyMTllNjI0NTJkMmE2ZDQ5ZWQ3YWQ0MjNiNjdmY2IyNGQ1M2Y4OTc5NSIsInBhdGgiOiJpc3N1YW5jZURhdGUifSx7InZhbHVlIjoiNWZmY2I0ZDE4YjUwMmY2NWI5ZWMyMDA1ZmJiMzE2NzcwMjBhZjczMWYwNGM2MmJhMjZjNWY4ZDA2M2FjODJiMSIsInBhdGgiOiJ2YWxpZEZyb20ifSx7InZhbHVlIjoiMzVjZjU5YTUyODBlMGI3OWIwOTg1OWIwODNhOGYwMGQwZjFhMTZlMjZmZDhhZGE2MjdjNzA1MGQ4NWIxNTcwMyIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZDkzZTdhYzJmMDg2Y2E1ZWU4ZTI5NjU1ZjM4Y2YzNzc5ZTZlYjhkOWFiMzNkNjAyYmNkNzc2YjlmOGJhNzcxNiIsInBhdGgiOiJpc3N1ZXIubmFtZSJ9LHsidmFsdWUiOiI4YjY1ZjcyNjk4ZjBjOTk2NDA1NTgzZTA5OTEzZDE2NGZhM2FiMGFiZGFkYTI1OTY4MmUzNDZlMjBkM2NhY2VlIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiMjZjYmVmNjY2NDJiOGE0MTIwZTMzYTI1NjExZGUzMTlkY2U1NzgwYmYzMTNjOWM5ZWM1MGQ0OTJmOTNhODk1ZiIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6ImY5ZTZjMWRhYWZlNGM3NjU4ZGY5ZmM0OGRhM2M0YjM3MzgxYzZlN2Y5YmExYmRlYjViOGFjNjM1Yjg4ZTY2MDAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMjRiNDUyYjI0NzdiMWY0OGU3Nzc2M2UzMmY3MDg1YjNkNWM5ZTBjOGUwZmM4NWVmNGU4NTgxNjQ3YTQ0YzYwYyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS50eXBlIn0seyJ2YWx1ZSI6IjBhYjU3MTQ1NWQzNTdlYmUzNjA2NzQ0OGFiOTZkOGIwZWIzYTY0MzM3YTVjZmUxMjRlYTE1YzgxYTJjZTAyNDYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiJlMzhmN2ExZWFlZjFiNGZmMzYwZjQ3YjJiNzM5ZjA1YWQ1ZDE4NTg3ZDJhMThkOGIwYjhjOTBjZTI4Y2FiMWQ4IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmNsYXNzWzFdLnR5cGUifSx7InZhbHVlIjoiYjBhZDZhZmE5ZDI0NzJjMTRjN2U5NWQ4M2Y4YmJkZGNmNzQzYjkzNjU2YzEyMDg4YmFjODg4MTIzZjkxMjM4MSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjEwMTkyYzhjOGZiZGM4MjlmZGRkYjYzYWIwNWE5OWZkZjFhZTBhN2IzMzMyMDFkY2MxZmIwZWRjZGVhMTQ5NzQiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEudGVtcGxhdGUubmFtZSJ9LHsidmFsdWUiOiI4M2ViNTE1OTAyNzc4MzkyZjczZmQzM2ZmZjliNzQ1NzNkMGZkZmExMmY2NjNhOTgzMjYzMjgwZjQ1OTBiNzZkIiwicGF0aCI6Im9wZW5BdHRlc3RhdGlvbk1ldGFkYXRhLnRlbXBsYXRlLnR5cGUifSx7InZhbHVlIjoiODcwMDk5ZTMxNjRjNzA4Y2IzZTFlZjlmOGM0Njk3ZDVmYTFiMTVjOWM5ZGJlZThlMDdiZDgxZTE0OWYyNTNhOCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS50ZW1wbGF0ZS51cmwifSx7InZhbHVlIjoiMmZiOTczMzIwMDQxYTRkMmIxODJkODBhNDRiMDA5YmY5ZmZhODJlMjVkMTMyYzg4YWVmYzk1Y2UzYzVlNmQ5ZCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5wcm9vZi50eXBlIn0seyJ2YWx1ZSI6IjNjNjNiM2RjYTIwYjg4Yzc4MmE0NDRjYzA5OTlkNTdhMjFhNzIyZThhY2JlZjlhNWU3YzFmODJmNzkwYzY4ODAiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YubWV0aG9kIn0seyJ2YWx1ZSI6IjY3N2FiYmIzOGIzZjhmM2Y3ZjBlYTQ1NGRkMjA0NDQ3OTFjZGI4MjU4MDk1MGM4NmRhNjc5ZmIzZDM2YjIxNTMiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YudmFsdWUifSx7InZhbHVlIjoiNzg0YjdkMTI3NjY1MWY2NzA0MjJhZmMyM2U2ZTcyNTZiYWI2NjVmN2IzMjk5N2U4NGNmOWJhZDhjZjllMzYzZiIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLnR5cGUifSx7InZhbHVlIjoiNTdjNzRhNmIwYzg0Mzg5M2JhN2Y0MzZhYTgwOTNkNDE0MWMwYmZhODgzZjMwY2NhNDUwZDM4M2Y5OTQ2N2NlYSIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLmlkZW50aWZpZXIifSx7InZhbHVlIjoiYjM2MmFmMWU1YmI4MTg5MDg1YTRhMzI0YzI0MzAwZWNiMDNjNGExZTRlMTkwMTMzYTAyNjNkM2UzOWNkYThkNSIsInBhdGgiOiJhdHRhY2htZW50c1swXS5maWxlTmFtZSJ9LHsidmFsdWUiOiJmMmU3NzAyYjNhMzc4NDJkNWVjY2E2ZTFjOGU2MmIxZjYxN2I0OTZjMTJiOGIzOGE3ZjA2OTZkZThiN2RkODMwIiwicGF0aCI6ImF0dGFjaG1lbnRzWzBdLm1pbWVUeXBlIn0seyJ2YWx1ZSI6Ijc3NDRjMjQ1ZGQyMTJiY2I0OGI3YWU4MjYyMWY5YjAyMjFiYzg0MDAyOGY0YjJmMTIzNjE5NzQwYjE0N2Q3ZWQiLCJwYXRoIjoiYXR0YWNobWVudHNbMF0uZGF0YSJ9XQ==",
+          privacy: {
+            obfuscated: [],
+          },
+        },
+      };
+      expect(utils.getTargetHash(document)).toStrictEqual(
+        "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e"
+      );
+    });
+    test("should return error when document is not OpenAttestation document", async () => {
+      const document: any = {
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+          proof: [],
+          merkleRoot: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+        },
+      };
+      expect(() => utils.getTargetHash(document)).toThrow(
+        new Error(
+          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+        )
+      );
+    });
+  });
+
+  describe("getAssetId", () => {
+    test("should return asset id for v2 document", async () => {
+      const document: WrappedDocument<any> = {
+        version: SchemaId.v2,
+        data: wrappedTransferableV2Document.data,
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+          proof: [],
+          merkleRoot: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+        },
+      };
+      expect(utils.getAssetId(document)).toStrictEqual(
+        "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc"
+      );
+    });
+    test("should return asset id for v3 document", async () => {
+      const document: WrappedDocument<v3.OpenAttestationDocument> = {
+        ...wrappedTransferableV3Document,
+        proof: {
+          type: "OpenAttestationMerkleProofSignature2018",
+          proofPurpose: "assertionMethod",
+          targetHash: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          proofs: [],
+          merkleRoot: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          salts:
+            "W3sidmFsdWUiOiJjNzEzMjQ0MTg4Y2VlNjE0ZmY4YmI5YjM1M2Y0ZTAzNTVkYWE4OTc1MzQ4ZWMzYjM0MGQ1ZTM2YTI1NjM1NjBiIiwicGF0aCI6InZlcnNpb24ifSx7InZhbHVlIjoiMzcxOTRiZmJhYzdjNGQ1NjcyYzFlMGM5OGVjNGE3OWFlYmZiZDczZTUwOTQ5MTJhY2IxN2Q1YjRkZjMwZmYzNiIsInBhdGgiOiJAY29udGV4dFswXSJ9LHsidmFsdWUiOiI4YWI1MGRjMWJlYTgzNzk0NmJjOTU2OTU2NGRmOGMxYTY2NjU1YTAwMzA3ZmQ4NGZlZmI3ZGEyMDZmZjUzNmY2IiwicGF0aCI6IkBjb250ZXh0WzFdIn0seyJ2YWx1ZSI6IjdlMjgzMTVhYzVkYzZlMDExNTRmNjhkZDQ1YmNmZWZlNzViYWU2NzhjM2Q3NTM4YTE0MTRkNTdlZDcwZjBjOTEiLCJwYXRoIjoiQGNvbnRleHRbMl0ifSx7InZhbHVlIjoiNGQzYzExODdiOWE4ODMyZWU3OGY2ZThhZWI4MzAxODU1OWM0ZTE2NDA3MDYxYTQ0NjBmMDliM2RhNDI3NTI1MSIsInBhdGgiOiJAY29udGV4dFszXSJ9LHsidmFsdWUiOiJhOGViNzdjNmEyMzk4OWM2ZjAzN2Q5Nzg2MzE2YzIwZWI5YjI0OTRlN2YwMzM0ODAyZTUxYzRjMWQ4OGRiYjlhIiwicGF0aCI6InJlZmVyZW5jZSJ9LHsidmFsdWUiOiJmMTgzNzE4MGUzZjU1NWY3NzgxODExM2FiYTU3NGZjMDdlOWVmZWUzZGMxZjUwYzMyMWExNDI4YjAzMWJiZTQ1IiwicGF0aCI6Im5hbWUifSx7InZhbHVlIjoiMjZjNWZiZTZmYmM4MDhmY2JhMzBlYmMyMTllNjI0NTJkMmE2ZDQ5ZWQ3YWQ0MjNiNjdmY2IyNGQ1M2Y4OTc5NSIsInBhdGgiOiJpc3N1YW5jZURhdGUifSx7InZhbHVlIjoiNWZmY2I0ZDE4YjUwMmY2NWI5ZWMyMDA1ZmJiMzE2NzcwMjBhZjczMWYwNGM2MmJhMjZjNWY4ZDA2M2FjODJiMSIsInBhdGgiOiJ2YWxpZEZyb20ifSx7InZhbHVlIjoiMzVjZjU5YTUyODBlMGI3OWIwOTg1OWIwODNhOGYwMGQwZjFhMTZlMjZmZDhhZGE2MjdjNzA1MGQ4NWIxNTcwMyIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZDkzZTdhYzJmMDg2Y2E1ZWU4ZTI5NjU1ZjM4Y2YzNzc5ZTZlYjhkOWFiMzNkNjAyYmNkNzc2YjlmOGJhNzcxNiIsInBhdGgiOiJpc3N1ZXIubmFtZSJ9LHsidmFsdWUiOiI4YjY1ZjcyNjk4ZjBjOTk2NDA1NTgzZTA5OTEzZDE2NGZhM2FiMGFiZGFkYTI1OTY4MmUzNDZlMjBkM2NhY2VlIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiMjZjYmVmNjY2NDJiOGE0MTIwZTMzYTI1NjExZGUzMTlkY2U1NzgwYmYzMTNjOWM5ZWM1MGQ0OTJmOTNhODk1ZiIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6ImY5ZTZjMWRhYWZlNGM3NjU4ZGY5ZmM0OGRhM2M0YjM3MzgxYzZlN2Y5YmExYmRlYjViOGFjNjM1Yjg4ZTY2MDAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMjRiNDUyYjI0NzdiMWY0OGU3Nzc2M2UzMmY3MDg1YjNkNWM5ZTBjOGUwZmM4NWVmNGU4NTgxNjQ3YTQ0YzYwYyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS50eXBlIn0seyJ2YWx1ZSI6IjBhYjU3MTQ1NWQzNTdlYmUzNjA2NzQ0OGFiOTZkOGIwZWIzYTY0MzM3YTVjZmUxMjRlYTE1YzgxYTJjZTAyNDYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiJlMzhmN2ExZWFlZjFiNGZmMzYwZjQ3YjJiNzM5ZjA1YWQ1ZDE4NTg3ZDJhMThkOGIwYjhjOTBjZTI4Y2FiMWQ4IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmNsYXNzWzFdLnR5cGUifSx7InZhbHVlIjoiYjBhZDZhZmE5ZDI0NzJjMTRjN2U5NWQ4M2Y4YmJkZGNmNzQzYjkzNjU2YzEyMDg4YmFjODg4MTIzZjkxMjM4MSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjEwMTkyYzhjOGZiZGM4MjlmZGRkYjYzYWIwNWE5OWZkZjFhZTBhN2IzMzMyMDFkY2MxZmIwZWRjZGVhMTQ5NzQiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEudGVtcGxhdGUubmFtZSJ9LHsidmFsdWUiOiI4M2ViNTE1OTAyNzc4MzkyZjczZmQzM2ZmZjliNzQ1NzNkMGZkZmExMmY2NjNhOTgzMjYzMjgwZjQ1OTBiNzZkIiwicGF0aCI6Im9wZW5BdHRlc3RhdGlvbk1ldGFkYXRhLnRlbXBsYXRlLnR5cGUifSx7InZhbHVlIjoiODcwMDk5ZTMxNjRjNzA4Y2IzZTFlZjlmOGM0Njk3ZDVmYTFiMTVjOWM5ZGJlZThlMDdiZDgxZTE0OWYyNTNhOCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS50ZW1wbGF0ZS51cmwifSx7InZhbHVlIjoiMmZiOTczMzIwMDQxYTRkMmIxODJkODBhNDRiMDA5YmY5ZmZhODJlMjVkMTMyYzg4YWVmYzk1Y2UzYzVlNmQ5ZCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5wcm9vZi50eXBlIn0seyJ2YWx1ZSI6IjNjNjNiM2RjYTIwYjg4Yzc4MmE0NDRjYzA5OTlkNTdhMjFhNzIyZThhY2JlZjlhNWU3YzFmODJmNzkwYzY4ODAiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YubWV0aG9kIn0seyJ2YWx1ZSI6IjY3N2FiYmIzOGIzZjhmM2Y3ZjBlYTQ1NGRkMjA0NDQ3OTFjZGI4MjU4MDk1MGM4NmRhNjc5ZmIzZDM2YjIxNTMiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YudmFsdWUifSx7InZhbHVlIjoiNzg0YjdkMTI3NjY1MWY2NzA0MjJhZmMyM2U2ZTcyNTZiYWI2NjVmN2IzMjk5N2U4NGNmOWJhZDhjZjllMzYzZiIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLnR5cGUifSx7InZhbHVlIjoiNTdjNzRhNmIwYzg0Mzg5M2JhN2Y0MzZhYTgwOTNkNDE0MWMwYmZhODgzZjMwY2NhNDUwZDM4M2Y5OTQ2N2NlYSIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLmlkZW50aWZpZXIifSx7InZhbHVlIjoiYjM2MmFmMWU1YmI4MTg5MDg1YTRhMzI0YzI0MzAwZWNiMDNjNGExZTRlMTkwMTMzYTAyNjNkM2UzOWNkYThkNSIsInBhdGgiOiJhdHRhY2htZW50c1swXS5maWxlTmFtZSJ9LHsidmFsdWUiOiJmMmU3NzAyYjNhMzc4NDJkNWVjY2E2ZTFjOGU2MmIxZjYxN2I0OTZjMTJiOGIzOGE3ZjA2OTZkZThiN2RkODMwIiwicGF0aCI6ImF0dGFjaG1lbnRzWzBdLm1pbWVUeXBlIn0seyJ2YWx1ZSI6Ijc3NDRjMjQ1ZGQyMTJiY2I0OGI3YWU4MjYyMWY5YjAyMjFiYzg0MDAyOGY0YjJmMTIzNjE5NzQwYjE0N2Q3ZWQiLCJwYXRoIjoiYXR0YWNobWVudHNbMF0uZGF0YSJ9XQ==",
+          privacy: {
+            obfuscated: [],
+          },
+        },
+      };
+      expect(utils.getAssetId(document)).toStrictEqual(
+        "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e"
+      );
+    });
+    test("should return error when v3 document doesn't have token registry", async () => {
+      const document: WrappedDocument<v3.OpenAttestationDocument> = {
+        ...wrappedV3Document,
+        proof: {
+          type: "OpenAttestationMerkleProofSignature2018",
+          proofPurpose: "assertionMethod",
+          targetHash: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          proofs: [],
+          merkleRoot: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          salts:
+            "W3sidmFsdWUiOiJjNzEzMjQ0MTg4Y2VlNjE0ZmY4YmI5YjM1M2Y0ZTAzNTVkYWE4OTc1MzQ4ZWMzYjM0MGQ1ZTM2YTI1NjM1NjBiIiwicGF0aCI6InZlcnNpb24ifSx7InZhbHVlIjoiMzcxOTRiZmJhYzdjNGQ1NjcyYzFlMGM5OGVjNGE3OWFlYmZiZDczZTUwOTQ5MTJhY2IxN2Q1YjRkZjMwZmYzNiIsInBhdGgiOiJAY29udGV4dFswXSJ9LHsidmFsdWUiOiI4YWI1MGRjMWJlYTgzNzk0NmJjOTU2OTU2NGRmOGMxYTY2NjU1YTAwMzA3ZmQ4NGZlZmI3ZGEyMDZmZjUzNmY2IiwicGF0aCI6IkBjb250ZXh0WzFdIn0seyJ2YWx1ZSI6IjdlMjgzMTVhYzVkYzZlMDExNTRmNjhkZDQ1YmNmZWZlNzViYWU2NzhjM2Q3NTM4YTE0MTRkNTdlZDcwZjBjOTEiLCJwYXRoIjoiQGNvbnRleHRbMl0ifSx7InZhbHVlIjoiNGQzYzExODdiOWE4ODMyZWU3OGY2ZThhZWI4MzAxODU1OWM0ZTE2NDA3MDYxYTQ0NjBmMDliM2RhNDI3NTI1MSIsInBhdGgiOiJAY29udGV4dFszXSJ9LHsidmFsdWUiOiJhOGViNzdjNmEyMzk4OWM2ZjAzN2Q5Nzg2MzE2YzIwZWI5YjI0OTRlN2YwMzM0ODAyZTUxYzRjMWQ4OGRiYjlhIiwicGF0aCI6InJlZmVyZW5jZSJ9LHsidmFsdWUiOiJmMTgzNzE4MGUzZjU1NWY3NzgxODExM2FiYTU3NGZjMDdlOWVmZWUzZGMxZjUwYzMyMWExNDI4YjAzMWJiZTQ1IiwicGF0aCI6Im5hbWUifSx7InZhbHVlIjoiMjZjNWZiZTZmYmM4MDhmY2JhMzBlYmMyMTllNjI0NTJkMmE2ZDQ5ZWQ3YWQ0MjNiNjdmY2IyNGQ1M2Y4OTc5NSIsInBhdGgiOiJpc3N1YW5jZURhdGUifSx7InZhbHVlIjoiNWZmY2I0ZDE4YjUwMmY2NWI5ZWMyMDA1ZmJiMzE2NzcwMjBhZjczMWYwNGM2MmJhMjZjNWY4ZDA2M2FjODJiMSIsInBhdGgiOiJ2YWxpZEZyb20ifSx7InZhbHVlIjoiMzVjZjU5YTUyODBlMGI3OWIwOTg1OWIwODNhOGYwMGQwZjFhMTZlMjZmZDhhZGE2MjdjNzA1MGQ4NWIxNTcwMyIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZDkzZTdhYzJmMDg2Y2E1ZWU4ZTI5NjU1ZjM4Y2YzNzc5ZTZlYjhkOWFiMzNkNjAyYmNkNzc2YjlmOGJhNzcxNiIsInBhdGgiOiJpc3N1ZXIubmFtZSJ9LHsidmFsdWUiOiI4YjY1ZjcyNjk4ZjBjOTk2NDA1NTgzZTA5OTEzZDE2NGZhM2FiMGFiZGFkYTI1OTY4MmUzNDZlMjBkM2NhY2VlIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiMjZjYmVmNjY2NDJiOGE0MTIwZTMzYTI1NjExZGUzMTlkY2U1NzgwYmYzMTNjOWM5ZWM1MGQ0OTJmOTNhODk1ZiIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6ImY5ZTZjMWRhYWZlNGM3NjU4ZGY5ZmM0OGRhM2M0YjM3MzgxYzZlN2Y5YmExYmRlYjViOGFjNjM1Yjg4ZTY2MDAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMjRiNDUyYjI0NzdiMWY0OGU3Nzc2M2UzMmY3MDg1YjNkNWM5ZTBjOGUwZmM4NWVmNGU4NTgxNjQ3YTQ0YzYwYyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS50eXBlIn0seyJ2YWx1ZSI6IjBhYjU3MTQ1NWQzNTdlYmUzNjA2NzQ0OGFiOTZkOGIwZWIzYTY0MzM3YTVjZmUxMjRlYTE1YzgxYTJjZTAyNDYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiJlMzhmN2ExZWFlZjFiNGZmMzYwZjQ3YjJiNzM5ZjA1YWQ1ZDE4NTg3ZDJhMThkOGIwYjhjOTBjZTI4Y2FiMWQ4IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmNsYXNzWzFdLnR5cGUifSx7InZhbHVlIjoiYjBhZDZhZmE5ZDI0NzJjMTRjN2U5NWQ4M2Y4YmJkZGNmNzQzYjkzNjU2YzEyMDg4YmFjODg4MTIzZjkxMjM4MSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjEwMTkyYzhjOGZiZGM4MjlmZGRkYjYzYWIwNWE5OWZkZjFhZTBhN2IzMzMyMDFkY2MxZmIwZWRjZGVhMTQ5NzQiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEudGVtcGxhdGUubmFtZSJ9LHsidmFsdWUiOiI4M2ViNTE1OTAyNzc4MzkyZjczZmQzM2ZmZjliNzQ1NzNkMGZkZmExMmY2NjNhOTgzMjYzMjgwZjQ1OTBiNzZkIiwicGF0aCI6Im9wZW5BdHRlc3RhdGlvbk1ldGFkYXRhLnRlbXBsYXRlLnR5cGUifSx7InZhbHVlIjoiODcwMDk5ZTMxNjRjNzA4Y2IzZTFlZjlmOGM0Njk3ZDVmYTFiMTVjOWM5ZGJlZThlMDdiZDgxZTE0OWYyNTNhOCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS50ZW1wbGF0ZS51cmwifSx7InZhbHVlIjoiMmZiOTczMzIwMDQxYTRkMmIxODJkODBhNDRiMDA5YmY5ZmZhODJlMjVkMTMyYzg4YWVmYzk1Y2UzYzVlNmQ5ZCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5wcm9vZi50eXBlIn0seyJ2YWx1ZSI6IjNjNjNiM2RjYTIwYjg4Yzc4MmE0NDRjYzA5OTlkNTdhMjFhNzIyZThhY2JlZjlhNWU3YzFmODJmNzkwYzY4ODAiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YubWV0aG9kIn0seyJ2YWx1ZSI6IjY3N2FiYmIzOGIzZjhmM2Y3ZjBlYTQ1NGRkMjA0NDQ3OTFjZGI4MjU4MDk1MGM4NmRhNjc5ZmIzZDM2YjIxNTMiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YudmFsdWUifSx7InZhbHVlIjoiNzg0YjdkMTI3NjY1MWY2NzA0MjJhZmMyM2U2ZTcyNTZiYWI2NjVmN2IzMjk5N2U4NGNmOWJhZDhjZjllMzYzZiIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLnR5cGUifSx7InZhbHVlIjoiNTdjNzRhNmIwYzg0Mzg5M2JhN2Y0MzZhYTgwOTNkNDE0MWMwYmZhODgzZjMwY2NhNDUwZDM4M2Y5OTQ2N2NlYSIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLmlkZW50aWZpZXIifSx7InZhbHVlIjoiYjM2MmFmMWU1YmI4MTg5MDg1YTRhMzI0YzI0MzAwZWNiMDNjNGExZTRlMTkwMTMzYTAyNjNkM2UzOWNkYThkNSIsInBhdGgiOiJhdHRhY2htZW50c1swXS5maWxlTmFtZSJ9LHsidmFsdWUiOiJmMmU3NzAyYjNhMzc4NDJkNWVjY2E2ZTFjOGU2MmIxZjYxN2I0OTZjMTJiOGIzOGE3ZjA2OTZkZThiN2RkODMwIiwicGF0aCI6ImF0dGFjaG1lbnRzWzBdLm1pbWVUeXBlIn0seyJ2YWx1ZSI6Ijc3NDRjMjQ1ZGQyMTJiY2I0OGI3YWU4MjYyMWY5YjAyMjFiYzg0MDAyOGY0YjJmMTIzNjE5NzQwYjE0N2Q3ZWQiLCJwYXRoIjoiYXR0YWNobWVudHNbMF0uZGF0YSJ9XQ==",
+          privacy: {
+            obfuscated: [],
+          },
+        },
+      };
+      expect(() => utils.getAssetId(document)).toThrow(
+        "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+      );
+    });
+    test("should return error when v2 document doesn't have token registry", async () => {
+      const document: WrappedDocument<any> = {
+        version: SchemaId.v2,
+        data: wrappedV2Document.data,
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+          proof: [],
+          merkleRoot: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+        },
+      };
+      expect(() => utils.getAssetId(document)).toThrow(
+        "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+      );
+    });
+  });
+
+  describe("isTransferableAsset", () => {
+    test("should return true for v2 transferable document", async () => {
+      const document: WrappedDocument<any> = {
+        version: SchemaId.v2,
+        data: wrappedTransferableV2Document.data,
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+          proof: [],
+          merkleRoot: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+        },
+      };
+      expect(utils.isTransferableAsset(document)).toStrictEqual(true);
+    });
+    test("should return false for v2 verifiable document", async () => {
+      const document: WrappedDocument<any> = {
+        version: SchemaId.v2,
+        data: wrappedV2Document.data,
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+          proof: [],
+          merkleRoot: "64b2ed566455d0adbc798a8f824f163d87276dcbd66cacff8a6a4ba28fb800fc",
+        },
+      };
+      expect(utils.isTransferableAsset(document)).toStrictEqual(false);
+    });
+    test("should return true for v3 transferable document", async () => {
+      const document: WrappedDocument<v3.OpenAttestationDocument> = {
+        ...wrappedTransferableV3Document,
+        proof: {
+          type: "OpenAttestationMerkleProofSignature2018",
+          proofPurpose: "assertionMethod",
+          targetHash: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          proofs: [],
+          merkleRoot: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          salts:
+            "W3sidmFsdWUiOiJjNzEzMjQ0MTg4Y2VlNjE0ZmY4YmI5YjM1M2Y0ZTAzNTVkYWE4OTc1MzQ4ZWMzYjM0MGQ1ZTM2YTI1NjM1NjBiIiwicGF0aCI6InZlcnNpb24ifSx7InZhbHVlIjoiMzcxOTRiZmJhYzdjNGQ1NjcyYzFlMGM5OGVjNGE3OWFlYmZiZDczZTUwOTQ5MTJhY2IxN2Q1YjRkZjMwZmYzNiIsInBhdGgiOiJAY29udGV4dFswXSJ9LHsidmFsdWUiOiI4YWI1MGRjMWJlYTgzNzk0NmJjOTU2OTU2NGRmOGMxYTY2NjU1YTAwMzA3ZmQ4NGZlZmI3ZGEyMDZmZjUzNmY2IiwicGF0aCI6IkBjb250ZXh0WzFdIn0seyJ2YWx1ZSI6IjdlMjgzMTVhYzVkYzZlMDExNTRmNjhkZDQ1YmNmZWZlNzViYWU2NzhjM2Q3NTM4YTE0MTRkNTdlZDcwZjBjOTEiLCJwYXRoIjoiQGNvbnRleHRbMl0ifSx7InZhbHVlIjoiNGQzYzExODdiOWE4ODMyZWU3OGY2ZThhZWI4MzAxODU1OWM0ZTE2NDA3MDYxYTQ0NjBmMDliM2RhNDI3NTI1MSIsInBhdGgiOiJAY29udGV4dFszXSJ9LHsidmFsdWUiOiJhOGViNzdjNmEyMzk4OWM2ZjAzN2Q5Nzg2MzE2YzIwZWI5YjI0OTRlN2YwMzM0ODAyZTUxYzRjMWQ4OGRiYjlhIiwicGF0aCI6InJlZmVyZW5jZSJ9LHsidmFsdWUiOiJmMTgzNzE4MGUzZjU1NWY3NzgxODExM2FiYTU3NGZjMDdlOWVmZWUzZGMxZjUwYzMyMWExNDI4YjAzMWJiZTQ1IiwicGF0aCI6Im5hbWUifSx7InZhbHVlIjoiMjZjNWZiZTZmYmM4MDhmY2JhMzBlYmMyMTllNjI0NTJkMmE2ZDQ5ZWQ3YWQ0MjNiNjdmY2IyNGQ1M2Y4OTc5NSIsInBhdGgiOiJpc3N1YW5jZURhdGUifSx7InZhbHVlIjoiNWZmY2I0ZDE4YjUwMmY2NWI5ZWMyMDA1ZmJiMzE2NzcwMjBhZjczMWYwNGM2MmJhMjZjNWY4ZDA2M2FjODJiMSIsInBhdGgiOiJ2YWxpZEZyb20ifSx7InZhbHVlIjoiMzVjZjU5YTUyODBlMGI3OWIwOTg1OWIwODNhOGYwMGQwZjFhMTZlMjZmZDhhZGE2MjdjNzA1MGQ4NWIxNTcwMyIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZDkzZTdhYzJmMDg2Y2E1ZWU4ZTI5NjU1ZjM4Y2YzNzc5ZTZlYjhkOWFiMzNkNjAyYmNkNzc2YjlmOGJhNzcxNiIsInBhdGgiOiJpc3N1ZXIubmFtZSJ9LHsidmFsdWUiOiI4YjY1ZjcyNjk4ZjBjOTk2NDA1NTgzZTA5OTEzZDE2NGZhM2FiMGFiZGFkYTI1OTY4MmUzNDZlMjBkM2NhY2VlIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiMjZjYmVmNjY2NDJiOGE0MTIwZTMzYTI1NjExZGUzMTlkY2U1NzgwYmYzMTNjOWM5ZWM1MGQ0OTJmOTNhODk1ZiIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6ImY5ZTZjMWRhYWZlNGM3NjU4ZGY5ZmM0OGRhM2M0YjM3MzgxYzZlN2Y5YmExYmRlYjViOGFjNjM1Yjg4ZTY2MDAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMjRiNDUyYjI0NzdiMWY0OGU3Nzc2M2UzMmY3MDg1YjNkNWM5ZTBjOGUwZmM4NWVmNGU4NTgxNjQ3YTQ0YzYwYyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS50eXBlIn0seyJ2YWx1ZSI6IjBhYjU3MTQ1NWQzNTdlYmUzNjA2NzQ0OGFiOTZkOGIwZWIzYTY0MzM3YTVjZmUxMjRlYTE1YzgxYTJjZTAyNDYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiJlMzhmN2ExZWFlZjFiNGZmMzYwZjQ3YjJiNzM5ZjA1YWQ1ZDE4NTg3ZDJhMThkOGIwYjhjOTBjZTI4Y2FiMWQ4IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmNsYXNzWzFdLnR5cGUifSx7InZhbHVlIjoiYjBhZDZhZmE5ZDI0NzJjMTRjN2U5NWQ4M2Y4YmJkZGNmNzQzYjkzNjU2YzEyMDg4YmFjODg4MTIzZjkxMjM4MSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjEwMTkyYzhjOGZiZGM4MjlmZGRkYjYzYWIwNWE5OWZkZjFhZTBhN2IzMzMyMDFkY2MxZmIwZWRjZGVhMTQ5NzQiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEudGVtcGxhdGUubmFtZSJ9LHsidmFsdWUiOiI4M2ViNTE1OTAyNzc4MzkyZjczZmQzM2ZmZjliNzQ1NzNkMGZkZmExMmY2NjNhOTgzMjYzMjgwZjQ1OTBiNzZkIiwicGF0aCI6Im9wZW5BdHRlc3RhdGlvbk1ldGFkYXRhLnRlbXBsYXRlLnR5cGUifSx7InZhbHVlIjoiODcwMDk5ZTMxNjRjNzA4Y2IzZTFlZjlmOGM0Njk3ZDVmYTFiMTVjOWM5ZGJlZThlMDdiZDgxZTE0OWYyNTNhOCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS50ZW1wbGF0ZS51cmwifSx7InZhbHVlIjoiMmZiOTczMzIwMDQxYTRkMmIxODJkODBhNDRiMDA5YmY5ZmZhODJlMjVkMTMyYzg4YWVmYzk1Y2UzYzVlNmQ5ZCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5wcm9vZi50eXBlIn0seyJ2YWx1ZSI6IjNjNjNiM2RjYTIwYjg4Yzc4MmE0NDRjYzA5OTlkNTdhMjFhNzIyZThhY2JlZjlhNWU3YzFmODJmNzkwYzY4ODAiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YubWV0aG9kIn0seyJ2YWx1ZSI6IjY3N2FiYmIzOGIzZjhmM2Y3ZjBlYTQ1NGRkMjA0NDQ3OTFjZGI4MjU4MDk1MGM4NmRhNjc5ZmIzZDM2YjIxNTMiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YudmFsdWUifSx7InZhbHVlIjoiNzg0YjdkMTI3NjY1MWY2NzA0MjJhZmMyM2U2ZTcyNTZiYWI2NjVmN2IzMjk5N2U4NGNmOWJhZDhjZjllMzYzZiIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLnR5cGUifSx7InZhbHVlIjoiNTdjNzRhNmIwYzg0Mzg5M2JhN2Y0MzZhYTgwOTNkNDE0MWMwYmZhODgzZjMwY2NhNDUwZDM4M2Y5OTQ2N2NlYSIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLmlkZW50aWZpZXIifSx7InZhbHVlIjoiYjM2MmFmMWU1YmI4MTg5MDg1YTRhMzI0YzI0MzAwZWNiMDNjNGExZTRlMTkwMTMzYTAyNjNkM2UzOWNkYThkNSIsInBhdGgiOiJhdHRhY2htZW50c1swXS5maWxlTmFtZSJ9LHsidmFsdWUiOiJmMmU3NzAyYjNhMzc4NDJkNWVjY2E2ZTFjOGU2MmIxZjYxN2I0OTZjMTJiOGIzOGE3ZjA2OTZkZThiN2RkODMwIiwicGF0aCI6ImF0dGFjaG1lbnRzWzBdLm1pbWVUeXBlIn0seyJ2YWx1ZSI6Ijc3NDRjMjQ1ZGQyMTJiY2I0OGI3YWU4MjYyMWY5YjAyMjFiYzg0MDAyOGY0YjJmMTIzNjE5NzQwYjE0N2Q3ZWQiLCJwYXRoIjoiYXR0YWNobWVudHNbMF0uZGF0YSJ9XQ==",
+          privacy: {
+            obfuscated: [],
+          },
+        },
+      };
+      expect(utils.isTransferableAsset(document)).toStrictEqual(true);
+    });
+    test("should return false for v3 verifiable document", async () => {
+      const document: WrappedDocument<v3.OpenAttestationDocument> = {
+        ...wrappedV3Document,
+        proof: {
+          type: "OpenAttestationMerkleProofSignature2018",
+          proofPurpose: "assertionMethod",
+          targetHash: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          proofs: [],
+          merkleRoot: "6e3b3b131db956263d142f42a840962d31359fff61c28937d9d1add0ca04c89e",
+          salts:
+            "W3sidmFsdWUiOiJjNzEzMjQ0MTg4Y2VlNjE0ZmY4YmI5YjM1M2Y0ZTAzNTVkYWE4OTc1MzQ4ZWMzYjM0MGQ1ZTM2YTI1NjM1NjBiIiwicGF0aCI6InZlcnNpb24ifSx7InZhbHVlIjoiMzcxOTRiZmJhYzdjNGQ1NjcyYzFlMGM5OGVjNGE3OWFlYmZiZDczZTUwOTQ5MTJhY2IxN2Q1YjRkZjMwZmYzNiIsInBhdGgiOiJAY29udGV4dFswXSJ9LHsidmFsdWUiOiI4YWI1MGRjMWJlYTgzNzk0NmJjOTU2OTU2NGRmOGMxYTY2NjU1YTAwMzA3ZmQ4NGZlZmI3ZGEyMDZmZjUzNmY2IiwicGF0aCI6IkBjb250ZXh0WzFdIn0seyJ2YWx1ZSI6IjdlMjgzMTVhYzVkYzZlMDExNTRmNjhkZDQ1YmNmZWZlNzViYWU2NzhjM2Q3NTM4YTE0MTRkNTdlZDcwZjBjOTEiLCJwYXRoIjoiQGNvbnRleHRbMl0ifSx7InZhbHVlIjoiNGQzYzExODdiOWE4ODMyZWU3OGY2ZThhZWI4MzAxODU1OWM0ZTE2NDA3MDYxYTQ0NjBmMDliM2RhNDI3NTI1MSIsInBhdGgiOiJAY29udGV4dFszXSJ9LHsidmFsdWUiOiJhOGViNzdjNmEyMzk4OWM2ZjAzN2Q5Nzg2MzE2YzIwZWI5YjI0OTRlN2YwMzM0ODAyZTUxYzRjMWQ4OGRiYjlhIiwicGF0aCI6InJlZmVyZW5jZSJ9LHsidmFsdWUiOiJmMTgzNzE4MGUzZjU1NWY3NzgxODExM2FiYTU3NGZjMDdlOWVmZWUzZGMxZjUwYzMyMWExNDI4YjAzMWJiZTQ1IiwicGF0aCI6Im5hbWUifSx7InZhbHVlIjoiMjZjNWZiZTZmYmM4MDhmY2JhMzBlYmMyMTllNjI0NTJkMmE2ZDQ5ZWQ3YWQ0MjNiNjdmY2IyNGQ1M2Y4OTc5NSIsInBhdGgiOiJpc3N1YW5jZURhdGUifSx7InZhbHVlIjoiNWZmY2I0ZDE4YjUwMmY2NWI5ZWMyMDA1ZmJiMzE2NzcwMjBhZjczMWYwNGM2MmJhMjZjNWY4ZDA2M2FjODJiMSIsInBhdGgiOiJ2YWxpZEZyb20ifSx7InZhbHVlIjoiMzVjZjU5YTUyODBlMGI3OWIwOTg1OWIwODNhOGYwMGQwZjFhMTZlMjZmZDhhZGE2MjdjNzA1MGQ4NWIxNTcwMyIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZDkzZTdhYzJmMDg2Y2E1ZWU4ZTI5NjU1ZjM4Y2YzNzc5ZTZlYjhkOWFiMzNkNjAyYmNkNzc2YjlmOGJhNzcxNiIsInBhdGgiOiJpc3N1ZXIubmFtZSJ9LHsidmFsdWUiOiI4YjY1ZjcyNjk4ZjBjOTk2NDA1NTgzZTA5OTEzZDE2NGZhM2FiMGFiZGFkYTI1OTY4MmUzNDZlMjBkM2NhY2VlIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiMjZjYmVmNjY2NDJiOGE0MTIwZTMzYTI1NjExZGUzMTlkY2U1NzgwYmYzMTNjOWM5ZWM1MGQ0OTJmOTNhODk1ZiIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6ImY5ZTZjMWRhYWZlNGM3NjU4ZGY5ZmM0OGRhM2M0YjM3MzgxYzZlN2Y5YmExYmRlYjViOGFjNjM1Yjg4ZTY2MDAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMjRiNDUyYjI0NzdiMWY0OGU3Nzc2M2UzMmY3MDg1YjNkNWM5ZTBjOGUwZmM4NWVmNGU4NTgxNjQ3YTQ0YzYwYyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1swXS50eXBlIn0seyJ2YWx1ZSI6IjBhYjU3MTQ1NWQzNTdlYmUzNjA2NzQ0OGFiOTZkOGIwZWIzYTY0MzM3YTVjZmUxMjRlYTE1YzgxYTJjZTAyNDYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuY2xhc3NbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiJlMzhmN2ExZWFlZjFiNGZmMzYwZjQ3YjJiNzM5ZjA1YWQ1ZDE4NTg3ZDJhMThkOGIwYjhjOTBjZTI4Y2FiMWQ4IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmNsYXNzWzFdLnR5cGUifSx7InZhbHVlIjoiYjBhZDZhZmE5ZDI0NzJjMTRjN2U5NWQ4M2Y4YmJkZGNmNzQzYjkzNjU2YzEyMDg4YmFjODg4MTIzZjkxMjM4MSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5jbGFzc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjEwMTkyYzhjOGZiZGM4MjlmZGRkYjYzYWIwNWE5OWZkZjFhZTBhN2IzMzMyMDFkY2MxZmIwZWRjZGVhMTQ5NzQiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEudGVtcGxhdGUubmFtZSJ9LHsidmFsdWUiOiI4M2ViNTE1OTAyNzc4MzkyZjczZmQzM2ZmZjliNzQ1NzNkMGZkZmExMmY2NjNhOTgzMjYzMjgwZjQ1OTBiNzZkIiwicGF0aCI6Im9wZW5BdHRlc3RhdGlvbk1ldGFkYXRhLnRlbXBsYXRlLnR5cGUifSx7InZhbHVlIjoiODcwMDk5ZTMxNjRjNzA4Y2IzZTFlZjlmOGM0Njk3ZDVmYTFiMTVjOWM5ZGJlZThlMDdiZDgxZTE0OWYyNTNhOCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS50ZW1wbGF0ZS51cmwifSx7InZhbHVlIjoiMmZiOTczMzIwMDQxYTRkMmIxODJkODBhNDRiMDA5YmY5ZmZhODJlMjVkMTMyYzg4YWVmYzk1Y2UzYzVlNmQ5ZCIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5wcm9vZi50eXBlIn0seyJ2YWx1ZSI6IjNjNjNiM2RjYTIwYjg4Yzc4MmE0NDRjYzA5OTlkNTdhMjFhNzIyZThhY2JlZjlhNWU3YzFmODJmNzkwYzY4ODAiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YubWV0aG9kIn0seyJ2YWx1ZSI6IjY3N2FiYmIzOGIzZjhmM2Y3ZjBlYTQ1NGRkMjA0NDQ3OTFjZGI4MjU4MDk1MGM4NmRhNjc5ZmIzZDM2YjIxNTMiLCJwYXRoIjoib3BlbkF0dGVzdGF0aW9uTWV0YWRhdGEucHJvb2YudmFsdWUifSx7InZhbHVlIjoiNzg0YjdkMTI3NjY1MWY2NzA0MjJhZmMyM2U2ZTcyNTZiYWI2NjVmN2IzMjk5N2U4NGNmOWJhZDhjZjllMzYzZiIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLnR5cGUifSx7InZhbHVlIjoiNTdjNzRhNmIwYzg0Mzg5M2JhN2Y0MzZhYTgwOTNkNDE0MWMwYmZhODgzZjMwY2NhNDUwZDM4M2Y5OTQ2N2NlYSIsInBhdGgiOiJvcGVuQXR0ZXN0YXRpb25NZXRhZGF0YS5pZGVudGl0eVByb29mLmlkZW50aWZpZXIifSx7InZhbHVlIjoiYjM2MmFmMWU1YmI4MTg5MDg1YTRhMzI0YzI0MzAwZWNiMDNjNGExZTRlMTkwMTMzYTAyNjNkM2UzOWNkYThkNSIsInBhdGgiOiJhdHRhY2htZW50c1swXS5maWxlTmFtZSJ9LHsidmFsdWUiOiJmMmU3NzAyYjNhMzc4NDJkNWVjY2E2ZTFjOGU2MmIxZjYxN2I0OTZjMTJiOGIzOGE3ZjA2OTZkZThiN2RkODMwIiwicGF0aCI6ImF0dGFjaG1lbnRzWzBdLm1pbWVUeXBlIn0seyJ2YWx1ZSI6Ijc3NDRjMjQ1ZGQyMTJiY2I0OGI3YWU4MjYyMWY5YjAyMjFiYzg0MDAyOGY0YjJmMTIzNjE5NzQwYjE0N2Q3ZWQiLCJwYXRoIjoiYXR0YWNobWVudHNbMF0uZGF0YSJ9XQ==",
+          privacy: {
+            obfuscated: [],
+          },
+        },
+      };
+      expect(utils.isTransferableAsset(document)).toStrictEqual(false);
     });
   });
 });
