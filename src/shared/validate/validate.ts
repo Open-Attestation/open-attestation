@@ -12,7 +12,7 @@ export const validateSchema = (document: any, validator: ValidateFunction): Erro
   const valid = validator(document.version === SchemaId.v3 ? document : getData(document));
   if (!valid) {
     logger.debug("There are errors in the document");
-    logger.debug(validator.errors);
+    logger.debug(JSON.stringify(validator.errors));
     return validator.errors ?? [];
   }
   logger.debug(`Document is a valid open attestation document v${document.version}`);
