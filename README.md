@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
 
-# Open Attestation
+# Open Attestation test
 
 Attestation and notary framework for any document types on the blockchain.
 
