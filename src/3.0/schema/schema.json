@@ -31,7 +31,7 @@
         }
       },
       "required": ["id", "name"],
-      "additionalProperties": false
+      "additionalProperties": true
     }
   },
   "properties": {

@@ -111,7 +111,11 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
   await expand(credential, {
     expansionMap: (info) => {
       if (info.unmappedProperty) {
-        throw new Error("The property '" + info.unmappedProperty + "' in the input was not defined in the context");
+        throw new Error(
+          `"The property ${info.activeProperty ? `${info.activeProperty}.` : ""}${
+            info.unmappedProperty
+          } in the input was not defined in the context"`
+        );
       }
     },
     documentLoader,

@@ -506,39 +506,6 @@ describe("schema/3.0", () => {
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
-    it("should be invalid when adding additional data", async () => {
-      expect.assertions(2);
-
-      const document = { ...cloneDeep(sampleDoc), issuer: { ...sample.issuer, key: "any" } };
-      try {
-        await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
-      } catch (e) {
-        expect(e).toHaveProperty("message", "Invalid document");
-        expect(e).toHaveProperty("validationErrors", [
-          {
-            keyword: "additionalProperties",
-            instancePath: "/issuer",
-            schemaPath: "#/definitions/issuer/additionalProperties",
-            params: { additionalProperty: "key" },
-            message: "must NOT have additional properties",
-          },
-          {
-            keyword: "type",
-            instancePath: "/issuer",
-            schemaPath: "#/properties/issuer/oneOf/1/type",
-            params: { type: "string" },
-            message: "must be string",
-          },
-          {
-            keyword: "oneOf",
-            instancePath: "/issuer",
-            schemaPath: "#/properties/issuer/oneOf",
-            params: { passingSchemas: null },
-            message: "must match exactly one schema in oneOf",
-          },
-        ]);
-      }
-    });
     it("should be invalid when id is not a URI", async () => {
       expect.assertions(2);
 

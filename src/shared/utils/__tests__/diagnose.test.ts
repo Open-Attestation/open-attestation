@@ -36,10 +36,11 @@ describe("diagnose", () => {
         ],
         issuer: {
           name: "name",
+          type: "OpenAttestationIssuer",
           id: "https://example.com",
         },
         issuanceDate: "2010-01-01T19:23:24Z",
-        type: ["VerifiableCredential", "UniversityDegreeCredential"],
+        type: ["VerifiableCredential", "UniversityDegreeCredential", "OpenAttestationCredential"],
         credentialSubject: {
           id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
           degree: {
@@ -53,6 +54,11 @@ describe("diagnose", () => {
             type: v3.ProofType.OpenAttestationProofMethod,
             method: v3.Method.DocumentStore,
           },
+          template: {
+            url: "https://",
+            name: "",
+            type: v3.TemplateType.EmbeddedRenderer,
+          },
           identityProof: {
             identifier: "whatever",
             type: v2.IdentityProofType.DNSTxt,
@@ -60,11 +66,6 @@ describe("diagnose", () => {
         },
         name: "",
         reference: "",
-        template: {
-          url: "https://",
-          name: "",
-          type: v3.TemplateType.EmbeddedRenderer,
-        },
         validFrom: "2010-01-01T19:23:24Z",
       },
       { version: SchemaId.v3 }
