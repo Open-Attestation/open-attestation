@@ -19,7 +19,7 @@ import sampleDid from "../schema/sample-credential-did.json";
 
 const openAttestationDataWithDid = sampleDid as OpenAttestationDocument;
 
-const openAttestationData: OpenAttestationDocument = {
+const openAttestationData = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -30,7 +30,7 @@ const openAttestationData: OpenAttestationDocument = {
   validFrom: "2010-01-01T19:23:24Z",
   issuanceDate: "2010-01-01T19:23:24Z",
   name: "document owner name",
-  type: ["VerifiableCredential", "UniversityDegreeCredential"],
+  type: ["VerifiableCredential", "UniversityDegreeCredential", "OpenAttestationCredential"],
   credentialSubject: {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     degree: {
@@ -56,6 +56,7 @@ const openAttestationData: OpenAttestationDocument = {
   },
   issuer: {
     id: "http://some.example.com",
+    type: "OpenAttestationIssuer",
     name: "DEMO STORE",
   },
 };
