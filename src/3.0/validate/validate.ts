@@ -3,6 +3,7 @@ import { WrappedDocument } from "../../3.0/types";
 import { documentLoaders, expand } from "jsonld";
 import fetch from "node-fetch";
 import { ContextLoader } from "./DocumentLoader";
+import { RemoteDocument } from "jsonld/jsonld-spec";
 
 const getId = (objectOrString: string | { id: string }): string => {
   if (typeof objectOrString === "string") {
@@ -39,44 +40,6 @@ const isValidRFC3986 = (str: any) => {
   return rfc3986.test(str);
 };
 
-const preloadedContextList = [
-  "https://www.w3.org/2018/credentials/v1",
-  "https://www.w3.org/2018/credentials/examples/v1",
-  "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json",
-  "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
-  "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
-];
-const contexts: Map<string, Promise<any>> = new Map();
-const nodeDocumentLoader = documentLoaders.xhr ? documentLoaders.xhr() : documentLoaders.node();
-let preload = true;
-
-const documentLoader = async (url: string) => {
-  if (preload) {
-    preload = false;
-    for (const url of preloadedContextList) {
-      contexts.set(
-        url,
-        fetch(url, { headers: { accept: "application/json" } }).then((res: any) => res.json())
-      );
-    }
-  }
-  if (contexts.get(url)) {
-    const promise = contexts.get(url);
-    return {
-      contextUrl: undefined, // this is for a context via a link header
-      document: await promise, // this is the actual document that was loaded
-      documentUrl: url, // this is the actual context URL after redirects
-    };
-  } else {
-    const promise = nodeDocumentLoader(url);
-    contexts.set(
-      url,
-      promise.then(({ document }) => document)
-    );
-    return promise;
-  }
-};
-
 export async function validateW3C<T extends OpenAttestationDocument>(credential: WrappedDocument<T>): Promise<void> {
   // ensure first context is 'https://www.w3.org/2018/credentials/v1' as it's mandatory, see https://www.w3.org/TR/vc-data-model/#contexts
   if (
@@ -110,7 +73,7 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
   }
 
   const contextLoader = new ContextLoader();
-  const docLoader = contextLoader.loadContext;
+  const docLoader: (url: string) => Promise<RemoteDocument> = contextLoader.loadContext;
 
   await expand(credential, {
     expansionMap: (info) => {
@@ -122,6 +85,6 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
         );
       }
     },
-    documentLoader,
+    documentLoader: docLoader,
   });
 }

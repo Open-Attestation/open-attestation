@@ -1,8 +1,6 @@
 import { JsonLdObj, RemoteDocument } from "jsonld/jsonld-spec";
 import fetch, { Response } from "node-fetch";
 
-type CallBack =  (err: Error, remoteDoc: RemoteDocument) => void
-
 export class ContextLoader {
     
     preloadedContextUrls: string[] = [
@@ -42,7 +40,7 @@ export class ContextLoader {
         return true;
     }
 
-    async loadContext(url: string, callback?: CallBack): Promise<RemoteDocument> {
+    async loadContext(url: string): Promise<RemoteDocument> {
         // wait for caching to complete
         await this.isCached;
 
@@ -50,12 +48,7 @@ export class ContextLoader {
             return this.contextMap.get(url) as RemoteDocument;
         }
 
-        const jsonLdObj: JsonLdObj = await this.fetchContext(url);
-            const remoteDocument: RemoteDocument = {
-                contextUrl: undefined, 
-                document: jsonLdObj, // this is the actual document that was loaded
-                documentUrl: url,
-            }
+        const remoteDocument: RemoteDocument = await this.fetchContext(url);
         this.contextMap.set(url, remoteDocument);
         return remoteDocument
     }
