@@ -12,7 +12,7 @@ const preloadedContextUrls: string[] = [
   "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
 ];
 
-// Module scoped - subsequent imports and calls to ContextLoader.loadContext will receive the latest updated value
+// Module scoped - subsequent imports and calls to ContextLoader.loadContext will receive the latest updated value of contextMap and isCached
 // https://stackoverflow.com/a/48173881/6514532
 const contextMap: Map<string, RemoteDocument> = new Map();
 
