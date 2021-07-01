@@ -1,7 +1,6 @@
 import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import { WrappedDocument } from "../../3.0/types";
-import { documentLoaders, expand } from "jsonld";
-import fetch from "node-fetch";
+import { expand } from "jsonld";
 import { ContextLoader } from "./DocumentLoader";
 import { RemoteDocument } from "jsonld/jsonld-spec";
 
@@ -73,13 +72,13 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
   }
 
   const contextLoader = new ContextLoader();
+
+  // direct method borrowing will return an error
+  // suspect might be due to 'this' keyword referencing
+  // const documentLoader = contextLoader.loadContext;
   const documentLoader = (url: string): Promise<RemoteDocument> => {
-    return contextLoader.loadContext(url)
-  }
-
-  // if i do this, i get an error: why?
-  // documentLoader = contextLoader.loadContext;
-
+    return contextLoader.loadContext(url);
+  };
 
   await expand(credential, {
     expansionMap: (info) => {
