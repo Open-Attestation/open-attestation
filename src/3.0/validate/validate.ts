@@ -2,6 +2,7 @@ import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import { WrappedDocument } from "../../3.0/types";
 import { documentLoaders, expand } from "jsonld";
 import fetch from "node-fetch";
+import { ContextLoader } from "./DocumentLoader";
 
 const getId = (objectOrString: string | { id: string }): string => {
   if (typeof objectOrString === "string") {
@@ -107,6 +108,9 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
   if (!credential.type.includes("VerifiableCredential")) {
     throw new Error("Property 'type' must have VerifiableCredential as one of the items");
   }
+
+  const contextLoader = new ContextLoader();
+  const docLoader = contextLoader.loadContext;
 
   await expand(credential, {
     expansionMap: (info) => {

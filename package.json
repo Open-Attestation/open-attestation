@@ -81,6 +81,7 @@
     "js-base64": "^3.6.0",
     "js-sha3": "^0.8.0",
     "jsonld": "^5.2.0",
+    "jsonld-document-loader": "^1.2.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.0",
     "runtypes": "^6.2.1",
