@@ -1,0 +1,4 @@
+
+> @govtechsg/open-attestation@0.0.0-development test:v3 C:\Users\eugen\Codes\dlt\eugene-open-attestation
+> jest src/3.0/schema/schema.test.ts --silent=false
+

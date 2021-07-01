@@ -73,7 +73,13 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
   }
 
   const contextLoader = new ContextLoader();
-  const docLoader: (url: string) => Promise<RemoteDocument> = contextLoader.loadContext;
+  const documentLoader = (url: string): Promise<RemoteDocument> => {
+    return contextLoader.loadContext(url)
+  }
+
+  // if i do this, i get an error: why?
+  // documentLoader = contextLoader.loadContext;
+
 
   await expand(credential, {
     expansionMap: (info) => {
@@ -85,6 +91,6 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
         );
       }
     },
-    documentLoader: docLoader,
+    documentLoader,
   });
 }

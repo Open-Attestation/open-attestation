@@ -10,7 +10,7 @@ const sampleDoc = sample as OpenAttestationDocument;
 
 // eslint-disable-next-line jest/no-disabled-tests
 describe("schema/3.0", () => {
-  it("should be valid with sample document", async () => {
+  it.only("should be valid with sample document", async () => {
     const document = cloneDeep(sampleDoc);
     const wrappedDocument = await wrapDocument(document, {
       externalSchemaId: $id,
