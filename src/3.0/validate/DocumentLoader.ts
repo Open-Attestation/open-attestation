@@ -1,4 +1,4 @@
-import { JsonLdObj, RemoteDocument } from "jsonld/jsonld-spec";
+import { JsonLd, JsonLdObj, RemoteDocument } from "jsonld/jsonld-spec";
 import fetch, { Response } from "node-fetch";
 
 const preloadedContextUrls: string[] = [
@@ -18,7 +18,9 @@ let isCached: Promise<true>;
 export class ContextLoader {
 
     constructor() {
-        isCached = this.preLoad();
+        if (isCached == null) {
+            isCached = this.preLoad();
+        }
     }
 
     private async fetchContext (url: string): Promise<any> {
@@ -26,10 +28,16 @@ export class ContextLoader {
         return repsonse.json();
     }    
 
+    // There is ambiguity between the objects fetched from the url
+    // they can be of type RemoteDocument or JsonLd 
+    private isRemoteDocument(obj: RemoteDocument | JsonLd): obj is RemoteDocument {
+        return (obj as RemoteDocument).document !== undefined 
+        && (obj as RemoteDocument).documentUrl !== undefined
+    }
+
     private async preLoad(): Promise<true> {
-        console.log(`preloading ...`);
         const promises: Promise<null>[] = preloadedContextUrls.map(async (url) => {
-            const jsonLdObj = (await this.fetchContext(url)) as JsonLdObj;
+            const jsonLdObj: JsonLd = await this.fetchContext(url);
             const remoteDocument: RemoteDocument = {
                 contextUrl: undefined, 
                 document: jsonLdObj, 
@@ -55,14 +63,18 @@ export class ContextLoader {
         }
 
         const jsonLdObj = (await this.fetchContext(url));
-        const remoteDocument: RemoteDocument = {
-            contextUrl: undefined, 
-            document: jsonLdObj, 
-            documentUrl: url,
+        if (this.isRemoteDocument(jsonLdObj)) {
+            contextMap.set(url, jsonLdObj);
+        } else {
+            const remoteDocument: RemoteDocument = {
+                contextUrl: undefined, 
+                document: jsonLdObj, 
+                documentUrl: url,
+            }
+            contextMap.set(url, remoteDocument);
         }
-
-        contextMap.set(url, remoteDocument);
-        return remoteDocument
+        
+        return contextMap.get(url) as RemoteDocument;
     }
 
 
