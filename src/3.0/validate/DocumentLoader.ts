@@ -1,8 +1,5 @@
 import { JsonLd, RemoteDocument } from "jsonld/jsonld-spec";
 import fetch, { Response } from "node-fetch";
-import { getLogger } from "../../../src/shared/logger";
-
-const { trace } = getLogger("DocumentLoader");
 
 const preloadedContextUrls: string[] = [
   "https://www.w3.org/2018/credentials/v1",
@@ -59,7 +56,7 @@ export class ContextLoader {
 
     // if cache has the url, and the value is not null
     if (contextMap.get(url) != null) {
-      trace(`preloaded key found: ${url}`);
+      console.trace(`preloaded key found: ${url}`);
       return contextMap.get(url) as RemoteDocument;
     }
 
