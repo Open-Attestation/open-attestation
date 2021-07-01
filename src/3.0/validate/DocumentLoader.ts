@@ -1,6 +1,6 @@
 import { JsonLd, RemoteDocument } from "jsonld/jsonld-spec";
 import fetch, { Response } from "node-fetch";
-import { getLogger } from "src/shared/logger";
+import { getLogger } from "../../../src/shared/logger";
 
 const { trace } = getLogger("DocumentLoader");
 
