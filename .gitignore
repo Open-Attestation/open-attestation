@@ -7,3 +7,4 @@ yarn.lock
 *.iml
 /public
 /vc-test-suite
+/dist
