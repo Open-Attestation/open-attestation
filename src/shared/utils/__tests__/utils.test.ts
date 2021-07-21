@@ -179,7 +179,6 @@ describe("Util Functions", () => {
       ]);
     });
     test("should return all issuers address for 3.0 document", async () => {
-      // This test takes some time to run, so we set the timeout to 14s
       expect(utils.getIssuerAddress(v3WrappedVerifiableDocument)).toStrictEqual(
         "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca"
       );
@@ -212,12 +211,12 @@ describe("Util Functions", () => {
       );
     });
     test("should return error when document is not OpenAttestation document", async () => {
-      const document: any = {
+      const document: WrappedDocument<any> = {
         signature: {
           type: "SHA3MerkleProof",
-          targetHash: "123",
+          targetHash: "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692",
           proof: [],
-          merkleRoot: "123",
+          merkleRoot: "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692",
         },
       };
       expect(() => utils.getTargetHash(document)).toThrow(
@@ -270,6 +269,21 @@ describe("Util Functions", () => {
     it("should return true for a revokable V2 verifiable document with document store", () => {
       expect(utils.isDocumentRevokable(v2WrappedVerifiableDocument)).toStrictEqual(true);
     });
+    it("should return false for a V2 verifiable document without document store", () => {
+      const document: WrappedDocument<any> = {
+        ...v2WrappedVerifiableDocument,
+        data: {
+          ...v2WrappedVerifiableDocument.data,
+          issuers: [
+            {
+              ...v2WrappedVerifiableDocument.data.issuers[0],
+              documentStore: "",
+            },
+          ],
+        },
+      };
+      expect(utils.isDocumentRevokable(document)).toStrictEqual(false);
+    });
     it("should return true for a revokable v3 verifiable document", () => {
       expect(utils.isDocumentRevokable(v3WrappedVerifiableDocument)).toStrictEqual(true);
     });
@@ -280,7 +294,7 @@ describe("Util Functions", () => {
       expect(utils.isDocumentRevokable(v3WrappedTransferableDocument)).toStrictEqual(false);
     });
     it("should return true for a v2 DID wrapped document revocation type 'REVOCATION_STORE'", () => {
-      const document: any = {
+      const document: WrappedDocument<any> = {
         ...v2WrappedDidDocument,
         data: {
           ...v2WrappedDidDocument.data,
@@ -298,7 +312,7 @@ describe("Util Functions", () => {
       expect(utils.isDocumentRevokable(v2WrappedDidDocument)).toStrictEqual(false);
     });
     it("should return true for a v3 DID wrapped document when revocation store is 'REVOCATION_STORE'", () => {
-      const document: any = {
+      const document: WrappedDocument<any> = {
         ...v3WrappedDidDocument,
         openAttestationMetadata: {
           ...v3WrappedDidDocument.openAttestationMetadata,
