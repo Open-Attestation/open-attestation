@@ -269,23 +269,21 @@ describe("Util Functions", () => {
     it("should return true for a revokable V2 verifiable document with document store", () => {
       expect(utils.isDocumentRevokable(v2WrappedVerifiableDocument)).toStrictEqual(true);
     });
-    it("should return false for a V2 verifiable document without document store", () => {
+    it("should return true for a revokable v3 verifiable document", () => {
+      expect(utils.isDocumentRevokable(v3WrappedVerifiableDocument)).toStrictEqual(true);
+    });
+    it("should return false for a V3 verifiable document without document store", () => {
       const document: WrappedDocument<any> = {
-        ...v2WrappedVerifiableDocument,
-        data: {
-          ...v2WrappedVerifiableDocument.data,
-          issuers: [
-            {
-              ...v2WrappedVerifiableDocument.data.issuers[0],
-              documentStore: "",
-            },
-          ],
+        ...v3WrappedVerifiableDocument,
+        openAttestationMetadata: {
+          ...v3WrappedVerifiableDocument.openAttestationMetadata,
+          proof: {
+            ...v3WrappedVerifiableDocument.openAttestationMetadata.proof,
+            value: "",
+          },
         },
       };
       expect(utils.isDocumentRevokable(document)).toStrictEqual(false);
-    });
-    it("should return true for a revokable v3 verifiable document", () => {
-      expect(utils.isDocumentRevokable(v3WrappedVerifiableDocument)).toStrictEqual(true);
     });
     it("should return false for a v2 transferable document", () => {
       expect(utils.isDocumentRevokable(v2WrappedTransferableDocument)).toStrictEqual(false);
