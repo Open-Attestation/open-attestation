@@ -112,6 +112,29 @@ export const isTransferableAsset = (document: any): boolean => {
   );
 };
 
+export const isDocumentRevokable = (document: any): boolean => {
+  switch (true) {
+    case isTransferableAsset(document):
+      return false;
+
+    case isWrappedV2Document(document):
+      const issuer = getData(document)?.issuers[0];
+      return !!issuer.certificateStore || !!issuer.documentStore || issuer.revocation?.type === "REVOCATION_STORE";
+
+    case isWrappedV3Document(document):
+      const isDidRevokable =
+        document.openAttestationMetadata.proof.method === "DID" &&
+        document.openAttestationMetadata.proof.revocation?.type === "REVOCATION_STORE";
+      const isDocumentStoreRevokable =
+        document.openAttestationMetadata.proof.method === "DOCUMENT_STORE" &&
+        !!document.openAttestationMetadata.proof.value;
+      return isDidRevokable || isDocumentStoreRevokable;
+
+    default:
+      return false;
+  }
+};
+
 export const getAssetId = (document: any): string => {
   if (isTransferableAsset(document)) {
     return getTargetHash(document);

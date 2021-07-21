@@ -1,0 +1,67 @@
+{
+  "version": "https://schema.openattestation.com/2.0/schema.json",
+  "data": {
+    "id": "cf7631d6-f92e-4a21-b4d1-8a8a263a827a:string:SERIAL_NUMBER_123",
+    "$template": {
+      "name": "287ce8a5-68e8-4733-8823-be1c9fadea72:string:CUSTOM_TEMPLATE",
+      "type": "01cc5da7-953c-438c-99da-47b155a67735:string:EMBEDDED_RENDERER",
+      "url": "0226f6f9-7f84-4ae3-b27f-2341671d811c:string:https://localhost:3000/renderer"
+    },
+    "issuers": [
+      {
+        "name": "7e56f0d6-afc8-4a06-8a42-68accd8025fd:string:DEMO STORE",
+        "tokenRegistry": "1bd3e259-9fc2-46cc-a321-ca80ce5ebdbc:string:0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+        "identityProof": {
+          "type": "f6d0f514-8dab-4809-9bbe-dd8c3ba52304:string:DNS-TXT",
+          "location": "46077e52-e864-40ba-95fc-933ce99faf4a:string:tradetrust.io"
+        }
+      }
+    ],
+    "recipient": {
+      "name": "43363b58-b70a-49e9-9100-0507f00489d6:string:Recipient Name"
+    },
+    "unknownKey": "f16e8521-9cc2-4b77-9932-37f2ea1ed203:string:unknownValue",
+    "attachments": [
+      {
+        "filename": "fc45f0ef-cf70-4ba6-80c9-e82791073a04:string:sample.pdf",
+        "type": "719b5bc7-7214-4ef0-9182-822da866f037:string:application/pdf",
+        "data": "761aa336-0fa6-4feb-a514-80272ae73a61:string:BASE64_ENCODED_FILE"
+      }
+    ],
+    "default": {
+      "id": "0bc2e1fe-ad0a-437e-a6fb-315125497769:string:SERIAL_NUMBER_123",
+      "$template": {
+        "name": "f8bd49c0-b2b8-469a-8efd-6daba58ebbc6:string:CUSTOM_TEMPLATE",
+        "type": "83cfe6b6-3ecc-402b-be4e-abb15a939754:string:EMBEDDED_RENDERER",
+        "url": "54146549-24fa-424d-8695-e3c813e24170:string:https://localhost:3000/renderer"
+      },
+      "issuers": [
+        {
+          "name": "b9259190-a033-4304-80b6-f000ed158c5c:string:DEMO STORE",
+          "tokenRegistry": "d990cbab-bf7f-4f58-be08-3b129d96536f:string:0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+          "identityProof": {
+            "type": "44f06d0f-df4e-4291-b000-e8fec7bc1f10:string:DNS-TXT",
+            "location": "cec15f72-4d3c-4eb9-a677-47b48b4fa68c:string:tradetrust.io"
+          }
+        }
+      ],
+      "recipient": {
+        "name": "4bac4eb0-8798-475a-82c6-1c3d6350448c:string:Recipient Name"
+      },
+      "unknownKey": "27723cd5-31c8-4690-95fa-7a0b1047b515:string:unknownValue",
+      "attachments": [
+        {
+          "filename": "884bf3bd-b433-440a-82dd-02f0570da9f7:string:sample.pdf",
+          "type": "f71ddeab-4fce-43ef-90e2-7402c0071fb4:string:application/pdf",
+          "data": "fa177c14-23bc-4e27-bc12-f25d11362d3a:string:BASE64_ENCODED_FILE"
+        }
+      ]
+    }
+  },
+  "signature": {
+    "type": "SHA3MerkleProof",
+    "targetHash": "53bc5e7c1f2f9f55bb55ce9834f666790f4976660c32ca1ccc3815eed9178d07",
+    "proof": [],
+    "merkleRoot": "53bc5e7c1f2f9f55bb55ce9834f666790f4976660c32ca1ccc3815eed9178d07"
+  }
+}
