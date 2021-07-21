@@ -122,9 +122,13 @@ export const isDocumentRevokable = (document: any): boolean => {
       return !!issuer.certificateStore || !!issuer.documentStore || issuer.revocation?.type === "REVOCATION_STORE";
 
     case isWrappedV3Document(document):
-      return document.openAttestationMetadata.proof.method === "DOCUMENT_STORE"
-        ? !!document.openAttestationMetadata.proof.value
-        : document.openAttestationMetadata.proof.revocation?.type === "REVOCATION_STORE";
+      const isDidRevokable =
+        document.openAttestationMetadata.proof.method === "DID" &&
+        document.openAttestationMetadata.proof.revocation?.type === "REVOCATION_STORE";
+      const isDocumentStoreRevokable =
+        document.openAttestationMetadata.proof.method === "DOCUMENT_STORE" &&
+        !!document.openAttestationMetadata.proof.value;
+      return isDidRevokable || isDocumentStoreRevokable;
 
     default:
       return false;
