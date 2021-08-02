@@ -2,18 +2,19 @@
   "name": "@govtechsg/open-attestation",
   "version": "0.0.0-development",
   "description": "## Usage",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "browser": "dist/index.umd.js",
-  "types": "dist/types/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "benchmark:qr-code": "ts-node --transpile-only benchmarks/qr-code",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:type",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs --project ./tsconfig.prod.json",
-    "build:esm": "tsc --module es2015 --outDir dist/esm --project ./tsconfig.prod.json",
-    "build:type": "tsc -d --emitDeclarationOnly --outDir dist/types --project ./tsconfig.prod.json",
-    "build:umd": "rollup -c",
-    "clean": "rm -rf dist/",
+    "build": "npm run build:clean && npm run build:esm",
+    "build:esm": "tsc --outDir dist --declaration --project ./tsconfig.prod.json",
+    "build:clean": "rm -rf dist/",
     "commit": "git-cz",
     "commit:retry": "npm run commit -- --retry",
     "test": "jest",
@@ -39,51 +40,48 @@
     "@commitlint/config-conventional": "^12.1.1",
     "@commitlint/prompt": "^12.1.1",
     "@ls-age/commitlint-circle": "1.0.0",
-    "@rollup/plugin-json": "^4.0.0",
-    "@types/debug": "^4.1.5",
-    "@types/jest": "^26.0.22",
-    "@types/js-base64": "^3.0.0",
-    "@types/jsonld": "^1.5.5",
-    "@types/lodash": "^4.14.168",
-    "@types/node-fetch": "^2.5.10",
-    "@types/qrcode": "^1.4.0",
-    "@types/uuid": "^8.3.0",
-    "@types/validator": "^13.1.3",
-    "@typescript-eslint/eslint-plugin": "^4.22.0",
-    "@typescript-eslint/parser": "^4.22.0",
-    "cbor": "^7.0.5",
-    "commitizen": "^4.2.3",
-    "eslint": "^7.24.0",
+    "@types/debug": "^4.1.7",
+    "@types/jest": "^26.0.24",
+    "@types/js-base64": "^3.3.1",
+    "@types/jsonld": "^1.5.6",
+    "@types/lodash": "^4.14.171",
+    "@types/node-fetch": "^2.5.12",
+    "@types/qrcode": "^1.4.1",
+    "@types/uuid": "^8.3.1",
+    "@types/validator": "^13.6.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
+    "cbor": "^7.0.6",
+    "commitizen": "^4.2.4",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-prettier": "^8.2.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.3.5",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-prettier": "^3.4.0",
     "git-cz": "^4.7.6",
     "jest": "^26.6.3",
     "jest-watch-typeahead": "^0.6.2",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.2",
     "qrcode": "^1.4.4",
     "quicktype": "^15.0.260",
-    "rollup": "^2.45.2",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "semantic-release": "^17.4.2",
+    "semantic-release": "^17.4.4",
     "ts-jest": "^26.5.5",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.5"
   },
   "dependencies": {
-    "ajv": "^8.1.0",
-    "ajv-formats": "^2.0.2",
-    "debug": "^4.3.1",
-    "ethers": "^5.1.3",
+    "ajv": "^8.6.2",
+    "ajv-formats": "^2.1.0",
+    "debug": "^4.3.2",
+    "ethers": "^5.4.3",
     "flatley": "^5.2.0",
-    "js-base64": "^3.6.0",
+    "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
     "jsonld": "^5.2.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.0",
-    "runtypes": "^6.2.1",
+    "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
     "validator": "^13.6.0"
   },
@@ -105,5 +103,27 @@
     "commitizen": {
       "path": "node_modules/@commitlint/prompt"
     }
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "setupFiles": [
+      "core-js"
+    ],
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "node_modules",
+      "dist"
+    ],
+    "watchPathIgnorePatterns": [
+      "/node_modules/",
+      "dist"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ]
   }
 }

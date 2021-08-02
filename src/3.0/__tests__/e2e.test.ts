@@ -180,7 +180,7 @@ describe("3.0 E2E Test Scenarios", () => {
           laurent: "task force, assemble!!",
         } as WrappedDocument,
       ];
-      await expect(wrapDocuments(malformedDatum)).rejects.toStrictEqual(new Error("Invalid document"));
+      await expect(wrapDocuments(malformedDatum)).rejects.toThrow("Invalid document");
     });
     test("creates a batch of documents if all are in the right format", async () => {
       const wrappedDocuments = await wrapDocuments(datum, {

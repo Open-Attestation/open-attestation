@@ -47,10 +47,9 @@ export type WrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestatio
   proof: VerifiableCredentialWrappedProof;
 };
 
-export type SignedWrappedDocument<
-  T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3
-> = WrappedDocument<T> & {
-  proof: VerifiableCredentialSignedProof;
-};
+export type SignedWrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> =
+  WrappedDocument<T> & {
+    proof: VerifiableCredentialSignedProof;
+  };
 
 export * from "../__generated__/schema.3.0";
