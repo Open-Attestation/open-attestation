@@ -1,5 +1,5 @@
 import { logger } from "ethers";
-import { SchemaId } from "../..";
+import { SchemaId } from "../@types/document";
 import { validateSchema as validate } from "../validate";
 import {
   VerifiableCredentialSignedProof,

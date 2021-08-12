@@ -1,7 +1,8 @@
 import { ErrorObject, ValidateFunction } from "ajv";
 import { getLogger } from "../logger";
 import { SchemaId } from "../@types/document";
-import { getData } from "../utils";
+// don't change this otherwise there is a cycle
+import { getData } from "../utils/utils";
 
 const logger = getLogger("validate");
 
