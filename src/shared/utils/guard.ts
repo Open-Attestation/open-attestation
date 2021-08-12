@@ -1,4 +1,4 @@
-import { SignedWrappedDocument } from "../..";
+import { SignedWrappedDocument } from "../@types/document";
 import {
   OpenAttestationDocument as OpenAttestationDocumentV3,
   WrappedDocument as WrappedDocumentV3,

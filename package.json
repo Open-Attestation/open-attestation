@@ -2,19 +2,18 @@
   "name": "@govtechsg/open-attestation",
   "version": "0.0.0-development",
   "description": "## Usage",
-  "type": "module",
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">=12"
-  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "browser": "dist/index.umd.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "benchmark:qr-code": "ts-node --transpile-only benchmarks/qr-code",
-    "build": "npm run build:clean && npm run build:esm",
-    "build:esm": "tsc --outDir dist --declaration --project ./tsconfig.prod.json",
-    "build:clean": "rm -rf dist/",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:type",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs --project ./tsconfig.prod.json",
+    "build:esm": "tsc --module es2015 --outDir dist/esm --project ./tsconfig.prod.json",
+    "build:type": "tsc -d --emitDeclarationOnly --outDir dist/types --project ./tsconfig.prod.json",
+    "build:umd": "rollup -c",
+    "clean": "rm -rf dist/",
     "commit": "git-cz",
     "commit:retry": "npm run commit -- --retry",
     "test": "jest",
@@ -40,6 +39,7 @@
     "@commitlint/config-conventional": "^12.1.1",
     "@commitlint/prompt": "^12.1.1",
     "@ls-age/commitlint-circle": "1.0.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@types/debug": "^4.1.7",
     "@types/jest": "^26.0.24",
     "@types/js-base64": "^3.3.1",
@@ -65,6 +65,8 @@
     "prettier": "^2.3.2",
     "qrcode": "^1.4.4",
     "quicktype": "^15.0.260",
+    "rollup": "^2.56.2",
+    "rollup-plugin-commonjs": "^10.1.0",
     "semantic-release": "^17.4.4",
     "ts-jest": "^26.5.5",
     "ts-node": "^9.1.1",
@@ -103,27 +105,5 @@
     "commitizen": {
       "path": "node_modules/@commitlint/prompt"
     }
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "setupFiles": [
-      "core-js"
-    ],
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "node_modules",
-      "dist"
-    ],
-    "watchPathIgnorePatterns": [
-      "/node_modules/",
-      "dist"
-    ],
-    "modulePathIgnorePatterns": [
-      "<rootDir>/dist"
-    ],
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ]
   }
 }
