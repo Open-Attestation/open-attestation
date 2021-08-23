@@ -1,11 +1,12 @@
-version: 2
+
+version: 2.1
 
 workflows:
-  build:
+  build-workflow:
     jobs:
       - build:
           context:
-            - NPM-Deployment
+            - NPM Deployment
 
 jobs:
   build:
