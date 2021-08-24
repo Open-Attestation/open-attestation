@@ -5,7 +5,7 @@ workflows:
     jobs:
       - build:
           context:
-            - NPM Deployment
+            - deployment
 
 jobs:
   build:
