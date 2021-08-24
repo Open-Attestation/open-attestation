@@ -1,7 +1,5 @@
-
-version: 2.1
-
 workflows:
+  version: 2.0
   build-workflow:
     jobs:
       - build:
