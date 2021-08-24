@@ -1,4 +1,3 @@
-
 version: 2.1
 
 workflows:
@@ -6,7 +5,7 @@ workflows:
     jobs:
       - build:
           context:
-            - NPM Deployment
+            - deployment
 
 jobs:
   build:
