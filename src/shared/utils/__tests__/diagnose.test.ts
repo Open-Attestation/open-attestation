@@ -123,7 +123,25 @@ describe("diagnose", () => {
         .toMatchInlineSnapshot(`
         Array [
           Object {
-            "message": "The raw document does not match OpenAttestation schema 3.0",
+            "message": "The document does not match OpenAttestation schema 3.0",
+          },
+          Object {
+            "message": "document - must have required property '@context'",
+          },
+          Object {
+            "message": "document - must have required property 'type'",
+          },
+          Object {
+            "message": "document - must have required property 'credentialSubject'",
+          },
+          Object {
+            "message": "document - must have required property 'issuer'",
+          },
+          Object {
+            "message": "document - must have required property 'issuanceDate'",
+          },
+          Object {
+            "message": "document - must have required property 'openAttestationMetadata'",
           },
         ]
       `);
@@ -178,7 +196,10 @@ describe("diagnose", () => {
         .toMatchInlineSnapshot(`
         Array [
           Object {
-            "message": "The raw document does not match OpenAttestation schema 2.0",
+            "message": "The document does not match OpenAttestation schema 2.0",
+          },
+          Object {
+            "message": "document - must have required property 'issuers'",
           },
         ]
       `);
@@ -188,6 +209,7 @@ describe("diagnose", () => {
       expect(
         diagnose({ version: "2.0", kind: "raw", document: rawV2Document, mode: "non-strict" })
       ).toMatchInlineSnapshot(`Array []`);
+      console.log(diagnose({ version: "2.0", kind: "raw", document: rawV2Document, mode: "non-strict" }));
     });
   });
 });

@@ -11,7 +11,7 @@ import { clone, cloneDeepWith } from "lodash";
 import { buildAjv, getSchema } from "../ajv";
 
 type Version = "2.0" | "3.0";
-type Kind = "raw" | "wrapped" | "signed";
+export type Kind = "raw" | "wrapped" | "signed";
 export type Mode = "strict" | "non-strict";
 
 interface DiagnoseError {
@@ -85,19 +85,10 @@ export const diagnose = ({
     return handleError(debug, "The document must be an object");
   }
 
-  if (kind === "raw") {
-    if (version === "2.0") {
-      return document.$template ? [] : handleError(debug, `The raw document does not match OpenAttestation schema 2.0`);
-    } else {
-      return document["@context"]
-        ? []
-        : handleError(debug, `The raw document does not match OpenAttestation schema 3.0`);
-    }
-  }
-
   const errors = validate(
     document,
-    getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode === "non-strict" ? ajv : undefined)
+    getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode === "non-strict" ? ajv : undefined),
+    kind
   );
 
   if (errors.length > 0) {
@@ -107,6 +98,10 @@ export const diagnose = ({
       `The document does not match OpenAttestation schema ${version === "3.0" ? "3.0" : "2.0"}`,
       ...errors.map((error) => `${error.instancePath || "document"} - ${error.message}`)
     );
+  }
+
+  if (kind === "raw") {
+    return [];
   }
 
   if (version === "3.0") {
