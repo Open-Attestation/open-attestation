@@ -14,6 +14,30 @@ import { diagnose, Mode } from "./diagnose";
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
+export const isRawV2Document = (
+  document: any,
+  { mode }: { mode: Mode } = { mode: "non-strict" }
+): document is OpenAttestationDocumentV2 => {
+  return diagnose({ version: "2.0", kind: "raw", document, debug: false, mode }).length === 0;
+};
+
+/**
+ *
+ * @param document
+ * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
+ */
+export const isRawV3Document = (
+  document: any,
+  { mode }: { mode: Mode } = { mode: "non-strict" }
+): document is OpenAttestationDocumentV3 => {
+  return diagnose({ version: "3.0", kind: "raw", document, debug: false, mode }).length === 0;
+};
+
+/**
+ *
+ * @param document
+ * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
+ */
 export const isWrappedV3Document = (
   document: any,
   { mode }: { mode: Mode } = { mode: "non-strict" }
