@@ -7,7 +7,7 @@ import { Kind } from "../utils/diagnose";
 
 const logger = getLogger("validate");
 
-export const validateSchema = (document: any, validator: ValidateFunction, kind: Kind): ErrorObject[] => {
+export const validateSchema = (document: any, validator: ValidateFunction, kind?: Kind): ErrorObject[] => {
   if (!validator) {
     throw new Error("No schema validator provided");
   }
