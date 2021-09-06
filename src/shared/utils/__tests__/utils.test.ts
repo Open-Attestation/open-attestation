@@ -3,6 +3,8 @@ import { wrapDocument } from "../../..";
 import { WrappedDocument } from "../../../shared/@types/document";
 import * as v2 from "../../../__generated__/schema.2.0";
 import * as v3 from "../../../__generated__/schema.3.0";
+import * as v2RawDocument from "../../../../test/fixtures/v2/raw-document.json";
+import * as v3RawDocument from "../../../../test/fixtures/v3/raw-document.json";
 import * as v2WrappedVerifiableDocument from "../../../../test/fixtures/v2/not-obfuscated-wrapped.json";
 import * as v3WrappedVerifiableDocument from "../../../../test/fixtures/v3/not-obfuscated-wrapped.json";
 import * as v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json";
@@ -246,6 +248,38 @@ describe("Util Functions", () => {
     test("should return error when v2 document doesn't have token registry", async () => {
       expect(() => utils.getAssetId(v2WrappedVerifiableDocument)).toThrow(
         "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+      );
+    });
+  });
+
+  describe("getTemplateURL", () => {
+    test("should return template url for raw v2 document", async () => {
+      expect(utils.getTemplateURL(v2RawDocument)).toStrictEqual("https://tutorial-renderer.openattestation.com");
+    });
+    test("should return template url for wrapped v2 document", async () => {
+      expect(utils.getTemplateURL(v2WrappedVerifiableDocument)).toStrictEqual(
+        "https://tutorial-renderer.openattestation.com"
+      );
+    });
+    test("should return template url for raw v3 document", async () => {
+      expect(utils.getTemplateURL(v3RawDocument)).toStrictEqual("https://tutorial-renderer.openattestation.com");
+    });
+    test("should return template url for wrapped v3 document", async () => {
+      expect(utils.getTemplateURL(v3WrappedVerifiableDocument)).toStrictEqual(
+        "https://tutorial-renderer.openattestation.com"
+      );
+    });
+    test("should return error when document is not OpenAttestation document", async () => {
+      const document: WrappedDocument<any> = {
+        signature: {
+          type: "SHA3MerkleProof",
+          targetHash: "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692",
+          proof: [],
+          merkleRoot: "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692",
+        },
+      };
+      expect(() => utils.getTemplateURL(document)).toThrow(
+        new Error("Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents.")
       );
     });
   });
