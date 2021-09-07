@@ -1,11 +1,11 @@
 import { keccak256 } from "js-sha3";
-import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
+import { OpenAttestationDocument as OpenAttestationDocumentV2, TemplateObject } from "../../__generated__/schema.2.0";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { unsaltData } from "../../2.0/salt";
 import { ErrorObject } from "ajv";
-import { isWrappedV2Document, isWrappedV3Document } from "./guard";
+import { isRawV2Document, isRawV3Document, isWrappedV2Document, isWrappedV3Document } from "./guard";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -101,6 +101,22 @@ export const getTargetHash = (document: any): string => {
     default:
       throw new Error(
         "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+      );
+  }
+};
+
+// get template url from raw document for document renderer preview.
+export const getTemplateURL = (document: any): string | undefined => {
+  switch (true) {
+    case isWrappedV2Document(document):
+      return (getData(document).$template as TemplateObject).url;
+    case isRawV2Document(document):
+      return document.$template.url;
+    case isRawV3Document(document) || isWrappedV3Document(document):
+      return document.openAttestationMetadata.template.url;
+    default:
+      throw new Error(
+        "Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents."
       );
   }
 };

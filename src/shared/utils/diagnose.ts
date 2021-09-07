@@ -9,10 +9,9 @@ import {
 import { ArrayProof, Signature, SignatureStrict } from "../../2.0/types";
 import { clone, cloneDeepWith } from "lodash";
 import { buildAjv, getSchema } from "../ajv";
+import { Kind, Mode } from "./@types/diagnose";
 
 type Version = "2.0" | "3.0";
-type Kind = "wrapped" | "signed";
-export type Mode = "strict" | "non-strict";
 
 interface DiagnoseError {
   message: string;
@@ -59,7 +58,7 @@ const ajv = buildAjv({ transform: transformSchema, validateFormats: false });
 /**
  * Tools to give information about the validity of a document. It will return and eventually output the errors found.
  * @param version 2.0 or 3.0
- * @param kind wrapped or signed
+ * @param kind raw, wrapped or signed
  * @param debug turn on to output in the console, the errors found
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  * @param document the document to validate
@@ -80,14 +79,17 @@ export const diagnose = ({
   if (!document) {
     return handleError(debug, "The document must not be empty");
   }
+
   if (typeof document !== "object") {
     return handleError(debug, "The document must be an object");
   }
 
   const errors = validate(
     document,
-    getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode === "non-strict" ? ajv : undefined)
+    getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode === "non-strict" ? ajv : undefined),
+    kind
   );
+
   if (errors.length > 0) {
     // TODO this can be improved later
     return handleError(
@@ -95,6 +97,10 @@ export const diagnose = ({
       `The document does not match OpenAttestation schema ${version === "3.0" ? "3.0" : "2.0"}`,
       ...errors.map((error) => `${error.instancePath || "document"} - ${error.message}`)
     );
+  }
+
+  if (kind === "raw") {
+    return [];
   }
 
   if (version === "3.0") {
@@ -132,6 +138,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
       `The document schema version is wrong. Expected ${SchemaId.v3}, received ${document.version}`
     );
   }
+
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     mode === "strict"
@@ -140,6 +147,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
   } catch (e) {
     return handleError(debug, e.message);
   }
+
   if (kind === "signed") {
     if (!document.proof) {
       return handleError(debug, `The document does not have a proof`);
