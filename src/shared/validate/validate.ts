@@ -3,8 +3,7 @@ import { getLogger } from "../logger";
 import { SchemaId } from "../@types/document";
 // don't change this otherwise there is a cycle
 import { getData } from "../utils/utils";
-import { Kind } from "../utils/diagnose";
-
+import { Kind } from "../utils/@types/diagnose";
 const logger = getLogger("validate");
 
 export const validateSchema = (document: any, validator: ValidateFunction, kind?: Kind): ErrorObject[] => {

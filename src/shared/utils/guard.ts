@@ -7,7 +7,8 @@ import {
   OpenAttestationDocument as OpenAttestationDocumentV2,
   WrappedDocument as WrappedDocumentV2,
 } from "../../2.0/types";
-import { diagnose, Mode } from "./diagnose";
+import { diagnose } from "./diagnose";
+import { Mode } from "./@types/diagnose";
 
 /**
  *
