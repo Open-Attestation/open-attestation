@@ -131,8 +131,6 @@ export const getTemplateData = <T extends WrappedDocument<OpenAttestationDocumen
   | {
       [key: string]: any;
     } => {
-  console.log(isWrappedV2Document(document));
-  console.log(isRawV2Document(document));
   if (isWrappedV3Document(document) || isRawV3Document(document)) {
     return document.credentialSubject;
   } else if (isWrappedV2Document(document)) {
