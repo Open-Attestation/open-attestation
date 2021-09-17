@@ -1,6 +1,6 @@
 import { OpenAttestationDocument } from "../../__generated__/schema.3.0";
 import { WrappedDocument } from "../../3.0/types";
-import { documentLoaders, expand } from "jsonld";
+import { documentLoaders, expand } from "@govtechsg/jsonld";
 import fetch from "cross-fetch";
 
 const getId = (objectOrString: string | { id: string }): string => {

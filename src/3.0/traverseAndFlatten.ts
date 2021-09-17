@@ -1,4 +1,4 @@
-import { Options } from "jsonld";
+import { Options } from "@govtechsg/jsonld";
 
 interface Options<T> {
   /* function to run on every field */
