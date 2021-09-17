@@ -1,4 +1,4 @@
-declare module "jsonld" {
+declare module "@govtechsg/jsonld" {
   import { RemoteDocument, Url } from "jsonld/jsonld-spec";
   export * from "@types/jsonld";
   export namespace documentLoaders {
