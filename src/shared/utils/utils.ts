@@ -122,23 +122,15 @@ export const getTemplateURL = (document: any): string | undefined => {
   }
 };
 
-export const getTemplateData = <T extends WrappedDocument<OpenAttestationDocument> | OpenAttestationDocument>(
-  document: T
-):
-  | {
-      [key: string]: any;
-    }[]
-  | {
-      [key: string]: any;
-    } => {
-  if (isWrappedV3Document(document) || isRawV3Document(document)) {
-    return document.credentialSubject;
+export const getDocumentData = (document: WrappedDocument<OpenAttestationDocument>): OpenAttestationDocument => {
+  if (isWrappedV3Document(document)) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { proof, ...rest } = document;
+    return rest;
   } else if (isWrappedV2Document(document)) {
     return getData(document);
-  } else if (isRawV2Document(document)) {
-    return document;
   } else {
-    throw new Error("Unsupported document type: Only can retrieve data from OpenAttestation v2 & v3 documents.");
+    throw "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents.";
   }
 };
 

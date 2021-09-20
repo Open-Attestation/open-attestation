@@ -1,6 +1,6 @@
 import * as utils from "../utils";
 import { wrapDocument } from "../../..";
-import { WrappedDocument } from "../../../shared/@types/document";
+import { OpenAttestationDocument, WrappedDocument } from "../../../shared/@types/document";
 import * as v2 from "../../../__generated__/schema.2.0";
 import * as v3 from "../../../__generated__/schema.3.0";
 import * as v2RawDocument from "../../../../test/fixtures/v2/raw-document.json";
@@ -361,6 +361,52 @@ describe("Util Functions", () => {
     });
     it("should return false for a v3 DID wrapped document when revocation store is 'NONE'", () => {
       expect(utils.isDocumentRevokable(v3WrappedDidDocument)).toStrictEqual(false);
+    });
+  });
+
+  describe("getDocumentData", () => {
+    it("should return document data for v2 wrapped document", () => {
+      const v2WrappedDocument = v2WrappedVerifiableDocument as WrappedDocument<OpenAttestationDocument>;
+      expect(utils.getDocumentData(v2WrappedDocument)).toMatchInlineSnapshot(`
+        Object {
+          "$template": Object {
+            "name": "main",
+            "type": "EMBEDDED_RENDERER",
+            "url": "https://tutorial-renderer.openattestation.com",
+          },
+          "issuers": Array [
+            Object {
+              "documentStore": "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca",
+              "identityProof": Object {
+                "location": "demo-tradetrust.openattestation.com",
+                "type": "DNS-TXT",
+              },
+              "name": "Demo Issuer",
+            },
+          ],
+          "recipient": Object {
+            "name": "John Doe",
+          },
+        }
+      `);
+    });
+
+    it("should return document data for v3 wrapped document", () => {
+      const v3WrappedDocument = v3WrappedVerifiableDocument as WrappedDocument<OpenAttestationDocument>;
+      expect(utils.getDocumentData(v3WrappedDocument)).not.toHaveProperty("proof");
+    });
+
+    test("should return error when document is not OpenAttestation document", async () => {
+      const document: any = {
+        RandomData: {
+          RandomProperty: "RandomField",
+        },
+      };
+      expect(() => utils.getDocumentData(document)).toThrow(
+        new Error(
+          "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
+        )
+      );
     });
   });
 });
