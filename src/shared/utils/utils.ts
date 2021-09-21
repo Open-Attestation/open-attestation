@@ -7,7 +7,6 @@ import { unsaltData } from "../../2.0/salt";
 import { ErrorObject } from "ajv";
 import { isRawV2Document, isRawV3Document, isWrappedV2Document, isWrappedV3Document } from "./guard";
 import { OpenAttestationDocument, WrappedDocument } from "../@types/document";
-import { omit } from "lodash";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -125,7 +124,9 @@ export const getTemplateURL = (document: any): string | undefined => {
 
 export const getDocumentData = (document: WrappedDocument<OpenAttestationDocument>): OpenAttestationDocument => {
   if (isWrappedV3Document(document)) {
-    return omit(document, "proof");
+    const omit = (keys: any, obj: any): any =>
+      Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
+    return omit(["proof", "default"], document);
   } else if (isWrappedV2Document(document)) {
     return getData(document);
   } else {
