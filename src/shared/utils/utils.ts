@@ -126,7 +126,7 @@ export const getDocumentData = (document: WrappedDocument<OpenAttestationDocumen
   if (isWrappedV3Document(document)) {
     const omit = (keys: any, obj: any): any =>
       Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
-    return omit(["proof", "default"], document);
+    return omit(["proof"], document);
   } else if (isWrappedV2Document(document)) {
     return getData(document);
   } else {

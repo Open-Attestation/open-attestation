@@ -3,14 +3,14 @@ import { wrapDocument } from "../../..";
 import { OpenAttestationDocument, WrappedDocument } from "../../../shared/@types/document";
 import * as v2 from "../../../__generated__/schema.2.0";
 import * as v3 from "../../../__generated__/schema.3.0";
-import * as v2RawDocument from "../../../../test/fixtures/v2/raw-document.json";
-import * as v3RawDocument from "../../../../test/fixtures/v3/raw-document.json";
-import * as v2WrappedVerifiableDocument from "../../../../test/fixtures/v2/not-obfuscated-wrapped.json";
-import * as v3WrappedVerifiableDocument from "../../../../test/fixtures/v3/not-obfuscated-wrapped.json";
-import * as v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json";
-import * as v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json";
-import * as v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
-import * as v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
+import v2RawDocument from "../../../../test/fixtures/v2/raw-document.json";
+import v3RawDocument from "../../../../test/fixtures/v3/raw-document.json";
+import v2WrappedVerifiableDocument from "../../../../test/fixtures/v2/not-obfuscated-wrapped.json";
+import v3WrappedVerifiableDocument from "../../../../test/fixtures/v3/not-obfuscated-wrapped.json";
+import v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json";
+import v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json";
+import v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
+import v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
