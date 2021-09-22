@@ -6,6 +6,7 @@ import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { unsaltData } from "../../2.0/salt";
 import { ErrorObject } from "ajv";
 import { isRawV2Document, isRawV3Document, isWrappedV2Document, isWrappedV3Document } from "./guard";
+import { OpenAttestationDocument, WrappedDocument } from "../@types/document";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -118,6 +119,18 @@ export const getTemplateURL = (document: any): string | undefined => {
       throw new Error(
         "Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents."
       );
+  }
+};
+
+export const getDocumentData = (document: WrappedDocument<OpenAttestationDocument>): OpenAttestationDocument => {
+  if (isWrappedV3Document(document)) {
+    const omit = (keys: any, obj: any): any =>
+      Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
+    return omit(["proof"], document);
+  } else if (isWrappedV2Document(document)) {
+    return getData(document);
+  } else {
+    throw "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents.";
   }
 };
 

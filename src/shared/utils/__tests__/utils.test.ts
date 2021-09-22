@@ -1,16 +1,16 @@
 import * as utils from "../utils";
 import { wrapDocument } from "../../..";
-import { WrappedDocument } from "../../../shared/@types/document";
+import { OpenAttestationDocument, WrappedDocument } from "../../../shared/@types/document";
 import * as v2 from "../../../__generated__/schema.2.0";
 import * as v3 from "../../../__generated__/schema.3.0";
-import * as v2RawDocument from "../../../../test/fixtures/v2/raw-document.json";
-import * as v3RawDocument from "../../../../test/fixtures/v3/raw-document.json";
-import * as v2WrappedVerifiableDocument from "../../../../test/fixtures/v2/not-obfuscated-wrapped.json";
-import * as v3WrappedVerifiableDocument from "../../../../test/fixtures/v3/not-obfuscated-wrapped.json";
-import * as v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json";
-import * as v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json";
-import * as v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
-import * as v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
+import v2RawDocument from "../../../../test/fixtures/v2/raw-document.json";
+import v3RawDocument from "../../../../test/fixtures/v3/raw-document.json";
+import v2WrappedVerifiableDocument from "../../../../test/fixtures/v2/not-obfuscated-wrapped.json";
+import v3WrappedVerifiableDocument from "../../../../test/fixtures/v3/not-obfuscated-wrapped.json";
+import v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json";
+import v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json";
+import v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
+import v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -361,6 +361,94 @@ describe("Util Functions", () => {
     });
     it("should return false for a v3 DID wrapped document when revocation store is 'NONE'", () => {
       expect(utils.isDocumentRevokable(v3WrappedDidDocument)).toStrictEqual(false);
+    });
+  });
+
+  describe("getDocumentData", () => {
+    it("should return document data for v2 wrapped document", () => {
+      const v2WrappedDocument = v2WrappedVerifiableDocument as WrappedDocument<OpenAttestationDocument>;
+      expect(utils.getDocumentData(v2WrappedDocument)).toMatchInlineSnapshot(`
+        Object {
+          "$template": Object {
+            "name": "main",
+            "type": "EMBEDDED_RENDERER",
+            "url": "https://tutorial-renderer.openattestation.com",
+          },
+          "issuers": Array [
+            Object {
+              "documentStore": "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca",
+              "identityProof": Object {
+                "location": "demo-tradetrust.openattestation.com",
+                "type": "DNS-TXT",
+              },
+              "name": "Demo Issuer",
+            },
+          ],
+          "recipient": Object {
+            "name": "John Doe",
+          },
+        }
+      `);
+    });
+
+    it("should return document data for v3 wrapped document", () => {
+      const v3WrappedDocument = v3WrappedVerifiableDocument as WrappedDocument<OpenAttestationDocument>;
+      const result = utils.getDocumentData(v3WrappedDocument);
+      expect(result).not.toHaveProperty("proof");
+      expect(result).toMatchInlineSnapshot(`
+        Object {
+          "@context": Array [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json",
+            "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
+            "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
+          ],
+          "credentialSubject": Object {
+            "id": "some:thing:here",
+          },
+          "issuanceDate": "2010-01-01T20:20:20Z",
+          "issuer": Object {
+            "id": "https://www.openattestation.com",
+            "name": "Demo Issuer",
+          },
+          "openAttestationMetadata": Object {
+            "identityProof": Object {
+              "identifier": "demo-tradetrust.openattestation.com",
+              "type": "DNS-TXT",
+            },
+            "proof": Object {
+              "method": "DOCUMENT_STORE",
+              "type": "OpenAttestationProofMethod",
+              "value": "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca",
+            },
+            "template": Object {
+              "name": "main",
+              "type": "EMBEDDED_RENDERER",
+              "url": "https://tutorial-renderer.openattestation.com",
+            },
+          },
+          "recipient": Object {
+            "name": "Mary Jane",
+          },
+          "type": Array [
+            "VerifiableCredential",
+          ],
+          "version": "https://schema.openattestation.com/3.0/schema.json",
+        }
+      `);
+    });
+
+    test("should return error when document is not OpenAttestation document", async () => {
+      const document: any = {
+        randomData: {
+          randomProperty: "RandomField",
+        },
+      };
+      expect(() => utils.getDocumentData(document)).toThrow(
+        new Error(
+          "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
+        )
+      );
     });
   });
 });

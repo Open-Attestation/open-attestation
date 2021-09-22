@@ -16,5 +16,13 @@
         "location": "few-green-cat.sandbox.openattestation.com"
       }
     }
+  ],
+  "id": "did:example:JOHN_DOE_DID",
+  "licenseNumber": "S1234567a",
+  "birthDate": "1977-02-22",
+  "name": "John Doe",
+  "class": [
+    { "type": "3", "effectiveDate": "2010-01-01T19:23:24Z" },
+    { "type": "3A", "effectiveDate": "2010-01-01T19:23:24Z" }
   ]
 }
