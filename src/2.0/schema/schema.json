@@ -8,47 +8,35 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "DNS-TXT"
-          ]
+          "enum": ["DNS-TXT"]
         },
         "location": {
           "type": "string",
           "description": "Url of the website referencing to document store"
         }
       },
-      "required": [
-        "type",
-        "location"
-      ]
+      "required": ["type", "location"]
     },
     "identityProofDid": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "DID"
-          ]
+          "enum": ["DID"]
         },
         "key": {
           "type": "string",
           "description": "Public key associated"
         }
       },
-      "required": [
-        "type",
-        "key"
-      ]
+      "required": ["type", "key"]
     },
     "identityProofDnsDid": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "DNS-DID"
-          ]
+          "enum": ["DNS-DID"]
         },
         "key": {
           "type": "string",
@@ -59,24 +47,14 @@
           "description": "Url of the website referencing to document store"
         }
       },
-      "required": [
-        "type",
-        "key",
-        "location"
-      ]
+      "required": ["type", "key", "location"]
     },
     "identityProof": {
       "type": "object",
       "oneOf": [
-        {
-          "$ref": "#/definitions/identityProofDns"
-        },
-        {
-          "$ref": "#/definitions/identityProofDnsDid"
-        },
-        {
-          "$ref": "#/definitions/identityProofDid"
-        }
+        { "$ref": "#/definitions/identityProofDns" },
+        { "$ref": "#/definitions/identityProofDnsDid" },
+        { "$ref": "#/definitions/identityProofDid" }
       ]
     },
     "issuer": {
@@ -95,11 +73,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "enum": [
-                "NONE",
-                "REVOCATION_STORE",
-                "OCSP_RESPONDER"
-              ]
+              "enum": ["NONE", "REVOCATION_STORE", "OCSP_RESPONDER"]
             },
             "location": {
               "type": "string",
@@ -107,21 +81,14 @@
             }
           }
         },
-        "identityProof": {
-          "$ref": "#/definitions/identityProof"
-        }
+        "identityProof": { "$ref": "#/definitions/identityProof" }
       },
-      "required": [
-        "name",
-        "identityProof"
-      ],
+      "required": ["name", "identityProof"],
       "additionalProperties": true
     },
     "documentStore": {
       "allOf": [
-        {
-          "$ref": "#/definitions/issuer"
-        },
+        { "$ref": "#/definitions/issuer" },
         {
           "type": "object",
           "properties": {
@@ -131,9 +98,7 @@
               "description": "Smart contract address of document store"
             }
           },
-          "required": [
-            "documentStore"
-          ]
+          "required": ["documentStore"]
         }
       ]
     },
@@ -151,17 +116,12 @@
           "description": "Smart contract address of certificate store. Same as documentStore"
         }
       },
-      "required": [
-        "name",
-        "certificateStore"
-      ],
+      "required": ["name", "certificateStore"],
       "additionalProperties": true
     },
     "tokenRegistry": {
       "allOf": [
-        {
-          "$ref": "#/definitions/issuer"
-        },
+        { "$ref": "#/definitions/issuer" },
         {
           "type": "object",
           "properties": {
@@ -171,9 +131,7 @@
               "description": "Smart contract address of token registry"
             }
           },
-          "required": [
-            "tokenRegistry"
-          ]
+          "required": ["tokenRegistry"]
         }
       ]
     }
@@ -199,19 +157,14 @@
             "type": {
               "type": "string",
               "description": "Type of renderer template",
-              "enum": [
-                "EMBEDDED_RENDERER"
-              ]
+              "enum": ["EMBEDDED_RENDERER"]
             },
             "url": {
               "type": "string",
               "description": "URL of a decentralised renderer to render this document"
             }
           },
-          "required": [
-            "name",
-            "type"
-          ]
+          "required": ["name", "type"]
         }
       ]
     },
@@ -236,26 +189,18 @@
           },
           {
             "allOf": [
-              {
-                "$ref": "#/definitions/issuer"
-              },
+              { "$ref": "#/definitions/issuer" },
               {
                 "not": {
                   "anyOf": [
                     {
-                      "required": [
-                        "certificateStore"
-                      ]
+                      "required": ["certificateStore"]
                     },
                     {
-                      "required": [
-                        "tokenRegistry"
-                      ]
+                      "required": ["tokenRegistry"]
                     },
                     {
-                      "required": [
-                        "documentStore"
-                      ]
+                      "required": ["documentStore"]
                     }
                   ]
                 }
@@ -294,17 +239,11 @@
             "description": "Base64 encoding of attachment"
           }
         },
-        "required": [
-          "filename",
-          "type",
-          "data"
-        ],
+        "required": ["filename", "type", "data"],
         "additionalProperties": false
       }
     }
   },
-  "required": [
-    "issuers"
-  ],
+  "required": ["issuers"],
   "additionalProperties": true
 }
