@@ -114,7 +114,7 @@ const diagnoseV2 = ({ kind, document, debug, mode }: { kind: Kind; document: any
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     mode === "strict" ? SignatureStrict.check(document.signature) : Signature.check(document.signature);
-  } catch (e) {
+  } catch (e: any) {
     return handleError(debug, e.message);
   }
   if (kind === "signed") {
@@ -123,7 +123,7 @@ const diagnoseV2 = ({ kind, document, debug, mode }: { kind: Kind; document: any
     }
     try {
       ArrayProof.check(document.proof);
-    } catch (e) {
+    } catch (e: any) {
       return handleError(debug, e.message);
     }
   }
@@ -144,7 +144,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
     mode === "strict"
       ? VerifiableCredentialWrappedProofStrict.check(document.proof)
       : VerifiableCredentialWrappedProof.check(document.proof);
-  } catch (e) {
+  } catch (e: any) {
     return handleError(debug, e.message);
   }
 
@@ -154,7 +154,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
     }
     try {
       VerifiableCredentialSignedProof.check(document.proof);
-    } catch (e) {
+    } catch (e: any) {
       return handleError(debug, e.message);
     }
   }
