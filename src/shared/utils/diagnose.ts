@@ -115,7 +115,11 @@ const diagnoseV2 = ({ kind, document, debug, mode }: { kind: Kind; document: any
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     mode === "strict" ? SignatureStrict.check(document.signature) : Signature.check(document.signature);
   } catch (e) {
-    return handleError(debug, e.message);
+    if (e instanceof Error) {
+      return handleError(debug, e.message);
+    } else {
+      console.error(e);
+    }
   }
   if (kind === "signed") {
     if (!document.proof || !(document.proof.length > 0)) {
@@ -124,7 +128,11 @@ const diagnoseV2 = ({ kind, document, debug, mode }: { kind: Kind; document: any
     try {
       ArrayProof.check(document.proof);
     } catch (e) {
-      return handleError(debug, e.message);
+      if (e instanceof Error) {
+        return handleError(debug, e.message);
+      } else {
+        console.error(e);
+      }
     }
   }
 
@@ -145,7 +153,11 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
       ? VerifiableCredentialWrappedProofStrict.check(document.proof)
       : VerifiableCredentialWrappedProof.check(document.proof);
   } catch (e) {
-    return handleError(debug, e.message);
+    if (e instanceof Error) {
+      return handleError(debug, e.message);
+    } else {
+      console.error(e);
+    }
   }
 
   if (kind === "signed") {
@@ -155,7 +167,11 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
     try {
       VerifiableCredentialSignedProof.check(document.proof);
     } catch (e) {
-      return handleError(debug, e.message);
+      if (e instanceof Error) {
+        return handleError(debug, e.message);
+      } else {
+        console.error(e);
+      }
     }
   }
   return [];

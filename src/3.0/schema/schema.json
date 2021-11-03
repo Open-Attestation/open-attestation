@@ -172,7 +172,7 @@
                 "type": {
                   "type": "string",
                   "description": "Revocation method (if required by proof method)",
-                  "enum": ["NONE", "REVOCATION_STORE"]
+                  "enum": ["NONE", "REVOCATION_STORE", "OCSP_RESPONDER"]
                 },
                 "location": {
                   "type": "string",
