@@ -84,7 +84,7 @@
     "lodash": "^4.17.21",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
-    "validator": "^13.6.0"
+    "validator": "^13.7.0"
   },
   "directories": {
     "test": "test"
