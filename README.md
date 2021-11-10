@@ -1,12 +1,10 @@
 [![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
 
-# Open Attestation
-
 Attestation and notary framework for any document types on the blockchain.
 
 OpenAttestation allows any entity to proof the existence of a document or a batch of documents. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
 
-This repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature of the document wrapped using the OpenAttestation framework.
+The [Open Attestation](https://github.com/Open-Attestation/open-attestation) repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature of the document wrapped using the OpenAttestation framework.
 
 ## Installation
 
@@ -14,7 +12,9 @@ This repository allows you to batch the documents to obtain the merkle root of t
 npm i @govtechsg/open-attestation
 ```
 
-## API References
+---
+
+## Usage
 
 ### Wrapping documents
 
@@ -61,6 +61,17 @@ console.log(wrappedDocuments);
 wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }], { version: "open-attestation/3.0" }); // will ensure document is valid regarding open-attestation 3.0 schema
 console.log(wrappedDocuments);
 ```
+
+> Note:
+> Though `wrapDocument` and `wrapDocuments` are both identical but there is a slight difference.
+>
+> wrapDocuments:
+>
+> - returns an array and not an object.
+> - Each element in the array is a wrapped document corresponding to the one provided as input.
+> - Each element will share the same unique `merkleRoot` value in every batch wrap instance.
+> - Each element has an unique `targetHash` value.
+> - Similar to wrapDocument, every time you run wrapDocuments, it will create unique hashes (in front of every fields in the data object).
 
 ### Sign a document
 
@@ -146,15 +157,15 @@ const newData = obfuscateDocument(wrappedDocument, "key1");
 console.log(newData);
 ```
 
-###
+## Development
 
-## Test
+To run tests
 
 ```
 npm run test
 ```
 
-## vc-test-suite
+### vc-test-suite
 
 You can run the vc-test-suite against `open-attestation` by running `npm run test:vc`. This command will:
 
@@ -163,7 +174,7 @@ You can run the vc-test-suite against `open-attestation` by running `npm run tes
 - install the latest version of `@govtechsg/open-attestation-cli`
 - monkey patch `open-attestation` in `@govtechsg/open-attestation-cli`. That means that the current version of the project will be built and replace the one installed with `@govtechsg/open-attestation-cli`.
 
-### Local debug
+#### Local debug
 
 In the event you face a problem with one test and want to debug locally:
 
@@ -171,3 +182,14 @@ In the event you face a problem with one test and want to debug locally:
 1. Open `runVcTest.sh` and update `install_vc_test_suite=true` to `install_vc_test_suite=false`. This line will help to preserve the `vc-test-suite` folder untouched.
 
 You can now debug from the `vc-test-suite` folder the way you need it.
+
+## Additional information
+
+- Found a bug? Have a question? Want to share an idea? Reach us at our [Github repository](https://github.com/Open-Attestation/open-attestation).
+- We are currently building a new version of the schema, compatible with W3C VC. This is very experimental and whatever is available for v2 documents are also available for v3 documents:
+  - [OA schema v3](https://raw.githubusercontent.com/Open-Attestation/open-attestation/master/src/schema/3.0/schema.json)
+  - Typings: `import {v3} from "@govtechsg/open-attestation"`.
+  - Type guard: `utils.isWrappedV3Document`.
+  - Wrapping: `wrapDocument(document, {version: "open-attestation/3.0"})`
+- There are extra utilities available:
+  - Refer to the [utils](https://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities.
