@@ -1,5 +1,7 @@
 [![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
 
+# Open Attestation
+
 Attestation and notary framework for any document types on the blockchain.
 
 OpenAttestation allows any entity to proof the existence of a document or a batch of documents. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
