@@ -65,7 +65,7 @@ console.log(wrappedDocuments);
 ```
 
 > Note:
-> Though `wrapDocument` and `wrapDocuments` are both identical but there is a slight difference.
+> Though `wrapDocument` and `wrapDocuments` are both identical but there are slight differences.
 >
 > wrapDocuments:
 >
