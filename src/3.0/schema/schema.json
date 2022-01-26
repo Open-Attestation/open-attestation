@@ -224,6 +224,21 @@
         "required": ["fileName", "mimeType", "data"],
         "additionalProperties": false
       }
+    },
+    "chainDetail": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Which blockchain being used"
+        },
+        "chainId": {
+          "type": "string",
+          "description": "Chain ID of the network used"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": true
     }
   },
   "required": ["@context", "type", "credentialSubject", "issuer", "issuanceDate", "openAttestationMetadata"],
