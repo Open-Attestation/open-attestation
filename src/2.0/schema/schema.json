@@ -221,6 +221,21 @@
       },
       "additionalProperties": true
     },
+    "network": {
+      "type": "object",
+      "properties": {
+        "chain": {
+          "type": "string",
+          "description": "Which blockchain being used"
+        },
+        "chainId": {
+          "type": "string",
+          "description": "Chain ID of the network used"
+        }
+      },
+      "required": ["chain"],
+      "additionalProperties": true
+    },
     "attachments": {
       "type": "array",
       "items": {
