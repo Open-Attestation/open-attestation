@@ -225,10 +225,10 @@
         "additionalProperties": false
       }
     },
-    "chainDetail": {
+    "network": {
       "type": "object",
       "properties": {
-        "type": {
+        "chain": {
           "type": "string",
           "description": "Which blockchain being used"
         },
@@ -237,7 +237,7 @@
           "description": "Chain ID of the network used"
         }
       },
-      "required": ["type"],
+      "required": ["chain"],
       "additionalProperties": true
     }
   },
