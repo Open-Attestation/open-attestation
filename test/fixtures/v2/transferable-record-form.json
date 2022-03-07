@@ -1,0 +1,21 @@
+{
+  "name": "A Transferable Record Form",
+  "type": "TRANSFERABLE_RECORD",
+  "defaults": {
+    "$template": {
+      "type": "EMBEDDED_RENDERER",
+      "name": "SAMPLE_BOL",
+      "url": "https://generic-templates.openattestation.io"
+    },
+    "issuers": [
+      {
+        "identityProof": {
+          "type": "DNS-TXT",
+          "location": "demo-oa.openattestation.com"
+        },
+        "name": "DEMO TOKEN REGISTRY",
+        "tokenRegistry": "0x123123123123123123123123123"
+      }
+    ]
+  }
+}
