@@ -1,4 +1,5 @@
 import * as utils from "../utils";
+import { Wallet } from "ethers";
 import { wrapDocument } from "../../..";
 import { OpenAttestationDocument, WrappedDocument } from "../../../shared/@types/document";
 import * as v2 from "../../../__generated__/schema.2.0";
@@ -11,6 +12,14 @@ import v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json"
 import v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json";
 import v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
 import v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
+import v2VerifiableDocumentForm from "../../../../test/fixtures/v2/verifiable-document-form.json";
+import v2TransferableRecordForm from "../../../../test/fixtures/v2/transferable-record-form.json";
+import v2DNSDIDForm from "../../../../test/fixtures/v2/dns-did-form.json";
+import v2DIDForm from "../../../../test/fixtures/v2/did-form.json";
+import v3VerifiableDocumentForm from "../../../../test/fixtures/v3/verifiable-document-form.json";
+import v3TransferableRecordForm from "../../../../test/fixtures/v3/transferable-record-form.json";
+import v3DNSDIDForm from "../../../../test/fixtures/v3/dns-did-form.json";
+import v3DIDForm from "../../../../test/fixtures/v3/did-form.json";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
@@ -449,6 +458,147 @@ describe("Util Functions", () => {
           "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
         )
       );
+    });
+  });
+
+  describe("updateFormV2", () => {
+    const wallet = Wallet.fromMnemonic(
+      "tourist quality multiply denial diary height funny calm disease buddy speed gold"
+    );
+    const walletString = JSON.stringify(wallet);
+
+    it("should update the form from a verifiable document correctly", () => {
+      const updatedForm = utils.updateFormV2({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v2VerifiableDocumentForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.issuers[0].identityProof.location).toStrictEqual("VerifiableDNS.com");
+      expect(updatedForm.defaults.issuers[0].documentStore).toStrictEqual("0xabcDocumentStore");
+    });
+
+    it("should update the form from a DID verifiable document correctly", () => {
+      const updatedForm = utils.updateFormV2({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v2DIDForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+
+      expect(updatedForm.defaults.issuers[0].id).toStrictEqual("did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C");
+      expect(updatedForm.defaults.issuers[0].identityProof.key).toStrictEqual(
+        "did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C#controller"
+      );
+      expect(updatedForm.defaults.issuers[0].identityProof.location).toStrictEqual(undefined);
+    });
+
+    it("should update the form from a DNS-DID verifiable document correctly", () => {
+      const updatedForm = utils.updateFormV2({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v2DNSDIDForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.issuers[0].id).toStrictEqual("did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C");
+      expect(updatedForm.defaults.issuers[0].identityProof.key).toStrictEqual(
+        "did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C#controller"
+      );
+      expect(updatedForm.defaults.issuers[0].identityProof.location).toStrictEqual("DNSDID.com");
+    });
+
+    it("should update the form from a transferable document correctly", () => {
+      const updatedForm = utils.updateFormV2({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v2TransferableRecordForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.issuers[0].identityProof.location).toStrictEqual("TransferableDNS.com");
+      expect(updatedForm.defaults.issuers[0].tokenRegistry).toStrictEqual("0xabcTokenRegistry");
+    });
+  });
+
+  describe("updateFormV3", () => {
+    const wallet = Wallet.fromMnemonic(
+      "tourist quality multiply denial diary height funny calm disease buddy speed gold"
+    );
+    const walletString = JSON.stringify(wallet);
+
+    it("should update the form from a verifiable document correctly", () => {
+      const updatedForm = utils.updateFormV3({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v3VerifiableDocumentForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.openAttestationMetadata.identityProof.identifier).toStrictEqual("VerifiableDNS.com");
+      expect(updatedForm.defaults.openAttestationMetadata.proof.value).toStrictEqual("0xabcDocumentStore");
+    });
+
+    it("should update the form from a DID verifiable document correctly", () => {
+      const updatedForm = utils.updateFormV3({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v3DIDForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.openAttestationMetadata.proof.value).toStrictEqual(
+        "did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C"
+      );
+      expect(updatedForm.defaults.openAttestationMetadata.identityProof.identifier).toStrictEqual(
+        "did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C"
+      );
+    });
+
+    it("should update the form from a DNS-DID verifiable document correctly", () => {
+      const updatedForm = utils.updateFormV3({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v3DNSDIDForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.openAttestationMetadata.proof.value).toStrictEqual(
+        "did:ethr:0x0x906FB815De8976b1e38D9a4C1014a3acE16Ce53C"
+      );
+      expect(updatedForm.defaults.openAttestationMetadata.identityProof.identifier).toStrictEqual("DNSDID.com");
+    });
+
+    it("should update the form from a transferable document correctly", () => {
+      const updatedForm = utils.updateFormV3({
+        wallet: { type: "", encryptedJson: walletString },
+        form: v3TransferableRecordForm,
+        documentStoreAddress: "0xabcDocumentStore",
+        tokenRegistryAddress: "0xabcTokenRegistry",
+        dnsVerifiable: "VerifiableDNS.com",
+        dnsDid: "DNSDID.com",
+        dnsTransferableRecord: "TransferableDNS.com",
+      });
+      expect(updatedForm.defaults.openAttestationMetadata.identityProof.identifier).toStrictEqual(
+        "TransferableDNS.com"
+      );
+      expect(updatedForm.defaults.openAttestationMetadata.proof.value).toStrictEqual("0xabcTokenRegistry");
     });
   });
 });

@@ -1,0 +1,21 @@
+{
+  "name": "A Verifiable Document Form",
+  "type": "VERIFIABLE_DOCUMENT",
+  "defaults": {
+    "$template": {
+      "type": "EMBEDDED_RENDERER",
+      "name": "SIMPLE_COO",
+      "url": "https://generic-templates.openattestation.io"
+    },
+    "issuers": [
+      {
+        "identityProof": {
+          "type": "DNS-TXT",
+          "location": "demo-oa.openattestation.com"
+        },
+        "name": "DEMO DOCUMENT STORE",
+        "documentStore": "0x123123123123123123123123"
+      }
+    ]
+  }
+}

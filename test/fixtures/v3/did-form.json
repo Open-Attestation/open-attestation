@@ -1,0 +1,38 @@
+{
+  "name": "A V3 DID Verifiable Document Form",
+  "type": "VERIFIABLE_DOCUMENT",
+  "defaults": {
+    "version": "https://schema.openattestation.com/3.0/schema.json",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
+    ],
+    "type": ["VerifiableCredential", "OpenAttestationCredential"],
+    "issuanceDate": "2010-01-01T19:23:24Z",
+    "openAttestationMetadata": {
+      "template": {
+        "type": "EMBEDDED_RENDERER",
+        "name": "CHAFTA_COO",
+        "url": "https://generic-templates.oa.io"
+      },
+      "proof": {
+        "type": "OpenAttestationProofMethod",
+        "method": "DID",
+        "value": "did:ethr:0x123",
+        "revocation": {
+          "type": "NONE"
+        }
+      },
+      "identityProof": {
+        "type": "DID",
+        "identifier": "demo-oa.openattestation.com"
+      }
+    },
+    "credentialSubject": {},
+    "issuer": {
+      "id": "https://example.com",
+      "name": "DEMO DID",
+      "type": "OpenAttestationIssuer"
+    }
+  }
+}
