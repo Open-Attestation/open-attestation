@@ -218,8 +218,22 @@ export const getObfuscatedData = (
   );
 };
 
+type WalletEncryptedJson = {
+  type: "ENCRYPTED_JSON";
+  encryptedJson: string;
+};
+
+type WalletAws = {
+  type: "AWS_KMS";
+  accessKeyId: string;
+  region: string;
+  kmsKeyId: string;
+};
+
+type Wallet = WalletEncryptedJson | WalletAws;
+
 interface UpdateForm {
-  wallet: { type: string; encryptedJson: string };
+  wallet: Wallet;
   form: any;
   documentStoreAddress: string;
   tokenRegistryAddress: string;
@@ -237,7 +251,7 @@ export const updateFormV2 = ({
   dnsDid,
   dnsTransferableRecord,
 }: UpdateForm) => {
-  const { encryptedJson } = wallet;
+  const { encryptedJson } = wallet as WalletEncryptedJson;
   const { address } = JSON.parse(encryptedJson);
 
   if (form.type === "VERIFIABLE_DOCUMENT") {
@@ -285,7 +299,7 @@ export const updateFormV3 = ({
   dnsDid,
   dnsTransferableRecord,
 }: UpdateForm) => {
-  const { encryptedJson } = wallet;
+  const { encryptedJson } = wallet as WalletEncryptedJson;
   const { address } = JSON.parse(encryptedJson);
 
   if (form.type === "VERIFIABLE_DOCUMENT") {

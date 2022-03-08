@@ -469,7 +469,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a verifiable document correctly", () => {
       const updatedForm = utils.updateFormV2({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v2VerifiableDocumentForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -483,7 +483,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a DID verifiable document correctly", () => {
       const updatedForm = utils.updateFormV2({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v2DIDForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -501,7 +501,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a DNS-DID verifiable document correctly", () => {
       const updatedForm = utils.updateFormV2({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v2DNSDIDForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -518,7 +518,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a transferable document correctly", () => {
       const updatedForm = utils.updateFormV2({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v2TransferableRecordForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -539,7 +539,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a verifiable document correctly", () => {
       const updatedForm = utils.updateFormV3({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v3VerifiableDocumentForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -553,7 +553,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a DID verifiable document correctly", () => {
       const updatedForm = utils.updateFormV3({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v3DIDForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -571,7 +571,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a DNS-DID verifiable document correctly", () => {
       const updatedForm = utils.updateFormV3({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v3DNSDIDForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
@@ -587,7 +587,7 @@ describe("Util Functions", () => {
 
     it("should update the form from a transferable document correctly", () => {
       const updatedForm = utils.updateFormV3({
-        wallet: { type: "", encryptedJson: walletString },
+        wallet: { type: "ENCRYPTED_JSON", encryptedJson: walletString },
         form: v3TransferableRecordForm,
         documentStoreAddress: "0xabcDocumentStore",
         tokenRegistryAddress: "0xabcTokenRegistry",
