@@ -189,7 +189,7 @@ You can now debug from the `vc-test-suite` folder the way you need it.
 
 - Found a bug? Have a question? Want to share an idea? Reach us at our [Github repository](https://github.com/Open-Attestation/open-attestation).
 - We are currently building a new version of the schema, compatible with W3C VC. This is very experimental and whatever is available for v2 documents are also available for v3 documents:
-  - [OA schema v3](https://raw.githubusercontent.com/Open-Attestation/open-attestation/master/src/schema/3.0/schema.json)
+  - [OA schema v3](https://schema.openattestation.com/3.0/schema.json)
   - Typings: `import {v3} from "@govtechsg/open-attestation"`.
   - Type guard: `utils.isWrappedV3Document`.
   - Wrapping: `wrapDocument(document, {version: "open-attestation/3.0"})`
