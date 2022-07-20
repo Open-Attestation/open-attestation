@@ -77,7 +77,7 @@ console.log(wrappedDocuments);
 
 ### Sign a document
 
-`signDocument` takes a wrapped document, as well as a public/private key pair or an [Ethers.js Signer](https://docs.ethers.io/v5/api/signer/). The method will sign the merkle root from the wrapped document, appened the signature to the document and return it. Currently, it supports the following sign algorithm:
+`signDocument` takes a wrapped document, as well as a public/private key pair or an [Ethers.js Signer](https://docs.ethers.io/v5/api/signer/). The method will sign the merkle root from the wrapped document, append the signature to the document and return it. Currently, it supports the following sign algorithm:
 
 - `Secp256k1VerificationKey2018`
 
