@@ -51,7 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.5",
     "@typescript-eslint/parser": "^4.28.5",
     "cbor": "^7.0.6",
-    "commitizen": "^4.2.4",
+    "commitizen": "^4.2.5",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
@@ -62,7 +62,7 @@
     "jest": "^26.6.3",
     "jest-watch-typeahead": "^0.6.2",
     "prettier": "^2.3.2",
-    "qrcode": "^1.4.4",
+    "qrcode": "^1.5.1",
     "quicktype": "^15.0.260",
     "rollup": "^2.56.2",
     "rollup-plugin-commonjs": "^10.1.0",
@@ -75,7 +75,7 @@
     "@govtechsg/jsonld": "^0.1.0",
     "ajv": "^8.6.2",
     "ajv-formats": "^2.1.0",
-    "cross-fetch": "^3.1.4",
+    "cross-fetch": "^3.1.5",
     "debug": "^4.3.2",
     "ethers": "^5.4.3",
     "flatley": "^5.2.0",
@@ -84,7 +84,7 @@
     "lodash": "^4.17.21",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
-    "validator": "^13.6.0"
+    "validator": "^13.7.0"
   },
   "directories": {
     "test": "test"
