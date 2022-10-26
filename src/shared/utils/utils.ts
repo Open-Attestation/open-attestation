@@ -7,6 +7,8 @@ import { unsaltData } from "../../2.0/salt";
 import { ErrorObject } from "ajv";
 import { isRawV2Document, isRawV3Document, isWrappedV2Document, isWrappedV3Document } from "./guard";
 import { OpenAttestationDocument, WrappedDocument } from "../@types/document";
+import * as v2 from "../../__generated__/schema.2.0";
+import * as v3 from "../../__generated__/schema.3.0";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -148,16 +150,25 @@ export const isDocumentRevokable = (document: any): boolean => {
 
     case isWrappedV2Document(document):
       const issuer = getData(document)?.issuers[0];
-      return !!issuer.certificateStore || !!issuer.documentStore || issuer.revocation?.type === "REVOCATION_STORE";
+      const isDidRevokableV2 =
+        (issuer.identityProof?.type === v2.IdentityProofType.Did ||
+          issuer.identityProof?.type === v2.IdentityProofType.DNSDid) &&
+        (issuer.revocation?.type === v2.RevocationType.RevocationStore ||
+          issuer.revocation?.type === v2.RevocationType.OcspResponder);
+      const isDocumentStoreRevokableV2 = !!issuer.certificateStore || !!issuer.documentStore;
+
+      return isDocumentStoreRevokableV2 || isDidRevokableV2;
 
     case isWrappedV3Document(document):
-      const isDidRevokable =
-        document.openAttestationMetadata.proof.method === "DID" &&
-        document.openAttestationMetadata.proof.revocation?.type === "REVOCATION_STORE";
-      const isDocumentStoreRevokable =
-        document.openAttestationMetadata.proof.method === "DOCUMENT_STORE" &&
+      const isDidRevokableV3 =
+        (document.openAttestationMetadata.proof.method === v3.IdentityProofType.Did ||
+          document.openAttestationMetadata.proof.method === v3.IdentityProofType.DNSDid) &&
+        document.openAttestationMetadata.proof.revocation?.type === v3.RevocationType.RevocationStore;
+      const isDocumentStoreRevokableV3 =
+        document.openAttestationMetadata.proof.method === v3.Method.DocumentStore &&
         !!document.openAttestationMetadata.proof.value;
-      return isDidRevokable || isDocumentStoreRevokable;
+
+      return isDocumentStoreRevokableV3 || isDidRevokableV3;
 
     default:
       return false;

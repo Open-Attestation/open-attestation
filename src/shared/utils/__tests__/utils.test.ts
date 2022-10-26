@@ -10,6 +10,7 @@ import v2WrappedVerifiableDocument from "../../../../test/fixtures/v2/not-obfusc
 import v3WrappedVerifiableDocument from "../../../../test/fixtures/v3/not-obfuscated-wrapped.json";
 import v2WrappedDidDocument from "../../../../test/fixtures/v2/did-wrapped.json";
 import v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json";
+import v2WrappedDidDocumentOscpResponder from "../../../../test/fixtures/v2/did-signed-ocsp-responder.json";
 import v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
 import v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
 import v2VerifiableDocumentForm from "../../../../test/fixtures/v2/verifiable-document-form.json";
@@ -312,6 +313,11 @@ describe("Util Functions", () => {
     it("should return true for a revokable V2 verifiable document with document store", () => {
       expect(utils.isDocumentRevokable(v2WrappedVerifiableDocument)).toStrictEqual(true);
     });
+
+    it("should return true for a revokable V2 did verifiable document with oscp responder", () => {
+      expect(utils.isDocumentRevokable(v2WrappedDidDocumentOscpResponder)).toStrictEqual(true);
+    });
+
     it("should return true for a revokable v3 verifiable document", () => {
       expect(utils.isDocumentRevokable(v3WrappedVerifiableDocument)).toStrictEqual(true);
     });
