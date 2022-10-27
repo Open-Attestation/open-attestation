@@ -1,0 +1,34 @@
+{
+  "version": "https://schema.openattestation.com/2.0/schema.json",
+  "data": {
+    "recipient": {
+      "name": "18134e8a-9e44-4269-b02b-53b0d82897d6:string:John Doe"
+    },
+    "$template": {
+      "name": "835c455c-c862-404f-9dff-e45f0e84b4c6:string:main",
+      "type": "9a60d273-f6c6-48a3-83ab-a88feecb9ab1:string:EMBEDDED_RENDERER",
+      "url": "4898fb9d-f1ee-4897-8d8f-c31cde38f597:string:https://tutorial-renderer.openattestation.com"
+    },
+    "issuers": [
+      {
+        "id": "610773d0-840e-46bd-8b47-8e8cf2b9012f:string:did:ethr:0x1245e5B64D785b25057f7438F715f4aA5D965733",
+        "name": "62fe5e04-2eed-4481-8a27-13622efe1abd:string:Demo Issuer",
+        "revocation": {
+          "type": "afd351c5-bf83-4956-a3a8-faa89354718c:string:OCSP_RESPONDER",
+          "location": "c578a822-03ab-4a79-b10a-a37fd7b0d9d7:string:https://api.example.com/ocsp-responder"
+        },
+        "identityProof": {
+          "type": "26a7fea3-46ef-4613-a61f-914a0f06312d:string:DNS-DID",
+          "location": "15f58a9b-04ba-49f2-925d-f5b065f5f847:string:demo-tradetrust.openattestation.com",
+          "key": "720aa75e-720d-4f12-a6e9-6bee1f758f1a:string:did:ethr:0x1245e5B64D785b25057f7438F715f4aA5D965733#controller"
+        }
+      }
+    ]
+  },
+  "signature": {
+    "type": "SHA3MerkleProof",
+    "targetHash": "c1c9dcdcf4d1027449f7db66e25cf12f3f83c8a89582a3c09bbc701491989ed8",
+    "proof": [],
+    "merkleRoot": "c1c9dcdcf4d1027449f7db66e25cf12f3f83c8a89582a3c09bbc701491989ed8"
+  }
+}
