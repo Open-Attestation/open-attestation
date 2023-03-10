@@ -10,7 +10,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: "circleci/node:18.15"
+      - image: "circleci/node:18.15.0"
     steps:
       - checkout
       - run:
