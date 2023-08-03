@@ -28,7 +28,7 @@ describe("digest v3.0", () => {
       );
 
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
-        Array [
+        [
           "014bcf2fecaae61a904a8624e22925e4dfdcad743921e0e67d81867fe5c23172",
         ]
       `);
@@ -47,7 +47,7 @@ describe("digest v3.0", () => {
       );
 
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
-        Array [
+        [
           "014bcf2fecaae61a904a8624e22925e4dfdcad743921e0e67d81867fe5c23172",
           "4c4866737f19e5e1d5e9411a9792111647cc9b27fc6726bad7825613d0c2e9d1",
           "4914057f46973c65a950797b1e7cb9ecdd62d0764aada14c26f81afb76b3040e",
@@ -72,7 +72,7 @@ describe("digest v3.0", () => {
 
       expect(obfuscatedVerifiableCredential).toStrictEqual({ proof: obfuscatedVerifiableCredential.proof });
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
-        Array [
+        [
           "ee7bd33dd33cc5ee221a72c8aa981c2fa5a20066811c960234058b7c1f327f30",
           "ff85488133f76785e52b18ce71ddc955593e16eaabe58c627b4897185c14ed40",
           "615c7a6c7d911b68eaf67dd4db28a9d1e6cae24a695bc14e16b8a91ab74b2eff",

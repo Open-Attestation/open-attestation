@@ -374,23 +374,23 @@ describe("Util Functions", () => {
     it("should return document data for v2 wrapped document", () => {
       const v2WrappedDocument = v2WrappedVerifiableDocument as WrappedDocument<OpenAttestationDocument>;
       expect(utils.getDocumentData(v2WrappedDocument)).toMatchInlineSnapshot(`
-        Object {
-          "$template": Object {
+        {
+          "$template": {
             "name": "main",
             "type": "EMBEDDED_RENDERER",
             "url": "https://tutorial-renderer.openattestation.com",
           },
-          "issuers": Array [
-            Object {
+          "issuers": [
+            {
               "documentStore": "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca",
-              "identityProof": Object {
+              "identityProof": {
                 "location": "demo-tradetrust.openattestation.com",
                 "type": "DNS-TXT",
               },
               "name": "Demo Issuer",
             },
           ],
-          "recipient": Object {
+          "recipient": {
             "name": "John Doe",
           },
         }
@@ -402,41 +402,41 @@ describe("Util Functions", () => {
       const result = utils.getDocumentData(v3WrappedDocument);
       expect(result).not.toHaveProperty("proof");
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "@context": Array [
+        {
+          "@context": [
             "https://www.w3.org/2018/credentials/v1",
             "https://schemata.openattestation.com/com/openattestation/1.0/DrivingLicenceCredential.json",
             "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
             "https://schemata.openattestation.com/com/openattestation/1.0/CustomContext.json",
           ],
-          "credentialSubject": Object {
+          "credentialSubject": {
             "id": "some:thing:here",
           },
           "issuanceDate": "2010-01-01T20:20:20Z",
-          "issuer": Object {
+          "issuer": {
             "id": "https://www.openattestation.com",
             "name": "Demo Issuer",
           },
-          "openAttestationMetadata": Object {
-            "identityProof": Object {
+          "openAttestationMetadata": {
+            "identityProof": {
               "identifier": "demo-tradetrust.openattestation.com",
               "type": "DNS-TXT",
             },
-            "proof": Object {
+            "proof": {
               "method": "DOCUMENT_STORE",
               "type": "OpenAttestationProofMethod",
               "value": "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca",
             },
-            "template": Object {
+            "template": {
               "name": "main",
               "type": "EMBEDDED_RENDERER",
               "url": "https://tutorial-renderer.openattestation.com",
             },
           },
-          "recipient": Object {
+          "recipient": {
             "name": "Mary Jane",
           },
-          "type": Array [
+          "type": [
             "VerifiableCredential",
           ],
           "version": "https://schema.openattestation.com/3.0/schema.json",
@@ -451,9 +451,7 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getDocumentData(document)).toThrow(
-        new Error(
-          "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
-        )
+        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
       );
     });
   });
