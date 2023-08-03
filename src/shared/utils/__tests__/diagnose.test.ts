@@ -20,8 +20,8 @@ describe("diagnose", () => {
   describe("3.0", () => {
     it("should return an error when document is empty", () => {
       expect(diagnose({ version: "3.0", kind: "wrapped", document: null, mode: "non-strict" })).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "message": "The document must not be empty",
           },
         ]
@@ -31,7 +31,7 @@ describe("diagnose", () => {
     it("should not return an error when document is valid", () => {
       expect(
         diagnose({ version: "3.0", kind: "wrapped", document: v3WrappedVerifiableDocument, mode: "non-strict" })
-      ).toMatchInlineSnapshot(`Array []`);
+      ).toMatchInlineSnapshot(`[]`);
     });
 
     it("should return an error when document does not have issuer", () => {
@@ -43,11 +43,11 @@ describe("diagnose", () => {
           mode: "non-strict",
         })
       ).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "message": "The document does not match OpenAttestation schema 3.0",
           },
-          Object {
+          {
             "message": "document - must have required property 'issuer'",
           },
         ]
@@ -57,26 +57,26 @@ describe("diagnose", () => {
     it("should return an error when raw document is not version 3", () => {
       expect(diagnose({ version: "3.0", kind: "raw", document: v2RawDocument, mode: "non-strict" }))
         .toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "message": "The document does not match OpenAttestation schema 3.0",
           },
-          Object {
+          {
             "message": "document - must have required property '@context'",
           },
-          Object {
+          {
             "message": "document - must have required property 'type'",
           },
-          Object {
+          {
             "message": "document - must have required property 'credentialSubject'",
           },
-          Object {
+          {
             "message": "document - must have required property 'issuer'",
           },
-          Object {
+          {
             "message": "document - must have required property 'issuanceDate'",
           },
-          Object {
+          {
             "message": "document - must have required property 'openAttestationMetadata'",
           },
         ]
@@ -86,15 +86,15 @@ describe("diagnose", () => {
     it("should not return an error when raw document is version 3", () => {
       expect(
         diagnose({ version: "3.0", kind: "raw", document: v3RawDocument, mode: "non-strict" })
-      ).toMatchInlineSnapshot(`Array []`);
+      ).toMatchInlineSnapshot(`[]`);
     });
   });
 
   describe("2.0", () => {
     it("should return an error when document is empty", () => {
       expect(diagnose({ version: "2.0", kind: "wrapped", document: null, mode: "non-strict" })).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "message": "The document must not be empty",
           },
         ]
@@ -104,7 +104,7 @@ describe("diagnose", () => {
     it("should not return an error when document is valid", () => {
       expect(
         diagnose({ version: "2.0", kind: "signed", document: v2SignedDocument, mode: "non-strict" })
-      ).toMatchInlineSnapshot(`Array []`);
+      ).toMatchInlineSnapshot(`[]`);
     });
 
     it("should return an error when document does not have issuer", () => {
@@ -116,11 +116,11 @@ describe("diagnose", () => {
           mode: "non-strict",
         })
       ).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "message": "The document does not match OpenAttestation schema 2.0",
           },
-          Object {
+          {
             "message": "document - must have required property 'issuers'",
           },
         ]
@@ -130,23 +130,23 @@ describe("diagnose", () => {
     it("should return an error when raw document is not version 2", () => {
       expect(diagnose({ version: "2.0", kind: "raw", document: v3RawDocument, mode: "non-strict" }))
         .toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "message": "The document does not match OpenAttestation schema 2.0",
           },
-          Object {
+          {
             "message": "document - must have required property 'issuers'",
           },
-          Object {
+          {
             "message": "/attachments/0 - must have required property 'filename'",
           },
-          Object {
+          {
             "message": "/attachments/0 - must have required property 'type'",
           },
-          Object {
+          {
             "message": "/attachments/0 - must NOT have additional properties",
           },
-          Object {
+          {
             "message": "/attachments/0 - must NOT have additional properties",
           },
         ]
@@ -156,7 +156,7 @@ describe("diagnose", () => {
     it("should not return an error when raw document is version 2", () => {
       expect(
         diagnose({ version: "2.0", kind: "raw", document: v2RawDocument, mode: "non-strict" })
-      ).toMatchInlineSnapshot(`Array []`);
+      ).toMatchInlineSnapshot(`[]`);
     });
   });
 });

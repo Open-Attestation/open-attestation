@@ -52,12 +52,12 @@ describe("validate", () => {
           },
         };
         expect(validateSchema(document, ajv.compile(schema))).toMatchInlineSnapshot(`
-          Array [
-            Object {
+          [
+            {
               "instancePath": "",
               "keyword": "required",
               "message": "must have required property 'key1'",
-              "params": Object {
+              "params": {
                 "missingProperty": "key1",
               },
               "schemaPath": "#/required",

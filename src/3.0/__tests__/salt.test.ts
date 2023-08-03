@@ -152,8 +152,8 @@ describe("digest v3.0", () => {
       );
       const decoded = decodeSalt(encodedSalt);
       expect(decoded).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "path": "foo",
             "value": "1234567890123456789012345678901234567890123456789012345678901234",
           },
