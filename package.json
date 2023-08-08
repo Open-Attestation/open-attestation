@@ -103,5 +103,18 @@
     "commitizen": {
       "path": "node_modules/@commitlint/prompt"
     }
+  },
+  "release": {
+    "branches": [
+      "master",
+      {
+        "name": "alpha",
+        "prerelease": true
+      },
+      {
+        "name": "beta",
+        "prerelease": true
+      }
+    ]
   }
 }
