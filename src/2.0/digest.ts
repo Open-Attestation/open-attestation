@@ -26,7 +26,7 @@ export const digestDocument = <T extends OpenAttestationDocument = OpenAttestati
   const hashedUnhashedDataArray = flattenHashArray(unhashedData);
 
   // Combine both array and sort them to ensure determinism
-  const combinedHashes = hashedDataArray.concat(hashedUnhashedDataArray);
+  const combinedHashes = [...hashedDataArray, ...hashedUnhashedDataArray];
   const sortedHashes = sortBy(combinedHashes);
 
   // Finally, return the digest of the entire set of data

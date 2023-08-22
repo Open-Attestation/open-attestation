@@ -12,7 +12,7 @@ export const digestCredential = (document: OpenAttestationDocument, salts: Salt[
     });
 
   // Combine both array and sort them to ensure determinism
-  const combinedHashes = obfuscatedData.concat(hashedUnhashedDataArray);
+  const combinedHashes = [...obfuscatedData, ...hashedUnhashedDataArray];
   const sortedHashes = sortBy(combinedHashes);
 
   // Finally, return the digest of the entire set of data
