@@ -12,7 +12,7 @@ import { getSchema } from "../shared/ajv";
 
 export const wrapDocument = async <T extends OpenAttestationDocument>(
   credential: T,
-  options: WrapDocumentOptionV4
+  options: WrapDocumentOptionV4 // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<WrappedDocument<T>> => {
   const document = { ...credential };
 
