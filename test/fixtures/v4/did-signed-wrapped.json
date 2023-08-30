@@ -1,0 +1,55 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+  ],
+  "type": ["VerifiableCredential", "OpenAttestationCredential"],
+  "issuanceDate": "2021-03-08T12:00:00+08:00",
+  "validFrom": "2021-03-08T12:00:00+08:00",
+  "name": "Republic of Singapore Driving Licence",
+  "issuer": {
+    "id": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+    "type": "OpenAttestationIssuer",
+    "name": "Government Technology Agency of Singapore (GovTech)",
+    "identityProof": { "identityProofType": "DNS-DID", "identifier": "donotverify.testing.verify.gov.sg" }
+  },
+  "credentialStatus": {
+    "type": "OpenAttestationCredentialStatus",
+    "credentialStatusType": "OCSP_RESPONDER",
+    "location": "https://ocsp-responder.example.com"
+  },
+  "renderMethod": {
+    "type": "OpenAttestationRenderMethod",
+    "renderMethodType": "EMBEDDED_RENDERER",
+    "name": "GOVTECH_DEMO",
+    "url": "https://demo-renderer.openattestation.com"
+  },
+  "credentialSubject": {
+    "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    "type": ["DriversLicense"],
+    "name": "John Doe",
+    "licenses": [
+      {
+        "class": "3",
+        "description": "Motor cars with unladen weight <= 3000kg",
+        "effectiveDate": "2013-05-16T00:00:00+08:00"
+      },
+      {
+        "class": "3A",
+        "description": "Motor cars with unladen weight <= 3000kg",
+        "effectiveDate": "2013-05-16T00:00:00+08:00"
+      }
+    ]
+  },
+  "proof": {
+    "type": "OpenAttestationMerkleProofSignature2018",
+    "proofPurpose": "assertionMethod",
+    "targetHash": "98d0979858c8d96c11373462b84e485863c7cec7a3c6b81f80c2673144839d48",
+    "proofs": [],
+    "merkleRoot": "98d0979858c8d96c11373462b84e485863c7cec7a3c6b81f80c2673144839d48",
+    "salts": "W3sidmFsdWUiOiJmYmU3ZGFkZGIxZmRkODgxZGZkYzA0NDA0N2Y3ODQzY2ZhZjUyNTdjOTE3NmFkM2MzNWU1ZTY5NDIwZGRmYWY4IiwicGF0aCI6IkBjb250ZXh0WzBdIn0seyJ2YWx1ZSI6IjFmZTEzNWUxMzgyYzY2OWE4YmEwNDE0NTc0MmEzZWM0YjY1MjdhZjU4ZTU3MDIyNGM3NTVlM2E2NDVjMmM3M2UiLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiNmU0Y2MyNmNkMjA5MjM2MTY2MWFlYzI3NDdhZjM4NGFkZjQxODAzZTkzMmMzY2FhZTAwODBkN2VkYTc0YThhNyIsInBhdGgiOiJ0eXBlWzBdIn0seyJ2YWx1ZSI6ImNjN2QwNWQ3ODcyNmRlMzdkMDRlNGIxODMwYzQ4NWIxZjcwOTM3MWJlNGU2ODBkMDlkMTEzNjhlMjlkYmYyOTIiLCJwYXRoIjoidHlwZVsxXSJ9LHsidmFsdWUiOiJmZGQwMGMzMDFiZjgzZmI0NTVjNmFlOTBjYjNhY2RlMmY3NDM0MGNlYzUwZTc1YTg1ODRjYWI0MDc3MTQ4NGRmIiwicGF0aCI6Imlzc3VhbmNlRGF0ZSJ9LHsidmFsdWUiOiI5ZGUwZmY3NDM4MmJkNzJjMTY4NTExNjUwZWMzNGQwMzE0ODc4NjYxOTRlYTZhNzFmOWZjYTJkNDRmZjVkZjRkIiwicGF0aCI6InZhbGlkRnJvbSJ9LHsidmFsdWUiOiI0OWM3ZmU4Y2FjNzE2MGI3Y2IxYTY5MWIyM2M3MWE2NmU0ODljYjY4ZTY5NWVmZGZjYWIyMzM2ZmE4ZDE0OTk1IiwicGF0aCI6Im5hbWUifSx7InZhbHVlIjoiOTFlNjRlOTNjNDBmNjY5NjE5NDczMDFmNzZmYTZhYjI0YmYzNDk2MzZjZGE1MTdiNzA1MmZkMzFiOWU0MjQyNiIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZmQ3Y2NhNTYzNzkyZGZlNDI2MGI3YTI2YTU0YWZkNDYxZWVlN2ZjZDZmZmFmYzAyMTFjODBhOGE5MGEyNzg0OCIsInBhdGgiOiJpc3N1ZXIudHlwZSJ9LHsidmFsdWUiOiIwNGU0MGI0YTQ3NzBlNDUwMDJiNGU5MjgzOGRjZmMzMDBiOGZjZGIzNjIyNDMxZDE0ODY3YzdhYzQyNTE2M2I5IiwicGF0aCI6Imlzc3Vlci5uYW1lIn0seyJ2YWx1ZSI6ImI4MzA2NzliYmUxMTljZDc2YjFhNTZiYWE0YWZiYzA1YzJmOGI5OTI2MzkzOGU0N2RlZTljN2JiM2U4YTFiOGQiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YuaWRlbnRpdHlQcm9vZlR5cGUifSx7InZhbHVlIjoiY2NhZTEyODM3Yzk4ZjlhOWFkYmJiZDlhMjYxYWI2YjU4OGI3MjhkZWI5OTQzZjc0MWFhNWI3NmRhYTFlMzMzMSIsInBhdGgiOiJpc3N1ZXIuaWRlbnRpdHlQcm9vZi5pZGVudGlmaWVyIn0seyJ2YWx1ZSI6ImE1NDQ1OWNlMjJlYTI1ZmVhZjQ1Yjk5NmIyYWJhYmQzMDFjZDUwZTVkMDdkODMxZGJjYzI0ZmVkMjAwZWNhNzkiLCJwYXRoIjoiY3JlZGVudGlhbFN0YXR1cy50eXBlIn0seyJ2YWx1ZSI6IjI2NmE1MGFjMmY0MDIwZjQ2NWQ5Y2RiZDc0MTg5ODJlYTRiNzg0YWRkZWJhMmM5ODg1OWQzNGZlZjRhYjNiMzIiLCJwYXRoIjoiY3JlZGVudGlhbFN0YXR1cy5jcmVkZW50aWFsU3RhdHVzVHlwZSJ9LHsidmFsdWUiOiI0MmQ5NzkzMGRlYjJhMzY1MDNlZGNmZDEzMTU2MjAwZmFjZjg4Mjk1ZDVkNWYzMDI4NjI0ZjllOTVhYjhkMDAyIiwicGF0aCI6ImNyZWRlbnRpYWxTdGF0dXMubG9jYXRpb24ifSx7InZhbHVlIjoiODdlZDVlNzIzZjllZGNmZTk4NmFiYWMyMjIzYWE1NDc3Nzg1MGZjNjFlMjhlNmQ2NzIyNGNlNmRlNWM3OGVjZiIsInBhdGgiOiJyZW5kZXJNZXRob2QudHlwZSJ9LHsidmFsdWUiOiJiMzBmMGM3MTlkYzljZGJjYjVmNGQ0YTdmMmJiOWFiNThiN2QwYjczMTFhNTE1NTZkNGNiOTg4NTA5MzdjYTM2IiwicGF0aCI6InJlbmRlck1ldGhvZC5yZW5kZXJNZXRob2RUeXBlIn0seyJ2YWx1ZSI6ImY1MjdlNzZiOGJhMjIxYWE3Mjg5MTM1NTU2NmIwY2Q2MDBjNTIwY2E3Y2MzMWVmM2Q0ZmQ3MjBmNzFjMDQwYjMiLCJwYXRoIjoicmVuZGVyTWV0aG9kLm5hbWUifSx7InZhbHVlIjoiN2E3ZmJkMjdkMzhjOWY3Y2E4OWFlYTc0NzI0M2U0NDllZDYxZjE1OTcwNGY3NDUwNDIxNTcwYzkzNDE4N2YyYSIsInBhdGgiOiJyZW5kZXJNZXRob2QudXJsIn0seyJ2YWx1ZSI6IjU2ZGNkNzUzYjYxMGMyOWM4YTRkNTBiZTMwNjc2ZmExYjZlNDUzYmU4ZjJhMDdjMzA2MTRhMTYzNmZkYTVkZWQiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMDc2MzZiMjhiNmNlZDE1ZWQ1ZGI3ZjMxODI1YmMxZWM0NDM2YTU2OWUxNGZjYzQxZGYxNmI2M2UyNmM4YTE4ZiIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC50eXBlWzBdIn0seyJ2YWx1ZSI6ImVjZWQ0NjIzM2Q4OTIwZWFkNDlkNDg2YTMyM2VlYTk2ZWIwM2MxMzVjNTM5MzQxMzdiMmY2M2EzYWMzOGM5YjgiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubmFtZSJ9LHsidmFsdWUiOiI4NjNiZmRiYzM3NGY1NDA4NGVmZjdmYjU1NmEzZGYwN2NkNDg4NjAyY2E3NjI4MWE1OGUwYzM3Y2FhOWZlZDU0IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzBdLmNsYXNzIn0seyJ2YWx1ZSI6ImNjNDczOGFjMjNlNGVhZGFmMjE0YTVkMWExNWQ0OGU0ZmIwOWE1ZGYyOWVlOTFiMjliYTMzZTg2MWNjNDliZWMiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMF0uZGVzY3JpcHRpb24ifSx7InZhbHVlIjoiMjk4ZGZkNTY4N2Q5YzcwMDUxM2VjMzk3ZTRmOThlN2Q5YWMzN2NlMDRiMjg5YzAzN2E3OTQ1N2Y3NzIzY2MyNSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1swXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjcxZWYyM2E5NWMxMmQ2ZjBhODU0MjI3ODc0NDk4NmYyNzc4ZDcwMWEwY2M2ZGU1YmZmZDQwZDUzNjIyNDU3NDYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMV0uY2xhc3MifSx7InZhbHVlIjoiYzY0NDlkYTQxOGRhYWUyYjhhN2E1NWU5Y2M0MjlmZDZkYWQ4MGQyOTE1ZGNmY2FhZGJiNjVlNzI1ODUwZDc2MyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1sxXS5kZXNjcmlwdGlvbiJ9LHsidmFsdWUiOiI1ODEyYTY0OTAwZWU4NGIxMTQ4NDQ4MmZhNzJiMjZlODRkYWE1ZTViODk4N2MwNjhmNzQwY2ZkOWQ5N2E1YjU0IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzFdLmVmZmVjdGl2ZURhdGUifV0=",
+    "privacy": { "obfuscated": [] },
+    "key": "did:ethr:0x1245e5B64D785b25057f7438F715f4aA5D965733#controller",
+    "signature": "0x886790b227c0b0aa6d84f8317bc44524a6cd0f904a958166fc205ba46d064eb22b28ccb27766c4d70183e317856e24b7436cf7dc6a79ca40c85b22a99bedb00c1b"
+  }
+}

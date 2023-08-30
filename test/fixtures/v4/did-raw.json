@@ -1,0 +1,47 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+  ],
+  "type": ["VerifiableCredential", "OpenAttestationCredential"],
+  "issuanceDate": "2021-03-08T12:00:00+08:00",
+  "validFrom": "2021-03-08T12:00:00+08:00",
+  "name": "Republic of Singapore Driving Licence",
+  "issuer": {
+    "id": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+    "type": "OpenAttestationIssuer",
+    "name": "Government Technology Agency of Singapore (GovTech)",
+    "identityProof": {
+      "identityProofType": "DNS-DID",
+      "identifier": "donotverify.testing.verify.gov.sg"
+    }
+  },
+  "credentialStatus": {
+    "type": "OpenAttestationCredentialStatus",
+    "credentialStatusType": "OCSP_RESPONDER",
+    "location": "https://ocsp-responder.example.com"
+  },
+  "renderMethod": {
+    "type": "OpenAttestationRenderMethod",
+    "renderMethodType": "EMBEDDED_RENDERER",
+    "name": "GOVTECH_DEMO",
+    "url": "https://demo-renderer.openattestation.com"
+  },
+  "credentialSubject": {
+    "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    "type": ["DriversLicense"],
+    "name": "John Doe",
+    "licenses": [
+      {
+        "class": "3",
+        "description": "Motor cars with unladen weight <= 3000kg",
+        "effectiveDate": "2013-05-16T00:00:00+08:00"
+      },
+      {
+        "class": "3A",
+        "description": "Motor cars with unladen weight <= 3000kg",
+        "effectiveDate": "2013-05-16T00:00:00+08:00"
+      }
+    ]
+  }
+}
