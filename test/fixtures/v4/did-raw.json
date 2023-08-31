@@ -8,19 +8,12 @@
   "validFrom": "2021-03-08T12:00:00+08:00",
   "name": "Republic of Singapore Driving Licence",
   "issuer": {
-    "id": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+    "id": "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     "type": "OpenAttestationIssuer",
     "name": "Government Technology Agency of Singapore (GovTech)",
-    "identityProof": {
-      "identityProofType": "DNS-DID",
-      "identifier": "donotverify.testing.verify.gov.sg"
-    }
+    "identityProof": { "identityProofType": "DNS-DID", "identifier": "example.openattestation.com" }
   },
-  "credentialStatus": {
-    "type": "OpenAttestationCredentialStatus",
-    "credentialStatusType": "OCSP_RESPONDER",
-    "location": "https://ocsp-responder.example.com"
-  },
+  "credentialStatus": { "type": "OpenAttestationCredentialStatus", "credentialStatusType": "NONE" },
   "renderMethod": {
     "type": "OpenAttestationRenderMethod",
     "renderMethodType": "EMBEDDED_RENDERER",
