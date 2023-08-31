@@ -141,7 +141,7 @@
         "id": {
           "type": "string",
           "format": "uri",
-          "description": "URI when dereferenced, results in a document containing machine-readable information about the issuer that can be used to verify the information expressed in the credential. More information in https://www.w3.org/TR/vc-data-model/#issuer"
+          "description": "An identifier related to the subject of the verifiable credential. More information in https://www.w3.org/TR/vc-data-model/#credential-subject"
         },
         "type": { "$ref": "#/definitions/type" }
       }
