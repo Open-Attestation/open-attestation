@@ -224,7 +224,7 @@ describe("Util Functions", () => {
       };
       expect(() => utils.getTargetHash(document)).toThrow(
         new Error(
-          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2, v3 & v4 documents."
         )
       );
     });

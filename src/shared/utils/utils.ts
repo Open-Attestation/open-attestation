@@ -106,7 +106,7 @@ export const getMerkleRoot = (document: any): string => {
   else if (isWrappedV4Document(document)) return document.proof.merkleRoot;
 
   throw new Error(
-    "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2 & v3 documents."
+    "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2, v3 & v4 documents."
   );
 };
 
@@ -116,7 +116,7 @@ export const getTargetHash = (document: any): string => {
   else if (isWrappedV4Document(document)) return document.proof.targetHash;
 
   throw new Error(
-    "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+    "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2, v3 & v4 documents."
   );
 };
 
