@@ -16,7 +16,7 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
 ): Promise<WrappedDocument<T>> => {
   const document = { ...credential };
 
-  // 1. Ensure that required @contexts are present
+  // 1. Ensure that required @contexts are present and in the correct order
   // @context: [Base, OA, ...]
   const contexts = new Set(["https://www.w3.org/2018/credentials/v1", ContextUrl.v4_alpha]);
 
@@ -26,14 +26,10 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
     document["@context"].forEach((context) => contexts.add(context));
   }
 
-  document["@context"] = Array.from(contexts).sort((a, b) => {
-    const order = Array.from(contexts);
-    if (order.indexOf(a) === -1) return 1;
-    if (order.indexOf(b) === -1) return -1;
-    return order.indexOf(a) - order.indexOf(b);
-  });
+  // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this:
+  document["@context"] = Array.from(contexts);
 
-  // 2. Ensure that required types are present
+  // 2. Ensure that required types are present and in the correct order
   // type: ["VerifiableCredential", "OpenAttestationCredential", ...]
   const types = new Set(["VerifiableCredential", "OpenAttestationCredential"]);
 
@@ -43,12 +39,8 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
     document["type"].forEach((type) => types.add(type));
   }
 
-  document["type"] = Array.from(types).sort((a, b) => {
-    const order = Array.from(types);
-    if (order.indexOf(a) === -1) return 1;
-    if (order.indexOf(b) === -1) return -1;
-    return order.indexOf(a) - order.indexOf(b);
-  });
+  // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this:
+  document["type"] = Array.from(types);
 
   // 3. OA wrapping
   const salts = salt(document);
