@@ -258,4 +258,4 @@ export const getObfuscatedData = (
 };
 
 export const isStringArray = (input: unknown): input is string[] =>
-  Array.isArray(input) && typeof input[0] === "string";
+  Array.isArray(input) && input.every((i) => typeof i === "string");
