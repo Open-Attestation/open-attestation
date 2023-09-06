@@ -139,7 +139,7 @@ export const getTemplateURL = (document: any): string | undefined => {
 };
 
 export const getDocumentData = (document: WrappedDocument<OpenAttestationDocument>): OpenAttestationDocument => {
-  if (isWrappedV3Document(document)) {
+  if (isWrappedV3Document(document) || isWrappedV4Document(document)) {
     const omit = (keys: any, obj: any): any =>
       Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
     return omit(["proof"], document);
@@ -148,7 +148,7 @@ export const getDocumentData = (document: WrappedDocument<OpenAttestationDocumen
   }
 
   throw new Error(
-    "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
+    "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2, v3 & v4 documents."
   );
 };
 

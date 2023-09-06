@@ -451,7 +451,7 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getDocumentData(document)).toThrow(
-        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
+        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2, v3 & v4 documents."
       );
     });
   });
