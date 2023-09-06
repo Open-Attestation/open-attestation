@@ -280,7 +280,9 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getTemplateURL(document)).toThrow(
-        new Error("Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents.")
+        new Error(
+          "Unsupported document type: Only can retrieve template url from OpenAttestation v2, v3 & v4 documents."
+        )
       );
     });
   });

@@ -135,7 +135,9 @@ export const getTemplateURL = (document: any): string | undefined => {
     return document.renderMethod?.url;
   }
 
-  throw new Error("Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents.");
+  throw new Error(
+    "Unsupported document type: Only can retrieve template url from OpenAttestation v2, v3 & v4 documents."
+  );
 };
 
 export const getDocumentData = (document: WrappedDocument<OpenAttestationDocument>): OpenAttestationDocument => {
