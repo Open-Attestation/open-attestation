@@ -1,6 +1,6 @@
 node_modules
 coverage
 dist
-src/__generated__
+__generated__
 vc-test-suite
 *.d.ts

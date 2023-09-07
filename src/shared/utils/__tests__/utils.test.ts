@@ -224,7 +224,7 @@ describe("Util Functions", () => {
       };
       expect(() => utils.getTargetHash(document)).toThrow(
         new Error(
-          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2, v3 & v4 documents."
         )
       );
     });
@@ -280,7 +280,9 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getTemplateURL(document)).toThrow(
-        new Error("Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents.")
+        new Error(
+          "Unsupported document type: Only can retrieve template url from OpenAttestation v2, v3 & v4 documents."
+        )
       );
     });
   });
@@ -451,7 +453,7 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getDocumentData(document)).toThrow(
-        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
+        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2, v3 & v4 documents."
       );
     });
   });

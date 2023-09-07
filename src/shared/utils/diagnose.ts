@@ -2,15 +2,16 @@ import { logger } from "ethers";
 import { SchemaId } from "../@types/document";
 import { validateSchema as validate } from "../validate";
 import {
-  VerifiableCredentialSignedProof,
-  VerifiableCredentialWrappedProof,
-  VerifiableCredentialWrappedProofStrict,
+  VerifiableCredentialWrappedProof as WrappedProofV3,
+  VerifiableCredentialWrappedProofStrict as WrappedProofStrictV3,
+  VerifiableCredentialSignedProof as SignedWrappedProofV3,
 } from "../../3.0/types";
 import { ArrayProof, Signature, SignatureStrict } from "../../2.0/types";
 import { getSchema } from "../ajv";
 import { Kind, Mode } from "./@types/diagnose";
+import { v4Diagnose } from "../../4.0/diagnose";
 
-type Version = "2.0" | "3.0";
+export type Version = "2.0" | "3.0" | "4.0";
 
 interface DiagnoseError {
   message: string;
@@ -27,7 +28,7 @@ const handleError = (debug: boolean, ...messages: string[]) => {
 
 /**
  * Tools to give information about the validity of a document. It will return and eventually output the errors found.
- * @param version 2.0 or 3.0
+ * @param version 2.0, 3.0 or 4.0
  * @param kind raw, wrapped or signed
  * @param debug turn on to output in the console, the errors found
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
@@ -54,25 +55,38 @@ export const diagnose = ({
     return handleError(debug, "The document must be an object");
   }
 
-  const errors = validate(document, getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode), kind);
+  const versionToSchemaId: Record<Version, SchemaId | undefined> = {
+    "2.0": SchemaId.v2,
+    "3.0": SchemaId.v3,
+    "4.0": undefined,
+  };
 
-  if (errors.length > 0) {
-    // TODO this can be improved later
-    return handleError(
-      debug,
-      `The document does not match OpenAttestation schema ${version === "3.0" ? "3.0" : "2.0"}`,
-      ...errors.map((error) => `${error.instancePath || "document"} - ${error.message}`)
-    );
+  const schemaId = versionToSchemaId[version];
+  if (schemaId) {
+    const errors = validate(document, getSchema(schemaId, mode), kind);
+
+    if (errors.length > 0) {
+      // TODO this can be improved later
+      return handleError(
+        debug,
+        `The document does not match OpenAttestation schema ${version}`,
+        ...errors.map((error) => `${error.instancePath || "document"} - ${error.message}`)
+      );
+    }
   }
 
-  if (kind === "raw") {
+  if (kind === "raw" && version !== "4.0") {
     return [];
   }
 
-  if (version === "3.0") {
-    return diagnoseV3({ mode, debug, document, kind });
-  } else {
-    return diagnoseV2({ mode, debug, document, kind });
+  switch (version) {
+    case "4.0":
+      return v4Diagnose({ debug, document, kind });
+    case "3.0":
+      return diagnoseV3({ mode, debug, document, kind });
+    case "2.0":
+    default:
+      return diagnoseV2({ mode, debug, document, kind });
   }
 };
 
@@ -115,9 +129,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    mode === "strict"
-      ? VerifiableCredentialWrappedProofStrict.check(document.proof)
-      : VerifiableCredentialWrappedProof.check(document.proof);
+    mode === "strict" ? WrappedProofStrictV3.check(document.proof) : WrappedProofV3.check(document.proof);
   } catch (e) {
     if (e instanceof Error) {
       return handleError(debug, e.message);
@@ -131,7 +143,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
       return handleError(debug, `The document does not have a proof`);
     }
     try {
-      VerifiableCredentialSignedProof.check(document.proof);
+      SignedWrappedProofV3.check(document.proof);
     } catch (e) {
       if (e instanceof Error) {
         return handleError(debug, e.message);
