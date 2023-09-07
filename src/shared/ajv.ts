@@ -2,6 +2,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import openAttestationSchemav2 from "../2.0/schema/schema.json";
 import openAttestationSchemav3 from "../3.0/schema/schema.json";
+import openAttestationSchemav4 from "../4.0/schema/schema.json";
 import { CurrentOptions } from "ajv/dist/core";
 
 const defaultTransform = (schema: Record<string, any>) => schema;
@@ -16,6 +17,7 @@ export const buildAjv = (
   ajv.addKeyword("deprecationMessage");
   ajv.compile(transform(openAttestationSchemav2));
   ajv.compile(transform(openAttestationSchemav3));
+  ajv.compile(transform(openAttestationSchemav4));
   return ajv;
 };
 

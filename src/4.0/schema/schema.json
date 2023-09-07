@@ -1,0 +1,170 @@
+{
+  "title": "OpenAttestation v4.0 Schema",
+  "$id": "https://schemata.openattestation.com/com/openattestation/4.0/alpha-schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "type": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        { "type": "string" }
+      ],
+      "description": "Specific verifiable credential type as explained by https://www.w3.org/TR/vc-data-model/#types"
+    }
+  },
+  "properties": {
+    "@context": {
+      "type": "array",
+      "items": {
+        "type": ["string", "object"],
+        "format": "uri"
+      },
+      "description": "List of URI to determine the terminology used in the verifiable credential as explained by https://www.w3.org/TR/vc-data-model/#contexts"
+    },
+    "id": {
+      "type": "string",
+      "format": "uri",
+      "description": "URI to the subject of the credential as explained by https://www.w3.org/TR/vc-data-model/#credential-subject"
+    },
+    "type": { "$ref": "#/definitions/type" },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential becomes valid"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this credential expires"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human readable name of this credential"
+    },
+    "issuer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI when dereferenced, results in a document containing machine-readable information about the issuer that can be used to verify the information expressed in the credential. More information in https://www.w3.org/TR/vc-data-model/#issuer"
+        },
+        "type": { "$ref": "#/definitions/type" },
+        "name": {
+          "type": "string",
+          "description": "Issuer's name"
+        },
+        "identityProof": {
+          "type": "object",
+          "properties": {
+            "identityProofType": {
+              "type": "string",
+              "enum": ["DNS-TXT", "DNS-DID", "DID"]
+            },
+            "identifier": {
+              "type": "string",
+              "description": "Identifier to be shown to end user upon verifying the identity"
+            }
+          },
+          "required": ["identityProofType", "identifier"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["id", "name", "identityProof"]
+    },
+    "credentialStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/type"
+            },
+            "credentialStatusType": {
+              "type": "string",
+              "enum": ["NONE"]
+            }
+          },
+          "required": ["credentialStatusType"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/type"
+            },
+            "credentialStatusType": {
+              "type": "string",
+              "enum": ["REVOCATION_STORE", "OCSP_RESPONDER"]
+            },
+            "location": {
+              "type": "string",
+              "format": "uri",
+              "examples": ["https://ocsp-responder.example.com"]
+            }
+          },
+          "required": ["credentialStatusType", "location"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "renderMethod": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "#/definitions/type" },
+        "renderMethodType": {
+          "type": "string",
+          "enum": ["EMBEDDED_RENDERER"],
+          "description": "Type of renderer template"
+        },
+        "name": {
+          "type": "string",
+          "description": "Template name to be use by template renderer to determine the template to use"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^(https?)://",
+          "description": "URL of a decentralised renderer to render this document"
+        }
+      },
+      "required": ["renderMethodType", "name", "url"]
+    },
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "An identifier related to the subject of the verifiable credential. More information in https://www.w3.org/TR/vc-data-model/#credential-subject"
+        },
+        "type": { "$ref": "#/definitions/type" }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "#/definitions/type" },
+        "proofPurpose": { "type": "string", "enum": ["assertionMethod"] },
+        "targetHash": { "type": "string" },
+        "proofs": { "type": "array", "items": { "type": "string" } },
+        "merkleRoot": { "type": "string" },
+        "salts": { "type": "string" },
+        "privacy": {
+          "type": "object",
+          "properties": { "obfuscated": { "type": "array", "items": { "type": "string" } } }
+        },
+        "key": { "type": "string" },
+        "signature": { "type": "string" }
+      },
+      "required": ["proofPurpose", "targetHash", "proofs", "merkleRoot", "salts", "privacy"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["@context", "issuer", "credentialStatus", "credentialSubject"]
+}
