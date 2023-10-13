@@ -1,5 +1,5 @@
 {
-  "name": "@govtechsg/open-attestation",
+  "name": "@tradetrust/open-attestation",
   "version": "0.0.0-development",
   "description": "## Usage",
   "main": "dist/cjs/index.js",
@@ -29,10 +29,7 @@
     "/dist",
     "/scripts"
   ],
-  "author": "Raymond Yeh <yehjxraymond@gmail.com> (http://geek.sg)",
-  "contributors": [
-    "RJ Chow <me@rjchow.com> (https://about.rjchow.com)"
-  ],
+  "author": "Tradetrust team",
   "license": "Apache-2.0",
   "devDependencies": {
     "@commitlint/cli": "^17.6.7",
@@ -90,12 +87,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Open-Attestation/open-attestation.git"
+    "url": "https://github.com/TradeTrust/open-attestation.git"
   },
   "bugs": {
-    "url": "https://github.com/Open-Attestation/open-attestation/issues"
+    "url": "https://github.com/TradeTrust/open-attestation/issues"
   },
-  "homepage": "https://github.com/Open-Attestation/open-attestation#readme",
+  "homepage": "https://github.com/TradeTrust/open-attestation#readme",
   "publishConfig": {
     "access": "public"
   },
