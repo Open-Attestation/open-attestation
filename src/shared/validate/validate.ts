@@ -1,12 +1,13 @@
-import { ErrorObject, ValidateFunction } from "ajv";
 import { getLogger } from "../logger";
 import { SchemaId } from "../@types/document";
 // don't change this otherwise there is a cycle
 import { getData } from "../utils/utils";
 import { Kind } from "../utils/@types/diagnose";
+import { AnyValidateFunction } from "ajv/dist/core";
+import { ErrorObject } from "ajv";
 const logger = getLogger("validate");
 
-export const validateSchema = (document: any, validator: ValidateFunction, kind?: Kind): ErrorObject[] => {
+export const validateSchema = (document: any, validator: AnyValidateFunction, kind?: Kind): ErrorObject[] => {
   if (!validator) {
     throw new Error("No schema validator provided");
   }
