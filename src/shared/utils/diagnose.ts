@@ -54,7 +54,7 @@ export const diagnose = ({
     return handleError(debug, "The document must be an object");
   }
 
-  const errors = validate(document, getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2), kind);
+  const errors = validate(document, getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode), kind);
 
   if (errors.length > 0) {
     // TODO this can be improved later
