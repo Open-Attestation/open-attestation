@@ -8,7 +8,6 @@ const { clone, cloneDeepWith } = require("lodash");
 const openAttestationSchemav2 = require(path.join(process.cwd(), "src/2.0/schema/schema.json"));
 const openAttestationSchemav3 = require(path.join(process.cwd(), "src/3.0/schema/schema.json"));
 
-
 // remove enum and pattern from the schema
 function transformSchema(schema) {
   const excludeKeys = ["enum", "pattern"];
@@ -64,4 +63,3 @@ fs.writeFileSync(
   path.join(__dirname, "../src/__generated__/compiled_schema_non_strict.js"),
   standaloneCode(nonStrictAjv)
 );
-
