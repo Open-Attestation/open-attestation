@@ -12,8 +12,7 @@
     "typeRoots": ["./src/@types", "./node_modules/@types"],
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowJs": true
+    "esModuleInterop": true
   },
   "include": ["./src/**/*"]
 }

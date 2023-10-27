@@ -7,7 +7,8 @@ import {
   VerifiableCredentialWrappedProofStrict,
 } from "../../3.0/types";
 import { ArrayProof, Signature, SignatureStrict } from "../../2.0/types";
-import { getSchema } from "../ajv";
+import { clone, cloneDeepWith } from "lodash";
+import { buildAjv, getSchema } from "../ajv";
 import { Kind, Mode } from "./@types/diagnose";
 
 type Version = "2.0" | "3.0";
@@ -24,6 +25,35 @@ const handleError = (debug: boolean, ...messages: string[]) => {
   }
   return messages.map((message) => ({ message }));
 };
+
+// remove enum and pattern from the schema
+function transformSchema(schema: Record<string, any>): Record<string, any> {
+  const excludeKeys = ["enum", "pattern"];
+  function omit(value: any) {
+    if (value && typeof value === "object") {
+      const key = excludeKeys.find((key) => value[key]);
+      if (key) {
+        const node = clone(value);
+        excludeKeys.forEach((key) => {
+          delete node[key];
+        });
+        return node;
+      }
+    }
+  }
+
+  const newSchema = cloneDeepWith(schema, omit);
+  // because we remove check on enum (DNS-DID, DNS-TXT, etc.) the identity proof can match multiple sub schema in v2.
+  // so here we change oneOf to anyOf, so that if more than one identityProof matches, it still passes
+  if (newSchema?.definitions?.identityProof?.oneOf) {
+    newSchema.definitions.identityProof.anyOf = newSchema?.definitions?.identityProof?.oneOf;
+    delete newSchema?.definitions?.identityProof?.oneOf;
+  }
+  return newSchema;
+}
+// custom ajv for loose schema validation
+// it will allow invalid format, invalid pattern and invalid enum
+const ajv = buildAjv({ transform: transformSchema, validateFormats: false });
 
 /**
  * Tools to give information about the validity of a document. It will return and eventually output the errors found.
@@ -54,7 +84,11 @@ export const diagnose = ({
     return handleError(debug, "The document must be an object");
   }
 
-  const errors = validate(document, getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode), kind);
+  const errors = validate(
+    document,
+    getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode === "non-strict" ? ajv : undefined),
+    kind
+  );
 
   if (errors.length > 0) {
     // TODO this can be improved later
