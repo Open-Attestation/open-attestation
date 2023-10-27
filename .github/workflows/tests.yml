@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 18.x
       - run: npm ci && npm run postinstall
-      - run: npm run build
+      - run: npm run prebuild
       - run: npm run test
 
   test-build:
