@@ -23,7 +23,8 @@
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "publish:schema": "./scripts/publishSchema.sh",
-    "postinstall": "node scripts/postInstall"
+    "postinstall": "node scripts/postInstall",
+    "prebuild": "node scripts/preBuild"
   },
   "files": [
     "/dist",
