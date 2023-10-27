@@ -6,8 +6,8 @@ const standaloneCode = require("ajv/dist/standalone").default;
 const Ajv = require("ajv");
 const { clone, cloneDeepWith } = require("lodash");
 
-const openAttestationSchemav2 = require("src/2.0/schema/schema.json");
-const openAttestationSchemav3 = require("src/3.0/schema/schema.json");
+const openAttestationSchemav2 = require(path.join(process.cwd(), "src", "2.0", "schema", "schema.json"));
+const openAttestationSchemav3 = require(path.join(process.cwd(), "src", "3.0", "schema", "schema.json"));
 const quicktype = path.join(process.cwd(), "node_modules", ".bin", "quicktype");
 
 // remove enum and pattern from the schema
