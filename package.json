@@ -24,7 +24,7 @@
     "lint:fix": "npm run lint -- --fix",
     "publish:schema": "./scripts/publishSchema.sh",
     "postinstall": "node scripts/postInstall",
-    "postbuild": "node scripts/postBuild"
+    "prebuild": "node scripts/preBuild"
   },
   "files": [
     "/dist",
