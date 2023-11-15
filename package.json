@@ -46,6 +46,7 @@
     "@types/jsonld": "^1.5.6",
     "@types/lodash": "^4.14.171",
     "@types/qrcode": "^1.4.1",
+    "@types/randombytes": "^2.0.0",
     "@types/uuid": "^8.3.1",
     "@types/validator": "^13.6.3",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
@@ -82,6 +83,7 @@
     "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.21",
+    "randombytes": "^2.1.0",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
     "validator": "^13.7.0"
