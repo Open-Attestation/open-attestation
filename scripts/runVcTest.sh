@@ -25,15 +25,15 @@ if [ "$install_vc_test_suite" = true ] ; then
   npm i
 
   echo "Install open-attestation-cli"
-  npm i @govtechsg/open-attestation-cli
+  npm i @tradetrust-tt/tradetrust-cli
   cd ..
 fi
 
 if [ "$patch_open_attestation_cli" = true ] ; then
   echo "Monkey patch open-attestation"
   npm run build
-  rm -rf $vc_path/node_modules/@govtechsg/open-attestation
-  rsync -a . $vc_path/node_modules/@govtechsg/open-attestation --exclude $vc_path
+  rm -rf $vc_path/node_modules/@tradetrust-tt/tradetrust
+  rsync -a . $vc_path/node_modules/@tradetrust-tt/tradetrust --exclude $vc_path
 fi
 
 echo "Run tests"

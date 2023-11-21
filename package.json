@@ -1,5 +1,5 @@
 {
-  "name": "@tradetrust/open-attestation",
+  "name": "@tradetrust-tt/tradetrust",
   "version": "0.0.0-development",
   "description": "## Usage",
   "main": "dist/cjs/index.js",
@@ -87,12 +87,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/TradeTrust/open-attestation.git"
+    "url": "https://github.com/TradeTrust/tradetrust.git"
   },
   "bugs": {
-    "url": "https://github.com/TradeTrust/open-attestation/issues"
+    "url": "https://github.com/TradeTrust/tradetrust/issues"
   },
-  "homepage": "https://github.com/TradeTrust/open-attestation#readme",
+  "homepage": "https://github.com/TradeTrust/tradetrust#readme",
   "publishConfig": {
     "access": "public"
   },
