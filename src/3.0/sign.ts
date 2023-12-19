@@ -7,12 +7,12 @@ import {
 import { sign } from "../shared/signer";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "../shared/@types/sign";
 import { isSignedWrappedV3Document } from "../shared/utils";
-import { ethers } from "ethers";
+import { Signer } from "ethers";
 
 export const signDocument = async <T extends OpenAttestationDocument>(
   document: SignedWrappedDocument<T> | WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ): Promise<SignedWrappedDocument<T>> => {
   if (isSignedWrappedV3Document(document)) throw new Error("Document has been signed");
   const merkleRoot = `0x${document.proof.merkleRoot}`;
