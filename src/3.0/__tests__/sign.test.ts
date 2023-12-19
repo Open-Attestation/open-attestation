@@ -18,7 +18,7 @@ describe("v3", () => {
     );
   });
   it("should sign a document with a wallet", async () => {
-    const wallet = Wallet.fromMnemonic(
+    const wallet = Wallet.fromPhrase(
       "tourist quality multiply denial diary height funny calm disease buddy speed gold"
     );
     const { proof } = await signDocument(

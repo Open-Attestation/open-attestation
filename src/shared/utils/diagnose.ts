@@ -1,4 +1,3 @@
-import { logger } from "ethers";
 import { SchemaId } from "../@types/document";
 import { validateSchema as validate } from "../validate";
 import {
@@ -19,7 +18,7 @@ interface DiagnoseError {
 const handleError = (debug: boolean, ...messages: string[]) => {
   if (debug) {
     for (const message of messages) {
-      logger.info(message);
+      console.log(message);
     }
   }
   return messages.map((message) => ({ message }));

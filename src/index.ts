@@ -18,7 +18,7 @@ import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
 import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SchemaValidationError } from "./shared/utils";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
-import { ethers, Signer } from "ethers";
+import { Signer } from "ethers";
 import { getSchema } from "./shared/ajv";
 
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
@@ -74,24 +74,27 @@ export function obfuscate(document: any, fields: string[] | string) {
 export const isSchemaValidationError = (error: any): error is SchemaValidationError => {
   return !!error.validationErrors;
 };
+export const isSigner = (keyOrSigner: SigningKey | Signer): keyOrSigner is Signer => {
+  return (<Signer>keyOrSigner).getAddress !== undefined;
+};
 
 export async function signDocument<T extends v3.OpenAttestationDocument>(
   document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ): Promise<v3.SignedWrappedDocument<T>>;
 export async function signDocument<T extends v2.OpenAttestationDocument>(
   document: v2.SignedWrappedDocument<T> | v2.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ): Promise<v2.SignedWrappedDocument<T>>;
 export async function signDocument(
   document: any,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ) {
   // rj was worried it could happen deep in the code, so I moved it to the boundaries
-  if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {
+  if (!SigningKey.guard(keyOrSigner) && !isSigner(keyOrSigner)) {
     throw new Error(`Either a keypair or ethers.js Signer must be provided`);
   }
   switch (true) {
