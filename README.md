@@ -73,21 +73,21 @@ console.log(wrappedDocuments);
 
 #### Differences between the two similar functions
 
-Although `wrapDocument` and `wrapDocuments` are almost identical, there is a slight difference.
+Although `wrapDocument` and `wrapDocuments` are almost identical, there are minor differences.
 
 - The `wrapDocuments` function returns an array and not an object.
 - Each element in the array is a wrapped document corresponding to the one provided as input.
 - Each element will share the same unique `merkleRoot` value in every batch wrap instance.
 - Each element has a unique `targetHash` value.
-- Similar to `wrapDocument`, every time you run `wrapDocuments`, it will create unique hashes (in front of every fields in the data object).
+- Similar to `wrapDocument`, every time you run `wrapDocuments`, it will create unique hashes (in front of every field in the data object).
 
-### Sign a document
+### Signing a document
 
 The `signDocument` function takes a wrapped document, as well as a public/private key pair or an [Ethers.js Signer](https://docs.ethers.io/v5/api/signer/). The method will sign the merkle root from the wrapped document, append the signature to the document, and return it. Currently, it supports the signing algorithm below:
 
 - `Secp256k1VerificationKey2018`
 
-#### Example with public/private key pair
+#### Example with a public/private key pair
 
 The following code example of `signDocument` contains a public/private key pair.
 
@@ -99,7 +99,7 @@ await signDocument(wrappedV2Document, SUPPORTED_SIGNING_ALGORITHM.Secp256k1Verif
 });
 ```
 
-#### Example with signer
+#### Example with the signer
 The following code example of `signDocument` contains the signer information. 
 
 ```js
@@ -114,7 +114,7 @@ const { proof } = await signDocument(
 );
 ```
 
-### Validate the schema of document
+### Validating the document schema
 
 The `validateSchema` function checks that the document conforms to OpenAttestation data structure.
 
@@ -124,7 +124,7 @@ const validatedSchema = validateSchema(wrappedDocument);
 console.log(validatedSchema);
 ```
 
-### Verify the signature of document
+### Verifying the document signature
 
 The `verifysignature` function checks that the signature of the document corresponds to the actual content in the document. In addition, it checks that the target hash (hash of the document content) is part of the set of documents wrapped in the batch using the proofs.
 
@@ -136,7 +136,7 @@ console.log(verified);
 
 >**Note:** This method does not check against the blockchain or any registry if this document has been published. The merkle root of this document needs to be checked against a publicly accessible document store, which can be a smart contract on the blockchain.
 
-### Retrieve document data
+### Retrieving the document data
 
 The `getData` function returns the original data stored in the document in a readable format.
 
@@ -146,9 +146,9 @@ const data = getData(wrappedDocument);
 console.log(data);
 ```
 
-### Utils
+### Utilities
 
-The `utils` function checks whether a document is a valid OA file that has been wrapped or signed. 
+Utilities refers to the `utils` function. It checks whether a document is a valid OA file that has been wrapped or signed. 
 
 ```js
 import { utils } from "@govtechsg/open-attestation";
@@ -174,7 +174,7 @@ console.log(newData);
 
 ## Development
 
-To run tests, use the following command:
+To run tests on your project in development, use the following command:
 
 ```
 npm run test
@@ -187,9 +187,11 @@ You can run `vc-test-suite` against `open-attestation` by using the `npm run tes
 - clone https://github.com/w3c/vc-test-suite.git
 - copy the local configuration (`vc-test-suite-config.json`) into the cloned repository
 - install the latest version of `@govtechsg/open-attestation-cli`
-- monkey patch `open-attestation` in `@govtechsg/open-attestation-cli`. That means it will build the current version of the project, which will replace the one installed with `@govtechsg/open-attestation-cli`.
+- monkey patch `open-attestation` in `@govtechsg/open-attestation-cli`
 
-#### Local debug
+  "Monkey patch" means it will build the current version of the project, which will replace the one installed with `@govtechsg/open-attestation-cli`.
+
+#### Local debugging
 
 If you face a problem with one test and want to debug locally:
 
@@ -214,4 +216,4 @@ You can now debug from the `vc-test-suite` folder the way you need.
     - future usage: `wrapDocument(document, {version: "open-attestation/3.0"})`
   - Example docs in `tests/fixtures/v3`
 - There are extra utilities available: 
-  - Refer to the [utils](https://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities. 
+  - Refer to the [utilshttps://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities. 
