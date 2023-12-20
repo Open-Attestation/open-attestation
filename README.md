@@ -216,4 +216,4 @@ You can now debug from the `vc-test-suite` folder the way you need.
     - future usage: `wrapDocument(document, {version: "open-attestation/3.0"})`
   - Example docs in `tests/fixtures/v3`
 - There are extra utilities available: 
-  - Refer to the [utilshttps://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities. 
+  - Refer to the [utils](https://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities. 
