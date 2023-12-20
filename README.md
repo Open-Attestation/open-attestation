@@ -12,6 +12,8 @@ The [OpenAttestation](https://github.com/Open-Attestation/open-attestation) repo
 
 ## Installation
 
+To install OpenAttestation framework on your machine, run the command below:
+
 ```bash
 npm i @govtechsg/open-attestation
 ```
