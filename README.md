@@ -1,14 +1,17 @@
+
 [![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
 
 # OpenAttestation
 
 OpenAttestation is a framework of attestation and notary for any document types on the blockchain.
 
-OpenAttestation helps any entity prove the existence of one document or several documents in a batch. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
+Any entity can prove the existence of one document or several documents in a batch using OpenAttestation. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
 
 Alternatively, you can use OpenAttestation to make digitally verifiable documents with digital signatures, without the need to pay for Ethereum transactions.
 
-The [OpenAttestation](https://github.com/Open-Attestation/open-attestation) repository helps you batch the documents and obtain the merkle root of the batch, which will be committed to the blockchain. It also lets you verify the signature of the document which you wrapped using the OpenAttestation framework.
+With the [OpenAttestation](https://github.com/Open-Attestation/open-attestation) repository, you can batch the documents and obtain the merkle root of the batch, which will be committed to the blockchain. You can also verify the signature of the document which you wrapped using the OpenAttestation framework.
+
+
 
 ## Installation
 
@@ -188,7 +191,7 @@ You can run `vc-test-suite` against `open-attestation` by using the `npm run tes
 - copy the local configuration (`vc-test-suite-config.json`) into the cloned repository
 - install the latest version of `@govtechsg/open-attestation-cli`
 - monkey patch `open-attestation` in `@govtechsg/open-attestation-cli`
-
+  
   "Monkey patch" means it will build the current version of the project, which will replace the one installed with `@govtechsg/open-attestation-cli`.
 
 #### Local debugging
@@ -201,7 +204,7 @@ If you face a problem with one test and want to debug locally:
 
 1. Open `runVcTest.sh` and update `install_vc_test_suite=true` to `install_vc_test_suite=false`. 
 
-    This line will help preserve the `vc-test-suite` folder untouched.
+    This line will preserve the `vc-test-suite` folder untouched.
 
 You can now debug from the `vc-test-suite` folder the way you need.
 
