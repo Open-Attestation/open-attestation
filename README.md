@@ -1,17 +1,14 @@
-
 [![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
 
 # OpenAttestation
 
 OpenAttestation is a framework of attestation and notary for any document types on the blockchain.
 
-Any entity can prove the existence of one document or several documents in a batch using OpenAttestation. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
+With OpenAttestation, you can issue and verify verifiable documents individually or in a batch using:
 
-Alternatively, you can use OpenAttestation to make digitally verifiable documents with digital signatures, without the need to pay for Ethereum transactions.
+* either smart contracts on the Ethereum blockchain
 
-With the [OpenAttestation](https://github.com/Open-Attestation/open-attestation) repository, you can batch the documents and obtain the merkle root of the batch, which will be committed to the blockchain. You can also verify the signature of the document which you wrapped using the OpenAttestation framework.
-
-
+* or digital signatures without the need to pay for Ethereum transactions
 
 ## Installation
 
@@ -129,7 +126,7 @@ console.log(validatedSchema);
 
 ### Verifying the document signature
 
-The `verifysignature` function checks that the signature of the document corresponds to the actual content in the document. In addition, it checks that the target hash (hash of the document content) is part of the set of documents wrapped in the batch using the proofs.
+The `verifySignature` function checks that the signature of the document corresponds to the actual content in the document. In addition, it checks that the target hash (hash of the document content) is part of the set of documents wrapped in the batch using the proofs.
 
 ```js
 import { verifySignature } from "@govtechsg/open-attestation";
@@ -137,7 +134,7 @@ const verified = verifySignature(wrappedDocument);
 console.log(verified);
 ```
 
->**Note:** This method does not check against the blockchain or any registry if this document has been published. The merkle root of this document needs to be checked against a publicly accessible document store, which can be a smart contract on the blockchain.
+>**Note:** This method does not check against the blockchain or any registry if this document has been published. The merkle root of this document needs to be checked against a publicly accessible document store, which in the case of OpenAttestation is a smart contract on the blockchain.
 
 ### Retrieving the document data
 
@@ -149,9 +146,9 @@ const data = getData(wrappedDocument);
 console.log(data);
 ```
 
-### Utilities
+### Utils
 
-Utilities refers to the `utils` function. It checks whether a document is a valid OA file that has been wrapped or signed. 
+A number of utility functions can be found under `utils`, which check whether a document is a valid OA file that has been wrapped or signed. The `diagnose` function can also be used for troubleshooting. 
 
 ```js
 import { utils } from "@govtechsg/open-attestation";
