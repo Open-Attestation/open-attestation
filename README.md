@@ -1,5 +1,3 @@
-[![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
-
 # OpenAttestation
 
 OpenAttestation is a framework of attestation and notary for any document types on the blockchain.
