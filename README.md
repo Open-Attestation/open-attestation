@@ -12,7 +12,7 @@ With OpenAttestation, you can issue and verify verifiable documents individually
 
 ## Installation
 
-To install OpenAttestation framework on your machine, run the command below:
+To install the OpenAttestation framework on your machine, run the command below:
 
 ```bash
 npm i @govtechsg/open-attestation
@@ -24,7 +24,7 @@ npm i @govtechsg/open-attestation
 
 ### Wrapping documents
 
-The `wrapDocuments` function takes in an array of documents and returns the wrapped batch. Each document must be valid according to the [version of the schema used](#version-of-the-schema). It computes the merkle root of the batch and appends it to each document. This merkle root can be published on the blockchain and be queried against to prove the provenance of the document issued this way. Alternatively, the merkle root may be signed by the document issuer's private key, which may be cryptographically verified using the issuer's public key or Ethereum account.
+The `wrapDocuments` function takes in an array of documents and returns the wrapped batch. Each document must be valid according to the [version of the schema used](#version-of-the-schema). It computes the merkle root of the batch and appends it to each document. This merkle root can be published on the blockchain and be queried against to prove the provenance of the document issued this way. Alternatively, the merkle root may be signed by the document issuer's private key, which may be cryptographically verified using the issuer's public key or Ethereum account to act as proof of issuance.
 
 #### Version of the schema
 In future, this function may accept a second optional parameter to specify the version of open-attestation you want to use. Currently, open-attestation will use schema 2.0. See [Additional Information](#additional-information) for how to use experimental v3.0 documents, which aim to be compatible with the W3C's data model for [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/).
@@ -165,7 +165,7 @@ In addition, the `diagnose` tool can find out why a document is not a valid Open
 
 ### Obfuscating data
 
-The `obfuscateDocument` function removes a key-value pair from the document's data section, without causing the file hash to change. You can use this to generate a new document containing a subset of the original data, without letting the recipient prove the provenance of the document.
+The `obfuscateDocument` function removes a key-value pair from the document's data section, without causing the file hash to change. You can use this to generate a new document containing a subset of the original data.
 
 ```js
 const newData = obfuscateDocument(wrappedDocument, "key1");
@@ -174,7 +174,7 @@ console.log(newData);
 
 ## Development
 
-To run tests on your project in development, use the following command:
+To run tests, use the following command:
 
 ```
 npm run test
