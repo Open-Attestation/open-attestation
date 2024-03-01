@@ -133,7 +133,7 @@
           "description": "URL of a decentralised renderer to render this document"
         }
       },
-      "required": ["renderMethodType", "name", "url"]
+      "required": ["name"]
     },
     "credentialSubject": {
       "type": "object",
