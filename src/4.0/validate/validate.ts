@@ -40,7 +40,7 @@ const isValidRFC3986 = (str: any) => {
   return rfc3986.test(str);
 };
 
-const preloadedContextList = ["https://www.w3.org/2018/credentials/v1", ContextUrl.v4_alpha];
+const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
 const contexts: Map<string, Promise<any>> = new Map();
 const nodeDocumentLoader = documentLoaders.xhr ? documentLoaders.xhr() : documentLoaders.node();
 let preload = true;

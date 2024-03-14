@@ -40,6 +40,7 @@ export enum SchemaId {
 }
 
 export enum ContextUrl {
+  v2_vc = "https://www.w3.org/ns/credentials/v2",
   v4_alpha = "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
 }
 
