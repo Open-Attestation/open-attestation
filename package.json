@@ -42,7 +42,7 @@
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.5.3",
     "@types/js-base64": "^3.3.1",
-    "@types/jsonld": "^1.5.6",
+    "@types/jsonld": "^1.5.13",
     "@types/lodash": "^4.14.171",
     "@types/qrcode": "^1.4.1",
     "@types/uuid": "^8.3.1",
@@ -67,7 +67,7 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "semantic-release": "^21.1.1",
     "ts-jest": "^29.1.1",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   },
   "dependencies": {
@@ -78,8 +78,10 @@
     "debug": "^4.3.2",
     "ethers": "^5.7.2",
     "flatley": "^5.2.0",
+    "joi": "^17.12.2",
     "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
+    "jsonld": "^8.3.2",
     "lodash": "^4.17.21",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
