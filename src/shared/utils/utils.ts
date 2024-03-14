@@ -185,8 +185,9 @@ export const isDocumentRevokable = (document: any): boolean => {
 
     return isDocumentStoreRevokableV3 || isDidRevokableV3;
   } else if (isWrappedV4Document(document)) {
+    if (typeof document.issuer === "string" || !document.credentialStatus) return false;
     const isDidRevokableV4 =
-      document.issuer.identityProof.identityProofType === v4.IdentityProofType.DNSDid
+      document.issuer.identityProof?.identityProofType === v4.IdentityProofType.DNSDid
         ? document.credentialStatus.credentialStatusType === v4.CredentialStatusType.OcspResponder ||
           document.credentialStatus.credentialStatusType === v4.CredentialStatusType.RevocationStore
         : false;
