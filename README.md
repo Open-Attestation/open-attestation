@@ -1,14 +1,12 @@
-[![CircleCI](https://circleci.com/gh/Open-Attestation/open-attestation.svg?style=svg)](https://circleci.com/gh/Open-Attestation/open-attestation)
-
-# Open Attestation
+# TradeTrust
 
 Attestation and notary framework for any document types on the blockchain.
 
-OpenAttestation allows any entity to prove the existence of a document or a batch of documents. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
+TradeTrust allows any entity to prove the existence of a document or a batch of documents. It makes use of smart contracts on the Ethereum blockchain to store cryptographic proofs of individual documents.
 
-Alternatively, OpenAttestation can be used to make digitally verifiable documents using digital signatures, forgoing the need to pay for Ethereum transactions.
+Alternatively, TradeTrust can be used to make digitally verifiable documents using digital signatures, forgoing the need to pay for Ethereum transactions.
 
-The [Open Attestation](https://github.com/Open-Attestation/open-attestation) repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature of the document wrapped using the OpenAttestation framework.
+The [TradeTrust](https://github.com/TradeTrust/tradetrust) repository allows you to batch the documents to obtain the merkle root of the batch to be committed to the blockchain. It also allows you to verify the signature of the document wrapped using the TradeTrust framework.
 
 ## Installation
 
@@ -187,7 +185,7 @@ You can now debug from the `vc-test-suite` folder the way you need it.
 
 ## Additional information
 
-- Found a bug? Have a question? Want to share an idea? Reach us at our [Github repository](https://github.com/Open-Attestation/open-attestation).
+- Found a bug? Have a question? Want to share an idea? Reach us at our [Github repository](https://github.com/TradeTrust/tradetrust).
 - We are currently building a new version of the schema, compatible with W3C VC. This is very experimental and whatever is available for v2 documents are also available for v3 documents:
   - [OA schema v3](https://schema.openattestation.com/3.0/schema.json)
   - Typings: `import {v3} from "@tradetrust-tt/tradetrust"`.
@@ -195,4 +193,4 @@ You can now debug from the `vc-test-suite` folder the way you need it.
   - Wrapping: `__unsafe__use__it__at__your__own__risks__wrapDocument` (future usage: `wrapDocument(document, {version: "open-attestation/3.0"})`
   - Example docs in `tests/fixtures/v3`
 - There are extra utilities available: 
-  - Refer to the [utils](https://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities.
+  - Refer to the [utils](https://github.com/TradeTrust/tradetrust/blob/master/src/shared/utils/utils.ts) component for the full list of utilities.
