@@ -48,7 +48,9 @@ export const vcSchema = Joi.object({
   credentialStatus:
     // Must have type defined
     // If id is present, id must match uri pattern (credentialStatus.id is optional and can be undefined)
-    Joi.object({ id: Joi.string().uri().optional(), type: Joi.string().required() }),
+    Joi.object({ id: Joi.string().uri().optional(), type: Joi.string().required() })
+      // Allow additional properties
+      .unknown(),
 
   termsOfUse: Joi.alternatives()
     // If object: Must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
@@ -67,4 +69,6 @@ export const vcSchema = Joi.object({
     .try(Joi.object({ type: Joi.string().required() }))
     // If array: Every object must have type defined
     .try(Joi.array().items({ type: Joi.string().required() })),
-}).unknown(); // Allow additional properties
+})
+  // Allow additional properties
+  .unknown();
