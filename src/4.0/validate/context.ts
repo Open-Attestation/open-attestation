@@ -1,20 +1,23 @@
 import jsonld, { expand, Options, JsonLdDocument } from "jsonld";
+import type { RemoteDocument } from "jsonld/jsonld-spec";
 import { ContextUrl } from "../../shared/@types/document";
 
 const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
 const contexts: Map<string, any> = new Map();
 
 // FIXME: @types/json-ld seems to be outdated as documentLoaders is not typed
-const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
+const nodeDocumentLoader: (url: string) => Promise<RemoteDocument> = (jsonld as any).documentLoaders.node();
 
 // Preload frequently used contexts
 // https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
 let isFirstLoad = true;
-const documentLoader: Options.DocLoader["documentLoader"] = async (url, callback) => {
+// FIXME: @types/json-ld seems to be outdated as callback is supposed to be options
+const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
   if (isFirstLoad) {
     isFirstLoad = false;
     for (const url of preloadedContextList) {
-      contexts.set(url, (await nodeDocumentLoader(url)).document);
+      const { document } = await nodeDocumentLoader(url);
+      contexts.set(url, document);
     }
   }
   if (contexts.get(url)) {
