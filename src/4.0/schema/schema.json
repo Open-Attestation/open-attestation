@@ -161,7 +161,9 @@
               "format": "uri",
               "examples": ["https://ocsp-responder.example.com"]
             }
-          }
+          },
+          "required": ["credentialStatusType", "location"],
+          "additionalProperties": false
         }
       ]
     },
