@@ -30,8 +30,7 @@ const documentLoader: Options.DocLoader["documentLoader"] = async (url, callback
 
 export const interpretContexts = async (input: JsonLdDocument) => {
   const expanded = await expand(input, { documentLoader }).catch((e) => {
-    console.error(e);
-    throw new Error(`Unable to interpret @context: Ensure that @context is one or more valid URLs`);
+    throw new Error(`Unable to interpret @context: ${JSON.stringify(e)}`);
   });
 
   const type = (expanded[0]["@type"] as string[]) || [];
