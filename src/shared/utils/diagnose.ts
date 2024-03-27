@@ -218,20 +218,20 @@ const diagnoseV4 = ({
 
     // 2. Ensure that required @contexts are present
     // @context: [Base, OA, ...]
-    const contexts = ["https://www.w3.org/2018/credentials/v1", ContextUrl.v4_alpha];
+    const contexts = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
     if (isStringArray(document["@context"])) {
       for (let i = 0; i < contexts.length; i++) {
         if (document["@context"][i] !== contexts[i]) {
           return handleError(
             debug,
-            `The document @context contains an unexpected value or in the wrong order. Expected ${contexts}, received ${document["@context"]}`
+            `The document @context contains an unexpected value or in the wrong order. Expected "${contexts}" but received "${document["@context"]}"`
           );
         }
       }
     } else {
       return handleError(
         debug,
-        `The document @context should be an array of string values. Expected ${contexts}, received ${document["@context"]}`
+        `The document @context should be an array of string values. Expected "${contexts}" but received "${document["@context"]}"`
       );
     }
 
@@ -243,14 +243,14 @@ const diagnoseV4 = ({
         if (document["type"][i] !== types[i]) {
           return handleError(
             debug,
-            `The document type contains an unexpected value or in the wrong order. Expected ${types}, received ${document["type"]}`
+            `The document type contains an unexpected value or in the wrong order. Expected "${types}" but received "${document["type"]}"`
           );
         }
       }
     } else {
       return handleError(
         debug,
-        `The document type should be an array of string values. Expected ${types}, received ${document["type"]}`
+        `The document type should be an array of string values. Expected "${types}" but received "${document["type"]}"`
       );
     }
 
