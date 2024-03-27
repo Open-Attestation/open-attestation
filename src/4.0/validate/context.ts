@@ -1,12 +1,9 @@
-import jsonld, { expand, Options, JsonLdDocument } from "jsonld";
-import type { RemoteDocument } from "jsonld/jsonld-spec";
+import { expand, Options, JsonLdDocument } from "jsonld";
+import { fetch } from "cross-fetch";
 import { ContextUrl } from "../../shared/@types/document";
 
 const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
 const contexts: Map<string, any> = new Map();
-
-// FIXME: @types/json-ld seems to be outdated as documentLoaders is not typed
-const nodeDocumentLoader: (url: string) => Promise<RemoteDocument> = (jsonld as any).documentLoaders.node();
 
 // Preload frequently used contexts
 // https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
@@ -16,7 +13,7 @@ const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
   if (isFirstLoad) {
     isFirstLoad = false;
     for (const url of preloadedContextList) {
-      const { document } = await nodeDocumentLoader(url);
+      const document = await fetch(url).then((res) => res.json());
       contexts.set(url, document);
     }
   }
@@ -27,7 +24,8 @@ const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
       documentUrl: url, // this is the actual context URL after redirects
     };
   } else {
-    return nodeDocumentLoader(url);
+    const document = await fetch(url).then((res) => res.json());
+    return { contextUrl: undefined, document, documentUrl: url };
   }
 };
 
