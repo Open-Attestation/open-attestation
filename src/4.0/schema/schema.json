@@ -48,7 +48,7 @@
     "proof": {
       "type": "object",
       "properties": {
-        "type": { "$ref": "#/definitions/type" },
+        "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationMerkleProofSignature2018"] },
         "proofPurpose": { "type": "string", "enum": ["assertionMethod"] },
         "targetHash": { "type": "string" },
         "proofs": { "type": "array", "items": { "type": "string" } },
@@ -67,7 +67,7 @@
   "properties": {
     "@context": { "$ref": "#/definitions/@context" },
     "id": { "$ref": "#/definitions/id" },
-    "type": { "$ref": "#/definitions/type" },
+    "type": { "$ref": "#/definitions/type", "examples": ["VerifiableCredential", "OpenAttestationCredential"] },
     "credentialSchema": {
       "anyOf": [
         { "$ref": "#/definitions/credentialSchema" },
@@ -77,12 +77,14 @@
     "validFrom": {
       "type": "string",
       "format": "date-time",
-      "description": "The date and time when this credential becomes valid"
+      "description": "The date and time when this credential becomes valid",
+      "examples": ["2024-03-08T12:00:00+08:00"]
     },
     "validUntil": {
       "type": "string",
       "format": "date-time",
-      "description": "The date and time when this credential expires"
+      "description": "The date and time when this credential expires",
+      "examples": ["2024-03-27T12:00:00+08:00"]
     },
     "name": {
       "type": "string",
@@ -99,7 +101,7 @@
               "format": "uri",
               "description": "URI when dereferenced, results in a document containing machine-readable information about the issuer that can be used to verify the information expressed in the credential. More information in https://www.w3.org/TR/vc-data-model/#issuer"
             },
-            "type": { "$ref": "#/definitions/type" },
+            "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationIssuer"] },
             "name": {
               "type": "string",
               "description": "Issuer's name"
@@ -126,68 +128,33 @@
     },
     "credentialStatus": {
       "type": "object",
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "$ref": "#/definitions/type"
-            },
-            "credentialStatusType": {
-              "type": "string",
-              "enum": ["NONE"]
-            }
-          },
-          "required": ["credentialStatusType"],
-          "additionalProperties": false
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to the status of the credential as explained by https://www.w3.org/TR/vc-data-model/#status",
+          "examples": ["https://ocsp-sandbox.openattestation.com"]
         },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string",
-              "format": "uri",
-              "description": "URI to the status of the credential as explained by https://www.w3.org/TR/vc-data-model/#status"
-            },
-            "type": {
-              "$ref": "#/definitions/type"
-            },
-            "credentialStatusType": {
-              "type": "string",
-              "enum": ["REVOCATION_STORE", "OCSP_RESPONDER"]
-            },
-            "location": {
-              "type": "string",
-              "format": "uri",
-              "examples": ["https://ocsp-responder.example.com"]
-            }
-          },
-          "required": ["credentialStatusType", "location"],
-          "additionalProperties": false
-        }
-      ]
+        "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationOcspResponder"] }
+      },
+      "additionalProperties": false
     },
     "renderMethod": {
       "type": "object",
       "properties": {
-        "type": { "$ref": "#/definitions/type" },
-        "renderMethodType": {
+        "id": {
           "type": "string",
-          "enum": ["EMBEDDED_RENDERER"],
-          "description": "Type of renderer template"
+          "format": "uri",
+          "description": "URL of a decentralised renderer to render this document",
+          "examples": ["https://demo-renderer.openattestation.com"]
         },
+        "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationEmbeddedRenderer"] },
         "name": {
           "type": "string",
           "description": "Template name to be use by template renderer to determine the template to use"
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "pattern": "^(https?)://",
-          "description": "URL of a decentralised renderer to render this document"
         }
       },
-      "required": ["name"]
+      "required": ["id", "name"]
     },
     "credentialSubject": {
       "anyOf": [

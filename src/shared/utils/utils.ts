@@ -132,7 +132,7 @@ export const getTemplateURL = (document: any): string | undefined => {
   } else if (isRawV3Document(document) || isWrappedV3Document(document)) {
     return document.openAttestationMetadata.template?.url;
   } else if (isRawV4Document(document) || isWrappedV4Document(document)) {
-    return document.renderMethod?.url;
+    return document.renderMethod?.id;
   }
 
   throw new Error(
@@ -188,8 +188,7 @@ export const isDocumentRevokable = (document: any): boolean => {
     if (typeof document.issuer === "string" || !document.credentialStatus) return false;
     const isDidRevokableV4 =
       document.issuer.identityProof?.identityProofType === v4.IdentityProofType.DNSDid
-        ? document.credentialStatus.credentialStatusType === v4.CredentialStatusType.OcspResponder ||
-          document.credentialStatus.credentialStatusType === v4.CredentialStatusType.RevocationStore
+        ? document.credentialStatus.type === "OpenAttestationOcspResponder" // TODO: Create suggested typings e.g. "v4.CredentialStatusType.OpenAttestationOcspResponder"
         : false;
     // TODO: OA v4 issuer schema not updated to support document store issuance yet
     // const isDocumentStoreRevokableV4 = ?
