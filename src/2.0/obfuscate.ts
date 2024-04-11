@@ -29,7 +29,7 @@ export const obfuscateData = (_data: any, fields: string[] | string) => {
 // TODO the return type could be improve by using Exclude eventually to remove the obfuscated properties
 export const obfuscateDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   document: WrappedDocument<T>,
-  fields: string[] | string
+  fields: string[] | string,
 ): WrappedDocument<T> => {
   const existingData = document.data;
   const { data, obfuscatedData } = obfuscateData(existingData, fields);

@@ -1,4 +1,4 @@
-/* eslint-disable jest/no-try-expect,jest/no-conditional-expect */
+/* eslint-disable jest/no-conditional-expect */
 import { cloneDeep, omit, set } from "lodash";
 import { __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocument } from "../../index";
 import { $id } from "./schema.json";
@@ -32,7 +32,7 @@ describe("schema/3.0", () => {
       // This should not have AJV validation errors as it's only caught after
       const document = { ...cloneDeep(sampleDoc), "@context": ["https://example.com"] };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
-        "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
+        "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts",
       );
     });
 
@@ -50,7 +50,7 @@ describe("schema/3.0", () => {
             params: { type: "array" },
             message: "must be array",
           },
-        ]
+        ],
       );
     });
     it("should be invalid when @context has https://www.w3.org/2018/credentials/v1 but is not the first", async () => {
@@ -60,7 +60,7 @@ describe("schema/3.0", () => {
         "@context": ["https://www.w3.org/2018/credentials/examples/v1", "https://www.w3.org/2018/credentials/v1"],
       };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toThrow(
-        "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts"
+        "https://www.w3.org/2018/credentials/v1 needs to be first in the list of contexts",
       );
     });
     it("should be invalid if @context contains one invalid URI", async () => {
@@ -77,7 +77,7 @@ describe("schema/3.0", () => {
             params: { format: "uri" },
             message: 'must match format "uri"',
           },
-        ]
+        ],
       );
     });
   });
@@ -85,7 +85,7 @@ describe("schema/3.0", () => {
   describe("id", () => {
     it("should be valid when id is missing", async () => {
       // id can be optional, see https://www.w3.org/TR/vc-data-model/#identifiers
-      const document = { ...omit(cloneDeep(sampleDoc), "id") };
+      const document = { ...omit(cloneDeep(sampleDoc), "id") } as OpenAttestationDocument;
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3,
@@ -96,7 +96,7 @@ describe("schema/3.0", () => {
       // id can be optional, but if present, it has to be a URI, see https://www.w3.org/TR/vc-data-model/#identifiers
       const wrappedDocument = await wrapDocument(
         { ...cloneDeep(sampleDoc), id: "https://example.com" },
-        { externalSchemaId: $id, version: SchemaId.v3 }
+        { externalSchemaId: $id, version: SchemaId.v3 },
       );
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
     });
@@ -114,7 +114,7 @@ describe("schema/3.0", () => {
             params: { format: "uri" },
             message: 'must match format "uri"',
           },
-        ]
+        ],
       );
     });
   });
@@ -123,7 +123,7 @@ describe("schema/3.0", () => {
     it("should be valid if reference is missing", async () => {
       // For now, reference is not compulsory
       expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "reference") };
+      const document = { ...omit(cloneDeep(sampleDoc), "reference") } as OpenAttestationDocument;
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3,
@@ -136,7 +136,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), reference: undefined };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Unexpected data 'undefined' in 'reference'"
+        "Unexpected data 'undefined' in 'reference'",
       );
     });
     it("should be invalid if reference is null", async () => {
@@ -155,7 +155,7 @@ describe("schema/3.0", () => {
             params: { type: "string" },
             schemaPath: "#/properties/reference/type",
           },
-        ]
+        ],
       );
     });
   });
@@ -164,7 +164,7 @@ describe("schema/3.0", () => {
     it("should be valid if name is missing", async () => {
       // For now, it's not compulsory
       expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "name") };
+      const document = { ...omit(cloneDeep(sampleDoc), "name") } as OpenAttestationDocument;
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3,
@@ -176,7 +176,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), name: undefined };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Unexpected data 'undefined' in 'name'"
+        "Unexpected data 'undefined' in 'name'",
       );
     });
     it("should be invalid if name is null", async () => {
@@ -194,7 +194,7 @@ describe("schema/3.0", () => {
             params: { type: "string" },
             schemaPath: "#/properties/name/type",
           },
-        ]
+        ],
       );
     });
   });
@@ -233,7 +233,7 @@ describe("schema/3.0", () => {
             },
             schemaPath: "#/definitions/type/oneOf",
           },
-        ]
+        ],
       );
     });
     it("should be invalid if type is a string", async () => {
@@ -241,7 +241,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), type: "VerifiableCredential" };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Property 'type' must exist and be an array"
+        "Property 'type' must exist and be an array",
       );
     });
     it("should be invalid if type is an array, but does not have VerifiableCredential", async () => {
@@ -249,7 +249,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), type: ["DrivingLicenceCredential"] };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Property 'type' must have VerifiableCredential as one of the items"
+        "Property 'type' must have VerifiableCredential as one of the items",
       );
     });
   });
@@ -258,7 +258,7 @@ describe("schema/3.0", () => {
     it("should be valid if validFrom is missing", async () => {
       // For now, it's not compulsory and is reserved for a later version of W3C VC Data Model, see https://www.w3.org/TR/vc-data-model/#issuance-date
       expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "validFrom") };
+      const document = { ...omit(cloneDeep(sampleDoc), "validFrom") } as OpenAttestationDocument;
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3,
@@ -271,7 +271,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), validFrom: undefined };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Unexpected data 'undefined' in 'validFrom'"
+        "Unexpected data 'undefined' in 'validFrom'",
       );
     });
     it("should be invalid if validFrom is null", async () => {
@@ -289,7 +289,7 @@ describe("schema/3.0", () => {
             params: { type: "string" },
             schemaPath: "#/properties/validFrom/type",
           },
-        ]
+        ],
       );
     });
 
@@ -306,7 +306,7 @@ describe("schema/3.0", () => {
             params: { format: "date-time" },
             message: 'must match format "date-time"',
           },
-        ]
+        ],
       );
     });
   });
@@ -315,7 +315,7 @@ describe("schema/3.0", () => {
     it("should be valid when validUntil is missing", async () => {
       // validUntil does not exist in our sample document anyways
       expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "validUntil") };
+      const document = { ...omit(cloneDeep(sampleDoc), "validUntil") } as OpenAttestationDocument;
       const wrappedDocument = await wrapDocument(document, {
         externalSchemaId: $id,
         version: SchemaId.v3,
@@ -327,7 +327,7 @@ describe("schema/3.0", () => {
       const document = { ...cloneDeep(sampleDoc), validUntil: undefined };
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "message",
-        "Unexpected data 'undefined' in 'validUntil'"
+        "Unexpected data 'undefined' in 'validUntil'",
       );
     });
     it("should be invalid when validUntil is null", async () => {
@@ -345,7 +345,7 @@ describe("schema/3.0", () => {
             params: { type: "string" },
             schemaPath: "#/properties/validUntil/type",
           },
-        ]
+        ],
       );
     });
     it("should be invalid if validUntil exists and is not in the RFC3339 date and time format", async () => {
@@ -361,7 +361,7 @@ describe("schema/3.0", () => {
             params: { format: "date-time" },
             message: 'must match format "date-time"',
           },
-        ]
+        ],
       );
     });
   });
@@ -372,7 +372,7 @@ describe("schema/3.0", () => {
       const document = set(
         cloneDeep(sampleDoc),
         "openAttestationMetadata.template.type",
-        TemplateType.EmbeddedRenderer
+        TemplateType.EmbeddedRenderer,
       );
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -402,12 +402,14 @@ describe("schema/3.0", () => {
             params: { additionalProperty: "key" },
             message: "must NOT have additional properties",
           },
-        ]
+        ],
       );
     });
     it("should be invalid if template.name is missing", async () => {
       expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "openAttestationMetadata.template.name") };
+      const document = {
+        ...omit(cloneDeep(sampleDoc), "openAttestationMetadata.template.name"),
+      } as OpenAttestationDocument;
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
@@ -418,12 +420,14 @@ describe("schema/3.0", () => {
             params: { missingProperty: "name" },
             message: "must have required property 'name'",
           },
-        ]
+        ],
       );
     });
     it("should be invalid if template.type is missing", async () => {
       expect.assertions(1);
-      const document = { ...omit(cloneDeep(sampleDoc), "openAttestationMetadata.template.type") };
+      const document = {
+        ...omit(cloneDeep(sampleDoc), "openAttestationMetadata.template.type"),
+      } as OpenAttestationDocument;
       await expect(wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 })).rejects.toHaveProperty(
         "validationErrors",
         [
@@ -434,7 +438,7 @@ describe("schema/3.0", () => {
             params: { missingProperty: "type" },
             message: "must have required property 'type'",
           },
-        ]
+        ],
       );
     });
     it("should be invalid if template.type is not equal to EMBEDDED_RENDERER", async () => {
@@ -648,7 +652,7 @@ describe("schema/3.0", () => {
               params: { missingProperty: "type" },
               message: "must have required property 'type'",
             },
-          ])
+          ]),
         );
       }
     });
@@ -671,7 +675,7 @@ describe("schema/3.0", () => {
               params: { allowedValues: ["DNS-TXT", "DNS-DID", "DID"] },
               message: "must be equal to one of the allowed values",
             },
-          ])
+          ]),
         );
       }
     });
@@ -694,7 +698,7 @@ describe("schema/3.0", () => {
               params: { missingProperty: "identifier" },
               message: "must have required property 'identifier'",
             },
-          ])
+          ]),
         );
       }
     });
@@ -710,7 +714,7 @@ describe("schema/3.0", () => {
       const document = set(
         cloneDeep(sampleDoc),
         "openAttestationMetadata.identityProof.type",
-        IdentityProofType.DNSDid
+        IdentityProofType.DNSDid,
       );
       const wrappedDocument = await wrapDocument(document, { externalSchemaId: $id, version: SchemaId.v3 });
       expect(wrappedDocument.version).toStrictEqual(SchemaId.v3);
@@ -758,7 +762,7 @@ describe("schema/3.0", () => {
               params: { additionalProperty: "key" },
               schemaPath: "#/properties/openAttestationMetadata/properties/identityProof/additionalProperties",
             },
-          ])
+          ]),
         );
       }
     });
@@ -781,7 +785,7 @@ describe("schema/3.0", () => {
               params: { missingProperty: "identityProof" },
               schemaPath: "#/properties/openAttestationMetadata/required",
             },
-          ])
+          ]),
         );
       }
     });

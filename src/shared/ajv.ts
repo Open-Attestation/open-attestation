@@ -8,7 +8,7 @@ const defaultTransform = (schema: Record<string, any>) => schema;
 export const buildAjv = (
   options: CurrentOptions & { transform: (schema: Record<string, any>) => Record<string, any> } = {
     transform: defaultTransform,
-  }
+  },
 ): Ajv => {
   const { transform, ...ajvOptions } = options;
   const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, ...ajvOptions });

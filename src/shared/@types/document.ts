@@ -16,13 +16,13 @@ export type OpenAttestationDocument = OpenAttestationDocumentV2 | OpenAttestatio
 export type WrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
   ? WrappedDocumentV2<T>
   : T extends OpenAttestationDocumentV3
-  ? WrappedDocumentV3<T>
-  : unknown;
+    ? WrappedDocumentV3<T>
+    : unknown;
 export type SignedWrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
   ? SignedWrappedDocumentV2<T>
   : T extends OpenAttestationDocumentV3
-  ? SignedWrappedDocumentV3<T>
-  : unknown;
+    ? SignedWrappedDocumentV3<T>
+    : unknown;
 
 export enum SchemaId {
   v2 = "https://schema.openattestation.com/2.0/schema.json",
@@ -30,7 +30,7 @@ export enum SchemaId {
 }
 
 export const OpenAttestationHexString = String.withConstraint(
-  (value) => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
+  (value) => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`,
 );
 
 export const SignatureAlgorithm = Literal("OpenAttestationMerkleProofSignature2018");

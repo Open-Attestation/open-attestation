@@ -14,7 +14,7 @@ const getExternalSchema = (schema?: string) => (schema ? { schema } : {});
 
 export const wrapDocument = async <T extends OpenAttestationDocument>(
   credential: T,
-  options: WrapDocumentOptionV3
+  options: WrapDocumentOptionV3,
 ): Promise<WrappedDocument<T>> => {
   const document = {
     version: SchemaId.v3 as SchemaId.v3,
@@ -30,7 +30,7 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
   if (
     Array.isArray(document["@context"]) &&
     !document["@context"].includes(
-      "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json"
+      "https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json",
     )
   ) {
     document["@context"].push("https://schemata.openattestation.com/com/openattestation/1.0/OpenAttestation.v3.json");
@@ -69,14 +69,14 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
 
 export const wrapDocuments = async <T extends OpenAttestationDocument>(
   documents: T[],
-  options: WrapDocumentOptionV3
+  options: WrapDocumentOptionV3,
 ): Promise<WrappedDocument<T>[]> => {
   // create individual verifiable credential
   const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document, options)));
 
   // get all the target hashes to compute the merkle tree and the merkle root
   const merkleTree = new MerkleTree(
-    verifiableCredentials.map((verifiableCredential) => verifiableCredential.proof.targetHash).map(hashToBuffer)
+    verifiableCredentials.map((verifiableCredential) => verifiableCredential.proof.targetHash).map(hashToBuffer),
   );
   const merkleRoot = merkleTree.getRoot().toString("hex");
 

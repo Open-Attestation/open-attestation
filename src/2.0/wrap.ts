@@ -11,7 +11,7 @@ import { getSchema } from "../shared/ajv";
 
 const createDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   data: any,
-  option?: WrapDocumentOption
+  option?: WrapDocumentOption,
 ): SchematisedDocument<T> => {
   const documentSchema: SchematisedDocument<T> = {
     version: SchemaId.v2,
@@ -25,7 +25,7 @@ const createDocument = <T extends OpenAttestationDocument = OpenAttestationDocum
 
 export const wrapDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   data: T,
-  options?: WrapDocumentOptionV2
+  options?: WrapDocumentOptionV2,
 ): WrappedDocument<T> => {
   const document: SchematisedDocument<T> = createDocument(data, options);
   const errors = validate(document, getSchema(options?.version ?? SchemaId.v2));
@@ -46,7 +46,7 @@ export const wrapDocument = <T extends OpenAttestationDocument = OpenAttestation
 
 export const wrapDocuments = <T extends OpenAttestationDocument = OpenAttestationDocument>(
   data: T[],
-  options?: WrapDocumentOptionV2
+  options?: WrapDocumentOptionV2,
 ): WrappedDocument<T>[] => {
   // wrap documents individually
   const documents = data.map((d) => wrapDocument(d, options));

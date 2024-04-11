@@ -6,7 +6,7 @@ export const name = "Secp256k1VerificationKey2018";
 export const sign: SigningFunction = (
   message: string,
   keyOrSigner: SigningKey | ethers.Signer,
-  options: SigningOptions = {}
+  options: SigningOptions = {},
 ): Promise<string> => {
   let signer: ethers.Signer;
   if (SigningKey.guard(keyOrSigner)) {

@@ -20,7 +20,7 @@ const timeSecFrac = /(\.[0-9]+)?/;
 const timeNumOffset = new RegExp("[-+]".concat(timeHour.source, ":").concat(timeMinute.source));
 const timeOffset = new RegExp("([zZ]|".concat(timeNumOffset.source, ")"));
 const partialTime = new RegExp(
-  "".concat(timeHour.source, ":").concat(timeMinute.source, ":").concat(timeSecond.source).concat(timeSecFrac.source)
+  "".concat(timeHour.source, ":").concat(timeMinute.source, ":").concat(timeSecond.source).concat(timeSecFrac.source),
 );
 const fullDate = new RegExp("".concat(dateFullYear.source, "-").concat(dateMonth.source, "-").concat(dateMDay.source));
 const fullTime = new RegExp("".concat(partialTime.source).concat(timeOffset.source));
@@ -56,7 +56,7 @@ const documentLoader = async (url: string) => {
     for (const url of preloadedContextList) {
       contexts.set(
         url,
-        fetch(url, { headers: { accept: "application/json" } }).then((res: any) => res.json())
+        fetch(url, { headers: { accept: "application/json" } }).then((res: any) => res.json()),
       );
     }
   }
@@ -71,7 +71,7 @@ const documentLoader = async (url: string) => {
     const promise = nodeDocumentLoader(url);
     contexts.set(
       url,
-      promise.then(({ document }) => document)
+      promise.then(({ document }) => document),
     );
     return promise;
   }
@@ -115,7 +115,7 @@ export async function validateW3C<T extends OpenAttestationDocument>(credential:
         throw new Error(
           `"The property ${info.activeProperty ? `${info.activeProperty}.` : ""}${
             info.unmappedProperty
-          } in the input was not defined in the context"`
+          } in the input was not defined in the context"`,
         );
       }
     },

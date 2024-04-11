@@ -98,7 +98,7 @@ describe("3.0 E2E Test Scenarios", () => {
         wrapDocument(missingData, {
           externalSchemaId: "http://example.com/schema.json",
           version: SchemaId.v3,
-        })
+        }),
       ).rejects.toThrow("Invalid document");
     });
     test("creates a wrapped document", async () => {
@@ -110,7 +110,7 @@ describe("3.0 E2E Test Scenarios", () => {
         {
           externalSchemaId: "http://example.com/schema.json",
           version: SchemaId.v3,
-        }
+        },
       );
       expect(wrappedDocument.schema).toBe("http://example.com/schema.json");
       expect(wrappedDocument.key1).toEqual(expect.stringContaining("test"));
@@ -133,7 +133,7 @@ describe("3.0 E2E Test Scenarios", () => {
       expect(wrappedDocumentWithDnsDID.proof.merkleRoot).toBe(wrappedDocumentWithDnsDID.proof.targetHash);
       expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.type).toContain(IdentityProofType.DNSDid);
       expect(wrappedDocumentWithDnsDID.openAttestationMetadata.identityProof?.identifier).toContain(
-        openAttestationDataWithDid.openAttestationMetadata.identityProof?.identifier
+        openAttestationDataWithDid.openAttestationMetadata.identityProof?.identifier,
       );
     });
     test("checks that document is wrapped correctly", async () => {
@@ -377,7 +377,7 @@ describe("3.0 E2E Test Scenarios", () => {
             targetHash: "0xabc",
             type: "SHA3MerkleProof",
           },
-        })
+        }),
       ).toStrictEqual(true);
     });
   });

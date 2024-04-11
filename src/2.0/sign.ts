@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 export const signDocument = async <T extends OpenAttestationDocument>(
   document: SignedWrappedDocument<T> | WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: ethers.Signer | SigningKey
+  keyOrSigner: ethers.Signer | SigningKey,
 ): Promise<SignedWrappedDocument<T>> => {
   const merkleRoot = `0x${document.signature.merkleRoot}`;
   const signature = await sign(algorithm, merkleRoot, keyOrSigner);

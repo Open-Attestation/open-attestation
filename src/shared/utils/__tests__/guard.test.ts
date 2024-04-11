@@ -73,7 +73,7 @@ describe("guard", () => {
         reference: "",
         validFrom: "2010-01-01T19:23:24Z",
       },
-      { version: SchemaId.v3 }
+      { version: SchemaId.v3 },
     );
     signedV2Document = await signDocument(wrappedV2Document, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
       public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
@@ -109,14 +109,14 @@ describe("guard", () => {
     });
     test("should be valid when document.data.issuers.documentStore does not have correct length", () => {
       expect(isWrappedV2Document(set(cloneDeep(wrappedV2Document), "data.issuers[0].documentStore", "0xabcd"))).toBe(
-        true
+        true,
       );
     });
     test("should not be valid when document.data.issuers.documentStore does not have correct length on strict mode", () => {
       expect(
         isWrappedV2Document(set(cloneDeep(wrappedV2Document), "data.issuers[0].documentStore", "0xabcd"), {
           mode: "strict",
-        })
+        }),
       ).toBe(false);
     });
     test("should not be valid when document.signature is an empty object", () => {
@@ -136,7 +136,7 @@ describe("guard", () => {
     });
     test("should not be valid when document.signature.targetHash is a string (not hex) in strict mode", () => {
       expect(
-        isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.targetHash", "oops"), { mode: "strict" })
+        isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.targetHash", "oops"), { mode: "strict" }),
       ).toBe(false);
     });
     test("should not be valid when document.signature.merkleRoot is missing", () => {
@@ -147,7 +147,7 @@ describe("guard", () => {
     });
     test("should not be valid when document.signature.merkleRoot is a string (not hex) in strict mode", () => {
       expect(
-        isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.merkleRoot", "oops"), { mode: "strict" })
+        isWrappedV2Document(set(cloneDeep(wrappedV2Document), "signature.merkleRoot", "oops"), { mode: "strict" }),
       ).toBe(false);
     });
     test("should not be valid when document.signature.proof is missing", () => {
@@ -164,8 +164,8 @@ describe("guard", () => {
         isWrappedV2Document(
           set(cloneDeep(wrappedV2Document), "signature.proof", [
             "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82",
-          ])
-        )
+          ]),
+        ),
       ).toBe(true);
     });
   });
@@ -197,7 +197,7 @@ describe("guard", () => {
     });
     test("should not be valid when proof has wrong proofPurpose", () => {
       expect(isSignedWrappedV2Document(set(cloneDeep(signedV2Document), "proof[0].proofPurpose", "schtroumpf"))).toBe(
-        false
+        false,
       );
     });
     test("should not be valid when proof does not have verificationMethod", () => {
@@ -213,7 +213,7 @@ describe("guard", () => {
         {
           public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
           private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
-        }
+        },
       );
       // make sure the document is valid first
       expect(isSignedWrappedV2Document(signDocumentWith2Proofs)).toBe(true);
@@ -253,14 +253,14 @@ describe("guard", () => {
     });
     test("should be valid when openAttestationMetadata.proof.method does not have correct length", () => {
       expect(
-        isWrappedV3Document(set(cloneDeep(wrappedV3Document), "openAttestationMetadata.proof.method", "abcd"))
+        isWrappedV3Document(set(cloneDeep(wrappedV3Document), "openAttestationMetadata.proof.method", "abcd")),
       ).toBe(true);
     });
     test("should not be valid when openAttestationMetadata.proof.method does not have correct length on strict mode", () => {
       expect(
         isWrappedV3Document(set(cloneDeep(wrappedV3Document), "openAttestationMetadata.proof.method", "abcd"), {
           mode: "strict",
-        })
+        }),
       ).toBe(false);
     });
     test("should be valid when document.proof.targetHash is a string", () => {
@@ -268,7 +268,7 @@ describe("guard", () => {
     });
     test("should be invalid when document.proof.targetHash is a string (not hex) in strict mode", () => {
       expect(
-        isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.targetHash", "oops"), { mode: "strict" })
+        isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.targetHash", "oops"), { mode: "strict" }),
       ).toBe(false);
     });
     test("should not be valid when document.proof.merkleRoot is missing", () => {
@@ -281,7 +281,7 @@ describe("guard", () => {
       expect(
         isWrappedV3Document(set(cloneDeep(wrappedV3Document), "proof.merkleRoot", "oops"), {
           mode: "strict",
-        })
+        }),
       ).toBe(false);
     });
     test("should not be valid when document.proof.proofs is missing", () => {
@@ -298,8 +298,8 @@ describe("guard", () => {
         isWrappedV3Document(
           set(cloneDeep(wrappedV3Document), "proof.proofs", [
             "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82",
-          ])
-        )
+          ]),
+        ),
       ).toBe(true);
     });
     test("should not be valid when document.proof.salts is missing", () => {
@@ -322,8 +322,8 @@ describe("guard", () => {
         isWrappedV3Document(
           set(cloneDeep(wrappedV3Document), "proof.privacy.obfuscated", [
             "50254337f2f7dba728fc6b000bdee615c79f1657665c6a668e88b5a1721c8d82",
-          ])
-        )
+          ]),
+        ),
       ).toBe(true);
     });
     test("should not be valid when document.proof.proofPurpose is missing", () => {

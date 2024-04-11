@@ -6,8 +6,8 @@ import { SchematisedDocument } from "../../2.0/types";
 const rawDocument: SchematisedDocument = {
   version: SchemaId.v2,
   schema: "foo",
+  //@ts-expect-error it's not an open attestation document
   data: {
-    //@ts-expect-error it's not an open attestation document
     key1: "value1",
     key2: {
       "key2-1": "value2-1",

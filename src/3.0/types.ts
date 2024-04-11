@@ -27,7 +27,7 @@ export const VerifiableCredentialWrappedProofStrict = VerifiableCredentialWrappe
     targetHash: OpenAttestationHexString,
     merkleRoot: OpenAttestationHexString,
     proofs: RunTypesArray(OpenAttestationHexString),
-  })
+  }),
 );
 export type VerifiableCredentialWrappedProofStrict = Static<typeof VerifiableCredentialWrappedProofStrict>;
 
@@ -35,7 +35,7 @@ export const VerifiableCredentialSignedProof = VerifiableCredentialWrappedProof.
   RunTypesRecord({
     key: String,
     signature: String,
-  })
+  }),
 );
 export type VerifiableCredentialSignedProof = Static<typeof VerifiableCredentialSignedProof>;
 

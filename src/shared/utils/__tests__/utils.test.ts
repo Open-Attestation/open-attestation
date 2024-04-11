@@ -51,7 +51,7 @@ describe("Util Functions", () => {
   describe("toBuffer", () => {
     test("should work", () => {
       expect(utils.toBuffer("foo").toString("hex")).toEqual(
-        "837fb5aa99ab7d0392fa43e61f529f072a693fd38032cd4a039793a9f9b4ea42"
+        "837fb5aa99ab7d0392fa43e61f529f072a693fd38032cd4a039793a9f9b4ea42",
       );
     });
 
@@ -67,9 +67,9 @@ describe("Util Functions", () => {
         utils
           .combineHashBuffers(
             utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"),
-            utils.hashToBuffer("9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2")
+            utils.hashToBuffer("9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2"),
           )
-          .toString("hex")
+          .toString("hex"),
       ).toBe("6a4fe9cb57c9f79964c0408f25d70a73b3448bc6e975d0a905f0f8694764954b");
     });
 
@@ -77,15 +77,15 @@ describe("Util Functions", () => {
       expect(
         utils
           .combineHashBuffers(utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"))
-          .toString("hex")
+          .toString("hex"),
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
       expect(
         utils
           .combineHashBuffers(
             undefined,
-            utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
+            utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"),
           )
-          .toString("hex")
+          .toString("hex"),
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
     });
   });
@@ -95,17 +95,17 @@ describe("Util Functions", () => {
       expect(
         utils.combineHashString(
           "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc",
-          "9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2"
-        )
+          "9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2",
+        ),
       ).toBe("6a4fe9cb57c9f79964c0408f25d70a73b3448bc6e975d0a905f0f8694764954b");
     });
 
     test("should return original hash if only one is given", () => {
       expect(utils.combineHashString("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")).toBe(
-        "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
+        "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc",
       );
       expect(
-        utils.combineHashString(undefined, "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
+        utils.combineHashString(undefined, "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"),
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
     });
   });
@@ -183,7 +183,7 @@ describe("Util Functions", () => {
     });
     test("should return all issuers address for 3.0 document", async () => {
       expect(utils.getIssuerAddress(v3WrappedVerifiableDocument)).toStrictEqual(
-        "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca"
+        "0x8bA63EAB43342AAc3AdBB4B827b68Cf4aAE5Caca",
       );
     });
   });
@@ -191,13 +191,13 @@ describe("Util Functions", () => {
   describe("getMerkleRoot", () => {
     test("should return merkleroot for v2.0 document", async () => {
       expect(utils.getMerkleRoot(v2WrappedVerifiableDocument)).toStrictEqual(
-        "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692"
+        "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692",
       );
     });
 
     test("should return merkleroot for v3.0 document", async () => {
       expect(utils.getMerkleRoot(v3WrappedVerifiableDocument)).toStrictEqual(
-        "797faecb7662eca4e73a82c25a2387d57acd666354c228291fcd664e6aaeb1ba"
+        "797faecb7662eca4e73a82c25a2387d57acd666354c228291fcd664e6aaeb1ba",
       );
     });
   });
@@ -205,12 +205,12 @@ describe("Util Functions", () => {
   describe("getTargetHash", () => {
     test("should return target hash for v2 document", async () => {
       expect(utils.getTargetHash(v2WrappedVerifiableDocument)).toStrictEqual(
-        "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692"
+        "c5d53262962b192c5c977f2252acd4862f41cc1ccce7e87c5b406905a2726692",
       );
     });
     test("should return target hash for v3 document", async () => {
       expect(utils.getTargetHash(v3WrappedVerifiableDocument)).toStrictEqual(
-        "797faecb7662eca4e73a82c25a2387d57acd666354c228291fcd664e6aaeb1ba"
+        "797faecb7662eca4e73a82c25a2387d57acd666354c228291fcd664e6aaeb1ba",
       );
     });
     test("should return error when document is not OpenAttestation document", async () => {
@@ -224,8 +224,8 @@ describe("Util Functions", () => {
       };
       expect(() => utils.getTargetHash(document)).toThrow(
         new Error(
-          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
-        )
+          "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents.",
+        ),
       );
     });
   });
@@ -233,22 +233,22 @@ describe("Util Functions", () => {
   describe("getAssetId", () => {
     test("should return asset id for v2 document", async () => {
       expect(utils.getAssetId(v2WrappedTransferableDocument)).toStrictEqual(
-        "53bc5e7c1f2f9f55bb55ce9834f666790f4976660c32ca1ccc3815eed9178d07"
+        "53bc5e7c1f2f9f55bb55ce9834f666790f4976660c32ca1ccc3815eed9178d07",
       );
     });
     test("should return asset id for v3 document", async () => {
       expect(utils.getAssetId(v3WrappedTransferableDocument)).toStrictEqual(
-        "21e104bea288809f659f6144ebae1ce632256ddeb9c8ecded795573853a43c5d"
+        "21e104bea288809f659f6144ebae1ce632256ddeb9c8ecded795573853a43c5d",
       );
     });
     test("should return error when v3 document doesn't have token registry", async () => {
       expect(() => utils.getAssetId(v3WrappedVerifiableDocument)).toThrow(
-        "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+        "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents.",
       );
     });
     test("should return error when v2 document doesn't have token registry", async () => {
       expect(() => utils.getAssetId(v2WrappedVerifiableDocument)).toThrow(
-        "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+        "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents.",
       );
     });
   });
@@ -259,7 +259,7 @@ describe("Util Functions", () => {
     });
     test("should return template url for wrapped v2 document", async () => {
       expect(utils.getTemplateURL(v2WrappedVerifiableDocument)).toStrictEqual(
-        "https://tutorial-renderer.openattestation.com"
+        "https://tutorial-renderer.openattestation.com",
       );
     });
     test("should return template url for raw v3 document", async () => {
@@ -267,7 +267,7 @@ describe("Util Functions", () => {
     });
     test("should return template url for wrapped v3 document", async () => {
       expect(utils.getTemplateURL(v3WrappedVerifiableDocument)).toStrictEqual(
-        "https://tutorial-renderer.openattestation.com"
+        "https://tutorial-renderer.openattestation.com",
       );
     });
     test("should return error when document is not OpenAttestation document", async () => {
@@ -280,7 +280,7 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getTemplateURL(document)).toThrow(
-        new Error("Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents.")
+        new Error("Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents."),
       );
     });
   });
@@ -451,7 +451,7 @@ describe("Util Functions", () => {
         },
       };
       expect(() => utils.getDocumentData(document)).toThrow(
-        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents."
+        "Unsupported document type: Only can retrieve document data for wrapped OpenAttestation v2 & v3 documents.",
       );
     });
   });

@@ -1,5 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+
+const config = {
   preset: "ts-jest",
   testEnvironment: "node",
   testPathIgnorePatterns: ["node_modules", "dist"],
@@ -7,3 +8,5 @@ module.exports = {
   modulePathIgnorePatterns: ["<rootDir>/dist"],
   watchPlugins: ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"],
 };
+
+export default config;

@@ -5,7 +5,7 @@ import { WrappedDocument } from "./types";
 import { checkProof } from "../shared/merkle";
 
 export const verify = <T extends OpenAttestationDocument = OpenAttestationDocument>(
-  document: any
+  document: any,
 ): document is WrappedDocument<T> => {
   const signature = get(document, "signature");
   if (!signature) {

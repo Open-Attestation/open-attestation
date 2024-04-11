@@ -86,8 +86,8 @@ describe("digest", () => {
       const document: SchematisedDocument = {
         version: SchemaId.v2,
         schema: "foo",
+        // @ts-expect-error the data is not a schematised document
         data: {
-          // @ts-expect-error the data is not a schematised document
           key1: "value1",
           key2: {
             "key2-1": "value2-1",
@@ -106,8 +106,8 @@ describe("digest", () => {
       const documentWithShadowedKey: SchematisedDocument = {
         version: SchemaId.v2,
         schema: "foo",
+        // @ts-expect-error the data is not a schematised document
         data: {
-          // @ts-expect-error the data is not a schematised document
           foo: {
             bar: "qux",
           },
@@ -124,8 +124,8 @@ describe("digest", () => {
       const document: SchematisedDocument = {
         version: SchemaId.v2,
         schema: "foo",
+        // @ts-expect-error the data is not a schematised document
         data: {
-          // @ts-expect-error the data is not a schematised document
           key1: "value1",
           key2: {
             "key2-1": "value2-1",

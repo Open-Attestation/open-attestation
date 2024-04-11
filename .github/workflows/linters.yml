@@ -26,3 +26,5 @@ jobs:
       - name: Install Commit Lint Dependencies
         run: npm install @commitlint/config-conventional
       - uses: JulienKode/pull-request-name-linter-action@v0.5.0
+        with:
+          configuration-path: ./commitlint.config.cjs

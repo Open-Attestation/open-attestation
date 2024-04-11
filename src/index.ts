@@ -23,28 +23,28 @@ import { getSchema } from "./shared/ajv";
 
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
   data: T,
-  options?: WrapDocumentOptionV3
+  options?: WrapDocumentOptionV3,
 ): Promise<WrappedDocumentV3<T>> {
   return wrapV3Document(data, options ?? { version: SchemaId.v3 });
 }
 
 export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends OpenAttestationDocumentV3>(
   dataArray: T[],
-  options?: WrapDocumentOptionV3
+  options?: WrapDocumentOptionV3,
 ): Promise<WrappedDocumentV3<T>[]> {
   return wrapV3Documents(dataArray, options ?? { version: SchemaId.v3 });
 }
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
   data: T,
-  options?: WrapDocumentOptionV2
+  options?: WrapDocumentOptionV2,
 ): WrappedDocumentV2<T> {
   return wrapV2Document(data, { externalSchemaId: options?.externalSchemaId });
 }
 
 export function wrapDocuments<T extends OpenAttestationDocumentV2>(
   dataArray: T[],
-  options?: WrapDocumentOptionV2
+  options?: WrapDocumentOptionV2,
 ): WrappedDocumentV2<T>[] {
   return wrapV2Documents(dataArray, { externalSchemaId: options?.externalSchemaId });
 }
@@ -59,11 +59,11 @@ export function verifySignature<T extends WrappedDocument<OpenAttestationDocumen
 
 export function obfuscate<T extends OpenAttestationDocumentV2>(
   document: WrappedDocument<T>,
-  fields: string[] | string
+  fields: string[] | string,
 ): WrappedDocument<T>;
 export function obfuscate<T extends OpenAttestationDocumentV3>(
   document: WrappedDocument<T>,
-  fields: string[] | string
+  fields: string[] | string,
 ): WrappedDocument<T>;
 export function obfuscate(document: any, fields: string[] | string) {
   return document.version === SchemaId.v3
@@ -78,17 +78,17 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
 export async function signDocument<T extends v3.OpenAttestationDocument>(
   document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | ethers.Signer,
 ): Promise<v3.SignedWrappedDocument<T>>;
 export async function signDocument<T extends v2.OpenAttestationDocument>(
   document: v2.SignedWrappedDocument<T> | v2.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | ethers.Signer,
 ): Promise<v2.SignedWrappedDocument<T>>;
 export async function signDocument(
   document: any,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | ethers.Signer,
 ) {
   // rj was worried it could happen deep in the code, so I moved it to the boundaries
   if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {

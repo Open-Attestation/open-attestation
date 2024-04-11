@@ -18,5 +18,5 @@ export type SigningKey = Static<typeof SigningKey>;
 export type SigningFunction = (
   message: string,
   key: SigningKey | ethers.Signer,
-  options?: SigningOptions
+  options?: SigningOptions,
 ) => Promise<string>;

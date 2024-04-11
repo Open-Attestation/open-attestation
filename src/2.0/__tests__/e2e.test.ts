@@ -182,7 +182,7 @@ describe("2.0 E2E Test Scenarios", () => {
             proof: [],
             merkleRoot: "0xabcd",
           },
-        })
+        }),
       ).toStrictEqual(true);
     });
     test("should default to 2.0 when document is valid and version is undefined", () => {
@@ -205,7 +205,7 @@ describe("2.0 E2E Test Scenarios", () => {
             targetHash: "0xabc",
             type: "SHA3MerkleProof",
           },
-        })
+        }),
       ).toStrictEqual(true);
     });
   });
@@ -222,7 +222,7 @@ describe("2.0 E2E Test Scenarios", () => {
     test("obfuscate data when there are multiple fields to obfuscate", () => {
       const newDocument = wrapDocument(
         { key1: "value1", key2: "value2", key3: "value3", ...openAttestationDatav2 },
-        { version: SchemaId.v2 }
+        { version: SchemaId.v2 },
       );
       const obfuscatedDocument = obfuscateDocument(newDocument, ["key2", "key3"]);
 
@@ -234,7 +234,7 @@ describe("2.0 E2E Test Scenarios", () => {
     test("obfuscate data transistively", () => {
       const newDocument = wrapDocument(
         { key1: "value1", key2: "value2", key3: "value3", ...openAttestationDatav2 },
-        { version: SchemaId.v2 }
+        { version: SchemaId.v2 },
       );
       const intermediateDocument = obfuscateDocument(newDocument, ["key2"]);
       const obfuscatedDocument = obfuscateDocument(intermediateDocument, ["key3"]);

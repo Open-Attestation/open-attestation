@@ -24,7 +24,7 @@ describe("digest v3.0", () => {
       const digest = digestCredential(
         obfuscatedVerifiableCredential,
         decodeSalt(obfuscatedVerifiableCredential.proof.salts),
-        obfuscatedVerifiableCredential.proof.privacy.obfuscated
+        obfuscatedVerifiableCredential.proof.privacy.obfuscated,
       );
 
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
@@ -43,7 +43,7 @@ describe("digest v3.0", () => {
       const digest = digestCredential(
         obfuscatedVerifiableCredential,
         decodeSalt(obfuscatedVerifiableCredential.proof.salts),
-        obfuscatedVerifiableCredential.proof.privacy.obfuscated
+        obfuscatedVerifiableCredential.proof.privacy.obfuscated,
       );
 
       expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
@@ -62,12 +62,12 @@ describe("digest v3.0", () => {
     test("digests a document with no visible content correctly", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(
         verifiableCredential,
-        Object.keys(verifiableCredential).filter((k) => k != "proof")
+        Object.keys(verifiableCredential).filter((k) => k != "proof"),
       );
       const digest = digestCredential(
         obfuscatedVerifiableCredential,
         decodeSalt(obfuscatedVerifiableCredential.proof.salts),
-        obfuscatedVerifiableCredential.proof.privacy.obfuscated
+        obfuscatedVerifiableCredential.proof.privacy.obfuscated,
       );
 
       expect(obfuscatedVerifiableCredential).toStrictEqual({ proof: obfuscatedVerifiableCredential.proof });

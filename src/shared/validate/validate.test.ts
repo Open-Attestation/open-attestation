@@ -20,8 +20,8 @@ describe("validate", () => {
     test("throws when the schema cannot be found/has not been added", () => {
       const document: SchematisedDocument = {
         schema: "http://example.com/schema.json",
+        //@ts-expect-error it's not an open attestation document
         data: {
-          //@ts-expect-error it's not an open attestation document
           key1: 2,
         },
       };

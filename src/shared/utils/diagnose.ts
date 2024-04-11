@@ -87,7 +87,7 @@ export const diagnose = ({
   const errors = validate(
     document,
     getSchema(version === "3.0" ? SchemaId.v3 : SchemaId.v2, mode === "non-strict" ? ajv : undefined),
-    kind
+    kind,
   );
 
   if (errors.length > 0) {
@@ -95,7 +95,7 @@ export const diagnose = ({
     return handleError(
       debug,
       `The document does not match OpenAttestation schema ${version === "3.0" ? "3.0" : "2.0"}`,
-      ...errors.map((error) => `${error.instancePath || "document"} - ${error.message}`)
+      ...errors.map((error) => `${error.instancePath || "document"} - ${error.message}`),
     );
   }
 
@@ -143,7 +143,7 @@ const diagnoseV3 = ({ kind, document, debug, mode }: { kind: Kind; document: any
   if (document.version !== SchemaId.v3) {
     return handleError(
       debug,
-      `The document schema version is wrong. Expected ${SchemaId.v3}, received ${document.version}`
+      `The document schema version is wrong. Expected ${SchemaId.v3}, received ${document.version}`,
     );
   }
 

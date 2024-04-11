@@ -31,7 +31,7 @@ export const SignatureStrict = Signature.And(
     targetHash: OpenAttestationHexString,
     merkleRoot: OpenAttestationHexString,
     proof: RunTypesArray(OpenAttestationHexString),
-  })
+  }),
 );
 export type SignatureStrict = Static<typeof SignatureStrict>;
 
@@ -58,18 +58,18 @@ export type DeepStringify<T> = {
   [P in keyof T]: T[P] extends Array<number> // if it's a []number
     ? Array<string> // return []string
     : T[P] extends Array<string> // if it's []string
-    ? Array<string> // return []string
-    : T[P] extends Record<string, any> // if it's an object
-    ? DeepStringify<T[P]> // apply stringify on the object
-    : T[P] extends Array<Record<string, infer U>> // if it's an array of object
-    ? DeepStringify<U> // apply stringify on the array
-    : number extends T[P] // if it's a number
-    ? string // make it a string
-    : undefined extends T[P] // if it's an optional field
-    ? DeepStringify<T[P]> // stringify the type
-    : T[P] extends string // if it's a string
-    ? string // make it a string
-    : DeepStringify<T[P]>; // unknown case => apply stringify, known use case: union (Issuer | string)
+      ? Array<string> // return []string
+      : T[P] extends Record<string, any> // if it's an object
+        ? DeepStringify<T[P]> // apply stringify on the object
+        : T[P] extends Array<Record<string, infer U>> // if it's an array of object
+          ? DeepStringify<U> // apply stringify on the array
+          : number extends T[P] // if it's a number
+            ? string // make it a string
+            : undefined extends T[P] // if it's an optional field
+              ? DeepStringify<T[P]> // stringify the type
+              : T[P] extends string // if it's a string
+                ? string // make it a string
+                : DeepStringify<T[P]>; // unknown case => apply stringify, known use case: union (Issuer | string)
 };
 
 export * from "../__generated__/schema.2.0";

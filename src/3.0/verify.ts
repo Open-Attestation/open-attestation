@@ -10,7 +10,7 @@ export const verify = <T extends WrappedDocument>(document: T): document is Wrap
 
   // Remove proof from document
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  const { proof, ...documentWithoutProof } = document;
+  const { proof, ...documentWithoutProof }: WrappedDocument = document;
   const decodedSalts = decodeSalt(document.proof.salts);
 
   // Checks to ensure there are no added/removed values, so visibleSalts.length must match decodedSalts.length

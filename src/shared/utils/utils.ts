@@ -78,7 +78,7 @@ export function getIssuerAddress(document: any): any {
     return document.openAttestationMetadata.proof.value;
   }
   throw new Error(
-    "Unsupported document type: Only can retrieve issuer address from wrapped OpenAttestation v2 & v3 documents."
+    "Unsupported document type: Only can retrieve issuer address from wrapped OpenAttestation v2 & v3 documents.",
   );
 }
 
@@ -90,7 +90,7 @@ export const getMerkleRoot = (document: any): string => {
       return document.proof.merkleRoot;
     default:
       throw new Error(
-        "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2 & v3 documents."
+        "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2 & v3 documents.",
       );
   }
 };
@@ -103,7 +103,7 @@ export const getTargetHash = (document: any): string => {
       return document.proof.targetHash;
     default:
       throw new Error(
-        "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents."
+        "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2 & v3 documents.",
       );
   }
 };
@@ -114,12 +114,12 @@ export const getTemplateURL = (document: any): string | undefined => {
     case isWrappedV2Document(document):
       return (getData(document).$template as TemplateObject).url;
     case isRawV2Document(document):
-      return document.$template.url;
+      return (document.$template as TemplateObject).url;
     case isRawV3Document(document) || isWrappedV3Document(document):
-      return document.openAttestationMetadata.template.url;
+      return document.openAttestationMetadata?.template?.url;
     default:
       throw new Error(
-        "Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents."
+        "Unsupported document type: Only can retrieve template url from OpenAttestation v2 & v3 documents.",
       );
   }
 };
@@ -161,8 +161,8 @@ export const isDocumentRevokable = (document: any): boolean => {
 
     case isWrappedV3Document(document):
       const isDidRevokableV3 =
-        (document.openAttestationMetadata.proof.method === v3.IdentityProofType.Did ||
-          document.openAttestationMetadata.proof.method === v3.IdentityProofType.DNSDid) &&
+        (document.openAttestationMetadata.identityProof.type === v3.IdentityProofType.Did ||
+          document.openAttestationMetadata.identityProof.type === v3.IdentityProofType.DNSDid) &&
         document.openAttestationMetadata.proof.revocation?.type === v3.RevocationType.RevocationStore;
       const isDocumentStoreRevokableV3 =
         document.openAttestationMetadata.proof.method === v3.Method.DocumentStore &&
@@ -181,12 +181,16 @@ export const getAssetId = (document: any): string => {
   }
 
   throw new Error(
-    "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents."
+    "Unsupported document type: Only can retrieve asset id from wrapped OpenAttestation v2 & v3 transferable documents.",
   );
 };
 
 export class SchemaValidationError extends Error {
-  constructor(message: string, public validationErrors: ErrorObject[], public document: any) {
+  constructor(
+    message: string,
+    public validationErrors: ErrorObject[],
+    public document: any,
+  ) {
     super(message);
   }
 }
@@ -198,7 +202,7 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
 export { keccak256 } from "js-sha3";
 
 export const isObfuscated = (
-  document: WrappedDocumentV3<OpenAttestationDocumentV3> | WrappedDocumentV2<OpenAttestationDocumentV2>
+  document: WrappedDocumentV3<OpenAttestationDocumentV3> | WrappedDocumentV2<OpenAttestationDocumentV2>,
 ): boolean => {
   if (isWrappedV3Document(document)) {
     return !!document.proof.privacy?.obfuscated?.length;
@@ -209,12 +213,12 @@ export const isObfuscated = (
   }
 
   throw new Error(
-    "Unsupported document type: Can only check if there are obfuscated data from wrapped OpenAttestation v2 & v3 documents."
+    "Unsupported document type: Can only check if there are obfuscated data from wrapped OpenAttestation v2 & v3 documents.",
   );
 };
 
 export const getObfuscatedData = (
-  document: WrappedDocumentV3<OpenAttestationDocumentV3> | WrappedDocumentV2<OpenAttestationDocumentV2>
+  document: WrappedDocumentV3<OpenAttestationDocumentV3> | WrappedDocumentV2<OpenAttestationDocumentV2>,
 ): string[] => {
   if (isWrappedV3Document(document)) {
     return document.proof.privacy?.obfuscated;
@@ -225,6 +229,6 @@ export const getObfuscatedData = (
   }
 
   throw new Error(
-    "Unsupported document type: Can only retrieve obfuscated data from wrapped OpenAttestation v2 & v3 documents."
+    "Unsupported document type: Can only retrieve obfuscated data from wrapped OpenAttestation v2 & v3 documents.",
   );
 };

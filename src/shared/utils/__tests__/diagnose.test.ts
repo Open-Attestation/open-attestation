@@ -30,7 +30,7 @@ describe("diagnose", () => {
 
     it("should not return an error when document is valid", () => {
       expect(
-        diagnose({ version: "3.0", kind: "wrapped", document: v3WrappedVerifiableDocument, mode: "non-strict" })
+        diagnose({ version: "3.0", kind: "wrapped", document: v3WrappedVerifiableDocument, mode: "non-strict" }),
       ).toMatchInlineSnapshot(`[]`);
     });
 
@@ -41,7 +41,7 @@ describe("diagnose", () => {
           kind: "wrapped",
           document: omit(v3WrappedVerifiableDocument, "issuer"),
           mode: "non-strict",
-        })
+        }),
       ).toMatchInlineSnapshot(`
         [
           {
@@ -85,7 +85,7 @@ describe("diagnose", () => {
 
     it("should not return an error when raw document is version 3", () => {
       expect(
-        diagnose({ version: "3.0", kind: "raw", document: v3RawDocument, mode: "non-strict" })
+        diagnose({ version: "3.0", kind: "raw", document: v3RawDocument, mode: "non-strict" }),
       ).toMatchInlineSnapshot(`[]`);
     });
   });
@@ -103,7 +103,7 @@ describe("diagnose", () => {
 
     it("should not return an error when document is valid", () => {
       expect(
-        diagnose({ version: "2.0", kind: "signed", document: v2SignedDocument, mode: "non-strict" })
+        diagnose({ version: "2.0", kind: "signed", document: v2SignedDocument, mode: "non-strict" }),
       ).toMatchInlineSnapshot(`[]`);
     });
 
@@ -114,7 +114,7 @@ describe("diagnose", () => {
           kind: "signed",
           document: omit(v2SignedDocument, "data.issuers"),
           mode: "non-strict",
-        })
+        }),
       ).toMatchInlineSnapshot(`
         [
           {
@@ -155,7 +155,7 @@ describe("diagnose", () => {
 
     it("should not return an error when raw document is version 2", () => {
       expect(
-        diagnose({ version: "2.0", kind: "raw", document: v2RawDocument, mode: "non-strict" })
+        diagnose({ version: "2.0", kind: "raw", document: v2RawDocument, mode: "non-strict" }),
       ).toMatchInlineSnapshot(`[]`);
     });
   });

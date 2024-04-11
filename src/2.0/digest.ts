@@ -16,7 +16,7 @@ export const flattenHashArray = (data: any) => {
 };
 
 export const digestDocument = <T extends OpenAttestationDocument = OpenAttestationDocument>(
-  document: SchematisedDocument<T>
+  document: SchematisedDocument<T>,
 ) => {
   // Prepare array of hashes from filtered data
   const hashedDataArray: string[] = get(document, "privacy.obfuscatedData", []);
