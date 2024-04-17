@@ -6,7 +6,8 @@ import { OpenAttestationDocument } from "../__generated__/schema.4.0";
 export const digestCredential = (document: OpenAttestationDocument, salts: Salt[], obfuscatedData: string[]) => {
   // Prepare array of hashes from visible data
   const hashedUnhashedDataArray = salts
-    .filter((salt) => get(document, salt.path))
+    // Explictly allow falsy values (e.g. false, 0, etc.) as they can exist in the document
+    .filter((salt) => get(document, salt.path) !== undefined)
     .map((salt) => {
       return keccak256(JSON.stringify({ [salt.path]: `${salt.value}:${get(document, salt.path)}` }));
     });
