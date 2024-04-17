@@ -16,11 +16,13 @@
     "id": "https://ocsp-sandbox.openattestation.com",
     "type": "OpenAttestationOcspResponder"
   },
-  "renderMethod": {
-    "id": "https://demo-renderer.opencerts.io",
-    "type": "OpenAttestationEmbeddedRenderer",
-    "name": "GOVTECH_DEMO"
-  },
+  "renderMethod": [
+    {
+      "id": "https://demo-renderer.opencerts.io",
+      "type": "OpenAttestationEmbeddedRenderer",
+      "name": "GOVTECH_DEMO"
+    }
+  ],
   "credentialSubject": {
     "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     "type": ["DriversLicense"],

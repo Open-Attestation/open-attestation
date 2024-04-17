@@ -25,6 +25,23 @@
       },
       "description": "A data schema that provide verifiers with enough information to determine whether the provided data conforms to the provided schema(s). More information in https://www.w3.org/TR/vc-data-model-2.0/#data-schemas"
     },
+    "renderMethod": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of a decentralised renderer to render this document",
+          "examples": ["https://demo-renderer.openattestation.com"]
+        },
+        "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationEmbeddedRenderer"] },
+        "templateName": {
+          "type": "string",
+          "description": "Template name to be use by template renderer to determine the template to use"
+        }
+      },
+      "required": ["id", "name"]
+    },
     "credentialSubject": {
       "type": "object",
       "properties": {
@@ -139,23 +156,7 @@
       },
       "additionalProperties": false
     },
-    "renderMethod": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uri",
-          "description": "URL of a decentralised renderer to render this document",
-          "examples": ["https://demo-renderer.openattestation.com"]
-        },
-        "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationEmbeddedRenderer"] },
-        "templateName": {
-          "type": "string",
-          "description": "Template name to be use by template renderer to determine the template to use"
-        }
-      },
-      "required": ["id", "name"]
-    },
+    "renderMethod": { "type": "array", "items": { "$ref": "#/definitions/renderMethod" } },
     "credentialSubject": {
       "anyOf": [
         { "$ref": "#/definitions/credentialSubject" },

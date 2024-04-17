@@ -132,7 +132,7 @@ export const getTemplateURL = (document: any): string | undefined => {
   } else if (isRawV3Document(document) || isWrappedV3Document(document)) {
     return document.openAttestationMetadata.template?.url;
   } else if (isRawV4Document(document) || isWrappedV4Document(document)) {
-    return document.renderMethod?.id;
+    return document.renderMethod && document.renderMethod[0].id;
   }
 
   throw new Error(
