@@ -1,14 +1,12 @@
-import { hashToBuffer, isStringArray, SchemaValidationError } from "../shared/utils";
+import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { ContextUrl, SchemaId } from "../shared/@types/document";
+import { ContextUrl } from "../shared/@types/document";
 import { WrappedDocument } from "./types";
 import { digestCredential } from "../4.0/digest";
-import { validateSchema } from "../shared/validate";
 import { WrapDocumentOptionV4 } from "../shared/@types/wrap";
 import { OpenAttestationDocument, ProofPurpose } from "../__generated__/schema.4.0";
 import { encodeSalt, salt } from "./salt";
 import { interpretContexts, vcSchema } from "./validate";
-import { getSchema } from "../shared/ajv";
 
 export const wrapDocument = async <T extends OpenAttestationDocument>(
   credential: T,
@@ -73,11 +71,6 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
       },
     },
   };
-
-  const errors = validateSchema(verifiableCredential, getSchema(SchemaId.v4));
-  if (errors.length > 0) {
-    throw new SchemaValidationError("Invalid document", errors, verifiableCredential);
-  }
 
   return verifiableCredential;
 };
