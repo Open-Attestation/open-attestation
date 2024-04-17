@@ -149,7 +149,7 @@
           "examples": ["https://demo-renderer.openattestation.com"]
         },
         "type": { "$ref": "#/definitions/type", "examples": ["OpenAttestationEmbeddedRenderer"] },
-        "name": {
+        "templateName": {
           "type": "string",
           "description": "Template name to be use by template renderer to determine the template to use"
         }
