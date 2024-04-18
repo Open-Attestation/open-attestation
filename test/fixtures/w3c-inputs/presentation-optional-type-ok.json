@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    {
+      "CredentialManagerPresentation": "https://example.org/examples#CredentialManagerPresentation"
+    }
+  ],
+  "type": [
+    "VerifiablePresentation",
+    "CredentialManagerPresentation"
+  ]
+}
