@@ -12,6 +12,10 @@
     "name": "Government Technology Agency of Singapore (GovTech)",
     "identityProof": { "identityProofType": "DNS-DID", "identifier": "example.openattestation.com" }
   },
+  "credentialStatus": {
+    "id": "https://ocsp-sandbox.openattestation.com",
+    "type": "OpenAttestationOcspResponder"
+  },
   "renderMethod": [
     {
       "id": "https://demo-renderer.opencerts.io",
