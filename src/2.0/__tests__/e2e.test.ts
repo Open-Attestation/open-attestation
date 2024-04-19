@@ -213,7 +213,7 @@ describe("2.0 E2E Test Scenarios", () => {
   describe("obfuscation", () => {
     test("obfuscate data when there is one field to obfuscate", () => {
       const newDocument = wrapDocument({ key1: "value1", ...openAttestationDatav2 }, { version: SchemaId.v2 });
-      const obfuscatedDocument = obfuscateDocument(newDocument, ["key1"]);
+      const obfuscatedDocument = obfuscateDocument(newDocument, ["issuers"]);
 
       expect(verifySignature(obfuscatedDocument)).toBe(true);
       expect(validateSchema(obfuscatedDocument)).toBe(true);
