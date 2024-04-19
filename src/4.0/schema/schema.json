@@ -40,7 +40,7 @@
           "description": "Template name to be use by template renderer to determine the template to use"
         }
       },
-      "required": ["id", "name"]
+      "required": ["id", "templateName"]
     },
     "credentialSubject": {
       "type": "object",
