@@ -5,7 +5,6 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "browser": "dist/index.umd.js",
-  "type": "module",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "benchmark:qr-code": "ts-node --transpile-only benchmarks/qr-code",
@@ -24,7 +23,7 @@
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "publish:schema": "./scripts/publishSchema.sh",
-    "postinstall": "node scripts/postInstall"
+    "postinstall": "node scripts/postInstall.mjs"
   },
   "files": [
     "/dist",
