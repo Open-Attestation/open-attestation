@@ -78,14 +78,14 @@
     "debug": "^4.3.2",
     "ethers": "^5.7.2",
     "flatley": "^5.2.0",
-    "joi": "^17.12.2",
     "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
     "jsonld": "^8.3.2",
     "lodash": "^4.17.21",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "zod": "^3.22.4"
   },
   "directories": {
     "test": "test"

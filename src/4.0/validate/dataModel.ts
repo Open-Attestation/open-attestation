@@ -1,74 +1,129 @@
-import Joi from "joi";
+import z from "zod";
 
-import { ContextUrl as baseContext } from "../../shared/@types/document";
+import { ContextUrl } from "../../shared/@types/document";
 
 const baseType = "VerifiableCredential";
 
-export const vcSchema = Joi.object({
-  "@context": Joi.alternatives()
-    .try(Joi.object())
-    .try(Joi.string())
+// Custom URI validation function
+const URI_REGEX =
+  /^(?=.)(?!https?:\/(?:$|[^/]))(?!https?:\/\/\/)(?!https?:[^/])(?:[a-zA-Z][a-zA-Z\d+-\.]*:(?:(?:\/\/(?:[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:]*@)?(?:\[(?:(?:(?:[\dA-Fa-f]{1,4}:){6}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|::(?:[\dA-Fa-f]{1,4}:){5}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){4}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,1}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){3}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,2}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){2}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,3}[\dA-Fa-f]{1,4})?::[\dA-Fa-f]{1,4}:(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,4}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,5}[\dA-Fa-f]{1,4})?::[\dA-Fa-f]{1,4}|(?:(?:[\dA-Fa-f]{1,4}:){0,6}[\dA-Fa-f]{1,4})?::)|v[\dA-Fa-f]+\.[\w-\.~!\$&'\(\)\*\+,;=:]+)\]|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])|[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=]{1,255})(?::\d*)?(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)|\/(?:[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]+(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)?|[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]+(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*|(?:\/\/\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)))(?:\?[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@\/\?]*(?=#|$))?(?:#[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@\/\?]*)?$/;
+const zodUri = z.string().regex(URI_REGEX, { message: "Invalid URI" });
+
+export const inputVcModel = z.object({
+  "@context": z.union([
+    z.record(z.any()),
+    z.string(),
     // If array: First item must be baseContext, while remaining items can be string or object
-    .try(Joi.array().ordered(Joi.string().valid(baseContext["v2_vc"]).required()).items(Joi.string(), Joi.object()))
-    .required(),
+    z.tuple([z.literal(ContextUrl.v2_vc)]).rest(z.union([z.string(), z.record(z.any())])),
+  ]),
 
   // [Optional] If string: Must match uri pattern
-  id: Joi.string().uri(),
+  id: zodUri.optional(),
 
-  type: Joi.alternatives()
-    .try(Joi.string())
+  type: z.union([
+    z.string(),
     // If array: Must have VerifiableCredential, while remaining items can be any string
-    .try(Joi.array().items(Joi.string().valid(baseType).required(), Joi.string()))
-    .required(),
+    z.array(z.string()).refine((types) => types.includes(baseType), { message: `Type must include ${baseType}` }),
+  ]),
 
-  credentialSchema: Joi.alternatives()
-    // If object: Must have id match uri pattern and type defined
-    .try(Joi.object({ id: Joi.string().uri().required(), type: Joi.string().required() }))
-    // If array: Every object must have id match uri pattern and type defined
-    .try(Joi.array().items({ id: Joi.string().uri().required(), type: Joi.string().required() })),
+  credentialSchema: z
+    .union([
+      // If object: Must have id match uri pattern and type defined
+      z.object({
+        id: zodUri,
+        type: z.string(),
+      }),
+      // If array: Every object must have id match uri pattern and type defined
+      z.array(
+        z.object({
+          id: zodUri,
+          type: z.string(),
+        })
+      ),
+    ])
+    .optional(),
 
-  issuer: Joi.alternatives()
+  issuer: z.union([
     // If string: Must match uri pattern
-    .try(Joi.string().uri())
+    zodUri,
     // If object: Must have id match uri pattern
-    .try(Joi.object({ id: Joi.string().uri() }).unknown())
-    .required(),
+    z.object({
+      id: zodUri,
+    }),
+  ]),
 
-  validFrom: Joi.string().isoDate(),
+  validFrom: z.string().datetime({ offset: true }).optional(),
 
-  validUntil: Joi.string().isoDate(),
+  validUntil: z.string().datetime({ offset: true }).optional(),
 
-  credentialSubject: Joi.alternatives()
+  credentialSubject: z.union([
     // If object: Cannot be empty (i.e. minimum 1 key)
-    .try(Joi.object().min(1))
+    z.record(z.any()).refine((obj) => Object.keys(obj).length > 0, {
+      message: "Must have at least one key",
+    }),
     // If array: Every object cannot be empty (i.e. minimum 1 key)
-    .try(Joi.array().items(Joi.object().min(1)))
-    .required(),
+    z.array(
+      z.record(z.any()).refine((obj) => Object.keys(obj).length > 0, {
+        message: "Must have at least one key",
+      })
+    ),
+  ]),
 
-  credentialStatus:
-    // Must have type defined
-    // If id is present, id must match uri pattern (credentialStatus.id is optional and can be undefined)
-    Joi.object({ id: Joi.string().uri().optional(), type: Joi.string().required() })
-      // Allow additional properties
-      .unknown(),
+  credentialStatus: z
+    .object({
+      // If id is present, id must match uri pattern (credentialStatus.id is optional and can be undefined)
+      id: zodUri.optional(),
+      // Must have type defined
+      type: z.string(),
+    })
+    .optional(),
 
-  termsOfUse: Joi.alternatives()
-    // If object: Must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
-    .try(Joi.object({ id: Joi.string().uri().optional(), type: Joi.string().required() }))
-    // If array: Every object must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
-    .try(Joi.array().items({ id: Joi.string().uri().optional(), type: Joi.string().required() })),
+  termsOfUse: z
+    .union([
+      // If object: Must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
+      z.object({
+        id: zodUri.optional(),
+        type: z.string(),
+      }),
+      // If array: Every object must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
+      z.array(
+        z.object({
+          id: zodUri.optional(),
+          type: z.string(),
+        })
+      ),
+    ])
+    .optional(),
 
-  evidence: Joi.alternatives()
-    // If object: Must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
-    .try(Joi.object({ id: Joi.string().uri().optional(), type: Joi.string().required() }))
-    // If array: Every object must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
-    .try(Joi.array().items({ id: Joi.string().uri().optional(), type: Joi.string().required() })),
+  evidence: z
+    .union([
+      // If object: Must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
+      z.object({
+        id: zodUri.optional(),
+        type: z.string(),
+      }),
+      // If array: Every object must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
+      z.array(
+        z.object({
+          id: zodUri.optional(),
+          type: z.string(),
+        })
+      ),
+    ])
+    .optional(),
 
-  proof: Joi.alternatives()
-    // If object: Must have type defined
-    .try(Joi.object({ type: Joi.string().required() }))
-    // If array: Every object must have type defined
-    .try(Joi.array().items({ type: Joi.string().required() })),
-})
-  // Allow additional properties
-  .unknown();
+  proof: z
+    .union([
+      // If object: Must have type defined
+      z.object({
+        type: z.string(),
+      }),
+      // If array: Every object must have type defined
+      z.array(
+        z.object({
+          type: z.string(),
+        })
+      ),
+    ])
+    .optional(),
+});

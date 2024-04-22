@@ -6,7 +6,7 @@ import { digestCredential } from "../4.0/digest";
 import { WrapDocumentOptionV4 } from "../shared/@types/wrap";
 import { OpenAttestationDocument, ProofPurpose } from "../__generated__/schema.4.0";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts, vcSchema } from "./validate";
+import { interpretContexts, inputVcModel } from "./validate";
 
 export const wrapDocument = async <T extends OpenAttestationDocument>(
   credential: T,
@@ -15,12 +15,13 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
   const document = { ...credential };
 
   /* 1. Data model validation */
-  const { error } = vcSchema.validate(document);
-  if (error) {
+  const result = await inputVcModel.safeParseAsync(document);
+  if (!result.success)
     throw new Error(
-      `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(error.details)}`
+      `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(
+        result.error.issues
+      )}`
     );
-  }
 
   /* 2. Ensure provided @context are interpretable (e.g. valid @context URL, all types are mapped, etc.) */
   await interpretContexts(document);
