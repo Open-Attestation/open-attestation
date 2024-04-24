@@ -36,14 +36,15 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   /* 3. Context validation */
   // Ensure that required contexts are present and in the correct order
   // type: [Base, OA, ...]
-  const contexts = new Set<string>([ContextUrl["v2_vc"], ContextUrl["v4_alpha"]]);
+  const REQUIRED_CONTEXTS = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
+  const contexts = new Set<string>(REQUIRED_CONTEXTS);
   if (typeof document["@context"] === "string") {
     contexts.add(document["@context"]);
   } else if (isStringArray(document["@context"])) {
     document["@context"].forEach((context) => contexts.add(context));
   }
-  [ContextUrl.v2_vc, ContextUrl.v4_alpha].forEach((c) => contexts.delete(c));
-  const finalContexts: OpenAttestationVC["@context"] = [ContextUrl.v2_vc, ContextUrl.v4_alpha, ...Array.from(contexts)]; // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this
+  REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
+  const finalContexts: OpenAttestationVC["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)]; // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this
 
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order
