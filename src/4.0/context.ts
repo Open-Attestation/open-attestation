@@ -1,6 +1,6 @@
 import { expand, Options, JsonLdDocument } from "jsonld";
 import { fetch } from "cross-fetch";
-import { ContextUrl } from "../../shared/@types/document";
+import { ContextUrl } from "../shared/@types/document";
 
 const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
 const contexts: Map<string, any> = new Map();

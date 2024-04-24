@@ -4,7 +4,7 @@ import { ContextType, ContextUrl } from "../shared/@types/document";
 import { V4RawDocument, VC, V4WrappedDocument, W3cVcDataModel } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts } from "./validate";
+import { interpretContexts } from "./context";
 
 export const wrapDocument = async <T extends V4RawDocument>(credential: T): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
