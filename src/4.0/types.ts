@@ -1,5 +1,5 @@
 import z from "zod";
-import { ContextUrl, ContextType } from "../shared/@types/document";
+import { ContextUrl, ContextType } from "./context";
 
 const baseType = "VerifiableCredential";
 

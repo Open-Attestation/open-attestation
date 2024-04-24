@@ -1,6 +1,6 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { ContextType } from "../shared/@types/document";
+import { ContextType } from "./context";
 import { V4RawDocument, VC, V4WrappedDocument, W3cVcDataModel } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
