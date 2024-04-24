@@ -9,18 +9,9 @@ import { interpretContexts, vcDataModel } from "./validate";
 export const wrapDocument = async <T extends OpenAttestationVC>(
   credential: T
 ): Promise<WrappedOpenAttestationVC<T>> => {
-  /* 1a. W3C VC data model validation */
-  const result = await vcDataModel.safeParseAsync(credential);
-  if (!result.success)
-    throw new Error(
-      `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(
-        result.error.issues
-      )}`
-    );
-  const rawDocument = result.data;
-
-  /* 1b. Narrow down to OpenAttestation VC validation */
-  const oav4context = await OpenAttestationVC.shape["@context"].safeParseAsync(rawDocument["@context"]); // Superficial check on user intention
+  /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
+  const oav4context = await OpenAttestationVC.pick({ "@context": true }).safeParseAsync(credential); // Superficial check on user intention
+  let rawDocument: VC | undefined;
   if (oav4context.success) {
     const oav4 = await OpenAttestationVC.safeParseAsync(rawDocument);
     if (!oav4.success) {
@@ -28,6 +19,20 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
         `Input document does not conform to OpenAttestation v4.0 Data Model: ${JSON.stringify(oav4.error.issues)}`
       );
     }
+    rawDocument = oav4.data;
+  }
+
+  /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
+  if (!rawDocument) {
+    const result = await vcDataModel.safeParseAsync(credential);
+    if (!result.success)
+      throw new Error(
+        `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(
+          result.error.issues
+        )}`
+      );
+
+    rawDocument = result.data;
   }
 
   /* 2. Ensure provided @context are interpretable (e.g. valid @context URL, all types are mapped, etc.) */
