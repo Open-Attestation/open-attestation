@@ -1,9 +1,11 @@
-import { WrappedDocument } from "./types";
+import { WrappedSignedOpenAttestationVC } from "./types";
 import { digestCredential } from "./digest";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt, salt } from "./salt";
 
-export const verify = <T extends WrappedDocument>(document: T): document is WrappedDocument<T> => {
+export const verify = <T extends WrappedSignedOpenAttestationVC>(
+  document: T
+): document is WrappedSignedOpenAttestationVC<T> => {
   if (!document.proof) {
     return false;
   }
