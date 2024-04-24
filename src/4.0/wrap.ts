@@ -74,14 +74,9 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   const merkleTree = new MerkleTree(batchBuffers);
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
-
   const verifiableCredential: WrappedOpenAttestationVC = {
     ...documentReadyForWrapping,
-    type: [ContextType.BaseContext, ContextType.V4AlphaContext], // FIXME: Follow finalContexts
-    issuer: rawDocument["issuer"] as OpenAttestationVC["issuer"], // Assume valid by asserting types
-    ...(rawDocument["credentialStatus"]
-      ? { credentialStatus: rawDocument["credentialStatus"] as OpenAttestationVC["credentialStatus"] }
-      : {}),
+    ...assertAsOaVcProps(documentReadyForWrapping, ["issuer", "credentialStatus"]),
     proof: {
       type: "OpenAttestationMerkleProofSignature2018",
       proofPurpose: "assertionMethod",
@@ -95,33 +90,13 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
     },
   };
 
-  return verifiableCredential;
+  return verifiableCredential as WrappedOpenAttestationVC<T>;
 };
 
-export const wrapDocuments = async <T extends OpenAttestationVC>(
-  documents: T[]
-): Promise<WrappedOpenAttestationVC<T>[]> => {
-  // create individual verifiable credential
-  const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document, options)));
-
-  // get all the target hashes to compute the merkle tree and the merkle root
-  const merkleTree = new MerkleTree(
-    verifiableCredentials.map((verifiableCredential) => verifiableCredential.proof.targetHash).map(hashToBuffer)
-  );
-  const merkleRoot = merkleTree.getRoot().toString("hex");
-
-  // for each document, update the merkle root and add the proofs needed
-  return verifiableCredentials.map((verifiableCredential) => {
-    const digest = verifiableCredential.proof.targetHash;
-    const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
-
-    return {
-      ...verifiableCredential,
-      proof: {
-        ...verifiableCredential.proof,
-        proofs: merkleProof,
-        merkleRoot,
-      },
-    };
+function assertAsOaVcProps<K extends keyof VC>(obj: VC, keys: K[]) {
+  const temp: Record<string, unknown> = {};
+  Object.entries(obj).forEach(([k, v]) => {
+    if (keys.includes(k as K)) temp[k] = v;
   });
-};
+  return temp as { [key in K]: OpenAttestationVC[key] };
+}
