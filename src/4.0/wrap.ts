@@ -61,6 +61,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
 
   const documentReadyForWrapping = {
     ...rawDocument,
+    ...assertAsOaVcProps(rawDocument, ["issuer", "credentialStatus"]),
     "@context": finalContexts,
     type: finalTypes,
   } satisfies VC;
@@ -76,7 +77,6 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
   const verifiableCredential: WrappedOpenAttestationVC = {
     ...documentReadyForWrapping,
-    ...assertAsOaVcProps(documentReadyForWrapping, ["issuer", "credentialStatus"]),
     proof: {
       type: "OpenAttestationMerkleProofSignature2018",
       proofPurpose: "assertionMethod",
