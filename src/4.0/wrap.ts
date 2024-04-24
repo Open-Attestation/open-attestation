@@ -1,10 +1,10 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { ContextType, ContextUrl } from "../shared/@types/document";
+import { ContextType } from "../shared/@types/document";
 import { V4RawDocument, VC, V4WrappedDocument, W3cVcDataModel } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts } from "./context";
+import { REQUIRED_CONTEXT_LIST, interpretContexts } from "./context";
 
 export const wrapDocument = async <T extends V4RawDocument>(credential: T): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
@@ -37,15 +37,14 @@ export const wrapDocument = async <T extends V4RawDocument>(credential: T): Prom
   /* 3. Context validation */
   // Ensure that required contexts are present and in the correct order
   // type: [Base, OA, ...]
-  const REQUIRED_CONTEXTS = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
-  const contexts = new Set<string>(REQUIRED_CONTEXTS);
+  const contexts = new Set<string>(REQUIRED_CONTEXT_LIST);
   if (typeof rawDocument["@context"] === "string") {
     contexts.add(rawDocument["@context"]);
   } else if (isStringArray(rawDocument["@context"])) {
     rawDocument["@context"].forEach((context) => contexts.add(context));
   }
-  REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
-  const finalContexts: V4RawDocument["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
+  REQUIRED_CONTEXT_LIST.forEach((c) => contexts.delete(c));
+  const finalContexts: V4RawDocument["@context"] = [...REQUIRED_CONTEXT_LIST, ...Array.from(contexts)];
 
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order

@@ -2,7 +2,7 @@ import { expand, Options, JsonLdDocument } from "jsonld";
 import { fetch } from "cross-fetch";
 import { ContextUrl } from "../shared/@types/document";
 
-const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
+export const REQUIRED_CONTEXT_LIST = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
 const contexts: Map<string, any> = new Map();
 
 // Preload frequently used contexts
@@ -12,7 +12,7 @@ let isFirstLoad = true;
 const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
   if (isFirstLoad) {
     isFirstLoad = false;
-    for (const url of preloadedContextList) {
+    for (const url of REQUIRED_CONTEXT_LIST) {
       const document = await fetch(url).then((res) => res.json());
       contexts.set(url, document);
     }
