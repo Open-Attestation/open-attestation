@@ -10,11 +10,9 @@ import * as v3 from "../../__generated__/schema.3.0";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
-import * as v4 from "../../__generated__/schema.4.0";
-import { WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
-import { OpenAttestationDocument as OpenAttestationDocumentV4 } from "../../__generated__/schema.4.0";
+import { WrappedOpenAttestationVC as WrappedDocumentV4 } from "../../4.0/types";
 
-import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl, ContextType } from "../@types/document";
+import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl } from "../@types/document";
 import {
   isRawV2Document,
   isWrappedV2Document,
@@ -23,6 +21,13 @@ import {
   isRawV4Document,
   isWrappedV4Document,
 } from "./guard";
+
+const VersionGuard = {
+  2: isWrappedV2Document,
+  3: isWrappedV3Document,
+  4: isWrappedV4Document,
+} as const satisfies Record<number, (document: unknown) => boolean>;
+type OAVersion = keyof typeof VersionGuard;
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -101,13 +106,20 @@ export function getIssuerAddress(document: any): any {
 }
 
 export const getMerkleRoot = (document: any): string => {
-  if (isWrappedV2Document(document)) return document.signature.merkleRoot;
-  else if (isWrappedV3Document(document)) return document.proof.merkleRoot;
-  else if (isWrappedV4Document(document)) return document.proof.merkleRoot;
+  const version = getVersion(document);
+  const getMerkleRoot: Record<OAVersion, () => unknown | undefined> = {
+    2: () => document?.signature?.merkleRoot,
+    3: () => document?.proof?.merkleRoot,
+    4: () => document?.proof?.merkleRoot,
+  };
 
-  throw new Error(
-    "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2, v3 & v4 documents."
-  );
+  const merkleRoot = getMerkleRoot[version]();
+  if (merkleRoot === undefined || typeof merkleRoot !== "string")
+    throw new Error(
+      "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2, v3 & v4 documents."
+    );
+
+  return merkleRoot;
 };
 
 export const getTargetHash = (document: any): string => {
@@ -187,8 +199,8 @@ export const isDocumentRevokable = (document: any): boolean => {
   } else if (isWrappedV4Document(document)) {
     if (typeof document.issuer === "string" || !document.credentialStatus) return false;
     const isDidRevokableV4 =
-      document.issuer.identityProof?.identityProofType === v4.IdentityProofType.DNSDid
-        ? document.credentialStatus.type === "OpenAttestationOcspResponder" // TODO: Create suggested typings e.g. "v4.CredentialStatusType.OpenAttestationOcspResponder"
+      document.issuer.identityProof?.identityProofType === "DNS-DID"
+        ? document.credentialStatus.type === "OpenAttestationOcspResponder"
         : false;
     // TODO: OA v4 issuer schema not updated to support document store issuance yet
     // const isDocumentStoreRevokableV4 = ?
@@ -225,7 +237,7 @@ export const isObfuscated = (
   document:
     | WrappedDocumentV2<OpenAttestationDocumentV2>
     | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | WrappedDocumentV4<OpenAttestationDocumentV4>
+    | WrappedDocumentV4
 ): boolean => {
   if (isWrappedV2Document(document)) {
     return !!document.privacy?.obfuscatedData?.length;
@@ -244,7 +256,7 @@ export const getObfuscatedData = (
   document:
     | WrappedDocumentV2<OpenAttestationDocumentV2>
     | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | WrappedDocumentV4<OpenAttestationDocumentV4>
+    | WrappedDocumentV4
 ): string[] => {
   if (isWrappedV2Document(document)) {
     return document.privacy?.obfuscatedData || [];
@@ -262,7 +274,7 @@ export const getObfuscatedData = (
 export const isStringArray = (input: unknown): input is string[] =>
   Array.isArray(input) && input.every((i) => typeof i === "string");
 
-export const getVersion = (document: unknown) => {
+export const getVersion = (document: unknown): OAVersion => {
   if (typeof document === "object" && document !== null) {
     if ("version" in document && typeof document.version === "string") {
       switch (document.version) {
