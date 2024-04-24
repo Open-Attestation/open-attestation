@@ -60,15 +60,15 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends
   return wrapDocumentsV3(dataArray, options ?? { version: SchemaId.v3 });
 }
 
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument<T extends v4.OpenAttestationVC>(
+export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument<T extends v4.V4RawDocument>(
   data: T
-): Promise<v4.WrappedOpenAttestationVC<T>> {
+): Promise<v4.V4WrappedDocument<T>> {
   return wrapDocumentV4(data);
 }
 
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments<T extends v4.OpenAttestationVC>(
+export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments<T extends v4.V4RawDocument>(
   dataArray: T[]
-): Promise<v4.WrappedOpenAttestationVC<T>[]> {
+): Promise<v4.V4WrappedDocument<T>[]> {
   return wrapDocumentsV4(dataArray);
 }
 
@@ -93,7 +93,7 @@ export function verifySignature<T extends WrappedDocument<OpenAttestationDocumen
 }
 
 export function digest(document: OpenAttestationDocumentV3, salts: v3.Salt[], obfuscatedData: string[]): string;
-export function digest(document: v4.OpenAttestationVC, salts: v4.Salt[], obfuscatedData: string[]): string;
+export function digest(document: v4.V4RawDocument, salts: v4.Salt[], obfuscatedData: string[]): string;
 export function digest(
   document: OpenAttestationDocumentV3 | OpenAttestationDocumentV4,
   salts: v3.Salt[] | v4.Salt[],
@@ -141,7 +141,7 @@ export async function signDocument<T extends v3.OpenAttestationDocument>(
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
   keyOrSigner: SigningKey | ethers.Signer
 ): Promise<v3.SignedWrappedDocument<T>>;
-export async function signDocument<T extends v4.OpenAttestationVC>(
+export async function signDocument<T extends v4.V4RawDocument>(
   document: v4.SignedWrappedDocument<T> | v4.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
   keyOrSigner: SigningKey | ethers.Signer

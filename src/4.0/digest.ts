@@ -1,6 +1,6 @@
 import { get, sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
-import { OpenAttestationVC, Salt } from "./types";
+import { V4RawDocument, Salt } from "./types";
 
 export const digestCredential = (document: OpenAttestationVC, salts: Salt[], obfuscatedData: string[]) => {
   // Prepare array of hashes from visible data

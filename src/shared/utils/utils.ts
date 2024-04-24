@@ -10,7 +10,7 @@ import * as v3 from "../../__generated__/schema.3.0";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
-import { WrappedOpenAttestationVC as WrappedDocumentV4 } from "../../4.0/types";
+import { V4WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
 
 import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl } from "../@types/document";
 import {

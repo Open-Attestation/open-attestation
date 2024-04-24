@@ -2,9 +2,9 @@ import { toBuffer } from "../shared/utils";
 import { cloneDeep, get, unset, pick } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
-import { OpenAttestationVC, WrappedOpenAttestationVC } from "./types";
+import { V4RawDocument, V4WrappedDocument } from "./types";
 
-const obfuscate = (_data: WrappedOpenAttestationVC, fields: string[] | string) => {
+const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
 
   const fieldsAsArray = ([] as string[]).concat(fields);
@@ -36,10 +36,10 @@ const obfuscate = (_data: WrappedOpenAttestationVC, fields: string[] | string) =
   };
 };
 
-export const obfuscateVerifiableCredential = <T extends OpenAttestationVC = OpenAttestationVC>(
-  document: WrappedOpenAttestationVC<T>,
+export const obfuscateVerifiableCredential = <T extends V4RawDocument = V4RawDocument>(
+  document: V4WrappedDocument<T>,
   fields: string[] | string
-): WrappedOpenAttestationVC<T> => {
+): V4WrappedDocument<T> => {
   const { data, obfuscatedData } = obfuscate(document, fields);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
@@ -52,5 +52,5 @@ export const obfuscateVerifiableCredential = <T extends OpenAttestationVC = Open
         obfuscated: newObfuscatedData,
       },
     },
-  } satisfies WrappedOpenAttestationVC as WrappedOpenAttestationVC<T>;
+  } satisfies V4WrappedDocument as V4WrappedDocument<T>;
 };

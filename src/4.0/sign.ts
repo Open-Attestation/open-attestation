@@ -2,17 +2,17 @@ import { sign } from "../shared/signer";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "../shared/@types/sign";
 import { isSignedWrappedV4Document } from "../shared/utils";
 import { ethers } from "ethers";
-import { OpenAttestationVC, WrappedOpenAttestationVC, WrappedSignedOpenAttestationVC } from "./types";
+import { V4RawDocument, V4WrappedDocument, V4SignedDocument } from "./types";
 
-export const signDocument = async <T extends OpenAttestationVC>(
-  document: WrappedSignedOpenAttestationVC<T> | WrappedOpenAttestationVC<T>,
+export const signDocument = async <T extends V4RawDocument>(
+  document: V4SignedDocument<T> | V4WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
   keyOrSigner: SigningKey | ethers.Signer
-): Promise<WrappedSignedOpenAttestationVC<T>> => {
+): Promise<V4SignedDocument<T>> => {
   if (isSignedWrappedV4Document(document)) throw new Error("Document has been signed");
   const merkleRoot = `0x${document.proof.merkleRoot}`;
   const signature = await sign(algorithm, merkleRoot, keyOrSigner);
-  const proof: WrappedSignedOpenAttestationVC["proof"] = {
+  const proof: V4SignedDocument["proof"] = {
     ...document.proof,
     key: SigningKey.guard(keyOrSigner) ? keyOrSigner.public : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
     signature,

@@ -14,7 +14,7 @@ type Salt = z.infer<typeof Salt>;
 const HEX_STRING_REGEX = /^(0x)?[0-9a-fA-F]{40}$/;
 const zodHexString = z.string().regex(HEX_STRING_REGEX, { message: "Invalid Hex String" });
 
-const OpenAttestationVC = vcDataModel.extend({
+const V4RawDocument = vcDataModel.extend({
   "@context": z
     // Must be an array that starts with [baseContext, v4Context, ...]
     .tuple([z.literal(ContextUrl.v2_vc), z.literal(ContextUrl.v4_alpha)])
@@ -71,7 +71,7 @@ const OpenAttestationVC = vcDataModel.extend({
     .optional(),
 });
 type VC = z.infer<typeof vcDataModel>;
-type OpenAttestationVC = z.infer<typeof OpenAttestationVC>;
+type V4RawDocument = z.infer<typeof V4RawDocument>;
 
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
@@ -90,18 +90,17 @@ const WrappedSignedProof = WrappedProof.and(
   })
 );
 
-const WrappedDocument = OpenAttestationVC.extend({
+const V4WrappedDocument = V4RawDocument.extend({
   proof: WrappedProof,
 });
 
-const SignedDocument = OpenAttestationVC.extend({
+const V4SignedDocument = V4RawDocument.extend({
   proof: WrappedSignedProof,
 });
 
-type _WrappedDocument = z.infer<typeof WrappedDocument>;
-type WrappedOpenAttestationVC<
-  T extends OpenAttestationVC = OpenAttestationVC,
-  U extends _WrappedDocument = Override<
+type V4WrappedDocument<
+  T extends V4RawDocument = V4RawDocument,
+  U extends z.infer<typeof V4WrappedDocument> = Override<
     T,
     {
       proof: z.infer<typeof WrappedProof>;
@@ -109,10 +108,9 @@ type WrappedOpenAttestationVC<
   >
 > = U;
 
-type _SignedDocument = z.infer<typeof SignedDocument>;
-type WrappedSignedOpenAttestationVC<
-  T extends OpenAttestationVC = OpenAttestationVC,
-  U extends _SignedDocument = Override<
+type V4SignedDocument<
+  T extends V4RawDocument = V4RawDocument,
+  U extends z.infer<typeof V4SignedDocument> = Override<
     T,
     {
       proof: z.infer<typeof WrappedSignedProof>;
@@ -123,4 +121,4 @@ type WrappedSignedOpenAttestationVC<
 // a & b does not override a props with b props
 type Override<T extends Record<string, unknown>, U extends Record<string, unknown>> = Omit<T, keyof U> & U;
 
-export { VC, OpenAttestationVC, WrappedOpenAttestationVC, WrappedSignedOpenAttestationVC, Salt };
+export { VC, V4RawDocument, V4WrappedDocument, V4SignedDocument, Salt };

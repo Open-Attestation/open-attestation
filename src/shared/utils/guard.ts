@@ -8,9 +8,9 @@ import {
   WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
 import {
-  OpenAttestationVC as OpenAttestationDocumentV4,
-  WrappedOpenAttestationVC,
-  WrappedSignedOpenAttestationVC,
+  V4RawDocument as OpenAttestationDocumentV4,
+  V4WrappedDocument,
+  V4SignedDocument,
 } from "../../4.0/types";
 import { diagnose } from "./diagnose";
 import { Mode } from "./@types/diagnose";
@@ -80,7 +80,7 @@ export const isWrappedV3Document = (
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isWrappedV4Document = <T extends WrappedOpenAttestationVC = WrappedOpenAttestationVC>(
+export const isWrappedV4Document = <T extends V4WrappedDocument = V4WrappedDocument>(
   document: unknown,
   { mode }: { mode: Mode } = { mode: "non-strict" }
 ): document is T => {
@@ -116,7 +116,7 @@ export const isSignedWrappedV3Document = (
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isSignedWrappedV4Document = <T extends WrappedSignedOpenAttestationVC = WrappedSignedOpenAttestationVC>(
+export const isSignedWrappedV4Document = <T extends V4SignedDocument = V4SignedDocument>(
   document: unknown,
   { mode }: { mode: Mode } = { mode: "non-strict" }
 ): document is T => {
