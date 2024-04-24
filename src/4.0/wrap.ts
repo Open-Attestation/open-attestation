@@ -24,15 +24,13 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
 
   /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
   if (!rawDocument) {
-    const result = await vcDataModel.safeParseAsync(credential);
-    if (!result.success)
+    const vc = await vcDataModel.safeParseAsync(credential);
+    if (!vc.success)
       throw new Error(
-        `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(
-          result.error.issues
-        )}`
+        `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(vc.error.issues)}`
       );
 
-    rawDocument = result.data;
+    rawDocument = vc.data;
   }
 
   /* 2. Ensure provided @context are interpretable (e.g. valid @context URL, all types are mapped, etc.) */
