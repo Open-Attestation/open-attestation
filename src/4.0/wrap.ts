@@ -44,19 +44,20 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
     document["@context"].forEach((context) => contexts.add(context));
   }
   REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
-  const finalContexts: OpenAttestationVC["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)]; // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this
+  const finalContexts: OpenAttestationVC["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
 
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order
   // type: ["VerifiableCredential", "OpenAttestationCredential", ...]
+  const REQUIRED_TYPES = [ContextType.BaseContext, ContextType.V4AlphaContext] as const;
   const types = new Set<string>([ContextType.BaseContext, ContextType.V4AlphaContext]);
   if (typeof document["type"] === "string") {
     types.add(document["type"]);
   } else if (isStringArray(document["type"])) {
-    document["type"].forEach((type) => types.add(type));
+    types.forEach((type) => types.add(type));
   }
-  [ContextUrl.v2_vc, ContextUrl.v4_alpha].forEach((c) => contexts.delete(c));
-  // document["type"] = Array.from(types); // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this
+  REQUIRED_TYPES.forEach((t) => types.delete(t));
+  const finalTypes: OpenAttestationVC["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
 
   /* 5.  OA wrapping */
   const salts = salt(document);
