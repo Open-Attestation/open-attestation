@@ -1,7 +1,7 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
 import { ContextType, ContextUrl } from "../shared/@types/document";
-import { OpenAttestationVC, WrappedOpenAttestationVC } from "./types";
+import { OpenAttestationVC, VC, WrappedOpenAttestationVC } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
 import { interpretContexts, vcDataModel } from "./validate";
@@ -59,9 +59,15 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   REQUIRED_TYPES.forEach((t) => types.delete(t));
   const finalTypes: OpenAttestationVC["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
 
+  const documentReadyForWrapping = {
+    ...rawDocument,
+    "@context": finalContexts,
+    type: finalTypes,
+  } satisfies VC;
+
   /* 5.  OA wrapping */
-  const salts = salt(rawDocument);
-  const digest = digestCredential(rawDocument, salts, []);
+  const salts = salt(documentReadyForWrapping);
+  const digest = digestCredential(documentReadyForWrapping, salts, []);
 
   const batchBuffers = [digest].map(hashToBuffer);
 
@@ -70,8 +76,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
   const verifiableCredential: WrappedOpenAttestationVC = {
-    ...rawDocument,
-    "@context": finalContexts,
+    ...documentReadyForWrapping,
     type: [ContextType.BaseContext, ContextType.V4AlphaContext], // FIXME: Follow finalContexts
     issuer: rawDocument["issuer"] as OpenAttestationVC["issuer"], // Assume valid by asserting types
     ...(rawDocument["credentialStatus"]
