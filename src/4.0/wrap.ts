@@ -1,10 +1,10 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
 import { ContextType, ContextUrl } from "../shared/@types/document";
-import { V4RawDocument, VC, V4WrappedDocument } from "./types";
+import { V4RawDocument, VC, V4WrappedDocument, W3cVcDataModel } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts, vcDataModel } from "./validate";
+import { interpretContexts } from "./validate";
 
 export const wrapDocument = async <T extends V4RawDocument>(credential: T): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
@@ -22,7 +22,7 @@ export const wrapDocument = async <T extends V4RawDocument>(credential: T): Prom
 
   /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
   if (!rawDocument) {
-    const vc = await vcDataModel.safeParseAsync(credential);
+    const vc = await W3cVcDataModel.safeParseAsync(credential);
     if (!vc.success)
       throw new Error(
         `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(vc.error.issues)}`
