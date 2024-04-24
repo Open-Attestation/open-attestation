@@ -90,12 +90,37 @@ const WrappedSignedProof = WrappedProof.and(
   })
 );
 
-type WrappedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = T & {
-  proof: z.infer<typeof WrappedProof>;
-};
+const WrappedDocument = OpenAttestationVC.extend({
+  proof: WrappedProof,
+});
 
-type WrappedSignedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = T & {
-  proof: z.infer<typeof WrappedSignedProof>;
-};
+const SignedDocument = OpenAttestationVC.extend({
+  proof: WrappedSignedProof,
+});
+
+type _WrappedDocument = z.infer<typeof WrappedDocument>;
+type WrappedOpenAttestationVC<
+  T extends OpenAttestationVC = OpenAttestationVC,
+  U extends _WrappedDocument = Override<
+    T,
+    {
+      proof: z.infer<typeof WrappedProof>;
+    }
+  >
+> = U;
+
+type _SignedDocument = z.infer<typeof SignedDocument>;
+type WrappedSignedOpenAttestationVC<
+  T extends OpenAttestationVC = OpenAttestationVC,
+  U extends _SignedDocument = Override<
+    T,
+    {
+      proof: z.infer<typeof WrappedSignedProof>;
+    }
+  >
+> = U;
+
+// a & b does not override a props with b props
+type Override<T extends Record<string, unknown>, U extends Record<string, unknown>> = Omit<T, keyof U> & U;
 
 export { VC, OpenAttestationVC, WrappedOpenAttestationVC, WrappedSignedOpenAttestationVC, Salt };
