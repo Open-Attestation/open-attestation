@@ -17,12 +17,12 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
         result.error.issues
       )}`
     );
-  const document = result.data;
+  const rawDocument = result.data;
 
   /* 1b. Narrow down to OpenAttestation VC validation */
-  const oav4context = await OpenAttestationVC.shape["@context"].safeParseAsync(document["@context"]); // Superficial check on user intention
+  const oav4context = await OpenAttestationVC.shape["@context"].safeParseAsync(rawDocument["@context"]); // Superficial check on user intention
   if (oav4context.success) {
-    const oav4 = await OpenAttestationVC.safeParseAsync(document);
+    const oav4 = await OpenAttestationVC.safeParseAsync(rawDocument);
     if (!oav4.success) {
       throw new Error(
         `Input document does not conform to OpenAttestation v4.0 Data Model: ${JSON.stringify(oav4.error.issues)}`
@@ -31,17 +31,17 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   }
 
   /* 2. Ensure provided @context are interpretable (e.g. valid @context URL, all types are mapped, etc.) */
-  await interpretContexts(document);
+  await interpretContexts(rawDocument);
 
   /* 3. Context validation */
   // Ensure that required contexts are present and in the correct order
   // type: [Base, OA, ...]
   const REQUIRED_CONTEXTS = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
   const contexts = new Set<string>(REQUIRED_CONTEXTS);
-  if (typeof document["@context"] === "string") {
-    contexts.add(document["@context"]);
-  } else if (isStringArray(document["@context"])) {
-    document["@context"].forEach((context) => contexts.add(context));
+  if (typeof rawDocument["@context"] === "string") {
+    contexts.add(rawDocument["@context"]);
+  } else if (isStringArray(rawDocument["@context"])) {
+    rawDocument["@context"].forEach((context) => contexts.add(context));
   }
   REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
   const finalContexts: OpenAttestationVC["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
@@ -51,17 +51,17 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   // type: ["VerifiableCredential", "OpenAttestationCredential", ...]
   const REQUIRED_TYPES = [ContextType.BaseContext, ContextType.V4AlphaContext] as const;
   const types = new Set<string>([ContextType.BaseContext, ContextType.V4AlphaContext]);
-  if (typeof document["type"] === "string") {
-    types.add(document["type"]);
-  } else if (isStringArray(document["type"])) {
+  if (typeof rawDocument["type"] === "string") {
+    types.add(rawDocument["type"]);
+  } else if (isStringArray(rawDocument["type"])) {
     types.forEach((type) => types.add(type));
   }
   REQUIRED_TYPES.forEach((t) => types.delete(t));
   const finalTypes: OpenAttestationVC["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
 
   /* 5.  OA wrapping */
-  const salts = salt(document);
-  const digest = digestCredential(document, salts, []);
+  const salts = salt(rawDocument);
+  const digest = digestCredential(rawDocument, salts, []);
 
   const batchBuffers = [digest].map(hashToBuffer);
 
@@ -70,12 +70,12 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
 
   const verifiableCredential: WrappedOpenAttestationVC = {
-    ...document,
+    ...rawDocument,
     "@context": finalContexts,
     type: [ContextType.BaseContext, ContextType.V4AlphaContext], // FIXME: Follow finalContexts
-    issuer: document["issuer"] as OpenAttestationVC["issuer"], // Assume valid by asserting types
-    ...(document["credentialStatus"]
-      ? { credentialStatus: document["credentialStatus"] as OpenAttestationVC["credentialStatus"] }
+    issuer: rawDocument["issuer"] as OpenAttestationVC["issuer"], // Assume valid by asserting types
+    ...(rawDocument["credentialStatus"]
+      ? { credentialStatus: rawDocument["credentialStatus"] as OpenAttestationVC["credentialStatus"] }
       : {}),
     proof: {
       type: "OpenAttestationMerkleProofSignature2018",
