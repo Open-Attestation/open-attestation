@@ -7,7 +7,11 @@ import {
   OpenAttestationDocument as OpenAttestationDocumentV3,
   WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
-import { OpenAttestationVC as OpenAttestationDocumentV4, WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
+import {
+  OpenAttestationVC as OpenAttestationDocumentV4,
+  WrappedOpenAttestationVC,
+  WrappedSignedOpenAttestationVC,
+} from "../../4.0/types";
 import { diagnose } from "./diagnose";
 import { Mode } from "./@types/diagnose";
 
@@ -76,10 +80,10 @@ export const isWrappedV3Document = (
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isWrappedV4Document = (
-  document: any,
+export const isWrappedV4Document = <T extends WrappedOpenAttestationVC = WrappedOpenAttestationVC>(
+  document: unknown,
   { mode }: { mode: Mode } = { mode: "non-strict" }
-): document is WrappedDocumentV4<OpenAttestationDocumentV4> => {
+): document is T => {
   return diagnose({ version: "4.0", kind: "wrapped", document, debug: false, mode }).length === 0;
 };
 
@@ -112,9 +116,9 @@ export const isSignedWrappedV3Document = (
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isSignedWrappedV4Document = (
-  document: any,
+export const isSignedWrappedV4Document = <T extends WrappedSignedOpenAttestationVC = WrappedSignedOpenAttestationVC>(
+  document: unknown,
   { mode }: { mode: Mode } = { mode: "non-strict" }
-): document is SignedWrappedDocument<OpenAttestationDocumentV4> => {
+): document is T => {
   return diagnose({ version: "4.0", kind: "signed", document, debug: false, mode }).length === 0;
 };
