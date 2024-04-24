@@ -14,7 +14,7 @@ import * as v4 from "../../__generated__/schema.4.0";
 import { WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV4 } from "../../__generated__/schema.4.0";
 
-import { OpenAttestationDocument, WrappedDocument } from "../@types/document";
+import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl, ContextType } from "../@types/document";
 import {
   isRawV2Document,
   isWrappedV2Document,
@@ -261,3 +261,22 @@ export const getObfuscatedData = (
 
 export const isStringArray = (input: unknown): input is string[] =>
   Array.isArray(input) && input.every((i) => typeof i === "string");
+
+export const getVersion = (document: unknown) => {
+  if (typeof document === "object" && document !== null) {
+    if ("version" in document && typeof document.version === "string") {
+      switch (document.version) {
+        case SchemaId.v2:
+          return 2;
+        case SchemaId.v3:
+          return 3;
+      }
+    } else if ("@context" in document && Array.isArray(document["@context"])) {
+      if (document["@context"].includes(ContextUrl.v4_alpha)) {
+        return 4;
+      }
+    }
+  }
+
+  throw new Error("Unknown document version: Can only determine between OpenAttestation v2, v3 & v4 documents.");
+};

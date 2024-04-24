@@ -7,10 +7,7 @@ import {
   OpenAttestationDocument as OpenAttestationDocumentV3,
   WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
-import {
-  OpenAttestationDocument as OpenAttestationDocumentV4,
-  WrappedDocument as WrappedDocumentV4,
-} from "../../4.0/types";
+import { OpenAttestationVC as OpenAttestationDocumentV4, WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
 import { diagnose } from "./diagnose";
 import { Mode } from "./@types/diagnose";
 

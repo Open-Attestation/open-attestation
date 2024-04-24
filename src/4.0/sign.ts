@@ -1,4 +1,4 @@
-import { OpenAttestationDocument, WrappedDocument, SignedWrappedDocument, SignedWrappedProof } from "./types";
+import { OpenAttestationVC, WrappedDocument, SignedWrappedDocument, SignedWrappedProof } from "./types";
 import { sign } from "../shared/signer";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "../shared/@types/sign";
 import { isSignedWrappedV4Document } from "../shared/utils";

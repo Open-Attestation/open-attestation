@@ -36,13 +36,17 @@ export type SignedWrappedDocument<T extends OpenAttestationDocument> = T extends
 export enum SchemaId {
   v2 = "https://schema.openattestation.com/2.0/schema.json",
   v3 = "https://schema.openattestation.com/3.0/schema.json",
-  v4 = "https://schemata.openattestation.com/com/openattestation/4.0/alpha-schema.json", // Note: Schema property is no longer placed in the OA v4 document
 }
 
-export enum ContextUrl {
-  v2_vc = "https://www.w3.org/ns/credentials/v2",
-  v4_alpha = "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
-}
+export const ContextUrl = {
+  v2_vc: "https://www.w3.org/ns/credentials/v2",
+  v4_alpha: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+} as const;
+
+export const ContextType = {
+  BaseContext: "VerifiableCredential",
+  V4AlphaContext: "OpenAttestationCredential",
+} as const;
 
 export const OpenAttestationHexString = String.withConstraint(
   (value) => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`

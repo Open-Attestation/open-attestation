@@ -5,7 +5,7 @@ import * as utils from "./shared/utils";
 import { SchemaValidationError } from "./shared/utils";
 import { validateSchema as validate } from "./shared/validate";
 import { SchemaId, WrappedDocument, OpenAttestationDocument } from "./shared/@types/document";
-import { WrapDocumentOptionV2, WrapDocumentOptionV3, WrapDocumentOptionV4 } from "./shared/@types/wrap";
+import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
 
 import * as v2 from "./2.0/types";
@@ -26,13 +26,11 @@ import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV3 } from
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
 
 import * as v4 from "./4.0/types";
-import { WrappedDocument as WrappedDocumentV4 } from "./4.0/types";
 import { wrapDocument as wrapDocumentV4, wrapDocuments as wrapDocumentsV4 } from "./4.0/wrap";
 import { signDocument as signDocumentV4 } from "./4.0/sign";
 import { verify as verifyV4 } from "./4.0/verify";
 import { digestCredential as digestCredentialV4 } from "./4.0/digest";
 import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4 } from "./4.0/obfuscate";
-import { OpenAttestationDocument as OpenAttestationDocumentV4 } from "./__generated__/schema.4.0";
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
   data: T,
@@ -62,18 +60,16 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends
   return wrapDocumentsV3(dataArray, options ?? { version: SchemaId.v3 });
 }
 
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument<T extends OpenAttestationDocumentV4>(
-  data: T,
-  options?: WrapDocumentOptionV4
-): Promise<WrappedDocumentV4<T>> {
-  return wrapDocumentV4(data, options ?? { version: SchemaId.v4 });
+export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument<T extends v4.OpenAttestationVC>(
+  data: T
+): Promise<v4.WrappedOpenAttestationVC<T>> {
+  return wrapDocumentV4(data);
 }
 
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments<T extends OpenAttestationDocumentV4>(
-  dataArray: T[],
-  options?: WrapDocumentOptionV4
-): Promise<WrappedDocumentV4<T>[]> {
-  return wrapDocumentsV4(dataArray, options ?? { version: SchemaId.v4 });
+export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments<T extends v4.OpenAttestationVC>(
+  dataArray: T[]
+): Promise<v4.WrappedOpenAttestationVC<T>[]> {
+  return wrapDocumentsV4(dataArray);
 }
 
 export const validateSchema = (document: WrappedDocument<any>): boolean => {
@@ -97,7 +93,7 @@ export function verifySignature<T extends WrappedDocument<OpenAttestationDocumen
 }
 
 export function digest(document: OpenAttestationDocumentV3, salts: v3.Salt[], obfuscatedData: string[]): string;
-export function digest(document: OpenAttestationDocumentV4, salts: v4.Salt[], obfuscatedData: string[]): string;
+export function digest(document: v4.OpenAttestationVC, salts: v4.Salt[], obfuscatedData: string[]): string;
 export function digest(
   document: OpenAttestationDocumentV3 | OpenAttestationDocumentV4,
   salts: v3.Salt[] | v4.Salt[],
@@ -145,7 +141,7 @@ export async function signDocument<T extends v3.OpenAttestationDocument>(
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
   keyOrSigner: SigningKey | ethers.Signer
 ): Promise<v3.SignedWrappedDocument<T>>;
-export async function signDocument<T extends v4.OpenAttestationDocument>(
+export async function signDocument<T extends v4.OpenAttestationVC>(
   document: v4.SignedWrappedDocument<T> | v4.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
   keyOrSigner: SigningKey | ethers.Signer
