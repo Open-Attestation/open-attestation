@@ -23,7 +23,7 @@ const OpenAttestationVC = vcDataModel.extend({
 
   type: z
     // Must be an array that starts with [VerifiableCredential, OpenAttestationCredential, ...]
-    .tuple([z.literal(ContextType.BaseContext as string), z.literal(ContextType.V4AlphaContext as string)])
+    .tuple([z.literal(ContextType.BaseContext), z.literal(ContextType.V4AlphaContext)])
     // Remaining items can be string
     .rest(z.string()),
 
