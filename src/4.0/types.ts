@@ -2,9 +2,9 @@ import z from "zod";
 
 // import { OpenAttestationDocument as OpenAttestationDocumentV4, ProofPurpose } from "../__generated__/schema.4.0";
 import { vcDataModel, zodUri } from "./validate/dataModel";
-import { ContextUrl, ContextType, OpenAttestationHexString, SignatureAlgorithm } from "../shared/@types/document";
+import { ContextUrl, ContextType } from "../shared/@types/document";
 
-const IdentityProofType = z.enum(["DNS-TXT", "DNS-DID", "DID"]);
+const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
 type IdentityProofType = z.infer<typeof IdentityProofType>;
 
 const Salt = z.object({ value: z.string(), path: z.string() });
