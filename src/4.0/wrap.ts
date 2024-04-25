@@ -62,7 +62,7 @@ export const wrapDocument = async <T extends V4Document>(document: T): Promise<V
 
   const documentReadyForWrapping = {
     ...rawDocument,
-    ...assertAsV4DocumentProps(rawDocument, ["issuer", "credentialStatus"]),
+    ...extractAndAssertAsV4DocumentProps(rawDocument, ["issuer", "credentialStatus"]),
     "@context": finalContexts,
     type: finalTypes,
   } satisfies W3cVerifiableCredential;
@@ -100,7 +100,7 @@ export const wrapDocument = async <T extends V4Document>(document: T): Promise<V
  * { a: undefined, b: "something" }. We also assert that the extracted properties
  * are of V4Document type.
  **/
-function assertAsV4DocumentProps<K extends keyof W3cVerifiableCredential>(
+function extractAndAssertAsV4DocumentProps<K extends keyof W3cVerifiableCredential>(
   original: W3cVerifiableCredential,
   keys: K[]
 ) {
