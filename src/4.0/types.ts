@@ -93,35 +93,21 @@ const WrappedSignedProof = WrappedProof.and(
   })
 );
 
-const WrappedDocument = OpenAttestationVC.extend({
-  proof: WrappedProof,
-});
+const WrappedDocumentProofShape = { proof: WrappedProof } as const;
+const WrappedDocument = OpenAttestationVC.extend(WrappedDocumentProofShape);
 
-const SignedDocument = OpenAttestationVC.extend({
-  proof: WrappedSignedProof,
-});
+const SignedDocumentProofShape = { proof: WrappedSignedProof } as const;
+const SignedDocument = OpenAttestationVC.extend(SignedDocumentProofShape);
 
-type _WrappedDocument = z.infer<typeof WrappedDocument>;
-type WrappedOpenAttestationVC<
-  T extends OpenAttestationVC = OpenAttestationVC,
-  U extends _WrappedDocument = Override<
-    T,
-    {
-      proof: z.infer<typeof WrappedProof>;
-    }
-  >
-> = U;
+type WrappedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
+  T,
+  Pick<z.infer<typeof WrappedDocument>, keyof typeof WrappedDocumentProofShape>
+>;
 
-type _SignedDocument = z.infer<typeof SignedDocument>;
-type WrappedSignedOpenAttestationVC<
-  T extends OpenAttestationVC = OpenAttestationVC,
-  U extends _SignedDocument = Override<
-    T,
-    {
-      proof: z.infer<typeof WrappedSignedProof>;
-    }
-  >
-> = U;
+type WrappedSignedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
+  T,
+  Pick<z.infer<typeof SignedDocument>, keyof typeof SignedDocumentProofShape>
+>;
 
 /** Overrides properties in the Target (a & b does not override a props with b props) */
 type Override<Target extends Record<string, unknown>, OverrideWith extends Record<string, unknown>> = Omit<
