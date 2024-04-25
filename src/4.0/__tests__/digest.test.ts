@@ -1,12 +1,12 @@
 import { cloneDeep } from "lodash";
 import { digestCredential } from "../digest";
-import { WrappedDocument } from "../../4.0/types";
 import { obfuscateVerifiableCredential } from "../obfuscate";
 import { decodeSalt } from "../salt";
 import sample from "../../../test/fixtures/v4/did-signed-wrapped.json";
+import { V4WrappedDocument } from "../types";
 
 // TODO: remove unknown
-const verifiableCredential = sample as unknown as WrappedDocument;
+const verifiableCredential = sample as unknown as V4WrappedDocument;
 // Digest will change whenever sample document is regenerated
 const credentialRoot = "f49be3b06f7a7eb074775ad12aae43936084c86646e3640eae18e7aeca4f7468";
 

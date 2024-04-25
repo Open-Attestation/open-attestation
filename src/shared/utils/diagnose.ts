@@ -6,11 +6,6 @@ import {
   VerifiableCredentialWrappedProofStrict as WrappedProofStrictV3,
   VerifiableCredentialSignedProof as SignedWrappedProofV3,
 } from "../../3.0/types";
-import {
-  WrappedProof as WrappedProofV4,
-  WrappedProofStrict as WrappedProofStrictV4,
-  SignedWrappedProof as SignedWrappedProofV4,
-} from "../../4.0/types";
 import { ArrayProof, Signature, SignatureStrict } from "../../2.0/types";
 import { clone, cloneDeepWith } from "lodash";
 import { buildAjv, getSchema } from "../ajv";
