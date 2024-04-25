@@ -1,5 +1,4 @@
-import { V4SignedWrappedDocument, VC, V4Document, V4WrappedDocument } from "../types";
-import { W3cVerifiableCredential } from "../validate";
+import { W3cVerifiableCredential, V4Document, V4WrappedDocument, V4SignedWrappedDocument } from "../types";
 
 const RAW_DOCUMENT: V4Document = {
   "@context": [
@@ -97,7 +96,7 @@ const SIGNED_WRAPPED: V4SignedWrappedDocument = {
 describe("v4 guard", () => {
   describe("given a raw document", () => {
     test("should pass w3c vc validation without removal of any data", () => {
-      const w3cVerifiableCredential: VC = RAW_DOCUMENT;
+      const w3cVerifiableCredential: W3cVerifiableCredential = RAW_DOCUMENT;
       const results = W3cVerifiableCredential.parse(w3cVerifiableCredential);
       expect(results).toEqual(RAW_DOCUMENT);
     });
@@ -155,7 +154,7 @@ describe("v4 guard", () => {
 
   describe("given a signed wrapped document", () => {
     test("should pass w3c vc validation without removal of any data", () => {
-      const w3cVerifiableCredential: VC = SIGNED_WRAPPED;
+      const w3cVerifiableCredential: W3cVerifiableCredential = SIGNED_WRAPPED;
       const results = W3cVerifiableCredential.parse(w3cVerifiableCredential);
       expect(results).toEqual(SIGNED_WRAPPED);
     });

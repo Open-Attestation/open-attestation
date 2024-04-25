@@ -1,15 +1,15 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
 import { ContextType, ContextUrl } from "../shared/@types/document";
-import { V4Document, VC, V4WrappedDocument } from "./types";
+import { V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts, W3cVerifiableCredential } from "./validate";
+import { interpretContexts } from "./validate";
 
 export const wrapDocument = async <T extends V4Document>(document: T): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
   const oav4context = await V4Document.pick({ "@context": true }).safeParseAsync(document); // Superficial check on user intention
-  let rawDocument: VC | undefined;
+  let rawDocument: W3cVerifiableCredential | undefined;
   if (oav4context.success) {
     const oav4 = await V4Document.safeParseAsync(rawDocument);
     if (!oav4.success) {
@@ -62,10 +62,10 @@ export const wrapDocument = async <T extends V4Document>(document: T): Promise<V
 
   const documentReadyForWrapping = {
     ...rawDocument,
-    ...assertAsOaVcProps(rawDocument, ["issuer", "credentialStatus"]),
+    ...assertAsV4DocumentProps(rawDocument, ["issuer", "credentialStatus"]),
     "@context": finalContexts,
     type: finalTypes,
-  } satisfies VC;
+  } satisfies W3cVerifiableCredential;
 
   /* 5.  OA wrapping */
   const salts = salt(documentReadyForWrapping);
@@ -94,9 +94,18 @@ export const wrapDocument = async <T extends V4Document>(document: T): Promise<V
   return verifiableCredential as V4WrappedDocument<T>;
 };
 
-function assertAsOaVcProps<K extends keyof VC>(obj: VC, keys: K[]) {
+/** Extract a set of properties from w3cVerifiableCredential but only include the ones
+ * that are defined in the original document. For example, if we extract
+ * "a" and "b" from { b: "something" } we should only get { b: "something" } NOT
+ * { a: undefined, b: "something" }. We also assert that the extracted properties
+ * are of V4Document type.
+ **/
+function assertAsV4DocumentProps<K extends keyof W3cVerifiableCredential>(
+  original: W3cVerifiableCredential,
+  keys: K[]
+) {
   const temp: Record<string, unknown> = {};
-  Object.entries(obj).forEach(([k, v]) => {
+  Object.entries(original).forEach(([k, v]) => {
     if (keys.includes(k as K)) temp[k] = v;
   });
   return temp as { [key in K]: V4Document[key] };
