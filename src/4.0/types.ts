@@ -4,16 +4,13 @@ import { vcDataModel, zodUri } from "./validate/dataModel";
 import { ContextUrl, ContextType } from "../shared/@types/document";
 
 const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
-type IdentityProofType = z.infer<typeof IdentityProofType>;
-
 const Salt = z.object({ value: z.string(), path: z.string() });
-type Salt = z.infer<typeof Salt>;
 
 // Custom hex string validation function
 const HEX_STRING_REGEX = /^(0x)?[0-9a-fA-F]{40}$/;
-const zodHexString = z.string().regex(HEX_STRING_REGEX, { message: "Invalid Hex String" });
+const HexString = z.string().regex(HEX_STRING_REGEX, { message: "Invalid Hex String" });
 
-const OpenAttestationVC = vcDataModel.extend({
+export const OpenAttestationVC = vcDataModel.extend({
   "@context": z
 
     // Must be an array that starts with [baseContext, v4Context, ...]
@@ -70,44 +67,48 @@ const OpenAttestationVC = vcDataModel.extend({
     )
     .optional(),
 });
-type VC = z.infer<typeof vcDataModel>;
-// AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
-// still being assignable to the base type. For example, if we accidentally extend and
-// replaced '@context' to a boolean, this would fail the assertion.
-type OpenAttestationVC = AssertStricterOrEqual<VC, z.infer<typeof OpenAttestationVC>>;
 
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
   proofPurpose: z.literal("assertionMethod"),
-  targetHash: zodHexString,
-  proofs: z.array(zodHexString),
-  merkleRoot: zodHexString,
+  targetHash: HexString,
+  proofs: z.array(HexString),
+  merkleRoot: HexString,
   salts: z.string(),
-  privacy: z.object({ obfuscated: z.array(zodHexString) }),
+  privacy: z.object({ obfuscated: z.array(HexString) }),
 });
+const WrappedDocumentExtrasShape = { proof: WrappedProof } as const;
+const WrappedDocument = OpenAttestationVC.extend(WrappedDocumentExtrasShape);
 
-const WrappedSignedProof = WrappedProof.and(
+const SignedWrappedProof = WrappedProof.and(
   z.object({
     key: z.string(),
     signature: z.string(),
   })
 );
+const SignedWrappedDocumentExtrasShape = { proof: SignedWrappedProof } as const;
+const SignedWrappedDocument = OpenAttestationVC.extend(SignedWrappedDocumentExtrasShape);
 
-const WrappedDocumentProofShape = { proof: WrappedProof } as const;
-const WrappedDocument = OpenAttestationVC.extend(WrappedDocumentProofShape);
+export type VC = z.infer<typeof vcDataModel>;
 
-const SignedDocumentProofShape = { proof: WrappedSignedProof } as const;
-const SignedDocument = OpenAttestationVC.extend(SignedDocumentProofShape);
+// AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
+// still being assignable to the base type. For example, if we accidentally extend and
+// replaced '@context' to a boolean, this would fail the assertion.
+export type OpenAttestationVC = AssertStricterOrEqual<VC, z.infer<typeof OpenAttestationVC>>;
 
-type WrappedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
+export type WrappedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
   T,
-  Pick<z.infer<typeof WrappedDocument>, keyof typeof WrappedDocumentProofShape>
+  Pick<z.infer<typeof WrappedDocument>, keyof typeof WrappedDocumentExtrasShape>
 >;
 
-type WrappedSignedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
+export type WrappedSignedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
   T,
-  Pick<z.infer<typeof SignedDocument>, keyof typeof SignedDocumentProofShape>
+  Pick<z.infer<typeof SignedWrappedDocument>, keyof typeof SignedWrappedDocumentExtrasShape>
 >;
+
+type IdentityProofType = z.infer<typeof IdentityProofType>;
+
+export type Salt = z.infer<typeof Salt>;
 
 /** Overrides properties in the Target (a & b does not override a props with b props) */
 type Override<Target extends Record<string, unknown>, OverrideWith extends Record<string, unknown>> = Omit<
@@ -119,5 +120,3 @@ type Override<Target extends Record<string, unknown>, OverrideWith extends Recor
 /** Used to assert that StricterType is a stricter or equal version of LooserType, and most importantly, that
  *  StricterType is STILL assignable to LooserType. */
 type AssertStricterOrEqual<LooserType, StricterType> = StricterType extends LooserType ? StricterType : never;
-
-export { VC, OpenAttestationVC, WrappedOpenAttestationVC, WrappedSignedOpenAttestationVC, Salt };
