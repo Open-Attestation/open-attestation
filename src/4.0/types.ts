@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { vcDataModel, zodUri } from "./validate/dataModel";
+import { W3cVerifiableCredential, Uri } from "./validate/dataModel";
 import { ContextUrl, ContextType } from "../shared/@types/document";
 
 const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
@@ -10,7 +10,7 @@ const Salt = z.object({ value: z.string(), path: z.string() });
 const HEX_STRING_REGEX = /^(0x)?[0-9a-fA-F]{40}$/;
 const HexString = z.string().regex(HEX_STRING_REGEX, { message: "Invalid Hex String" });
 
-export const OpenAttestationVC = vcDataModel.extend({
+export const V4Document = W3cVerifiableCredential.extend({
   "@context": z
 
     // Must be an array that starts with [baseContext, v4Context, ...]
@@ -26,7 +26,7 @@ export const OpenAttestationVC = vcDataModel.extend({
 
   issuer: z.object({
     // Must have id match uri pattern
-    id: zodUri,
+    id: Uri,
     type: z.literal("OpenAttestationIssuer"),
     name: z.string(),
     identityProof: z.object({
@@ -78,7 +78,7 @@ const WrappedProof = z.object({
   privacy: z.object({ obfuscated: z.array(HexString) }),
 });
 const WrappedDocumentExtrasShape = { proof: WrappedProof } as const;
-const WrappedDocument = OpenAttestationVC.extend(WrappedDocumentExtrasShape);
+export const V4WrappedDocument = V4Document.extend(WrappedDocumentExtrasShape);
 
 const SignedWrappedProof = WrappedProof.and(
   z.object({
@@ -87,23 +87,23 @@ const SignedWrappedProof = WrappedProof.and(
   })
 );
 const SignedWrappedDocumentExtrasShape = { proof: SignedWrappedProof } as const;
-const SignedWrappedDocument = OpenAttestationVC.extend(SignedWrappedDocumentExtrasShape);
+export const V4SignedWrappedDocument = V4Document.extend(SignedWrappedDocumentExtrasShape);
 
-export type VC = z.infer<typeof vcDataModel>;
+export type VC = z.infer<typeof W3cVerifiableCredential>;
 
 // AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
 // still being assignable to the base type. For example, if we accidentally extend and
 // replaced '@context' to a boolean, this would fail the assertion.
-export type OpenAttestationVC = AssertStricterOrEqual<VC, z.infer<typeof OpenAttestationVC>>;
+export type V4Document = AssertStricterOrEqual<VC, z.infer<typeof V4Document>>;
 
-export type WrappedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
+export type V4WrappedDocument<T extends V4Document = V4Document> = Override<
   T,
-  Pick<z.infer<typeof WrappedDocument>, keyof typeof WrappedDocumentExtrasShape>
+  Pick<z.infer<typeof V4WrappedDocument>, keyof typeof WrappedDocumentExtrasShape>
 >;
 
-export type WrappedSignedOpenAttestationVC<T extends OpenAttestationVC = OpenAttestationVC> = Override<
+export type V4SignedWrappedDocument<T extends V4Document = V4Document> = Override<
   T,
-  Pick<z.infer<typeof SignedWrappedDocument>, keyof typeof SignedWrappedDocumentExtrasShape>
+  Pick<z.infer<typeof V4SignedWrappedDocument>, keyof typeof SignedWrappedDocumentExtrasShape>
 >;
 
 type IdentityProofType = z.infer<typeof IdentityProofType>;

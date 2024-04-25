@@ -1,19 +1,17 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
 import { ContextType, ContextUrl } from "../shared/@types/document";
-import { OpenAttestationVC, VC, WrappedOpenAttestationVC } from "./types";
+import { V4Document, VC, V4WrappedDocument } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts, vcDataModel } from "./validate";
+import { interpretContexts, W3cVerifiableCredential } from "./validate";
 
-export const wrapDocument = async <T extends OpenAttestationVC>(
-  credential: T
-): Promise<WrappedOpenAttestationVC<T>> => {
+export const wrapDocument = async <T extends V4Document>(document: T): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
-  const oav4context = await OpenAttestationVC.pick({ "@context": true }).safeParseAsync(credential); // Superficial check on user intention
+  const oav4context = await V4Document.pick({ "@context": true }).safeParseAsync(document); // Superficial check on user intention
   let rawDocument: VC | undefined;
   if (oav4context.success) {
-    const oav4 = await OpenAttestationVC.safeParseAsync(rawDocument);
+    const oav4 = await V4Document.safeParseAsync(rawDocument);
     if (!oav4.success) {
       throw new Error(
         `Input document does not conform to OpenAttestation v4.0 Data Model: ${JSON.stringify(oav4.error.issues)}`
@@ -24,7 +22,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
 
   /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
   if (!rawDocument) {
-    const vc = await vcDataModel.safeParseAsync(credential);
+    const vc = await W3cVerifiableCredential.safeParseAsync(document);
     if (!vc.success)
       throw new Error(
         `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(vc.error.issues)}`
@@ -47,7 +45,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
     rawDocument["@context"].forEach((context) => contexts.add(context));
   }
   REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
-  const finalContexts: OpenAttestationVC["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
+  const finalContexts: V4Document["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
 
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order
@@ -60,7 +58,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
     types.forEach((type) => types.add(type));
   }
   REQUIRED_TYPES.forEach((t) => types.delete(t));
-  const finalTypes: OpenAttestationVC["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
+  const finalTypes: V4Document["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
 
   const documentReadyForWrapping = {
     ...rawDocument,
@@ -78,7 +76,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
   const merkleTree = new MerkleTree(batchBuffers);
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
-  const verifiableCredential: WrappedOpenAttestationVC = {
+  const verifiableCredential: V4WrappedDocument = {
     ...documentReadyForWrapping,
     proof: {
       type: "OpenAttestationMerkleProofSignature2018",
@@ -93,7 +91,7 @@ export const wrapDocument = async <T extends OpenAttestationVC>(
     },
   };
 
-  return verifiableCredential as WrappedOpenAttestationVC<T>;
+  return verifiableCredential as V4WrappedDocument<T>;
 };
 
 function assertAsOaVcProps<K extends keyof VC>(obj: VC, keys: K[]) {
@@ -101,5 +99,5 @@ function assertAsOaVcProps<K extends keyof VC>(obj: VC, keys: K[]) {
   Object.entries(obj).forEach(([k, v]) => {
     if (keys.includes(k as K)) temp[k] = v;
   });
-  return temp as { [key in K]: OpenAttestationVC[key] };
+  return temp as { [key in K]: V4Document[key] };
 }

@@ -1,8 +1,8 @@
 import { get, sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
-import { OpenAttestationVC, Salt } from "./types";
+import { V4Document, Salt } from "./types";
 
-export const digestCredential = (document: OpenAttestationVC, salts: Salt[], obfuscatedData: string[]) => {
+export const digestCredential = (document: V4Document, salts: Salt[], obfuscatedData: string[]) => {
   // Prepare array of hashes from visible data
   const hashedUnhashedDataArray = salts
     // Explictly allow falsy values (e.g. false, 0, etc.) as they can exist in the document

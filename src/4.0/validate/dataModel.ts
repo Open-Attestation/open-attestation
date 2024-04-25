@@ -7,9 +7,9 @@ const baseType = "VerifiableCredential";
 // Custom URI validation function
 const URI_REGEX =
   /^(?=.)(?!https?:\/(?:$|[^/]))(?!https?:\/\/\/)(?!https?:[^/])(?:[a-zA-Z][a-zA-Z\d+-\.]*:(?:(?:\/\/(?:[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:]*@)?(?:\[(?:(?:(?:[\dA-Fa-f]{1,4}:){6}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|::(?:[\dA-Fa-f]{1,4}:){5}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){4}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,1}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){3}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,2}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){2}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,3}[\dA-Fa-f]{1,4})?::[\dA-Fa-f]{1,4}:(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,4}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,5}[\dA-Fa-f]{1,4})?::[\dA-Fa-f]{1,4}|(?:(?:[\dA-Fa-f]{1,4}:){0,6}[\dA-Fa-f]{1,4})?::)|v[\dA-Fa-f]+\.[\w-\.~!\$&'\(\)\*\+,;=:]+)\]|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])|[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=]{1,255})(?::\d*)?(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)|\/(?:[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]+(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)?|[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]+(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*|(?:\/\/\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)))(?:\?[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@\/\?]*(?=#|$))?(?:#[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@\/\?]*)?$/;
-export const zodUri = z.string().regex(URI_REGEX, { message: "Invalid URI" });
+export const Uri = z.string().regex(URI_REGEX, { message: "Invalid URI" });
 
-export const vcDataModel = z.object({
+export const W3cVerifiableCredential = z.object({
   "@context": z.union([
     z.record(z.any()),
     z.string(),
@@ -18,7 +18,7 @@ export const vcDataModel = z.object({
   ]),
 
   // [Optional] If string: Must match uri pattern
-  id: zodUri.optional(),
+  id: Uri.optional(),
 
   type: z.union([
     z.string(),
@@ -30,13 +30,13 @@ export const vcDataModel = z.object({
     .union([
       // If object: Must have id match uri pattern and type defined
       z.object({
-        id: zodUri,
+        id: Uri,
         type: z.string(),
       }),
       // If array: Every object must have id match uri pattern and type defined
       z.array(
         z.object({
-          id: zodUri,
+          id: Uri,
           type: z.string(),
         })
       ),
@@ -45,10 +45,10 @@ export const vcDataModel = z.object({
 
   issuer: z.union([
     // If string: Must match uri pattern
-    zodUri,
+    Uri,
     // If object: Must have id match uri pattern
     z.object({
-      id: zodUri,
+      id: Uri,
     }),
   ]),
 
@@ -72,7 +72,7 @@ export const vcDataModel = z.object({
   credentialStatus: z
     .object({
       // If id is present, id must match uri pattern (credentialStatus.id is optional and can be undefined)
-      id: zodUri.optional(),
+      id: Uri.optional(),
       // Must have type defined
       type: z.string(),
     })
@@ -82,13 +82,13 @@ export const vcDataModel = z.object({
     .union([
       // If object: Must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
       z.object({
-        id: zodUri.optional(),
+        id: Uri.optional(),
         type: z.string(),
       }),
       // If array: Every object must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
       z.array(
         z.object({
-          id: zodUri.optional(),
+          id: Uri.optional(),
           type: z.string(),
         })
       ),
@@ -99,13 +99,13 @@ export const vcDataModel = z.object({
     .union([
       // If object: Must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
       z.object({
-        id: zodUri.optional(),
+        id: Uri.optional(),
         type: z.string(),
       }),
       // If array: Every object must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
       z.array(
         z.object({
-          id: zodUri.optional(),
+          id: Uri.optional(),
           type: z.string(),
         })
       ),
