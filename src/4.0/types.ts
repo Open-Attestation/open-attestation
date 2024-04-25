@@ -1,6 +1,5 @@
 import z from "zod";
 
-// import { OpenAttestationDocument as OpenAttestationDocumentV4, ProofPurpose } from "../__generated__/schema.4.0";
 import { vcDataModel, zodUri } from "./validate/dataModel";
 import { ContextUrl, ContextType } from "../shared/@types/document";
 
@@ -16,6 +15,7 @@ const zodHexString = z.string().regex(HEX_STRING_REGEX, { message: "Invalid Hex 
 
 const OpenAttestationVC = vcDataModel.extend({
   "@context": z
+
     // Must be an array that starts with [baseContext, v4Context, ...]
     .tuple([z.literal(ContextUrl.v2_vc), z.literal(ContextUrl.v4_alpha)])
     // Remaining items can be string or object
@@ -71,7 +71,10 @@ const OpenAttestationVC = vcDataModel.extend({
     .optional(),
 });
 type VC = z.infer<typeof vcDataModel>;
-type OpenAttestationVC = z.infer<typeof OpenAttestationVC>;
+// AssertStricter is used to ensure that we have zod extended from the base type while
+// still being assignable to the base type. For example, if we accidentally extend and
+// replaced '@context' to a boolean, this would fail the assertion.
+type OpenAttestationVC = AssertStricter<VC, z.infer<typeof OpenAttestationVC>>;
 
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
@@ -120,7 +123,15 @@ type WrappedSignedOpenAttestationVC<
   >
 > = U;
 
-// a & b does not override a props with b props
-type Override<T extends Record<string, unknown>, U extends Record<string, unknown>> = Omit<T, keyof U> & U;
+/** Overrides properties in the Target (a & b does not override a props with b props) */
+type Override<Target extends Record<string, unknown>, OverrideWith extends Record<string, unknown>> = Omit<
+  Target,
+  keyof OverrideWith
+> &
+  OverrideWith;
+
+/** Used to assert that StricterType is a stricter version of LooserType, and most importantly, that
+ *  StricterType is STILL assignable to LooserType. */
+type AssertStricter<LooserType, StricterType> = StricterType extends LooserType ? StricterType : never;
 
 export { VC, OpenAttestationVC, WrappedOpenAttestationVC, WrappedSignedOpenAttestationVC, Salt };
