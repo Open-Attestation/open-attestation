@@ -17,6 +17,9 @@ export const W3cVerifiableCredential = z.object({
     z.tuple([z.literal(ContextUrl.v2_vc)]).rest(z.union([z.string(), z.record(z.any())])),
   ]),
 
+  // [Optional]
+  name: z.string().optional(),
+
   // [Optional] If string: Must match uri pattern
   id: Uri.optional(),
 
@@ -29,16 +32,20 @@ export const W3cVerifiableCredential = z.object({
   credentialSchema: z
     .union([
       // If object: Must have id match uri pattern and type defined
-      z.object({
-        id: Uri,
-        type: z.string(),
-      }),
-      // If array: Every object must have id match uri pattern and type defined
-      z.array(
-        z.object({
+      z
+        .object({
           id: Uri,
           type: z.string(),
         })
+        .passthrough(),
+      // If array: Every object must have id match uri pattern and type defined
+      z.array(
+        z
+          .object({
+            id: Uri,
+            type: z.string(),
+          })
+          .passthrough()
       ),
     ])
     .optional(),
@@ -47,9 +54,11 @@ export const W3cVerifiableCredential = z.object({
     // If string: Must match uri pattern
     Uri,
     // If object: Must have id match uri pattern
-    z.object({
-      id: Uri,
-    }),
+    z
+      .object({
+        id: Uri,
+      })
+      .passthrough(),
   ]),
 
   validFrom: z.string().datetime({ offset: true }).optional(),
@@ -76,21 +85,29 @@ export const W3cVerifiableCredential = z.object({
       // Must have type defined
       type: z.string(),
     })
+    .passthrough()
     .optional(),
+
+  // [Optional] This is at risk of being removed from the w3c spec
+  renderMethod: z.any().optional(),
 
   termsOfUse: z
     .union([
       // If object: Must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
-      z.object({
-        id: Uri.optional(),
-        type: z.string(),
-      }),
-      // If array: Every object must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
-      z.array(
-        z.object({
+      z
+        .object({
           id: Uri.optional(),
           type: z.string(),
         })
+        .passthrough(),
+      // If array: Every object must have type defined. If id is present, id must match uri pattern (termsOfUse.id is optional and can be undefined)
+      z.array(
+        z
+          .object({
+            id: Uri.optional(),
+            type: z.string(),
+          })
+          .passthrough()
       ),
     ])
     .optional(),
@@ -98,16 +115,20 @@ export const W3cVerifiableCredential = z.object({
   evidence: z
     .union([
       // If object: Must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
-      z.object({
-        id: Uri.optional(),
-        type: z.string(),
-      }),
-      // If array: Every object must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
-      z.array(
-        z.object({
+      z
+        .object({
           id: Uri.optional(),
           type: z.string(),
         })
+        .passthrough(),
+      // If array: Every object must have type defined. If id is present, id must match uri pattern (evidence.id is optional and can be undefined)
+      z.array(
+        z
+          .object({
+            id: Uri.optional(),
+            type: z.string(),
+          })
+          .passthrough()
       ),
     ])
     .optional(),
@@ -115,14 +136,18 @@ export const W3cVerifiableCredential = z.object({
   proof: z
     .union([
       // If object: Must have type defined
-      z.object({
-        type: z.string(),
-      }),
-      // If array: Every object must have type defined
-      z.array(
-        z.object({
+      z
+        .object({
           type: z.string(),
         })
+        .passthrough(),
+      // If array: Every object must have type defined
+      z.array(
+        z
+          .object({
+            type: z.string(),
+          })
+          .passthrough()
       ),
     ])
     .optional(),
