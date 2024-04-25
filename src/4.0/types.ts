@@ -71,10 +71,10 @@ const OpenAttestationVC = vcDataModel.extend({
     .optional(),
 });
 type VC = z.infer<typeof vcDataModel>;
-// AssertStricter is used to ensure that we have zod extended from the base type while
+// AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
 // still being assignable to the base type. For example, if we accidentally extend and
 // replaced '@context' to a boolean, this would fail the assertion.
-type OpenAttestationVC = AssertStricter<VC, z.infer<typeof OpenAttestationVC>>;
+type OpenAttestationVC = AssertStricterOrEqual<VC, z.infer<typeof OpenAttestationVC>>;
 
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
@@ -130,8 +130,8 @@ type Override<Target extends Record<string, unknown>, OverrideWith extends Recor
 > &
   OverrideWith;
 
-/** Used to assert that StricterType is a stricter version of LooserType, and most importantly, that
+/** Used to assert that StricterType is a stricter or equal version of LooserType, and most importantly, that
  *  StricterType is STILL assignable to LooserType. */
-type AssertStricter<LooserType, StricterType> = StricterType extends LooserType ? StricterType : never;
+type AssertStricterOrEqual<LooserType, StricterType> = StricterType extends LooserType ? StricterType : never;
 
 export { VC, OpenAttestationVC, WrappedOpenAttestationVC, WrappedSignedOpenAttestationVC, Salt };
