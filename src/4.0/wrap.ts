@@ -1,12 +1,15 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
 import { ContextType, ContextUrl } from "../shared/@types/document";
-import { V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
+import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
 import { interpretContexts } from "./validate";
 
-export const wrapDocument = async <T extends V4Document>(document: T): Promise<V4WrappedDocument<T>> => {
+export const wrapDocument = async <T extends V4Document>(
+  // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
+  document: NoExtraProperties<V4Document, T>
+): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
   const oav4context = await V4Document.pick({ "@context": true }).safeParseAsync(document); // Superficial check on user intention
   let validatedRawDocument: W3cVerifiableCredential | undefined;
@@ -94,7 +97,10 @@ export const wrapDocument = async <T extends V4Document>(document: T): Promise<V
   return verifiableCredential as V4WrappedDocument<T>;
 };
 
-export const wrapDocuments = async <T extends V4Document>(documents: T[]): Promise<V4WrappedDocument<T>[]> => {
+export const wrapDocuments = async <T extends V4Document>(
+  // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
+  documents: NoExtraProperties<V4Document, T>[]
+): Promise<V4WrappedDocument<T>[]> => {
   // create individual verifiable credential
   const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document)));
 

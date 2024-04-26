@@ -260,3 +260,6 @@ type Override<Target extends Record<string, unknown>, OverrideWith extends Recor
 /** Used to assert that StricterType is a stricter or equal version of LooserType, and most importantly, that
  *  StricterType is STILL assignable to LooserType. */
 type AssertStricterOrEqual<LooserType, StricterType> = StricterType extends LooserType ? StricterType : never;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type NoExtraProperties<Reference, NewObj> = NewObj extends Reference & infer _ExtraProps ? Reference : NewObj;

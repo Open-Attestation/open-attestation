@@ -26,7 +26,6 @@ import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV3 } from
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
 
 import * as v4 from "./4.0/types";
-import { wrapDocument as wrapDocumentV4, wrapDocuments as wrapDocumentsV4 } from "./4.0/wrap";
 import { signDocument as signDocumentV4 } from "./4.0/sign";
 import { verify as verifyV4 } from "./4.0/verify";
 import { digestCredential as digestCredentialV4 } from "./4.0/digest";
@@ -61,17 +60,10 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends
   return wrapDocumentsV3(dataArray, options ?? { version: SchemaId.v3 });
 }
 
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument<T extends v4.V4Document>(
-  data: T
-): Promise<v4.V4WrappedDocument<T>> {
-  return wrapDocumentV4(data);
-}
-
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments<T extends v4.V4Document>(
-  dataArray: T[]
-): Promise<v4.V4WrappedDocument<T>[]> {
-  return wrapDocumentsV4(dataArray);
-}
+export {
+  wrapDocument as _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument,
+  wrapDocuments as _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments,
+} from "./4.0/wrap";
 
 export const validateSchema = (document: WrappedDocument<any>): boolean => {
   if (utils.isWrappedV2Document(document) || document?.version === SchemaId.v2)
