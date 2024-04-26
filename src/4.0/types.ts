@@ -211,7 +211,7 @@ export const V4Document = W3cVerifiableCredential.extend({
       ])
     )
     .optional(),
-});
+}).strict();
 
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
@@ -223,11 +223,11 @@ const WrappedProof = z.object({
   privacy: z.object({ obfuscated: z.array(z.string()) }),
 });
 const WrappedDocumentExtrasShape = { proof: WrappedProof.passthrough() } as const;
-export const V4WrappedDocument = V4Document.extend(WrappedDocumentExtrasShape);
+export const V4WrappedDocument = V4Document.extend(WrappedDocumentExtrasShape).strict();
 
 const SignedWrappedProof = WrappedProof.extend({ key: z.string(), signature: z.string() });
 const SignedWrappedDocumentExtrasShape = { proof: SignedWrappedProof } as const;
-export const V4SignedWrappedDocument = V4Document.extend(SignedWrappedDocumentExtrasShape);
+export const V4SignedWrappedDocument = V4Document.extend(SignedWrappedDocumentExtrasShape).strict();
 
 export type W3cVerifiableCredential = z.infer<typeof W3cVerifiableCredential>;
 
