@@ -40,6 +40,48 @@ const RAW_DOCUMENT: V4Document = {
   },
 };
 
+const WRAPPED: V4WrappedDocument = {
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+  ],
+  name: "Republic of Singapore Driving Licence",
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
+  issuer: {
+    id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
+    type: "OpenAttestationIssuer",
+    name: "Government Technology Agency of Singapore (GovTech)",
+    identityProof: {
+      identityProofType: "DNS-DID",
+      identifier: "example.openattestation.com",
+    },
+  },
+  validFrom: "2021-03-08T12:00:00+08:00",
+  credentialSubject: {
+    id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    type: ["DriversLicense"],
+    name: "John Doe",
+    licenses: [[Object], [Object]],
+  },
+  renderMethod: [
+    {
+      id: "https://demo-renderer.opencerts.io",
+      type: "OpenAttestationEmbeddedRenderer",
+      templateName: "GOVTECH_DEMO",
+    },
+  ],
+  proof: {
+    type: "OpenAttestationMerkleProofSignature2018",
+    proofPurpose: "assertionMethod",
+    targetHash: "5746a5bc0a8aa0cfdaa6ab14bd63d10a91713b0d8450f0403d86f777ff4ba81b",
+    proofs: [],
+    merkleRoot: "5746a5bc0a8aa0cfdaa6ab14bd63d10a91713b0d8450f0403d86f777ff4ba81b",
+    salts:
+      "W3sidmFsdWUiOiI3ZDgzZGNkMWU2NjM1ZjAxZWM3NjZlNzQwZDM1ZTE4MjU2OWM3MjdjNjViNDZlMTQyMDY3NDRiMTFhMThhYWNiIiwicGF0aCI6IkBjb250ZXh0WzBdIn0seyJ2YWx1ZSI6IjI3OGJmZjY2ZTA4N2VhNDBkNjcwZTQ0OTgwYzUyZWM4NTRlOWViZjEyYjM2M2VhZTEyNDExOWQwMzgyMTgxMzUiLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiY2U0YTJhOWMzMjBhOTU1MDlmNGQwODIwZGE1N2M3OWVlMDE1ZTQyNzgwODg3ZDkzZjE4ODIwMGNhMDNmMGI1OCIsInBhdGgiOiJuYW1lIn0seyJ2YWx1ZSI6ImEzMGVmNzM1MTljZmNjMDE3Zjk5MzBkYWJmNjk2YmNjMjY1ZjI4MDljZjBlOGQyNmUwMzUzYjY3NWZiMzMyZjYiLCJwYXRoIjoidHlwZVswXSJ9LHsidmFsdWUiOiIyMzczMzYwMGNjOTBjMjQ3MzhjOThjMWQxMTJiY2ExZDc0NWFkODMyNjczY2RlMWE5ZjhmYWM3MWZmN2FkODQyIiwicGF0aCI6InR5cGVbMV0ifSx7InZhbHVlIjoiZjhhZDY4MmVjMGMzYzJjMjZlZjhmY2FkNDg1NzE4ODNiMTU3M2ZkMjYzZTA4N2NlMWZmNDQ3ZGUxYjAxYWRiMCIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiMzIxMzEwYTI4MDMwZjE1NmEzM2VkNzM5N2MzNGE0ZTk2OTkxNjVkZTQyNjRiODgyMGVmNTZkMGJiOWQ1NDM1MyIsInBhdGgiOiJpc3N1ZXIudHlwZSJ9LHsidmFsdWUiOiI3NzM1NGIxMTQ4MTA4ZDIzYWQ5OTI5NDE4MmViYmJmNzM1NzIyNjg4YTdjOGFmYTQxOTM4ZGVkNzUwY2VlZTQzIiwicGF0aCI6Imlzc3Vlci5uYW1lIn0seyJ2YWx1ZSI6IjVhZjY1OTQ1YTlkNTEyODUwM2RjMTM3ZDgwM2ZmMzg5OTJhNTQ4MTg3ZjRlZjJkNThlMGQ4MjMwYjE5ZDZlZWMiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YuaWRlbnRpdHlQcm9vZlR5cGUifSx7InZhbHVlIjoiN2IxOTE4NjJiNWY0OWQxY2M1NTA0OWI0NGI2ODk4YmQwNThhMjlkNzg5MjljZDZjYjk2MWNiODgwOWE5ZjBmZSIsInBhdGgiOiJpc3N1ZXIuaWRlbnRpdHlQcm9vZi5pZGVudGlmaWVyIn0seyJ2YWx1ZSI6ImI5OGQxMTI0Y2RhYTU2NGY4YjJhZjE1OTE0OWM0MDBiODM4NWZhN2YxZThhYTRjNmExODEzNzg0NWUwMDIyMDEiLCJwYXRoIjoidmFsaWRGcm9tIn0seyJ2YWx1ZSI6ImFkYTY5ZDZlYjI3OWVjNjk0ZGE1ODMxZDU1N2Q3NjIxYWM4NWQwYzJlN2IxNDdmM2E5ZGNkMjM0NzA3MWZjMzkiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMDdiYjI0NDRkZmQxMWVkY2M5OWI1MWJhMzllNTI4ODM3NWY2YTExY2U5YTg4Y2MxMjZkNmY4YjYxMzM2ZmQ0NiIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC50eXBlWzBdIn0seyJ2YWx1ZSI6ImZlZGIyMDRmNWM4ZWM1OGU3NzUxYTNhNWM3YmU2MmQxZjhkYjg2MTAyOTI1ZGU1MzcyY2E3NGNlZWVlZjhiOWUiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubmFtZSJ9LHsidmFsdWUiOiJjYTM4YjM3MDk0OTM5ZTE0MDNhN2RlNGUzNzljYTAzMzIzNTQ4ZTdmZjc2YmQ1MGI1ZmI0MGY4NjdmYzRkZjk2IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzBdLmNsYXNzIn0seyJ2YWx1ZSI6IjAxY2NkZjAxMTI3YWRiODAzYjJhNmQ2YmVjZWU2YTk4N2EyNzM1ZWIxYjYzZGI0Njg5NDMyYmY2NzNmMzIwYzYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMF0uZGVzY3JpcHRpb24ifSx7InZhbHVlIjoiZDJlZGY0NmZiMjQwNzRjNzY0Y2I4MzliMjYyNGNmNjQ5NWU2NTY5NzA1YmI3ZmMyZjllZjYxNDc0ZTdkODBjYSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1swXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6ImY4OWQyOWEwOGE5NmI2YjYyNWU5NjM0OWFiMGVlM2JmNDUzODZhODAxMDhiMTE2NTUwMjk0ODg3MmE4ZmExYmYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMV0uY2xhc3MifSx7InZhbHVlIjoiMDdmY2JmMzhjYWYxOTYyZjI5MTBjNjk1ZGY1OTVlOWYzYzUwNjk2OWRlNDVlOWU5NWNhNzAwYjFiN2E1OGZlMSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1sxXS5kZXNjcmlwdGlvbiJ9LHsidmFsdWUiOiIyYzYyNGQ0NTJmNWE1MGJiMzlkMzY0NDMwMDA5NDYyMDY2NmY2NTk5MzJiODhmMmFjZWNjYzRiYzQwMmQ4MmNlIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzFdLmVmZmVjdGl2ZURhdGUifSx7InZhbHVlIjoiZmE5NWEyOGRhNjRlMjA4OTBiZWVjMTZiNGY2N2E2ZDMyNThkYThjYTljN2M1MDljNTZjYjMwZjg0NGUzMjNjOCIsInBhdGgiOiJyZW5kZXJNZXRob2RbMF0uaWQifSx7InZhbHVlIjoiYTZmM2FlMmYyNjM0OTkxNzg2NzZlZmMzZmVlYjc3OWEwM2IyMDlhOTQwN2Q1NWU1MDNlN2U4YTA5OWExYmFiMSIsInBhdGgiOiJyZW5kZXJNZXRob2RbMF0udHlwZSJ9LHsidmFsdWUiOiIyYjEyNGIzOGE0MDEyOWM1ZTM3OTZhZjQ3ZTEyZDg4YWI2YWZmNjllNzZiMTgyYWJmNTZiYjQ2OWU1MTZlNjc1IiwicGF0aCI6InJlbmRlck1ldGhvZFswXS50ZW1wbGF0ZU5hbWUifV0=",
+    privacy: { obfuscated: [] },
+  },
+};
+
 const SIGNED_WRAPPED: V4SignedWrappedDocument = {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
@@ -135,6 +177,54 @@ describe("v4 guard", () => {
             "received": "undefined",
             "path": [
               "proof"
+            ],
+            "message": "Required"
+          }
+        ]]
+      `);
+    });
+  });
+
+  describe("given a wrapped document", () => {
+    test("should pass w3c vc validation without removal of any data", () => {
+      const w3cVerifiableCredential: W3cVerifiableCredential = WRAPPED;
+      const results = W3cVerifiableCredential.parse(w3cVerifiableCredential);
+      expect(results).toEqual(WRAPPED);
+    });
+
+    test("should pass document validation without removal of any data", () => {
+      const v4Document: V4Document = WRAPPED;
+      const results = V4Document.parse(v4Document);
+      expect(results).toEqual(WRAPPED);
+    });
+
+    test("should pass wrapped document validation without removal of any data", () => {
+      const results = V4WrappedDocument.parse(WRAPPED);
+      expect(results).toEqual(WRAPPED);
+    });
+
+    test("should fail signed wrapped document validation", () => {
+      const results = V4SignedWrappedDocument.safeParse(WRAPPED);
+      expect(results.success).toBe(false);
+      expect((results as { error: unknown }).error).toMatchInlineSnapshot(`
+        [ZodError: [
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "proof",
+              "key"
+            ],
+            "message": "Required"
+          },
+          {
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined",
+            "path": [
+              "proof",
+              "signature"
             ],
             "message": "Required"
           }

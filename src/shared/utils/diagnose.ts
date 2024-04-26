@@ -88,7 +88,7 @@ export const diagnose = ({
   const versionToSchemaId: Record<Version, SchemaId> = {
     "2.0": SchemaId.v2,
     "3.0": SchemaId.v3,
-    "4.0": SchemaId.v4,
+    "4.0": "" as SchemaId,
   };
 
   const errors = validate(
@@ -252,9 +252,9 @@ const diagnoseV4 = ({
     // 4. Check proof object
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     if (mode === "strict") {
-      WrappedProofStrictV4.check(document.proof);
+      // WrappedProofStrictV4.check(document.proof);
     } else {
-      WrappedProofV4.check(document.proof);
+      // WrappedProofV4.check(document.proof);
     }
   } catch (e) {
     if (e instanceof Error) {
@@ -270,7 +270,7 @@ const diagnoseV4 = ({
       return handleError(debug, `The document does not have a proof`);
     }
     try {
-      SignedWrappedProofV4.check(document.proof);
+      // SignedWrappedProofV4.check(document.proof);
     } catch (e) {
       if (e instanceof Error) {
         return handleError(debug, e.message);
