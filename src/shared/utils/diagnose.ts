@@ -12,7 +12,7 @@ import { buildAjv, getSchema } from "../ajv";
 import { Kind, Mode } from "./@types/diagnose";
 import { v4Diagnose } from "../../4.0/diagnose";
 
-type Version = "2.0" | "3.0" | "4.0";
+export type Version = "2.0" | "3.0" | "4.0";
 
 interface DiagnoseError {
   message: string;

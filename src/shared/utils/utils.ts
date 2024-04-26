@@ -21,13 +21,7 @@ import {
   isRawV4Document,
   isWrappedV4Document,
 } from "./guard";
-
-const VersionGuard = {
-  2: isWrappedV2Document,
-  3: isWrappedV3Document,
-  4: isWrappedV4Document,
-} as const satisfies Record<number, (document: unknown) => boolean>;
-type OAVersion = keyof typeof VersionGuard;
+import { Version } from "./diagnose";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -274,18 +268,18 @@ export const getObfuscatedData = (
 export const isStringArray = (input: unknown): input is string[] =>
   Array.isArray(input) && input.every((i) => typeof i === "string");
 
-export const getVersion = (document: unknown): OAVersion => {
+export const getVersion = (document: unknown): Version => {
   if (typeof document === "object" && document !== null) {
     if ("version" in document && typeof document.version === "string") {
       switch (document.version) {
         case SchemaId.v2:
-          return 2;
+          return "2.0";
         case SchemaId.v3:
-          return 3;
+          return "3.0";
       }
     } else if ("@context" in document && Array.isArray(document["@context"])) {
       if (document["@context"].includes(ContextUrl.v4_alpha)) {
-        return 4;
+        return "4.0";
       }
     }
   }
