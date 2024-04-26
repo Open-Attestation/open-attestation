@@ -137,15 +137,6 @@ describe("v4 guard", () => {
               "proof"
             ],
             "message": "Required"
-          },
-          {
-            "code": "invalid_type",
-            "expected": "object",
-            "received": "undefined",
-            "path": [
-              "proof"
-            ],
-            "message": "Required"
           }
         ]]
       `);
