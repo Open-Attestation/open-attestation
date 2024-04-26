@@ -10,7 +10,7 @@ import * as v3 from "../../__generated__/schema.3.0";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
-import { V4WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
+import { V4WrappedDocument } from "../../4.0/types";
 
 import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl } from "../@types/document";
 import {
@@ -224,7 +224,7 @@ export const isObfuscated = (
   document:
     | WrappedDocumentV2<OpenAttestationDocumentV2>
     | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | WrappedDocumentV4
+    | V4WrappedDocument
 ): boolean => {
   if (isWrappedV2Document(document)) {
     return !!document.privacy?.obfuscatedData?.length;
@@ -243,7 +243,7 @@ export const getObfuscatedData = (
   document:
     | WrappedDocumentV2<OpenAttestationDocumentV2>
     | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | WrappedDocumentV4
+    | V4WrappedDocument
 ): string[] => {
   if (isWrappedV2Document(document)) {
     return document.privacy?.obfuscatedData || [];
