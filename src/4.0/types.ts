@@ -155,10 +155,6 @@ export const W3cVerifiableCredential = z.object({
 const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
 const Salt = z.object({ value: z.string(), path: z.string() });
 
-// Custom hex string validation function
-const HEX_STRING_REGEX = /^(0x)?[0-9a-fA-F]{40}$/;
-const HexString = z.string().regex(HEX_STRING_REGEX, { message: "Invalid Hex String" });
-
 export const V4Document = W3cVerifiableCredential.extend({
   "@context": z
 
@@ -220,21 +216,16 @@ export const V4Document = W3cVerifiableCredential.extend({
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
   proofPurpose: z.literal("assertionMethod"),
-  targetHash: HexString,
-  proofs: z.array(HexString),
-  merkleRoot: HexString,
+  targetHash: z.string(),
+  proofs: z.array(z.string()),
+  merkleRoot: z.string(),
   salts: z.string(),
-  privacy: z.object({ obfuscated: z.array(HexString) }),
+  privacy: z.object({ obfuscated: z.array(z.string()) }),
 });
-const WrappedDocumentExtrasShape = { proof: WrappedProof } as const;
+const WrappedDocumentExtrasShape = { proof: WrappedProof.passthrough() } as const;
 export const V4WrappedDocument = V4Document.extend(WrappedDocumentExtrasShape);
 
-const SignedWrappedProof = WrappedProof.and(
-  z.object({
-    key: z.string(),
-    signature: z.string(),
-  })
-);
+const SignedWrappedProof = WrappedProof.extend({ key: z.string(), signature: z.string() });
 const SignedWrappedDocumentExtrasShape = { proof: SignedWrappedProof } as const;
 export const V4SignedWrappedDocument = V4Document.extend(SignedWrappedDocumentExtrasShape);
 
