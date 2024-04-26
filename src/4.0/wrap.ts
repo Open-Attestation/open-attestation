@@ -1,68 +1,89 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { ContextUrl } from "../shared/@types/document";
-import { WrappedDocument } from "./types";
+import { ContextType, ContextUrl } from "../shared/@types/document";
+import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
-import { WrapDocumentOptionV4 } from "../shared/@types/wrap";
-import { OpenAttestationDocument, ProofPurpose } from "../__generated__/schema.4.0";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts, inputVcModel } from "./validate";
+import { interpretContexts } from "./validate";
 
-export const wrapDocument = async <T extends OpenAttestationDocument>(
-  credential: T,
-  options: WrapDocumentOptionV4 // eslint-disable-line @typescript-eslint/no-unused-vars
-): Promise<WrappedDocument<T>> => {
-  const document = { ...credential };
+export const wrapDocument = async <T extends V4Document>(
+  // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
+  document: NoExtraProperties<V4Document, T>
+): Promise<V4WrappedDocument<T>> => {
+  /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
+  const oav4context = await V4Document.pick({ "@context": true }).safeParseAsync(document); // Superficial check on user intention
+  let validatedRawDocument: W3cVerifiableCredential | undefined;
+  if (oav4context.success) {
+    const oav4 = await V4Document.safeParseAsync(document);
+    if (!oav4.success) {
+      throw new Error(
+        `Input document does not conform to OpenAttestation v4.0 Data Model: ${JSON.stringify(oav4.error.issues)}`
+      );
+    }
+    validatedRawDocument = oav4.data;
+  }
 
-  /* 1. Data model validation */
-  const result = await inputVcModel.safeParseAsync(document);
-  if (!result.success)
-    throw new Error(
-      `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(
-        result.error.issues
-      )}`
-    );
+  /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
+  if (!validatedRawDocument) {
+    const vc = await W3cVerifiableCredential.safeParseAsync(document);
+    if (!vc.success)
+      throw new Error(
+        `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(vc.error.issues)}`
+      );
+
+    validatedRawDocument = vc.data;
+  }
 
   /* 2. Ensure provided @context are interpretable (e.g. valid @context URL, all types are mapped, etc.) */
-  await interpretContexts(document);
+  await interpretContexts(validatedRawDocument);
 
   /* 3. Context validation */
   // Ensure that required contexts are present and in the correct order
   // type: [Base, OA, ...]
-  const contexts = new Set<string>([ContextUrl["v2_vc"], ContextUrl["v4_alpha"]]);
-  if (typeof document["@context"] === "string") {
-    contexts.add(document["@context"]);
-  } else if (isStringArray(document["@context"])) {
-    document["@context"].forEach((context) => contexts.add(context));
+  const REQUIRED_CONTEXTS = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
+  const contexts = new Set<string>(REQUIRED_CONTEXTS);
+  if (typeof validatedRawDocument["@context"] === "string") {
+    contexts.add(validatedRawDocument["@context"]);
+  } else if (isStringArray(validatedRawDocument["@context"])) {
+    validatedRawDocument["@context"].forEach((context) => contexts.add(context));
   }
-  document["@context"] = Array.from(contexts); // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this
+  REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
+  const finalContexts: V4Document["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
 
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order
   // type: ["VerifiableCredential", "OpenAttestationCredential", ...]
-  const types = new Set(["VerifiableCredential", "OpenAttestationCredential"]);
-  if (typeof document["type"] === "string") {
-    types.add(document["type"]);
-  } else if (isStringArray(document["type"])) {
-    document["type"].forEach((type) => types.add(type));
+  const REQUIRED_TYPES = [ContextType.BaseContext, ContextType.V4AlphaContext] as const;
+  const types = new Set<string>([ContextType.BaseContext, ContextType.V4AlphaContext]);
+  if (typeof validatedRawDocument["type"] === "string") {
+    types.add(validatedRawDocument["type"]);
+  } else if (isStringArray(validatedRawDocument["type"])) {
+    types.forEach((type) => types.add(type));
   }
-  document["type"] = Array.from(types); // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this
+  REQUIRED_TYPES.forEach((t) => types.delete(t));
+  const finalTypes: V4Document["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
+
+  const documentReadyForWrapping = {
+    ...validatedRawDocument,
+    ...extractAndAssertAsV4DocumentProps(validatedRawDocument, ["issuer", "credentialStatus"]),
+    "@context": finalContexts,
+    type: finalTypes,
+  } satisfies W3cVerifiableCredential;
 
   /* 5.  OA wrapping */
-  const salts = salt(document);
-  const digest = digestCredential(document, salts, []);
+  const salts = salt(documentReadyForWrapping);
+  const digest = digestCredential(documentReadyForWrapping, salts, []);
 
   const batchBuffers = [digest].map(hashToBuffer);
 
   const merkleTree = new MerkleTree(batchBuffers);
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
-
-  const verifiableCredential: WrappedDocument<T> = {
-    ...document,
+  const verifiableCredential: V4WrappedDocument = {
+    ...documentReadyForWrapping,
     proof: {
       type: "OpenAttestationMerkleProofSignature2018",
-      proofPurpose: ProofPurpose.AssertionMethod,
+      proofPurpose: "assertionMethod",
       targetHash: digest,
       proofs: merkleProof,
       merkleRoot,
@@ -73,15 +94,15 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
     },
   };
 
-  return verifiableCredential;
+  return verifiableCredential as V4WrappedDocument<T>;
 };
 
-export const wrapDocuments = async <T extends OpenAttestationDocument>(
-  documents: T[],
-  options: WrapDocumentOptionV4
-): Promise<WrappedDocument<T>[]> => {
+export const wrapDocuments = async <T extends V4Document>(
+  // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
+  documents: NoExtraProperties<V4Document, T>[]
+): Promise<V4WrappedDocument<T>[]> => {
   // create individual verifiable credential
-  const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document, options)));
+  const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document)));
 
   // get all the target hashes to compute the merkle tree and the merkle root
   const merkleTree = new MerkleTree(
@@ -104,3 +125,20 @@ export const wrapDocuments = async <T extends OpenAttestationDocument>(
     };
   });
 };
+
+/** Extract a set of properties from w3cVerifiableCredential but only include the ones
+ * that are defined in the original document. For example, if we extract
+ * "a" and "b" from { b: "something" } we should only get { b: "something" } NOT
+ * { a: undefined, b: "something" }. We also assert that the extracted properties
+ * are of V4Document type.
+ **/
+function extractAndAssertAsV4DocumentProps<K extends keyof W3cVerifiableCredential>(
+  original: W3cVerifiableCredential,
+  keys: K[]
+) {
+  const temp: Record<string, unknown> = {};
+  Object.entries(original).forEach(([k, v]) => {
+    if (keys.includes(k as K)) temp[k] = v;
+  });
+  return temp as { [key in K]: V4Document[key] };
+}

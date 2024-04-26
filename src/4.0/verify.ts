@@ -1,9 +1,9 @@
-import { WrappedDocument } from "./types";
+import { V4WrappedDocument } from "./types";
 import { digestCredential } from "./digest";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt, salt } from "./salt";
 
-export const verify = <T extends WrappedDocument>(document: T): document is WrappedDocument<T> => {
+export const verify = <T extends V4WrappedDocument>(document: T): document is T => {
   if (!document.proof) {
     return false;
   }
