@@ -22,8 +22,9 @@
     "test:vc": "scripts/runVcTest.sh",
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
+    "generate-v4-fixtures": "npx ts-node scripts/generateV4JsonFixtures.ts",
     "publish:schema": "./scripts/publishSchema.sh",
-    "postinstall": "node scripts/postInstall"
+    "postinstall": "node scripts/postInstall; npm run generate-v4-fixtures"
   },
   "files": [
     "/dist",

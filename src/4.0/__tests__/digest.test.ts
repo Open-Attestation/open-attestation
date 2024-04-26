@@ -2,15 +2,12 @@ import { cloneDeep } from "lodash";
 import { digestCredential } from "../digest";
 import { obfuscateVerifiableCredential } from "../obfuscate";
 import { decodeSalt } from "../salt";
-import sample from "../../../test/fixtures/v4/did-signed-wrapped.json";
-import { V4WrappedDocument } from "../types";
+import { SIGNED_WRAPPED_DOCUMENT_DID } from "../fixtures";
 
-// TODO: remove unknown
-const verifiableCredential = sample as unknown as V4WrappedDocument;
 // Digest will change whenever sample document is regenerated
 const credentialRoot = "f49be3b06f7a7eb074775ad12aae43936084c86646e3640eae18e7aeca4f7468";
 
-const { proof, ...credential } = verifiableCredential;
+const { proof, ...credential } = SIGNED_WRAPPED_DOCUMENT_DID;
 
 describe("digest v4.0", () => {
   describe("digestCredential", () => {
@@ -21,7 +18,7 @@ describe("digest v4.0", () => {
       expect(digest).toBe(credentialRoot);
     });
     test("digests a document when one single element is obfuscated", () => {
-      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, "issuer.id");
+      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(SIGNED_WRAPPED_DOCUMENT_DID, "issuer.id");
       const digest = digestCredential(
         obfuscatedVerifiableCredential,
         decodeSalt(obfuscatedVerifiableCredential.proof.salts),
@@ -37,7 +34,7 @@ describe("digest v4.0", () => {
       expect(digest).toBe(credentialRoot);
     });
     test("digests a document when multiple element are obfuscated", () => {
-      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, [
+      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(SIGNED_WRAPPED_DOCUMENT_DID, [
         "credentialSubject.id",
         "credentialSubject.name",
         "credentialSubject.licenses.0.description",
@@ -60,8 +57,8 @@ describe("digest v4.0", () => {
     });
     test("digests a document with no visible content correctly", () => {
       const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(
-        verifiableCredential,
-        Object.keys(verifiableCredential).filter((k) => k != "proof")
+        SIGNED_WRAPPED_DOCUMENT_DID,
+        Object.keys(SIGNED_WRAPPED_DOCUMENT_DID).filter((k) => k != "proof")
       );
       const digest = digestCredential(
         obfuscatedVerifiableCredential,
