@@ -100,20 +100,13 @@ export function getIssuerAddress(document: any): any {
 }
 
 export const getMerkleRoot = (document: any): string => {
-  const version = getVersion(document);
-  const getMerkleRoot: Record<OAVersion, () => unknown | undefined> = {
-    2: () => document?.signature?.merkleRoot,
-    3: () => document?.proof?.merkleRoot,
-    4: () => document?.proof?.merkleRoot,
-  };
+  if (isWrappedV2Document(document)) return document.signature.merkleRoot;
+  else if (isWrappedV3Document(document)) return document.proof.merkleRoot;
+  else if (isWrappedV4Document(document)) return document.proof.merkleRoot;
 
-  const merkleRoot = getMerkleRoot[version]();
-  if (merkleRoot === undefined || typeof merkleRoot !== "string")
-    throw new Error(
-      "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2, v3 & v4 documents."
-    );
-
-  return merkleRoot;
+  throw new Error(
+    "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2, v3 & v4 documents."
+  );
 };
 
 export const getTargetHash = (document: any): string => {
