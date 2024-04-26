@@ -10,7 +10,7 @@ import { ArrayProof, Signature, SignatureStrict } from "../../2.0/types";
 import { clone, cloneDeepWith } from "lodash";
 import { buildAjv, getSchema } from "../ajv";
 import { Kind, Mode } from "./@types/diagnose";
-import { v4Diagnose } from "src/4.0/diagnose";
+import { v4Diagnose } from "../../4.0/diagnose";
 
 type Version = "2.0" | "3.0" | "4.0";
 
