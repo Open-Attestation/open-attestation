@@ -8,7 +8,7 @@ const OUTPUT_DIR = path.resolve("./test/fixtures/v4/__generated__");
 if (fs.existsSync(OUTPUT_DIR)) {
   fs.rmSync(OUTPUT_DIR, { recursive: true });
 }
-fs.mkdirSync(OUTPUT_DIR);
+fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 for (const [key, value] of Object.entries(V4_FIXTURES)) {
   fs.writeFileSync(
