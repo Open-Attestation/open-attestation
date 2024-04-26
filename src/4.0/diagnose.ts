@@ -1,8 +1,15 @@
 import { Diagnose } from "src/shared/utils/@types/diagnose";
-import { V4WrappedDocument, V4SignedWrappedDocument } from "./types";
+import { V4WrappedDocument, V4SignedWrappedDocument, V4Document } from "./types";
 
 export const v4Diagnose: Diagnose = ({ document, kind, debug }) => {
-  const Validator = kind === "signed" ? V4SignedWrappedDocument : V4WrappedDocument;
+  let Validator: typeof V4Document | typeof V4WrappedDocument | typeof V4SignedWrappedDocument = V4Document;
+  if (kind === "raw") {
+    Validator = V4Document;
+  } else if (kind === "wrapped") {
+    Validator = V4WrappedDocument;
+  } else {
+    Validator = V4SignedWrappedDocument;
+  }
 
   const results = Validator.safeParse(document);
 

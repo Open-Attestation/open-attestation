@@ -105,13 +105,13 @@ export const diagnose = ({
     }
   }
 
-  if (kind === "raw") {
+  if (kind === "raw" && version !== "4.0") {
     return [];
   }
 
   switch (version) {
     case "4.0":
-      return v4Diagnose({ mode, debug, document, kind });
+      return v4Diagnose({ debug, document, kind });
     case "3.0":
       return diagnoseV3({ mode, debug, document, kind });
     case "2.0":
