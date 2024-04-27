@@ -1,6 +1,6 @@
 import { V4Document, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
 
-export const RAW_DOCUMENT_DID = {
+export const RAW_DOCUMENT_DID = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
@@ -38,9 +38,9 @@ export const RAW_DOCUMENT_DID = {
       },
     ],
   },
-} satisfies V4Document;
+} satisfies V4Document);
 
-export const RAW_DOCUMENT_DID_OSCP = {
+export const RAW_DOCUMENT_DID_OSCP = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
@@ -82,9 +82,9 @@ export const RAW_DOCUMENT_DID_OSCP = {
       },
     ],
   },
-} satisfies V4Document;
+} satisfies V4Document);
 
-export const WRAPPED_DOCUMENT_DID = {
+export const WRAPPED_DOCUMENT_DID = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
@@ -137,9 +137,9 @@ export const WRAPPED_DOCUMENT_DID = {
       obfuscated: [],
     },
   },
-} satisfies V4WrappedDocument;
+} satisfies V4WrappedDocument);
 
-export const SIGNED_WRAPPED_DOCUMENT_DID = {
+export const SIGNED_WRAPPED_DOCUMENT_DID = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
@@ -190,9 +190,9 @@ export const SIGNED_WRAPPED_DOCUMENT_DID = {
     signature:
       "0x170fbb2d5916a7b3a4863feb8b705f5560c0b42311b164b2da32e682a8633b6f2c332f963db8267ab9a1c3be16ba1091388ed70e6e2a4ec240f5c0865557c6aa1c",
   },
-} satisfies V4SignedWrappedDocument;
+} satisfies V4SignedWrappedDocument);
 
-export const SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED = {
+export const SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
@@ -240,9 +240,9 @@ export const SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED = {
     signature:
       "0xfa3bb0c734fd8853b58447cbf64c87198bf8dea6e5da81a325dd74b0105972be77944ef532f45fdbfe463c061462c7cf468025cbdf772200cbf37c76934448ee1b",
   },
-} satisfies V4SignedWrappedDocument;
+} satisfies V4SignedWrappedDocument);
 
-export const SIGNED_WRAPPED_DOCUMENT_DID_OSCP = {
+export const SIGNED_WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
@@ -294,4 +294,123 @@ export const SIGNED_WRAPPED_DOCUMENT_DID_OSCP = {
     signature:
       "0xfa3bb0c734fd8853b58447cbf64c87198bf8dea6e5da81a325dd74b0105972be77944ef532f45fdbfe463c061462c7cf468025cbdf772200cbf37c76934448ee1b",
   },
-} satisfies V4SignedWrappedDocument;
+} satisfies V4SignedWrappedDocument);
+
+export const BATCHED_WRAPPED_DOCUMENTS_DID = freezeObject([
+  {
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+    ],
+    name: "Republic of Singapore Driving Licence",
+    type: ["VerifiableCredential", "OpenAttestationCredential"],
+    issuer: {
+      id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
+      type: "OpenAttestationIssuer",
+      name: "Government Technology Agency of Singapore (GovTech)",
+      identityProof: {
+        identityProofType: "DNS-DID",
+        identifier: "example.openattestation.com",
+      },
+    },
+    validFrom: "2021-03-08T12:00:00+08:00",
+    credentialSubject: {
+      id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+      type: ["DriversLicense"],
+      name: "John Doe",
+      licenses: [
+        {
+          class: "3",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+        {
+          class: "3A",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+      ],
+    },
+    renderMethod: [
+      {
+        id: "https://demo-renderer.opencerts.io",
+        type: "OpenAttestationEmbeddedRenderer",
+        templateName: "GOVTECH_DEMO",
+      },
+    ],
+    proof: {
+      type: "OpenAttestationMerkleProofSignature2018",
+      proofPurpose: "assertionMethod",
+      targetHash: "e7fbcdadb66fa5561d1891185f8c16fb80e4fdd04d5fbbb7f49d66426a699b18",
+      proofs: ["a23257bff49b375448b6a7657c6d6fd16000d2f29a54673030b0c9c66cdeb79f"],
+      merkleRoot: "ac50e4ffdca1256e5771ecc3f266f5f72d1c9f3686b387811628ad0c28f16836",
+      salts:
+        "W3sidmFsdWUiOiJjZjM2NWE5YjlkN2ViNjg1OTQ0ZTkwNGM1YzM1MDg2MGU5ODkxODI5ZGQ3N2NkZWVkZTJmMzk3M2UyZWI0MjFhIiwicGF0aCI6IkBjb250ZXh0WzBdIn0seyJ2YWx1ZSI6ImFkNzVmMDVmNjJkM2FkZDU2YWJkZjUxMjFmN2VmOWMyZDQ1OGYzMjFmMzYwMGI2MDc2OWE3MTc4ODk1NzRjNGMiLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiODQ3MGU2MDhlMDdlM2IxY2YxMjlkMzQ2ZjVhZGQwZjg1NzQ5OWUxMDc0MWI0Y2NiZjdhYzA1MDVjNjdjZTc5OSIsInBhdGgiOiJuYW1lIn0seyJ2YWx1ZSI6IjAyYWYwZjc1NzU2NDM3MDQ3Mjg2MGY4MzJkMjAxM2I1N2Y0ZGRlMWZhMzhhNDhmMzZjNjE2MzgwNjhkMjZmNDYiLCJwYXRoIjoidHlwZVswXSJ9LHsidmFsdWUiOiI4MDFhN2JhODI1N2Y2NTEyM2JhN2ZhY2Q4OTY5NTBhNmE1NzNhM2RmMDFmY2M0ODFiNmI0OTMxMGYwYTBjYjM0IiwicGF0aCI6InR5cGVbMV0ifSx7InZhbHVlIjoiNzRlZDM3NjUzNDdjYWE4OTg1ZTdjODU4NmNmODU2M2QzNmNkMGE0Y2Y0NmEzYTRkNjdiZTIzOGJjM2IwN2U1YSIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiNGQyODdjNGZmZDM1MDliNzg4MjUxMDA5Zjc4YWQxNjkwNWRjMzQwOGJlYmJjNDRjNmI1YzFjMjg5ODdhZGVhNCIsInBhdGgiOiJpc3N1ZXIudHlwZSJ9LHsidmFsdWUiOiI1ZjBkOTUwYWJkNGRiNDFhMTdkM2QxY2Q0ZjI2M2ExYTYwNGZlNzVkN2U4MTkwZDRmN2I4Yzc4NjZjMDNjYWE3IiwicGF0aCI6Imlzc3Vlci5uYW1lIn0seyJ2YWx1ZSI6ImVhM2IyOGM4MjA1ODNhNDNiOTU5ZDE2YmEzNzI0ZTgwYzMzYTYwNWFhMTNiNjBjMjAzYmRkOTExMDllMWQ4ZWQiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YuaWRlbnRpdHlQcm9vZlR5cGUifSx7InZhbHVlIjoiNmJiOTk1NmQwYjI3Mjg4MTE1MjhmOGRhOTg4ZDIzNGQwNTlkNzAxYmM1OTc5NzkzODlkMjliYmYyMzMyODA5ZSIsInBhdGgiOiJpc3N1ZXIuaWRlbnRpdHlQcm9vZi5pZGVudGlmaWVyIn0seyJ2YWx1ZSI6ImU3NmM2ZDAxMjBiZGI5NjgzMzc5MzdmZTYwYjgwMmI1OTZjZGQyYzk1MGFhM2JkYmM0NjlmMzkwNGM5YmFlNzQiLCJwYXRoIjoidmFsaWRGcm9tIn0seyJ2YWx1ZSI6ImVkMGVkYzMwMWQwOTQ5MmM2NjVhMDU0OWIyZjM2OGYzY2JjZWY5ZWIwODg4ZWQ4NGZlNTA1MTc1MjAxYzM3MDQiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiZmUzMmEwYjVlOTljNjZmMWYwZmI0OTQzNWNmNzdkNmZjMDBhMzFhZTQwNDJjYzEzMzdjMTNjNzNjZDUxOTY5MSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC50eXBlWzBdIn0seyJ2YWx1ZSI6IjI4YjZmMzViNjk4Mzg1ZmRiYTZlMTFkZmJhZDQzYTEwZDc1OGExMGE1ZDEwODMxY2ZhMmYyYWQ2MzI2NTA5MzciLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubmFtZSJ9LHsidmFsdWUiOiIyOGY2ZGE0MmUzMjYyOTE0N2Y4ZDVhZjg3NTRlOTJiZWEzMDZkZWQzNzljYzhhZThiYzcyN2Y4MDMwZmJiY2MzIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzBdLmNsYXNzIn0seyJ2YWx1ZSI6IjViMjg3YTIxMGE4NmQ1ZTFmMGI2ZmY3Y2VlZGYyYzBiZDI0YTNmMjQwOTNiMTY1ZjRhZWRlNTliZGU4ZGUxZjAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMF0uZGVzY3JpcHRpb24ifSx7InZhbHVlIjoiOWQyOGRjNTcxMGJlNWMzMjVhMDQ5YmMwODU2NjZiMjdkMDM2OGU5MjBkZGNiOGExZDUwN2I3ZGJkMDcyZjkzZCIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1swXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjJkZjVlMWZkZjFiY2JmOWM0YjJiODYzYmZjODEyNWZhYjAxOThiMjQxNTA3NjdjNzNmYjZmMDkyZDYxYjQ2OGQiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMV0uY2xhc3MifSx7InZhbHVlIjoiZjY5NjMxNDhiMjIzY2EzMWFkYWJhMTBiNDQ3ZDhkZWViMzE0ZjY3ZTdkN2E0MmRlNzIzYTg1YTY2OTJmYTY2MiIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1sxXS5kZXNjcmlwdGlvbiJ9LHsidmFsdWUiOiI0YjAyMjQ3ZTVjZTk1YzE1NDZjNTVmNGQ4OTNkMWY1YjE0MmViYzE3ZTM2OGI1OTM3N2UyMzAwZDQxMjRjM2ZlIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzFdLmVmZmVjdGl2ZURhdGUifSx7InZhbHVlIjoiOGE4MTZjOTY0MTY5MGI1Yjg2MjdkYTA0MDRmYzBmMGY1ZWViMjM3NDA1ZjUxY2IwOTY2YzhiMmRhZDI1NGM1NyIsInBhdGgiOiJyZW5kZXJNZXRob2RbMF0uaWQifSx7InZhbHVlIjoiNjgzOWYzZmQyNDg1NjU5ZmFhMDIyMzBkMGE1Y2E0YmIzN2NlYTFmMGZkMzRiNjg0MGM3M2QyN2ExMWUyZjU1NCIsInBhdGgiOiJyZW5kZXJNZXRob2RbMF0udHlwZSJ9LHsidmFsdWUiOiIyZDI0NzUyODZjOTk0ZmY2NmFhZDNkNTRlNDQwOTg4ZjdjZjliNzIxMDRjNmVkNDdmYzFjZjBjMzlkMDEzOWFkIiwicGF0aCI6InJlbmRlck1ldGhvZFswXS50ZW1wbGF0ZU5hbWUifV0=",
+      privacy: {
+        obfuscated: [],
+      },
+    },
+  },
+  {
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+    ],
+    name: "Republic of Singapore Driving Licence",
+    type: ["VerifiableCredential", "OpenAttestationCredential"],
+    issuer: {
+      id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
+      type: "OpenAttestationIssuer",
+      name: "Government Technology Agency of Singapore (GovTech)",
+      identityProof: {
+        identityProofType: "DNS-DID",
+        identifier: "example.openattestation.com",
+      },
+    },
+    validFrom: "2021-03-08T12:00:00+08:00",
+    credentialSubject: {
+      id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+      type: ["DriversLicense"],
+      name: "Jane Doe",
+      licenses: [
+        {
+          class: "3000A",
+          description: "Motor spaceships with unladen weight <= 3000tonnes",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+      ],
+    },
+    renderMethod: [
+      {
+        id: "https://demo-renderer.opencerts.io",
+        type: "OpenAttestationEmbeddedRenderer",
+        templateName: "GOVTECH_DEMO",
+      },
+    ],
+    proof: {
+      type: "OpenAttestationMerkleProofSignature2018",
+      proofPurpose: "assertionMethod",
+      targetHash: "a23257bff49b375448b6a7657c6d6fd16000d2f29a54673030b0c9c66cdeb79f",
+      proofs: ["e7fbcdadb66fa5561d1891185f8c16fb80e4fdd04d5fbbb7f49d66426a699b18"],
+      merkleRoot: "ac50e4ffdca1256e5771ecc3f266f5f72d1c9f3686b387811628ad0c28f16836",
+      salts:
+        "W3sidmFsdWUiOiJkMjQxZjc3NWNkYjNjOWRhNjI4MjU5M2ViYmY2NGMwZDkxMzM3ZTY1MmU5MWIyYTQ0NzEzNTY1NjdiN2NjMzI5IiwicGF0aCI6IkBjb250ZXh0WzBdIn0seyJ2YWx1ZSI6ImQ3NDMxZWIwMWZmYTE0MmEyMThkMjc3OWE3YjY2MGJjZTYxMzRkMTQ3NTUyNjA3MDgwMjc3OGM4OGYyNzczNTciLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiZWZmOWI2ZWFmNzg2OWM1OTgxNjM4NTIyYjIxNjc5NDQ4YWIxNmQyM2YzZjZlZjI0MWY5ZWM3M2ZiYjE3YWU2OCIsInBhdGgiOiJuYW1lIn0seyJ2YWx1ZSI6IjlhZjY3MWYyYTUyZTIxMTk5YzU1MDE2ZTlkNzNlN2E2YTBiNmEzMjI2Yzg3ODIyMzlmNDhjZWM3MjZlZjE4YWMiLCJwYXRoIjoidHlwZVswXSJ9LHsidmFsdWUiOiIwOTYzNDFkMDA1OTU1ZDg2Y2IwZjVjOTJmMGFkMWU5NWIxOWJiZmRhMzk2NmYyNTJiMGUzZGY0MGFmMzYwZjBjIiwicGF0aCI6InR5cGVbMV0ifSx7InZhbHVlIjoiNjY2MDI2YzkyMjYyMzBlNGEwNzliNWMyZmY0ZWMzMzgxMzM1YzI5NTcwOTZjMzFjZWVjN2ViMmM3OTY5NTA0ZCIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiZWE2ZmRjYzc2YjI0OTBkNWE0ODg3ZWFiMTJlM2M4Mjc1YzdkMmM3ZDcwYzdhZmRhNWZlNjVhOWYwNzQwYzY0MSIsInBhdGgiOiJpc3N1ZXIudHlwZSJ9LHsidmFsdWUiOiJlYzhiY2ZlYWFkZDk0NjAyZmU0ZGZkMjBiMzgwNGE1M2ZhZmRkOTI4ZjA0NTQ4NzkxZTg5NzNiYzc4MDI5NTM3IiwicGF0aCI6Imlzc3Vlci5uYW1lIn0seyJ2YWx1ZSI6ImI1YzdmODYxOGQ0ZjgwNGI2MmQxYjkyY2UwMTJlOGRjOWVjOTY5M2U5NGEzY2Q2YWJkOTBlZDNkZjBiOWVmNDUiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YuaWRlbnRpdHlQcm9vZlR5cGUifSx7InZhbHVlIjoiNzRjNjgzZjhkNmY4YzAzNDNmMTM1MjVmN2FmMWNjY2RjZmVhNTlkNWYxYjRhOWVkOTRiYmU1NzE4ODkxMWQwZSIsInBhdGgiOiJpc3N1ZXIuaWRlbnRpdHlQcm9vZi5pZGVudGlmaWVyIn0seyJ2YWx1ZSI6ImE1ZTg4MmU2ZGY0MjdkM2NlODBiY2MyZjNkYzI5NmU1MGU4MTZhMGU0ZTEyMDZlYzgwNGNhNzQzNDY3NjVjYmIiLCJwYXRoIjoidmFsaWRGcm9tIn0seyJ2YWx1ZSI6IjU2YTUyYzFiMmE4ZWE4NGQ3NzZhZDBhYjMzODM3ZDdkZGEwNGZiODYwODJmMzU0NGEwNzM4YTVjZjBlYTYwMDgiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiZjFiZjI4MDFhNzcxNjZkNzZkZDJhZjFmZTM2NGZmYWQzNGViYmNiMmRjZTVkODc4ZjZiYWE1NjJhMGMxNGY2NCIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC50eXBlWzBdIn0seyJ2YWx1ZSI6ImFmMTA3NjBiYjIzOTBmNmJkYjFiODgwNjViNTgzZTVkZTJkMWEzNDczNTFjMDYwMGU5MDRkZWFlNDA1MTA0MWQiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubmFtZSJ9LHsidmFsdWUiOiJlNzRhOTM3MTg3ZDY1NDQ3MWYxMzMxZWU4MTcxYjE2OWQ3NTgxMWZmMWRhNzNhYzNiOWQ4ZWNmNzUwODk5M2VkIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzBdLmNsYXNzIn0seyJ2YWx1ZSI6IjhlNTE5ZWEzNjQwNmY2YTdkOGNmMzVhMTdmYmI2YTVkMTNkOWU3YThlMjJkMzNmZmMwOGNhN2U1ZGZmZmZjNGMiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMF0uZGVzY3JpcHRpb24ifSx7InZhbHVlIjoiMDgyMTg5MmRjZmUyNTc0YTc3MmVjYzc1OTc5YzE2NDBhZjg1MDBkYjU4NzAxMTlmMGQyZmE0NjMyNDYxNmM5MyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1swXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjgwYzM4OTg5MTY0Y2ExMTRiYjMyNjJmNDFkOWRiYjU2MjdlNTFhMjlhMmFlOWJmY2I5ZjM0M2M0NTc3OWRjMzAiLCJwYXRoIjoicmVuZGVyTWV0aG9kWzBdLmlkIn0seyJ2YWx1ZSI6ImVkNTZhZTMxMGZlZDlkN2E4ZjBhOGZiNzhlNzY4MWJlYzkyNzBkYzYyMGIwOGYzZDU3ODI0MTZmYmVkNzA3YWEiLCJwYXRoIjoicmVuZGVyTWV0aG9kWzBdLnR5cGUifSx7InZhbHVlIjoiZTI4MTdhZGFlOWNmMzgzYTE1OWNkNmE0ZjQ1YjY2NjZhNTVmNzQ5ZTRmYzY0NzQ2NDcxM2RlZjQ4N2UwYWExOSIsInBhdGgiOiJyZW5kZXJNZXRob2RbMF0udGVtcGxhdGVOYW1lIn1d",
+      privacy: {
+        obfuscated: [],
+      },
+    },
+  },
+] satisfies V4WrappedDocument[]);
+
+// Freeze fixture to prevent accidental changes during tests
+function freezeObject<T>(obj: T): T {
+  return deepFreeze(obj) as T;
+}
+
+function deepFreeze(obj: unknown) {
+  if (obj && typeof obj === "object" && !Object.isFrozen(obj)) {
+    Object.freeze(obj);
+    Object.getOwnPropertyNames(obj).forEach((prop) => deepFreeze(obj[prop as keyof typeof obj]));
+  }
+  return obj;
+}
