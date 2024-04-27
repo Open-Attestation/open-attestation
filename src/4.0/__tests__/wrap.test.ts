@@ -103,5 +103,12 @@ describe("V4.0 wrap document", () => {
     const wrapped = await wrapDocument(genericW3cVc as unknown as V4Document);
     const parsedResults = V4WrappedDocument.pick({ "@context": true, type: true }).passthrough().safeParse(wrapped);
     expect(parsedResults.success).toBe(true);
+    expect(wrapped.proof.merkleRoot.length).toBe(64);
+    expect(wrapped.proof.privacy.obfuscated).toEqual([]);
+    expect(wrapped.proof.proofPurpose).toBe("assertionMethod");
+    expect(wrapped.proof.proofs).toEqual([]);
+    expect(wrapped.proof.salts.length).toBeGreaterThan(0);
+    expect(wrapped.proof.targetHash.length).toBe(64);
+    expect(wrapped.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
   });
 });
