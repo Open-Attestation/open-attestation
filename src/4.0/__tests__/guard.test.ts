@@ -1,7 +1,7 @@
 import { W3cVerifiableCredential, V4Document, V4WrappedDocument, V4SignedWrappedDocument } from "../types";
 import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID, WRAPPED_DOCUMENT_DID } from "../fixtures";
 
-describe("v4 guard", () => {
+describe("V4.0 guard", () => {
   describe("given a raw document", () => {
     test("should pass w3c vc validation without removal of any data", () => {
       const w3cVerifiableCredential: W3cVerifiableCredential = RAW_DOCUMENT_DID;

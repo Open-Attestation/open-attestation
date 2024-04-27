@@ -9,7 +9,7 @@ const credentialRoot = "f49be3b06f7a7eb074775ad12aae43936084c86646e3640eae18e7ae
 
 const { proof, ...credential } = SIGNED_WRAPPED_DOCUMENT_DID;
 
-describe("digest v4.0", () => {
+describe("V4.0 digest", () => {
   describe("digestCredential", () => {
     test("digests a document with all visible content correctly", () => {
       const clonedCredential = cloneDeep(credential);
