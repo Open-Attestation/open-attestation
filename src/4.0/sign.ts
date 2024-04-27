@@ -10,7 +10,7 @@ export const signDocument = async <T extends V4Document>(
 ): Promise<V4SignedWrappedDocument<T>> => {
   const parsedResults = V4WrappedDocument.pick({ proof: true }).passthrough().safeParse(document);
   if (!parsedResults.success) {
-    throw new Error("Document has not been wrapped yet");
+    throw new Error("Document has not been properly wrapped " + JSON.stringify(parsedResults.error));
   }
   const { proof: validatedProof } = parsedResults.data;
   const merkleRoot = `0x${validatedProof.merkleRoot}`;
