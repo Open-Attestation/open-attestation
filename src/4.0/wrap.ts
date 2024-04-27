@@ -11,7 +11,7 @@ export const wrapDocument = async <T extends V4Document>(
   document: NoExtraProperties<V4Document, T>
 ): Promise<V4WrappedDocument<T>> => {
   /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
-  const oav4context = await V4Document.pick({ "@context": true }).safeParseAsync(document); // Superficial check on user intention
+  const oav4context = await V4Document.pick({ "@context": true }).passthrough().safeParseAsync(document); // Superficial check on user intention
   let validatedRawDocument: W3cVerifiableCredential | undefined;
   if (oav4context.success) {
     const oav4 = await V4Document.safeParseAsync(document);
