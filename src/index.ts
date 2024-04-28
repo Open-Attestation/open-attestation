@@ -108,10 +108,7 @@ export function obfuscate<T extends OpenAttestationDocumentV3>(
   document: WrappedDocument<T>,
   fields: string[] | string
 ): WrappedDocument<T>;
-export function obfuscate<T extends v4.V4Document>(
-  document: WrappedDocument<T>,
-  fields: string[] | string
-): WrappedDocument<T>;
+export function obfuscate<T extends v4.V4WrappedDocument>(document: T, fields: string[] | string): T;
 export function obfuscate<T extends OpenAttestationDocument>(document: WrappedDocument<T>, fields: string[] | string) {
   if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields);
   else if (utils.isWrappedV3Document(document)) return obfuscateVerifiableCredentialV3(document, fields);

@@ -2,7 +2,7 @@ import { toBuffer } from "../shared/utils";
 import { cloneDeep, get, unset, pick } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
-import { V4Document, V4WrappedDocument } from "./types";
+import { V4WrappedDocument } from "./types";
 
 const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -36,10 +36,10 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   };
 };
 
-export const obfuscateVerifiableCredential = <T extends V4Document = V4Document>(
-  document: V4WrappedDocument<T>,
+export const obfuscateVerifiableCredential = <T extends V4WrappedDocument>(
+  document: T,
   fields: string[] | string
-): V4WrappedDocument<T> => {
+): T => {
   const { data, obfuscatedData } = obfuscate(document, fields);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
@@ -52,5 +52,5 @@ export const obfuscateVerifiableCredential = <T extends V4Document = V4Document>
         obfuscated: newObfuscatedData,
       },
     },
-  } satisfies V4WrappedDocument as V4WrappedDocument<T>;
+  } satisfies V4WrappedDocument as T;
 };
