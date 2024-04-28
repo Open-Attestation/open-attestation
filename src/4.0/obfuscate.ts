@@ -2,7 +2,7 @@ import { toBuffer } from "../shared/utils";
 import { cloneDeep, get, unset, pick } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
-import { V4WrappedDocument } from "./types";
+import { Override, PartialDeep, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
 
 const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -36,10 +36,14 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   };
 };
 
-export const obfuscateVerifiableCredential = <T extends V4WrappedDocument>(
+export type ObfuscateVerifiableCredentialResult<T extends V4WrappedDocument | V4SignedWrappedDocument> = Override<
+  T extends V4SignedWrappedDocument ? V4SignedWrappedDocument : V4WrappedDocument,
+  Required<PartialDeep<Pick<T, "credentialSubject">>>
+>;
+export const obfuscateVerifiableCredential = <T extends V4WrappedDocument | V4SignedWrappedDocument>(
   document: T,
   fields: string[] | string
-): T => {
+): ObfuscateVerifiableCredentialResult<T> => {
   const { data, obfuscatedData } = obfuscate(document, fields);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
@@ -59,7 +63,7 @@ export const obfuscateVerifiableCredential = <T extends V4WrappedDocument>(
     const paths = parsedResults.error.errors.map(({ path }) => path.join("."));
     throw new ObfuscatedInvalidPaths(paths);
   }
-  return parsedResults.data as T;
+  return parsedResults.data as ObfuscateVerifiableCredentialResult<T>;
 };
 
 export class ObfuscatedInvalidPaths extends Error {

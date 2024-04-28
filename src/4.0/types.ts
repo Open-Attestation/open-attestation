@@ -251,7 +251,7 @@ type IdentityProofType = z.infer<typeof IdentityProofType>;
 export type Salt = z.infer<typeof Salt>;
 
 /** Overrides properties in the Target (a & b does not override a props with b props) */
-type Override<Target extends Record<string, unknown>, OverrideWith extends Record<string, unknown>> = Omit<
+export type Override<Target extends Record<string, unknown>, OverrideWith extends Record<string, unknown>> = Omit<
   Target,
   keyof OverrideWith
 > &
@@ -263,3 +263,21 @@ type AssertStricterOrEqual<LooserType, StricterType> = StricterType extends Loos
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type NoExtraProperties<Reference, NewObj> = NewObj extends Reference & infer _ExtraProps ? Reference : NewObj;
+
+export type PartialDeep<T> = T extends string | number | bigint | boolean | null | undefined | symbol | Date
+  ? T | undefined
+  : T extends Array<infer ArrayType>
+  ? Array<PartialDeep<ArrayType>>
+  : T extends ReadonlyArray<infer ArrayType>
+  ? ReadonlyArray<ArrayType>
+  : T extends Set<infer SetType>
+  ? Set<PartialDeep<SetType>>
+  : T extends ReadonlySet<infer SetType>
+  ? ReadonlySet<SetType>
+  : T extends Map<infer KeyType, infer ValueType>
+  ? Map<PartialDeep<KeyType>, PartialDeep<ValueType>>
+  : T extends ReadonlyMap<infer KeyType, infer ValueType>
+  ? ReadonlyMap<PartialDeep<KeyType>, PartialDeep<ValueType>>
+  : {
+      [K in keyof T]?: PartialDeep<T[K]>;
+    };

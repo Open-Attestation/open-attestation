@@ -29,7 +29,10 @@ import * as v4 from "./4.0/types";
 import { signDocument as signDocumentV4 } from "./4.0/sign";
 import { verify as verifyV4 } from "./4.0/verify";
 import { digestCredential as digestCredentialV4 } from "./4.0/digest";
-import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4 } from "./4.0/obfuscate";
+import {
+  ObfuscateVerifiableCredentialResult,
+  obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4,
+} from "./4.0/obfuscate";
 import { v4Diagnose } from "./4.0/diagnose";
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
@@ -108,7 +111,10 @@ export function obfuscate<T extends OpenAttestationDocumentV3>(
   document: WrappedDocument<T>,
   fields: string[] | string
 ): WrappedDocument<T>;
-export function obfuscate<T extends v4.V4WrappedDocument>(document: T, fields: string[] | string): T;
+export function obfuscate<T extends v4.V4WrappedDocument>(
+  document: T,
+  fields: string[] | string
+): ObfuscateVerifiableCredentialResult<T>;
 export function obfuscate<T extends OpenAttestationDocument>(document: WrappedDocument<T>, fields: string[] | string) {
   if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields);
   else if (utils.isWrappedV3Document(document)) return obfuscateVerifiableCredentialV3(document, fields);
