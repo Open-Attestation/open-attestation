@@ -43,7 +43,9 @@ export const obfuscateVerifiableCredential = <T extends V4WrappedDocument>(
   const { data, obfuscatedData } = obfuscate(document, fields);
   const currentObfuscatedData = document.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
-  return {
+
+  // assert that obfuscated is still compliant to our schema
+  const parsedResults = V4WrappedDocument.safeParse({
     ...data,
     proof: {
       ...data.proof,
@@ -52,5 +54,20 @@ export const obfuscateVerifiableCredential = <T extends V4WrappedDocument>(
         obfuscated: newObfuscatedData,
       },
     },
-  } satisfies V4WrappedDocument as T;
+  });
+  if (!parsedResults.success) {
+    const paths = parsedResults.error.errors.map(({ path }) => path.join("."));
+    throw new ObfuscatedInvalidPaths(paths);
+  }
+  return parsedResults.data as T;
 };
+
+export class ObfuscatedInvalidPaths extends Error {
+  constructor(public paths: string[]) {
+    super(
+      `The resultant obfuscated document is not V4 Wrapped Document compliant, please ensure that the following path(s) are not obfuscated: ${paths
+        .map((val) => `"${val}"`)
+        .join(", ")}`
+    );
+  }
+}
