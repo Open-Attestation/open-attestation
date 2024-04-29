@@ -1,27 +1,33 @@
 import { Options } from "@govtechsg/jsonld";
 
-interface Options<T> {
+type LeafValue = string | number | boolean | null;
+interface Options<IterateeValue> {
   /* function to run on every field */
-  iteratee: (data: { value: any; path: string }) => T;
+  iteratee: (data: { value: LeafValue; path: string }) => IterateeValue;
   /* root path of the property being acceded */
   path?: string;
 }
 
-export function traverseAndFlatten<T>(data: any[], options: Options<T>): T[];
-export function traverseAndFlatten<T>(data: string | number | boolean | null, options: Options<T>): T;
-export function traverseAndFlatten<T>(data: any, options: Options<T>): T[]; // hmmmm this is probably wrong but it works for the moment :)
-export function traverseAndFlatten<T>(data: any, { iteratee, path = "" }: Options<T>): any {
+/** Given a record | list, returns a list of all leaf nodes of value that is not undefined */
+export function traverseAndFlatten<IterateeValue>(data: LeafValue, options: Options<IterateeValue>): IterateeValue;
+export function traverseAndFlatten<IterateeValue>(data: unknown, options: Options<IterateeValue>): IterateeValue[];
+export function traverseAndFlatten<IterateeValue>(
+  data: unknown,
+  { iteratee, path = "" }: Options<IterateeValue>
+): IterateeValue | IterateeValue[] {
   if (Array.isArray(data)) {
     return data.flatMap((v, index) => traverseAndFlatten(v, { iteratee, path: `${path}[${index}]` }));
   }
-  // Since null datas are allowed but typeof null === "object", the "&& data" is used to skip this
-  if (typeof data === "object" && data) {
+
+  if (typeof data === "object" && data !== null) {
     return Object.keys(data).flatMap((key) =>
-      traverseAndFlatten(data[key], { iteratee, path: path ? `${path}.${key}` : key })
+      traverseAndFlatten(data[key as keyof typeof data], { iteratee, path: path ? `${path}.${key}` : key })
     );
   }
+
   if (typeof data === "string" || typeof data === "number" || typeof data === "boolean" || data === null) {
     return iteratee({ value: data, path });
   }
+
   throw new Error(`Unexpected data '${data}' in '${path}'`);
 }
