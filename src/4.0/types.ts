@@ -1,14 +1,12 @@
 import z from "zod";
 import { ContextUrl, ContextType } from "../shared/@types/document";
 
-const BASE_TYPE = "VerifiableCredential" as const;
-
 // Custom URI validation function
 const URI_REGEX =
   /^(?=.)(?!https?:\/(?:$|[^/]))(?!https?:\/\/\/)(?!https?:[^/])(?:[a-zA-Z][a-zA-Z\d+-\.]*:(?:(?:\/\/(?:[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:]*@)?(?:\[(?:(?:(?:[\dA-Fa-f]{1,4}:){6}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|::(?:[\dA-Fa-f]{1,4}:){5}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){4}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,1}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){3}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,2}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:){2}(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,3}[\dA-Fa-f]{1,4})?::[\dA-Fa-f]{1,4}:(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,4}[\dA-Fa-f]{1,4})?::(?:[\dA-Fa-f]{1,4}:[\dA-Fa-f]{1,4}|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(?:(?:[\dA-Fa-f]{1,4}:){0,5}[\dA-Fa-f]{1,4})?::[\dA-Fa-f]{1,4}|(?:(?:[\dA-Fa-f]{1,4}:){0,6}[\dA-Fa-f]{1,4})?::)|v[\dA-Fa-f]+\.[\w-\.~!\$&'\(\)\*\+,;=:]+)\]|(?:(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:0{0,2}\d|0?[1-9]\d|1\d\d|2[0-4]\d|25[0-5])|[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=]{1,255})(?::\d*)?(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)|\/(?:[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]+(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)?|[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]+(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*|(?:\/\/\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*(?:\/[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@]*)*)))(?:\?[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@\/\?]*(?=#|$))?(?:#[\w-\.~%\dA-Fa-f!\$&'\(\)\*\+,;=:@\/\?]*)?$/;
 const Uri = z.string().regex(URI_REGEX, { message: "Invalid URI" });
 
-export const W3cVerifiableCredential = z.object({
+const _W3cVerifiableCredential = z.object({
   "@context": z.union([
     z.record(z.any()),
     z.string(),
@@ -25,7 +23,9 @@ export const W3cVerifiableCredential = z.object({
   type: z.union([
     z.string(),
     // If array: Must have VerifiableCredential, while remaining items can be any string
-    z.array(z.string()).refine((types) => types.includes(BASE_TYPE), { message: `Type must include ${BASE_TYPE}` }),
+    z.array(z.string()).refine((types) => types.includes(ContextType.BaseContext), {
+      message: `Type must include ${ContextType.BaseContext}`,
+    }),
   ]),
 
   credentialSchema: z
@@ -86,9 +86,6 @@ export const W3cVerifiableCredential = z.object({
     })
     .passthrough()
     .optional(),
-
-  // [Optional] This is at risk of being removed from the w3c spec
-  renderMethod: z.any().optional(),
 
   termsOfUse: z
     .union([
@@ -151,87 +148,91 @@ export const W3cVerifiableCredential = z.object({
     ])
     .optional(),
 });
+// W3cVerifiableCredential should always allow extra root properties
+export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
 
 const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
 const Salt = z.object({ value: z.string(), path: z.string() });
 
-export const V4Document = W3cVerifiableCredential.extend({
-  "@context": z
+export const V4Document = _W3cVerifiableCredential
+  .extend({
+    "@context": z
 
-    // Must be an array that starts with [baseContext, v4Context, ...]
-    .tuple([z.literal(ContextUrl.v2_vc), z.literal(ContextUrl.v4_alpha)])
-    // Remaining items can be string or object
-    .rest(z.union([z.string(), z.record(z.any())])),
+      // Must be an array that starts with [baseContext, v4Context, ...]
+      .tuple([z.literal(ContextUrl.v2_vc), z.literal(ContextUrl.v4_alpha)])
+      // Remaining items can be string or object
+      .rest(z.union([z.string(), z.record(z.any())])),
 
-  type: z
-    // Must be an array that starts with [VerifiableCredential, OpenAttestationCredential, ...]
-    .tuple([z.literal(ContextType.BaseContext), z.literal(ContextType.V4AlphaContext)])
-    // Remaining items can be string
-    .rest(z.string()),
+    type: z
+      // Must be an array that starts with [VerifiableCredential, OpenAttestationCredential, ...]
+      .tuple([z.literal(ContextType.BaseContext), z.literal(ContextType.V4AlphaContext)])
+      // Remaining items can be string
+      .rest(z.string()),
 
-  issuer: z.object({
-    // Must have id match uri pattern
-    id: Uri,
-    type: z.literal("OpenAttestationIssuer"),
-    name: z.string(),
-    identityProof: z.object({
-      identityProofType: IdentityProofType,
-      identifier: z.string(),
+    issuer: z.object({
+      // Must have id match uri pattern
+      id: Uri,
+      type: z.literal("OpenAttestationIssuer"),
+      name: z.string(),
+      identityProof: z.object({
+        identityProofType: IdentityProofType,
+        identifier: z.string(),
+      }),
     }),
-  }),
 
-  // [Optional] OCSP Revocation
-  credentialStatus: z
-    .object({
-      // Must have id match url pattern (OCSP endpoint)
-      id: z.string().url(),
-      type: z.literal("OpenAttestationOcspResponder"),
-    })
-    .optional(),
-
-  // [Optional] Render Method
-  renderMethod: z
-    .array(
-      z.discriminatedUnion("type", [
-        /* OA Decentralised Embedded Renderer */
-        z.object({
-          // Must have id match url pattern
-          id: z.string().url().describe("URL of a decentralised renderer to render this document"),
-          type: z.literal("OpenAttestationEmbeddedRenderer"),
-          templateName: z.string(),
-        }),
-        /* SVG Renderer (URL or Embedded) */
-        z.object({
-          // Must have id match url pattern or embeded SVG string
-          id: z
-            .union([z.string(), z.string().url()])
-            .describe(
-              "A URL that dereferences to an SVG image [SVG] with an associated image/svg+xml media type. Or an embedded SVG image [SVG]"
-            ),
-          type: z.literal("SvgRenderingTemplate2023"),
-          name: z.string(),
-          digestMultibase: z
-            .string()
-            .describe(
-              "An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12)."
-            )
-            .optional(),
-        }),
-      ])
-    )
-    .optional(),
-
-  // [Optional] Attachments
-  attachments: z
-    .array(
-      z.object({
-        data: z.string().describe("Base64 encoding of this attachment"),
-        fileName: z.string().min(1).describe("Name of this attachment, with appropriate extensions"),
-        mimeType: z.string().min(1).describe("Media type (or MIME type) of this attachment"),
+    // [Optional] OCSP Revocation
+    credentialStatus: z
+      .object({
+        // Must have id match url pattern (OCSP endpoint)
+        id: z.string().url(),
+        type: z.literal("OpenAttestationOcspResponder"),
       })
-    )
-    .optional(),
-}).strict();
+      .optional(),
+
+    // [Optional] Render Method
+    renderMethod: z
+      .array(
+        z.discriminatedUnion("type", [
+          /* OA Decentralised Embedded Renderer */
+          z.object({
+            // Must have id match url pattern
+            id: z.string().url().describe("URL of a decentralised renderer to render this document"),
+            type: z.literal("OpenAttestationEmbeddedRenderer"),
+            templateName: z.string(),
+          }),
+          /* SVG Renderer (URL or Embedded) */
+          z.object({
+            // Must have id match url pattern or embeded SVG string
+            id: z
+              .union([z.string(), z.string().url()])
+              .describe(
+                "A URL that dereferences to an SVG image [SVG] with an associated image/svg+xml media type. Or an embedded SVG image [SVG]"
+              ),
+            type: z.literal("SvgRenderingTemplate2023"),
+            name: z.string().optional(),
+            digestMultibase: z
+              .string()
+              .describe(
+                "An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12)."
+              )
+              .optional(),
+          }),
+        ])
+      )
+      .optional(),
+
+    // [Optional] Attachments
+    attachments: z
+      .array(
+        z.object({
+          data: z.string().describe("Base64 encoding of this attachment"),
+          fileName: z.string().min(1).describe("Name of this attachment, with appropriate extensions"),
+          mimeType: z.string().min(1).describe("Media type (or MIME type) of this attachment"),
+        })
+      )
+      .optional(),
+  })
+  .strict();
 
 const WrappedProof = z.object({
   type: z.literal("OpenAttestationMerkleProofSignature2018"),
@@ -243,13 +244,15 @@ const WrappedProof = z.object({
   privacy: z.object({ obfuscated: z.array(z.string()) }),
 });
 const WrappedDocumentExtrasShape = { proof: WrappedProof.passthrough() } as const;
+// V4WrappedDocument should never allow extra root properties
 export const V4WrappedDocument = V4Document.extend(WrappedDocumentExtrasShape).strict();
 
 const SignedWrappedProof = WrappedProof.extend({ key: z.string(), signature: z.string() });
 const SignedWrappedDocumentExtrasShape = { proof: SignedWrappedProof } as const;
+// V4SignedWrappedDocument should never allow extra root properties
 export const V4SignedWrappedDocument = V4Document.extend(SignedWrappedDocumentExtrasShape).strict();
 
-export type W3cVerifiableCredential = z.infer<typeof W3cVerifiableCredential>;
+export type W3cVerifiableCredential = z.infer<typeof _W3cVerifiableCredential>;
 
 // AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
 // still being assignable to the base type. For example, if we accidentally extend and
@@ -270,6 +273,7 @@ type IdentityProofType = z.infer<typeof IdentityProofType>;
 
 export type Salt = z.infer<typeof Salt>;
 
+// Utility types
 /** Overrides properties in the Target (a & b does not override a props with b props) */
 export type Override<Target extends Record<string, unknown>, OverrideWith extends Record<string, unknown>> = Omit<
   Target,
