@@ -196,17 +196,26 @@ export const V4Document = W3cVerifiableCredential.extend({
         /* OA Decentralised Embedded Renderer */
         z.object({
           // Must have id match url pattern
-          id: z.string().url(),
+          id: z.string().url().describe("URL of a decentralised renderer to render this document"),
           type: z.literal("OpenAttestationEmbeddedRenderer"),
           templateName: z.string(),
         }),
         /* SVG Renderer (URL or Embedded) */
         z.object({
           // Must have id match url pattern or embeded SVG string
-          id: z.union([z.string(), z.string().url()]),
+          id: z
+            .union([z.string(), z.string().url()])
+            .describe(
+              "A URL that dereferences to an SVG image [SVG] with an associated image/svg+xml media type. Or an embedded SVG image [SVG]"
+            ),
           type: z.literal("SvgRenderingTemplate2023"),
           name: z.string(),
-          digestMultibase: z.string(),
+          digestMultibase: z
+            .string()
+            .describe(
+              "An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12)."
+            )
+            .optional(),
         }),
       ])
     )
