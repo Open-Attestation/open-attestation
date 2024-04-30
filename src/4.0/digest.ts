@@ -1,15 +1,16 @@
-import { get, sortBy } from "lodash";
+import { sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
 import { V4Document, Salt } from "./types";
+import { LeafValue, traverseAndFlatten } from "./traverseAndFlatten";
+import { hashToBuffer } from "../shared/utils";
 
 export const digestCredential = (document: V4Document, salts: Salt[], obfuscatedData: string[]) => {
-  // Prepare array of hashes from visible data
-  const hashedUnhashedDataArray = salts
-    // Explictly allow falsy values (e.g. false, 0, etc.) as they can exist in the document
-    .filter((salt) => get(document, salt.path) !== undefined)
-    .map((salt) => {
-      return keccak256(JSON.stringify({ [salt.path]: `${salt.value}:${get(document, salt.path)}` }));
-    });
+  const saltsMap = new Map(salts.map((salt) => [salt.path, salt.value]));
+  const hashedUnhashedDataArray = traverseAndFlatten(document, ({ value, path }) => {
+    const salt = saltsMap.get(path);
+    if (!salt) throw new Error(`Salt not found for ${path}`);
+    return hashLeafNode({ path, salt, value });
+  });
 
   // Combine both array and sort them to ensure determinism
   const combinedHashes = obfuscatedData.concat(hashedUnhashedDataArray);
@@ -18,3 +19,38 @@ export const digestCredential = (document: V4Document, salts: Salt[], obfuscated
   // Finally, return the digest of the entire set of data
   return keccak256(JSON.stringify(sortedHashes));
 };
+
+type HashParams = {
+  salt: string;
+  value: LeafValue;
+  path: string;
+};
+type HashOptions = {
+  toHexString: true;
+};
+export function hashLeafNode({ path, salt, value }: HashParams, options?: HashOptions) {
+  const type = deriveType(value);
+  const hash = keccak256(JSON.stringify({ [path]: `${salt}:${type}:${value}` }));
+  return !options?.toHexString ? hash : hashToBuffer(hash).toString("hex");
+}
+
+export function deriveType(value: unknown): "string" | "number" | "object" | "array" | "null" {
+  if (Array.isArray(value)) {
+    return "array";
+  } else if (value === null) {
+    return "null";
+  } else {
+    switch (typeof value) {
+      case "string":
+        return "string";
+      case "number":
+        return "number";
+      case "object":
+        return "object";
+      case "boolean":
+        return "object";
+      default:
+        throw new Error(`Unsupported type ${typeof value}`);
+    }
+  }
+}

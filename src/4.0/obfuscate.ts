@@ -1,8 +1,8 @@
-import { toBuffer } from "../shared/utils";
 import { cloneDeep, get, unset, pick } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
 import { Override, PartialDeep, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
+import { hashLeafNode } from "./digest";
 
 const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -10,9 +10,7 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   const fieldsAsArray = ([] as string[]).concat(fields);
   // fields to remove will contain the list of each expanded keys from the fields passed in parameter, it's for instance useful in case of
   // object obfuscation, where the object itself is not part of the salts, but each individual keys are
-  const fieldsToRemove: string[] = traverseAndFlatten(pick(data, fieldsAsArray), {
-    iteratee: ({ path }) => path,
-  });
+  const fieldsToRemove = traverseAndFlatten(pick(data, fieldsAsArray), ({ path }) => path);
   const salts = decodeSalt(data.proof.salts);
 
   // Obfuscate data by hashing them with the key
@@ -24,7 +22,7 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
       throw new Error(`Salt not found for ${field}`);
     }
 
-    return toBuffer({ [salt.path]: `${salt.value}:${value}` }).toString("hex");
+    return hashLeafNode({ value, salt: salt.value, path: salt.path }, { toHexString: true });
   });
   // remove fields from the object
   fieldsAsArray.forEach((field) => unset(data, field));

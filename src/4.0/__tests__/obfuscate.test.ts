@@ -3,11 +3,11 @@ import { obfuscateVerifiableCredential } from "../obfuscate";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
 import { SchemaId } from "../../shared/@types/document";
-import { toBuffer, isObfuscated, getObfuscatedData } from "../../shared/utils";
 import { wrapDocument } from "../wrap";
 import { Salt, V4Document, V4WrappedDocument } from "../types";
 import { verifySignature } from "../../";
 import { RAW_DOCUMENT_DID } from "../fixtures";
+import { hashLeafNode } from "../digest";
 
 const makeV4RawDocument = <T extends Pick<V4Document, "credentialSubject" | "attachments">>(props: T) =>
   ({
@@ -34,8 +34,10 @@ const expectRemovedFieldsWithoutArrayNotation = (
   const value = get(document, field);
   const salt = findSaltByPath(document.proof.salts, field);
 
+  if (!salt) throw new Error("Salt not found for ${field}");
+
   expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
-    toBuffer({ [field]: `${salt?.value}:${value}` }).toString("hex")
+    hashLeafNode({ value, salt: salt.value, path: salt.path }, { toHexString: true })
   );
   expect(findSaltByPath(obfuscatedDocument.proof.salts, field)).toBeUndefined();
   expect(obfuscatedDocument).not.toHaveProperty(field);
@@ -89,8 +91,10 @@ describe("privacy", () => {
       const value = get(newDocument, PATH_TO_REMOVE);
       const salt = findSaltByPath(newDocument.proof.salts, PATH_TO_REMOVE);
 
+      if (!salt) throw new Error(`Salt not found for ${PATH_TO_REMOVE}`);
+
       expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
-        toBuffer({ [PATH_TO_REMOVE]: `${salt?.value}:${value}` }).toString("hex")
+        hashLeafNode({ value, salt: salt.value, path: PATH_TO_REMOVE }, { toHexString: true })
       );
       expect(findSaltByPath(obfuscatedDocument.proof.salts, PATH_TO_REMOVE)).toBeUndefined();
       expect(obfuscatedDocument.credentialSubject.arrayOfObject?.[0]).toStrictEqual({ doo: "foo" });
@@ -120,8 +124,10 @@ describe("privacy", () => {
           const value = get(wrappedDocument, expectedRemovedField);
           const salt = findSaltByPath(wrappedDocument.proof.salts, expectedRemovedField);
 
+          if (!salt) throw new Error(`Salt not found for ${expectedRemovedField}`);
+
           expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
-            toBuffer({ [expectedRemovedField]: `${salt?.value}:${value}` }).toString("hex")
+            hashLeafNode({ value, salt: salt.value, path: expectedRemovedField }, { toHexString: true })
           );
           expect(findSaltByPath(obfuscatedDocument.proof.salts, expectedRemovedField)).toBeUndefined();
         }
@@ -172,8 +178,10 @@ describe("privacy", () => {
         const value = get(wrappedDocument, expectedRemovedField);
         const salt = findSaltByPath(wrappedDocument.proof.salts, expectedRemovedField);
 
+        if (!salt) throw new Error(`Salt not found for ${expectedRemovedField}`);
+
         expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
-          toBuffer({ [expectedRemovedField]: `${salt?.value}:${value}` }).toString("hex")
+          hashLeafNode({ value, salt: salt.value, path: expectedRemovedField }, { toHexString: true })
         );
         expect(findSaltByPath(obfuscatedDocument.proof.salts, expectedRemovedField)).toBeUndefined();
       });
@@ -183,7 +191,7 @@ describe("privacy", () => {
 
     test("given multiple fields to be removed, should remove fields and add their hash into privacy.obfuscated", async () => {
       const PATHS_TO_REMOVE = ["credentialSubject.key1", "credentialSubject.key2"];
-      const newDocument = await wrapDocument(
+      const wrappedDocument = await wrapDocument(
         makeV4RawDocument({
           credentialSubject: {
             key1: "value1",
@@ -192,17 +200,17 @@ describe("privacy", () => {
           },
         })
       );
-      const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, PATHS_TO_REMOVE);
+      const obfuscatedDocument = await obfuscateVerifiableCredential(wrappedDocument, PATHS_TO_REMOVE);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
       PATHS_TO_REMOVE.forEach((expectedRemovedField) => {
-        expectRemovedFieldsWithoutArrayNotation(expectedRemovedField, newDocument, obfuscatedDocument);
+        expectRemovedFieldsWithoutArrayNotation(expectedRemovedField, wrappedDocument, obfuscatedDocument);
       });
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(2);
     });
 
-    test("removes values from arrays", async () => {
+    test("given a path to remove an entire item from an array, should throw", async () => {
       const PATHS_TO_REMOVE = ["attachments[0]", "attachments[2]"];
       const wrappedDocument = await wrapDocument(
         makeV4RawDocument({
@@ -231,49 +239,55 @@ describe("privacy", () => {
           ],
         })
       );
-      const obfuscatedDocument = await obfuscateVerifiableCredential(wrappedDocument, PATHS_TO_REMOVE);
-      const verified = verifySignature(obfuscatedDocument);
-      expect(verified).toBe(true);
 
-      [
-        "attachments[0].mimeType",
-        "attachments[0].fileName",
-        "attachments[0].data",
-        "attachments[2].mimeType",
-        "attachments[2].fileName",
-        "attachments[2].data",
-      ].forEach((expectedRemovedField) => {
-        const value = get(wrappedDocument, expectedRemovedField);
-        const salt = findSaltByPath(wrappedDocument.proof.salts, expectedRemovedField);
-
-        expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
-          toBuffer({ [expectedRemovedField]: `${salt?.value}:${value}` }).toString("hex")
-        );
-        expect(findSaltByPath(obfuscatedDocument.proof.salts, expectedRemovedField)).toBeUndefined();
-      });
-
-      expect(obfuscatedDocument.attachments?.[0]).not.toEqual(undefined);
-      expect(obfuscatedDocument.attachments?.[1]).toEqual({
-        mimeType: "image/png",
-        fileName: "bbb",
-        data: "abcd",
-      });
-      expect(obfuscatedDocument.attachments?.[2]).not.toEqual(undefined);
+      expect(() => obfuscateVerifiableCredential(wrappedDocument, PATHS_TO_REMOVE)).toThrow();
     });
 
-    // test("is transitive", async () => {
-    //   const newDocument = await wrapDocument(testData, { version: SchemaId.v3 });
-    //   const intermediateDoc = obfuscateVerifiableCredential(newDocument, "key1");
-    //   const finalDoc1 = obfuscateVerifiableCredential(intermediateDoc, "key2");
-    //   const finalDoc2 = obfuscateVerifiableCredential(newDocument, ["key1", "key2"]);
+    test("given a path to remove all elements in an object, should throw", async () => {
+      const wrappedDocument = await wrapDocument(
+        makeV4RawDocument({
+          credentialSubject: {
+            arrayOfObject: [
+              { foo: "bar", doo: "foo" },
+              { foo: "baz", doo: "faz" },
+            ],
+            object: {
+              foo: "bar",
+            },
+          },
+        })
+      );
 
-    //   expect(finalDoc1).toEqual(finalDoc2);
-    //   expect(intermediateDoc).not.toHaveProperty("key1");
-    //   expect(finalDoc1).not.toHaveProperty("key1");
-    //   expect(finalDoc1).not.toHaveProperty("key2");
-    //   expect(finalDoc2).not.toHaveProperty("key1");
-    //   expect(finalDoc2).not.toHaveProperty("key2");
-    // });
+      expect(() =>
+        obfuscateVerifiableCredential(wrappedDocument, [
+          "credentialSubject.arrayOfObject[0].foo",
+          "credentialSubject.arrayOfObject[0].doo",
+        ])
+      ).toThrow();
+      expect(() => obfuscateVerifiableCredential(wrappedDocument, ["credentialSubject.object.foo"])).toThrow();
+    });
+
+    test("is transitive", async () => {
+      const wrappedDocument = await wrapDocument(
+        makeV4RawDocument({
+          credentialSubject: {
+            key1: "value1",
+            key2: "value2",
+            key3: "value3",
+          },
+        })
+      );
+      const intermediateDoc = obfuscateVerifiableCredential(wrappedDocument, "key1");
+      const finalDoc1 = obfuscateVerifiableCredential(intermediateDoc, "key2");
+      const finalDoc2 = obfuscateVerifiableCredential(wrappedDocument, ["key1", "key2"]);
+
+      expect(finalDoc1).toEqual(finalDoc2);
+      expect(intermediateDoc).not.toHaveProperty("key1");
+      expect(finalDoc1).not.toHaveProperty("key1");
+      expect(finalDoc1).not.toHaveProperty("key2");
+      expect(finalDoc2).not.toHaveProperty("key1");
+      expect(finalDoc2).not.toHaveProperty("key2");
+    });
   });
 
   // describe("getObfuscated", () => {

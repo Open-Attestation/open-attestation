@@ -1,7 +1,7 @@
 import { V4WrappedDocument } from "./types";
 import { digestCredential } from "./digest";
 import { checkProof } from "../shared/merkle";
-import { decodeSalt, salt } from "./salt";
+import { decodeSalt } from "./salt";
 
 export const verify = <T extends V4WrappedDocument>(document: T): document is T => {
   if (!document.proof) {
@@ -12,10 +12,6 @@ export const verify = <T extends V4WrappedDocument>(document: T): document is T 
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
   const { proof, ...documentWithoutProof } = document;
   const decodedSalts = decodeSalt(document.proof.salts);
-
-  // Checks to ensure there are no added/removed values, so visibleSalts.length must match decodedSalts.length
-  const visibleSalts = salt(documentWithoutProof);
-  if (visibleSalts.length !== decodedSalts.length) return false;
 
   // Checks target hash
   const digest = digestCredential(documentWithoutProof, decodedSalts, document.proof.privacy.obfuscated);
