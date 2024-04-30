@@ -34,7 +34,7 @@ export function hashLeafNode({ path, salt, value }: HashParams, options?: HashOp
   return !options?.toHexString ? hash : hashToBuffer(hash).toString("hex");
 }
 
-export function deriveType(value: unknown): "string" | "number" | "object" | "array" | "null" {
+export function deriveType(value: unknown): "string" | "number" | "boolean" | "null" | "object" | "array" {
   if (Array.isArray(value)) {
     return "array";
   } else if (value === null) {
@@ -48,7 +48,7 @@ export function deriveType(value: unknown): "string" | "number" | "object" | "ar
       case "object":
         return "object";
       case "boolean":
-        return "object";
+        return "boolean";
       default:
         throw new Error(`Unsupported type ${typeof value}`);
     }
