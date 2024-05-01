@@ -82,18 +82,11 @@ describe("V4.0 digest", () => {
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[3]" }));
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[4]" }));
     });
-    test("handles sparse arrays correctly", () => {
+    test("throw on sparse arrays (we do not support obfuscation of array item as JSON turns empty slots into null values)", () => {
       const document = {
         grades: ["A+", 100, , , , true, "B+"],
       };
-      const salted = salt(document);
-      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[0]" }));
-      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[1]" }));
-      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[5]" }));
-      expect(salted).toContainEqual(expect.objectContaining({ path: "grades[6]" }));
-      expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[2]" }));
-      expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[3]" }));
-      expect(salted).not.toContainEqual(expect.objectContaining({ path: "grades[4]" }));
+      expect(() => salt(document)).toThrow(`Unexpected data 'undefined'`);
     });
   });
 
