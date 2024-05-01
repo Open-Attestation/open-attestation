@@ -4,7 +4,7 @@
   },
   "compilerOptions": {
     "lib": ["es2019"],
-    "target": "ES6",
+    "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
