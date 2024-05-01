@@ -6,14 +6,14 @@ import { hashToBuffer } from "../shared/utils";
 
 export const digestCredential = (document: V4Document, salts: Salt[], obfuscatedData: string[]) => {
   const saltsMap = new Map(salts.map((salt) => [salt.path, salt.value]));
-  const hashedUnhashedDataArray = traverseAndFlatten(document, ({ value, path }) => {
+  const hashedLeafNodes = traverseAndFlatten(document, ({ value, path }) => {
     const salt = saltsMap.get(path);
     if (!salt) throw new Error(`Salt not found for ${path}`);
     return hashLeafNode({ path, salt, value });
   });
 
   // Combine both array and sort them to ensure determinism
-  const combinedHashes = obfuscatedData.concat(hashedUnhashedDataArray);
+  const combinedHashes = obfuscatedData.concat(hashedLeafNodes);
   const sortedHashes = sortBy(combinedHashes);
 
   // Finally, return the digest of the entire set of data

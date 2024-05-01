@@ -59,7 +59,7 @@ describe("privacy", () => {
     });
 
     test("removes paths that result in an invalid wrapped document, should throw", async () => {
-      const PATHS_TO_REMOVE = ["credentialSubject.id", "credentialSubject.name", "renderMethod.0.id", "name"];
+      const PATHS_TO_REMOVE = ["credentialSubject", "renderMethod.0.id", "name"];
       const wrappedDocument = await wrapDocument(
         makeV4RawDocument({ credentialSubject: { id: "S1234567A", name: "John Doe" } })
       );
@@ -102,14 +102,12 @@ describe("privacy", () => {
     });
 
     test("given an object is to be removed, should remove the object itself, as well as add each of its key's hash into privacy.obfuscated", async () => {
-      const PATH_TO_REMOVE = "credentialSubject.arrayOfObject[0]";
+      const PATH_TO_REMOVE = "credentialSubject.hee";
       const wrappedDocument = await wrapDocument(
         makeV4RawDocument({
           credentialSubject: {
-            arrayOfObject: [
-              { foo: "bar", doo: "foo" },
-              { foo: "baz", doo: "faz" },
-            ],
+            hee: { foo: "bar", doo: "foo" },
+            haa: { foo: "baz", doo: "faz" },
           },
         })
       );
@@ -119,22 +117,19 @@ describe("privacy", () => {
       expect(verified).toBe(true);
 
       // assert that each key of the object has been moved to privacy.obfuscated
-      ["credentialSubject.arrayOfObject[0].foo", "credentialSubject.arrayOfObject[0].doo"].forEach(
-        (expectedRemovedField) => {
-          const value = get(wrappedDocument, expectedRemovedField);
-          const salt = findSaltByPath(wrappedDocument.proof.salts, expectedRemovedField);
+      ["credentialSubject.hee.foo", "credentialSubject.hee.doo"].forEach((expectedRemovedField) => {
+        const value = get(wrappedDocument, expectedRemovedField);
+        const salt = findSaltByPath(wrappedDocument.proof.salts, expectedRemovedField);
 
-          if (!salt) throw new Error(`Salt not found for ${expectedRemovedField}`);
+        if (!salt) throw new Error(`Salt not found for ${expectedRemovedField}`);
 
-          expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
-            hashLeafNode({ value, salt: salt.value, path: expectedRemovedField }, { toHexString: true })
-          );
-          expect(findSaltByPath(obfuscatedDocument.proof.salts, expectedRemovedField)).toBeUndefined();
-        }
-      );
+        expect(obfuscatedDocument.proof.privacy.obfuscated).toContain(
+          hashLeafNode({ value, salt: salt.value, path: expectedRemovedField }, { toHexString: true })
+        );
+        expect(findSaltByPath(obfuscatedDocument.proof.salts, expectedRemovedField)).toBeUndefined();
+      });
 
-      expect(obfuscatedDocument.credentialSubject?.arrayOfObject?.[0]).toBeUndefined();
-      expect(obfuscatedDocument.credentialSubject?.arrayOfObject?.[1]).not.toBeUndefined(); // let's make sure only the first item has been removed
+      expect(obfuscatedDocument.credentialSubject?.hee).toBeUndefined(); // let's make sure only the first item has been removed
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(2);
     });
 
@@ -211,7 +206,6 @@ describe("privacy", () => {
     });
 
     test("given a path to remove an entire item from an array, should throw", async () => {
-      const PATHS_TO_REMOVE = ["attachments[0]", "attachments[2]"];
       const wrappedDocument = await wrapDocument(
         makeV4RawDocument({
           credentialSubject: {
@@ -240,7 +234,7 @@ describe("privacy", () => {
         })
       );
 
-      expect(() => obfuscateVerifiableCredential(wrappedDocument, PATHS_TO_REMOVE)).toThrow();
+      expect(() => obfuscateVerifiableCredential(wrappedDocument, ["attachments[0]", "attachments[2]"])).toThrow();
     });
 
     test("given a path to remove all elements in an object, should throw", async () => {
@@ -263,8 +257,14 @@ describe("privacy", () => {
           "credentialSubject.arrayOfObject[0].foo",
           "credentialSubject.arrayOfObject[0].doo",
         ])
-      ).toThrow();
-      expect(() => obfuscateVerifiableCredential(wrappedDocument, ["credentialSubject.object.foo"])).toThrow();
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Obfuscation of "credentialSubject.arrayOfObject[0].doo" has resulted in an empty {}, this is currently not supported."`
+      );
+      expect(() =>
+        obfuscateVerifiableCredential(wrappedDocument, ["credentialSubject.object.foo"])
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Obfuscation of "credentialSubject.object.foo" has resulted in an empty {}, this is currently not supported."`
+      );
     });
 
     test("is transitive", async () => {

@@ -8,7 +8,20 @@ function _traverseAndFlatten<IterateeValue>(
   if (Array.isArray(data)) {
     // an empty array is considered a leaf node
     if (data.length === 0) return iteratee({ value: [], path });
-    return data.flatMap((v, index) => _traverseAndFlatten(v, iteratee, `${path}[${index}]`));
+
+    // dont use flat map as it skips empty items in the array
+    const results: IterateeValue[] = [];
+    for (let index = 0; index < data.length; index++) {
+      const value = data[index];
+      const result = _traverseAndFlatten(value, iteratee, `${path}[${index}]`);
+      if (Array.isArray(result)) {
+        results.push(...result);
+      } else {
+        results.push(result);
+      }
+    }
+
+    return results;
   }
 
   if (typeof data === "object" && data !== null) {
@@ -24,7 +37,6 @@ function _traverseAndFlatten<IterateeValue>(
     return iteratee({ value: data, path });
   }
 
-  // our expected input is JSON so it should never have undefined
   throw new Error(`Unexpected data '${data}' in '${path}'`);
 }
 
