@@ -5,8 +5,10 @@ import { LeafValue, traverseAndFlatten } from "./traverseAndFlatten";
 import { hashToBuffer } from "../shared/utils";
 
 export const digestCredential = (document: V4Document, salts: Salt[], obfuscatedData: string[]) => {
+  // proof is not part of the digest
+  const { proof: _proof, ...documentWithoutProof } = document;
   const saltsMap = new Map(salts.map((salt) => [salt.path, salt.value]));
-  const hashedLeafNodes = traverseAndFlatten(document, ({ value, path }) => {
+  const hashedLeafNodes = traverseAndFlatten(documentWithoutProof, ({ value, path }) => {
     const salt = saltsMap.get(path);
     if (!salt) throw new Error(`Salt not found for ${path}`);
     return hashLeafNode({ path, salt, value });
