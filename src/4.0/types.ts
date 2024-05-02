@@ -224,13 +224,11 @@ export const V4Document = _W3cVerifiableCredential
     // [Optional] Attachments
     attachments: z
       .array(
-        z
-          .object({
-            data: z.string().describe("Base64 encoding of this attachment"),
-            fileName: z.string().min(1).describe("Name of this attachment, with appropriate extensions"),
-            mimeType: z.string().min(1).describe("Media type (or MIME type) of this attachment"),
-          })
-          .optional()
+        z.object({
+          data: z.string().describe("Base64 encoding of this attachment"),
+          fileName: z.string().min(1).describe("Name of this attachment, with appropriate extensions"),
+          mimeType: z.string().min(1).describe("Media type (or MIME type) of this attachment"),
+        })
       )
       .optional(),
   })
