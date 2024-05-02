@@ -114,6 +114,8 @@ export class CannotObfuscateArrayItemError extends Error {
 
 export class CannotResultInEmptyObjectError extends Error {
   constructor(public field: string) {
-    super(`Obfuscation of "${field}" has resulted in an empty {}, this is currently not supported.`);
+    super(
+      `Obfuscation of "${field}" has resulted in an empty {}, this is currently not supported. Alternatively, if the object is not part of an array, you may choose to obfuscate the parent of "${field}".`
+    );
   }
 }

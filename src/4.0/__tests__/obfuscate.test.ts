@@ -258,12 +258,12 @@ describe("privacy", () => {
           "credentialSubject.arrayOfObject[0].doo",
         ])
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Obfuscation of "credentialSubject.arrayOfObject[0].doo" has resulted in an empty {}, this is currently not supported."`
+        `"Obfuscation of "credentialSubject.arrayOfObject[0].doo" has resulted in an empty {}, this is currently not supported. Alternatively, if the object is not part of an array, you may choose to obfuscate the parent of "credentialSubject.arrayOfObject[0].doo"."`
       );
       expect(() =>
         obfuscateVerifiableCredential(wrappedDocument, ["credentialSubject.object.foo"])
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Obfuscation of "credentialSubject.object.foo" has resulted in an empty {}, this is currently not supported."`
+        `"Obfuscation of "credentialSubject.object.foo" has resulted in an empty {}, this is currently not supported. Alternatively, if the object is not part of an array, you may choose to obfuscate the parent of "credentialSubject.object.foo"."`
       );
     });
 
