@@ -10,7 +10,8 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
-        "argsIgnorePattern": "^_"
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
       }
     ],
     "func-names": ["error", "as-needed"],

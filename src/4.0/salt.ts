@@ -26,7 +26,7 @@ export const secureRandomString = () => randomBytes(ENTROPY_IN_BYTES).toString("
 export const salt = (data: any): Salt[] => {
   // Check for illegal characters e.g. '.', '[' or ']'
   illegalCharactersCheck(data);
-  return traverseAndFlatten(data, { iteratee: ({ path }) => ({ value: secureRandomString(), path }) });
+  return traverseAndFlatten(data, ({ path }) => ({ value: secureRandomString(), path }));
 };
 
 export const encodeSalt = (salts: Salt[]): string => Base64.encode(JSON.stringify(salts));
