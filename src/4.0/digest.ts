@@ -16,7 +16,7 @@ export const digestCredential = (document: V4Document, salts: Salt[], obfuscated
       ? []
       : traverseAndFlatten(documentWithoutProof, ({ value, path }) => {
           const salt = saltsMap.get(path);
-          if (!salt) throw new Error(`Salt not found for ${path}`);
+          if (!salt) throw new SaltNotFoundError(path);
           return hashLeafNode({ path, salt, value });
         });
 
@@ -60,5 +60,15 @@ export function deriveType(value: unknown): "string" | "number" | "boolean" | "n
       default:
         throw new Error(`Unsupported type ${typeof value}`);
     }
+  }
+}
+
+export class SaltNotFoundError extends Error {
+  constructor(public path: string) {
+    super(`Salt not found for ${path}`);
+
+    // we shd consider changing the compilation target to >= es6
+    // https://www.dannyguo.com/blog/how-to-fix-instanceof-not-working-for-custom-errors-in-typescript
+    Object.setPrototypeOf(this, SaltNotFoundError.prototype);
   }
 }
