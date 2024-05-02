@@ -4,7 +4,7 @@ import * as FIXTURES from "../fixtures";
 
 const PATH_TO_GENERATED_FIXTURES = path.resolve(__dirname, "../../../test/fixtures/v4/__generated__");
 
-describe("assert fixtures matches generated JSON fixtures", () => {
+describe(`assert fixtures matches generated JSON fixtures, if this fails, run "npm i" or "npm run postinstall" to update the json fixtures, and commit changes if needed`, () => {
   for (const fixtureName of Object.keys(FIXTURES)) {
     const jsonFixtureFilename = fixtureName.replace(/_/g, "-").toLowerCase() + ".json";
 
