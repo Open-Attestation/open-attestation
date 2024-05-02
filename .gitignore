@@ -9,5 +9,3 @@ yarn.lock
 /public
 /vc-test-suite
 /.vscode
-
-/test/fixtures/v4/__generated__/
