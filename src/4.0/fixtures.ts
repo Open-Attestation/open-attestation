@@ -679,7 +679,7 @@ export const BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID = freezeObject([
         "0x153aeb0f59bef692f1b5bec2f20fc08f72863b0a670e87ac7c68460d311fc7a574189bb92056a15f1ef283c1784303528364d2124a006de3dba586f6162df5481b",
     },
   },
-]);
+] satisfies V4SignedWrappedDocument[]);
 
 // Freeze fixture to prevent accidental changes during tests
 function freezeObject<T>(obj: T): T {
