@@ -2,12 +2,12 @@
 import { obfuscateVerifiableCredential } from "../obfuscate";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
-import { SchemaId } from "../../shared/@types/document";
 import { wrapDocument } from "../wrap";
 import { Salt, V4Document, V4WrappedDocument } from "../types";
 import { verifySignature } from "../../";
-import { RAW_DOCUMENT_DID } from "../fixtures";
+import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED, WRAPPED_DOCUMENT_DID } from "../fixtures";
 import { hashLeafNode } from "../digest";
+import { getObfuscatedData, isObfuscated } from "../../shared/utils";
 
 const makeV4RawDocument = <T extends Pick<V4Document, "credentialSubject" | "attachments">>(props: T) =>
   ({
@@ -290,31 +290,25 @@ describe("privacy", () => {
     });
   });
 
-  // describe("getObfuscated", () => {
-  //   const documentObfuscatedV3 = ObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
-  //   const documentNotObfuscatedV3 = NotObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
+  describe("getObfuscated", () => {
+    test("should return empty array when there is no obfuscated data in document", () => {
+      expect(getObfuscatedData(WRAPPED_DOCUMENT_DID)).toHaveLength(0);
+    });
 
-  //   test("should return empty array when there is no obfuscated data in document v3", () => {
-  //     expect(getObfuscatedData(documentNotObfuscatedV3)).toHaveLength(0);
-  //   });
+    test("should return array of hashes when there is obfuscated data in document", () => {
+      const obfuscatedData = getObfuscatedData(SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED);
+      expect(obfuscatedData.length).toBe(1);
+      expect(obfuscatedData?.[0]).toBe("0394c26c5be1bde929bf5aec2e076fc6843ace379be541c30707dab467baa59f");
+    });
+  });
 
-  //   test("should return array of hashes when there is obfuscated data in document v3", () => {
-  //     const obfuscatedData = getObfuscatedData(documentObfuscatedV3);
-  //     expect(obfuscatedData.length).toBe(1);
-  //     expect(obfuscatedData?.[0]).toBe("e411260249d681968bdde76246350f7ca1c9bf1fae59b6bbf147692961b12e26");
-  //   });
-  // });
+  describe("isObfuscated", () => {
+    test("should return false when there is no obfuscated data in document", () => {
+      expect(isObfuscated(WRAPPED_DOCUMENT_DID)).toBe(false);
+    });
 
-  // describe("isObfuscated", () => {
-  //   const documentObfuscatedV3 = ObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
-  //   const documentNotObfuscatedV3 = NotObfuscatedWrapped as WrappedDocument<OpenAttestationDocument>;
-
-  //   test("should return false when there is no obfuscated data in document v3", () => {
-  //     expect(isObfuscated(documentNotObfuscatedV3)).toBe(false);
-  //   });
-
-  //   test("should return true where there is obfuscated data in document v3", () => {
-  //     expect(isObfuscated(documentObfuscatedV3)).toBe(true);
-  //   });
-  // });
+    test("should return true where there is obfuscated data in document", () => {
+      expect(isObfuscated(SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED)).toBe(true);
+    });
+  });
 });
