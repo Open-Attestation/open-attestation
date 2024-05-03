@@ -10,11 +10,9 @@ import * as v3 from "../../__generated__/schema.3.0";
 import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
-import * as v4 from "../../__generated__/schema.4.0";
-import { WrappedDocument as WrappedDocumentV4 } from "../../4.0/types";
-import { OpenAttestationDocument as OpenAttestationDocumentV4 } from "../../__generated__/schema.4.0";
+import { V4WrappedDocument } from "../../4.0/types";
 
-import { OpenAttestationDocument, WrappedDocument } from "../@types/document";
+import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl } from "../@types/document";
 import {
   isRawV2Document,
   isWrappedV2Document,
@@ -23,6 +21,7 @@ import {
   isRawV4Document,
   isWrappedV4Document,
 } from "./guard";
+import { Version } from "./diagnose";
 
 export type Hash = string | Buffer;
 type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
@@ -132,7 +131,7 @@ export const getTemplateURL = (document: any): string | undefined => {
   } else if (isRawV3Document(document) || isWrappedV3Document(document)) {
     return document.openAttestationMetadata.template?.url;
   } else if (isRawV4Document(document) || isWrappedV4Document(document)) {
-    return document.renderMethod?.url;
+    return document.renderMethod && document.renderMethod[0].id;
   }
 
   throw new Error(
@@ -185,10 +184,10 @@ export const isDocumentRevokable = (document: any): boolean => {
 
     return isDocumentStoreRevokableV3 || isDidRevokableV3;
   } else if (isWrappedV4Document(document)) {
+    if (typeof document.issuer === "string" || !document.credentialStatus) return false;
     const isDidRevokableV4 =
-      document.issuer.identityProof.identityProofType === v4.IdentityProofType.DNSDid
-        ? document.credentialStatus.credentialStatusType === v4.CredentialStatusType.OcspResponder ||
-          document.credentialStatus.credentialStatusType === v4.CredentialStatusType.RevocationStore
+      document.issuer.identityProof?.identityProofType === "DNS-DID"
+        ? document.credentialStatus.type === "OpenAttestationOcspResponder"
         : false;
     // TODO: OA v4 issuer schema not updated to support document store issuance yet
     // const isDocumentStoreRevokableV4 = ?
@@ -225,7 +224,7 @@ export const isObfuscated = (
   document:
     | WrappedDocumentV2<OpenAttestationDocumentV2>
     | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | WrappedDocumentV4<OpenAttestationDocumentV4>
+    | V4WrappedDocument
 ): boolean => {
   if (isWrappedV2Document(document)) {
     return !!document.privacy?.obfuscatedData?.length;
@@ -244,7 +243,7 @@ export const getObfuscatedData = (
   document:
     | WrappedDocumentV2<OpenAttestationDocumentV2>
     | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | WrappedDocumentV4<OpenAttestationDocumentV4>
+    | V4WrappedDocument
 ): string[] => {
   if (isWrappedV2Document(document)) {
     return document.privacy?.obfuscatedData || [];
@@ -261,3 +260,22 @@ export const getObfuscatedData = (
 
 export const isStringArray = (input: unknown): input is string[] =>
   Array.isArray(input) && input.every((i) => typeof i === "string");
+
+export const getVersion = (document: unknown): Version => {
+  if (typeof document === "object" && document !== null) {
+    if ("version" in document && typeof document.version === "string") {
+      switch (document.version) {
+        case SchemaId.v2:
+          return "2.0";
+        case SchemaId.v3:
+          return "3.0";
+      }
+    } else if ("@context" in document && Array.isArray(document["@context"])) {
+      if (document["@context"].includes(ContextUrl.v4_alpha)) {
+        return "4.0";
+      }
+    }
+  }
+
+  throw new Error("Unknown document version: Can only determine between OpenAttestation v2, v3 & v4 documents.");
+};

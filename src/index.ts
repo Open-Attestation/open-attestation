@@ -4,8 +4,8 @@ import { getSchema } from "./shared/ajv";
 import * as utils from "./shared/utils";
 import { SchemaValidationError } from "./shared/utils";
 import { validateSchema as validate } from "./shared/validate";
-import { SchemaId, WrappedDocument, OpenAttestationDocument } from "./shared/@types/document";
-import { WrapDocumentOptionV2, WrapDocumentOptionV3, WrapDocumentOptionV4 } from "./shared/@types/wrap";
+import { SchemaId, WrappedDocument, OpenAttestationDocument, SignedWrappedDocument } from "./shared/@types/document";
+import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
 
 import * as v2 from "./2.0/types";
@@ -26,13 +26,14 @@ import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV3 } from
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
 
 import * as v4 from "./4.0/types";
-import { WrappedDocument as WrappedDocumentV4 } from "./4.0/types";
-import { wrapDocument as wrapDocumentV4, wrapDocuments as wrapDocumentsV4 } from "./4.0/wrap";
 import { signDocument as signDocumentV4 } from "./4.0/sign";
 import { verify as verifyV4 } from "./4.0/verify";
 import { digestCredential as digestCredentialV4 } from "./4.0/digest";
-import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4 } from "./4.0/obfuscate";
-import { OpenAttestationDocument as OpenAttestationDocumentV4 } from "./__generated__/schema.4.0";
+import {
+  ObfuscateVerifiableCredentialResult,
+  obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4,
+} from "./4.0/obfuscate";
+import { v4Diagnose } from "./4.0/diagnose";
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
   data: T,
@@ -62,19 +63,10 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends
   return wrapDocumentsV3(dataArray, options ?? { version: SchemaId.v3 });
 }
 
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument<T extends OpenAttestationDocumentV4>(
-  data: T,
-  options?: WrapDocumentOptionV4
-): Promise<WrappedDocumentV4<T>> {
-  return wrapDocumentV4(data, options ?? { version: SchemaId.v4 });
-}
-
-export function _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments<T extends OpenAttestationDocumentV4>(
-  dataArray: T[],
-  options?: WrapDocumentOptionV4
-): Promise<WrappedDocumentV4<T>[]> {
-  return wrapDocumentsV4(dataArray, options ?? { version: SchemaId.v4 });
-}
+export {
+  wrapDocument as _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument,
+  wrapDocuments as _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments,
+} from "./4.0/wrap";
 
 export const validateSchema = (document: WrappedDocument<any>): boolean => {
   if (utils.isWrappedV2Document(document) || document?.version === SchemaId.v2)
@@ -82,7 +74,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
   else if (utils.isWrappedV3Document(document) || document?.version === SchemaId.v3)
     return validate(document, getSchema(SchemaId.v3)).length === 0;
   else if (utils.isWrappedV4Document(document)) {
-    return validate(document, getSchema(SchemaId.v4)).length === 0;
+    return v4Diagnose({ document, kind: "wrapped", debug: false, mode: "strict" }).length === 0;
   }
 
   return validate(document, getSchema(`${document?.version || SchemaId.v2}`)).length === 0;
@@ -97,9 +89,9 @@ export function verifySignature<T extends WrappedDocument<OpenAttestationDocumen
 }
 
 export function digest(document: OpenAttestationDocumentV3, salts: v3.Salt[], obfuscatedData: string[]): string;
-export function digest(document: OpenAttestationDocumentV4, salts: v4.Salt[], obfuscatedData: string[]): string;
+export function digest(document: v4.V4Document, salts: v4.Salt[], obfuscatedData: string[]): string;
 export function digest(
-  document: OpenAttestationDocumentV3 | OpenAttestationDocumentV4,
+  document: OpenAttestationDocumentV3 | v4.V4Document,
   salts: v3.Salt[] | v4.Salt[],
   obfuscatedData: string[]
 ): string {
@@ -119,10 +111,10 @@ export function obfuscate<T extends OpenAttestationDocumentV3>(
   document: WrappedDocument<T>,
   fields: string[] | string
 ): WrappedDocument<T>;
-export function obfuscate<T extends OpenAttestationDocumentV4>(
-  document: WrappedDocument<T>,
+export function obfuscate<T extends v4.V4WrappedDocument>(
+  document: T,
   fields: string[] | string
-): WrappedDocument<T>;
+): ObfuscateVerifiableCredentialResult<T>;
 export function obfuscate<T extends OpenAttestationDocument>(document: WrappedDocument<T>, fields: string[] | string) {
   if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields);
   else if (utils.isWrappedV3Document(document)) return obfuscateVerifiableCredentialV3(document, fields);
@@ -135,34 +127,22 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
   return !!error.validationErrors;
 };
 
-export async function signDocument<T extends v2.OpenAttestationDocument>(
-  document: v2.SignedWrappedDocument<T> | v2.WrappedDocument<T>,
+export async function signDocument<T extends v2.OpenAttestationDocument | v3.OpenAttestationDocument | v4.V4Document>(
+  document: WrappedDocument<T> | SignedWrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
   keyOrSigner: SigningKey | ethers.Signer
-): Promise<v2.SignedWrappedDocument<T>>;
-export async function signDocument<T extends v3.OpenAttestationDocument>(
-  document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
-  algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
-): Promise<v3.SignedWrappedDocument<T>>;
-export async function signDocument<T extends v4.OpenAttestationDocument>(
-  document: v4.SignedWrappedDocument<T> | v4.WrappedDocument<T>,
-  algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
-): Promise<v4.SignedWrappedDocument<T>>;
-export async function signDocument(
-  document: any,
-  algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
-) {
+): Promise<SignedWrappedDocument<T>> {
   // rj was worried it could happen deep in the code, so I moved it to the boundaries
   if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {
     throw new Error(`Either a keypair or ethers.js Signer must be provided`);
   }
 
-  if (utils.isWrappedV2Document(document)) return signDocumentV2(document, algorithm, keyOrSigner);
-  else if (utils.isWrappedV3Document(document)) return signDocumentV3(document, algorithm, keyOrSigner);
-  else if (utils.isWrappedV4Document(document)) return signDocumentV4(document, algorithm, keyOrSigner);
+  let results: unknown;
+  if (utils.isWrappedV2Document(document)) results = signDocumentV2(document, algorithm, keyOrSigner);
+  else if (utils.isWrappedV3Document(document)) results = signDocumentV3(document, algorithm, keyOrSigner);
+  else if (utils.isWrappedV4Document(document)) results = signDocumentV4(document, algorithm, keyOrSigner);
+
+  if (results) return results as SignedWrappedDocument<T>;
 
   // Unreachable code atm until utils.isWrappedV2Document & utils.isWrappedV3Document becomes more strict
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be signed");

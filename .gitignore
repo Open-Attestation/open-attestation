@@ -8,3 +8,4 @@ yarn.lock
 *.iml
 /public
 /vc-test-suite
+/.vscode

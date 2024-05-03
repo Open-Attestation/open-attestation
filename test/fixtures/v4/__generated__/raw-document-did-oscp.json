@@ -1,27 +1,39 @@
 {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
   ],
-  "type": ["VerifiableCredential", "OpenAttestationCredential"],
+  "type": [
+    "VerifiableCredential",
+    "OpenAttestationCredential"
+  ],
   "validFrom": "2021-03-08T12:00:00+08:00",
   "name": "Republic of Singapore Driving Licence",
   "issuer": {
-    "id": "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
+    "id": "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
     "type": "OpenAttestationIssuer",
     "name": "Government Technology Agency of Singapore (GovTech)",
-    "identityProof": { "identityProofType": "DNS-DID", "identifier": "example.openattestation.com" }
+    "identityProof": {
+      "identityProofType": "DNS-DID",
+      "identifier": "example.openattestation.com"
+    }
   },
-  "credentialStatus": { "type": "OpenAttestationCredentialStatus", "credentialStatusType": "NONE" },
-  "renderMethod": {
-    "type": "OpenAttestationRenderMethod",
-    "renderMethodType": "EMBEDDED_RENDERER",
-    "name": "GOVTECH_DEMO",
-    "url": "https://demo-renderer.openattestation.com"
+  "credentialStatus": {
+    "id": "https://ocsp-sandbox.openattestation.com",
+    "type": "OpenAttestationOcspResponder"
   },
+  "renderMethod": [
+    {
+      "id": "https://demo-renderer.opencerts.io",
+      "type": "OpenAttestationEmbeddedRenderer",
+      "templateName": "GOVTECH_DEMO"
+    }
+  ],
   "credentialSubject": {
     "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
-    "type": ["DriversLicense"],
+    "type": [
+      "DriversLicense"
+    ],
     "name": "John Doe",
     "licenses": [
       {

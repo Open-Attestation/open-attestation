@@ -1,106 +1,175 @@
-import { cloneDeep } from "lodash";
 import { digestCredential } from "../digest";
-import { WrappedDocument } from "../../4.0/types";
-import { obfuscateVerifiableCredential } from "../obfuscate";
 import { decodeSalt } from "../salt";
-import sample from "../../../test/fixtures/v4/did-wrapped.json";
+import { SIGNED_WRAPPED_DOCUMENT_DID as ROOT_CREDENTIAL } from "../fixtures";
+import { V4SignedWrappedDocument } from "../types";
+import { obfuscateVerifiableCredential } from "../obfuscate";
 
-const verifiableCredential = sample as WrappedDocument;
-// Digest will change whenever sample document is regenerated
-const credentialRoot = "adb16863b9b92f1f46d67f518f853092404dc1322ffb61b45a831ee113f4ea99";
+// All obfuscated documents are generated from the ROOT_CREDENTIAL
+const ROOT_CREDENTIAL_TARGET_HASH = ROOT_CREDENTIAL.proof.targetHash;
 
-const { proof, ...credential } = verifiableCredential;
+describe("V4 digestCredential", () => {
+  test("given all testobfuscated documents are generated from the ROOT_CREDENTIAL, ROOT_CREDENTIAL_TARGET_HASH should match snapshot", () => {
+    expect(ROOT_CREDENTIAL_TARGET_HASH).toMatchInlineSnapshot(
+      `"dd55a7d96d47e58350f2cfb03ebdf3f859684c9f97ba75eed55b1bdcc761c5aa"`
+    );
+  });
 
-describe("digest v4.0", () => {
-  describe("digestCredential", () => {
-    test("digests a document with all visible content correctly", () => {
-      const clonedCredential = cloneDeep(credential);
-
-      const digest = digestCredential(clonedCredential, decodeSalt(proof.salts), []);
-      expect(digest).toBe(credentialRoot);
-    });
-    test("digests a document when one single element is obfuscated", () => {
-      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, "issuer.id");
-      const digest = digestCredential(
-        obfuscatedVerifiableCredential,
-        decodeSalt(obfuscatedVerifiableCredential.proof.salts),
-        obfuscatedVerifiableCredential.proof.privacy.obfuscated
-      );
-
-      expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
-        [
-          "016c17fefa241351dc2950cfbeaef8281b0bc71e1ee445d890e9c37622fa0318",
-        ]
+  test("given a document with ALL FIELDS VISIBLE, should digest and match the root credential's target hash", () => {
+    expect(ROOT_CREDENTIAL.credentialSubject).toMatchInlineSnapshot(`
+        {
+          "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+          "licenses": [
+            {
+              "class": "3",
+              "description": "Motor cars with unladen weight <= 3000kg",
+              "effectiveDate": "2013-05-16T00:00:00+08:00",
+            },
+            {
+              "class": "3A",
+              "description": "Motor cars with unladen weight <= 3000kg",
+              "effectiveDate": "2013-05-16T00:00:00+08:00",
+            },
+          ],
+          "name": "John Doe",
+          "type": [
+            "DriversLicense",
+          ],
+        }
       `);
-      expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(1);
-      expect(digest).toBe(credentialRoot);
-    });
-    test("digests a document when multiple element are obfuscated", () => {
-      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(verifiableCredential, [
-        "credentialSubject.id",
-        "credentialSubject.name",
-        "credentialSubject.licenses.0.description",
-      ]);
-      const digest = digestCredential(
-        obfuscatedVerifiableCredential,
-        decodeSalt(obfuscatedVerifiableCredential.proof.salts),
-        obfuscatedVerifiableCredential.proof.privacy.obfuscated
-      );
+    expect(ROOT_CREDENTIAL.proof.privacy.obfuscated).toMatchInlineSnapshot(`[]`);
 
-      expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
-        [
-          "84c8662d07d3b98b7b9b58687a04fd6ff5a90e91f63e70c2399755721630b370",
-          "4390ee551a3ef3bebaad99c85738b3ebd96932343fb22a59865764125b79565c",
-          "026dbfc89aaa98005d2f25b0b274a972f1dc5c351d22270eba9d80422dd9850f",
-        ]
-      `);
-      expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(3);
-      expect(digest).toBe(credentialRoot);
-    });
-    test("digests a document with no visible content correctly", () => {
-      const obfuscatedVerifiableCredential = obfuscateVerifiableCredential(
-        verifiableCredential,
-        Object.keys(verifiableCredential).filter((k) => k != "proof")
-      );
-      const digest = digestCredential(
-        obfuscatedVerifiableCredential,
-        decodeSalt(obfuscatedVerifiableCredential.proof.salts),
-        obfuscatedVerifiableCredential.proof.privacy.obfuscated
-      );
+    const digest = digestCredential(ROOT_CREDENTIAL, decodeSalt(ROOT_CREDENTIAL.proof.salts), []);
+    expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
+  });
 
-      expect(obfuscatedVerifiableCredential).toStrictEqual({ proof: obfuscatedVerifiableCredential.proof });
-      expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toMatchInlineSnapshot(`
-        [
-          "f0798858da35807f0e5ae1a253722da6eb073abfad039151a18355d71e18f232",
-          "867ae2f030d04745d384969efe67b9fdfeea3236aa6b5f10d2bdbfb495a1ecb3",
-          "671da469c4211222ef05dcfc4fb795b6d774f5a1fc9f1397fab7ff6eba58e5db",
-          "b92f17321f80808f90ee5c1b089fad1b8ad2ff63e8d4d4ba923e50d0996aba75",
-          "21d7f40f46a97e9480b48739b560fba4cfe6d2f1b6bf14e3bdf7c9d765590a9a",
-          "4b13961eed15c275d3b8c11c4d40d8f956ffa8f1361b36058da28349c155d193",
-          "016c17fefa241351dc2950cfbeaef8281b0bc71e1ee445d890e9c37622fa0318",
-          "c5796036b237228ddc64bab40cd34200cb8d9dc4574c8a9a7cdda2350d77bdf9",
-          "b031b7f3cc154783acc36cbdc524bb7d8e4f4093785d25c1000a15c49e0ce58b",
-          "0913c1f68e821d8b4b07c9406419f083cd326c989bf433ccd13c242fdf834497",
-          "0c9bbd46994b92637562fef0df5a95eb4549a0198923c66693b547311635455a",
-          "5dff1a92a0cae0a5d50530968ff06c2baea9d3ac11b415268d98728ff13a4aa6",
-          "363e3a4656d4b586d1855a4cc22e56b4b446a357f2c76bdc777df6596d22e7e3",
-          "13e4d679f8cc43a69c7fbc37cd6339ee3864eeaca137687b6c7cff07309f6f98",
-          "5d027cec038e4f0fbb684da654f12999b973e20788801e13e063f642228d56a5",
-          "6d8b020b1ef826ce5e05fb034f4d2b9c4ed5bc4d4a0d697a6ec9f6c249970cb0",
-          "97bbd9a5415e96e1f5f61879e1bdef14db6868304ab3b681c6bbb82e0ecd21b3",
-          "84c8662d07d3b98b7b9b58687a04fd6ff5a90e91f63e70c2399755721630b370",
-          "c96b471fec27d76d3b5e1c479ccf690bca845ba78bc2b6b28abd52f9defcf491",
-          "4390ee551a3ef3bebaad99c85738b3ebd96932343fb22a59865764125b79565c",
-          "6d38b0c91fa83fd141a20098b121eca264dcf8c20e6bd97d13b9a5e8924026c2",
-          "026dbfc89aaa98005d2f25b0b274a972f1dc5c351d22270eba9d80422dd9850f",
-          "5bc0eb80d28496cfe3ed416b91fada582f097bbdaaedcff5aa5e393c8f8be726",
-          "6fb9f93f2b42bb70a67e6ad5cb22f72083d9d3bf98776e83a470c82800770623",
-          "aa4414e7a955a034998fd1221c80a2ef77c30c26a7b15fe15b7c2716811bb3d9",
-          "fba6d49a55387b611fb4dedf401630d3adb1d377e17ba051524a09795ee734ae",
-        ]
+  test("given a document with ONE element obfuscated, should digest and match the root credential's target hash", () => {
+    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateVerifiableCredential(ROOT_CREDENTIAL, "credentialSubject.id");
+    expect(OBFUSCATED_WRAPPED_DOCUMENT.credentialSubject).toMatchInlineSnapshot(`
+        {
+          "licenses": [
+            {
+              "class": "3",
+              "description": "Motor cars with unladen weight <= 3000kg",
+              "effectiveDate": "2013-05-16T00:00:00+08:00",
+            },
+            {
+              "class": "3A",
+              "description": "Motor cars with unladen weight <= 3000kg",
+              "effectiveDate": "2013-05-16T00:00:00+08:00",
+            },
+          ],
+          "name": "John Doe",
+          "type": [
+            "DriversLicense",
+          ],
+        }
       `);
-      expect(obfuscatedVerifiableCredential.proof.privacy.obfuscated).toHaveLength(26);
-      expect(digest).toBe(credentialRoot);
-    });
+    expect(OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated).toMatchInlineSnapshot(`
+      [
+        "410849f7c317307141d4cecd4d72fe7efb9655abaa0ee37374b2ec53a3588ee7",
+      ]
+    `);
+
+    const digest = digestCredential(
+      OBFUSCATED_WRAPPED_DOCUMENT,
+      decodeSalt(OBFUSCATED_WRAPPED_DOCUMENT.proof.salts),
+      OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated
+    );
+    expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
+    expect(digest).toBe(OBFUSCATED_WRAPPED_DOCUMENT.proof.targetHash);
+  });
+
+  test("given a document with THREE elements obfuscated, should digest and match the root credential's target hash", () => {
+    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateVerifiableCredential(ROOT_CREDENTIAL, [
+      "credentialSubject.id",
+      "credentialSubject.name",
+      "credentialSubject.licenses[0].description",
+    ]);
+    expect(OBFUSCATED_WRAPPED_DOCUMENT.credentialSubject).toMatchInlineSnapshot(`
+        {
+          "licenses": [
+            {
+              "class": "3",
+              "effectiveDate": "2013-05-16T00:00:00+08:00",
+            },
+            {
+              "class": "3A",
+              "description": "Motor cars with unladen weight <= 3000kg",
+              "effectiveDate": "2013-05-16T00:00:00+08:00",
+            },
+          ],
+          "type": [
+            "DriversLicense",
+          ],
+        }
+      `);
+    expect(OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated).toMatchInlineSnapshot(`
+      [
+        "410849f7c317307141d4cecd4d72fe7efb9655abaa0ee37374b2ec53a3588ee7",
+        "21f8a6f2f464ff14afbc52e4dcb965d7891a7c63fd37eb93f8f98477dcdfc7f9",
+        "228eb6b469ca3a475238455f11125b7edc826c6dc3ae727d023d1eb71d0e60d6",
+      ]
+    `);
+
+    const digest = digestCredential(
+      OBFUSCATED_WRAPPED_DOCUMENT,
+      decodeSalt(OBFUSCATED_WRAPPED_DOCUMENT.proof.salts),
+      OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated
+    );
+    expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
+    expect(digest).toBe(OBFUSCATED_WRAPPED_DOCUMENT.proof.targetHash);
+  });
+
+  test("given a document with NO VISIBLE FIELDS, should digest and match the root credential's target hash", () => {
+    // this has to be manually generated, since obfuscateVerifiableCredential does not allow obfuscating fields that
+    // result in a non compliant V4 OA document
+    const OBFUSCATED_WRAPPED_DOCUMENT = {
+      // no visible fields
+      proof: {
+        type: "OpenAttestationMerkleProofSignature2018",
+        proofPurpose: "assertionMethod",
+        targetHash: "dd55a7d96d47e58350f2cfb03ebdf3f859684c9f97ba75eed55b1bdcc761c5aa",
+        proofs: [],
+        merkleRoot: "dd55a7d96d47e58350f2cfb03ebdf3f859684c9f97ba75eed55b1bdcc761c5aa",
+        salts: "W10=",
+        privacy: {
+          obfuscated: [
+            "0fd4ac5ade244ee2fe47437ea43cd142479540b878fffc86662600fce4d47ef5",
+            "0cc6e4c50bb090af720d224a9bd73be4c0d72831fc701907339693cdcb34ede3",
+            "d2afadbec39872577eae0d5e4ea3b590608cab744f214a2f703f65a5b41683cb",
+            "569b596d71fb145e9c87be1b301da3cbc89cfc104627f6dd95c8123f7974e9c6",
+            "5dee7aa2b48b9a5edae5042459c7c3eeaa8c5b13132b1477641c727a89471b36",
+            "2a1ff14be659821afa68edc245f67b9e25331b450715b41348ed2405334d5abd",
+            "0f1d172b5352464121dffc550e16f64b8019637e39768c506fd2e517a0da305d",
+            "ff4eeed1d7bb70aef646d46dc75b3408cf019e0daeaf2ef0313974690d8beef2",
+            "2a4e9fd43be0221af2f02a6b959edf704b630559268a0b2a657fe046e282fbb8",
+            "bbdf2b05cc0bd2a64fc3483211806e2f863bea05fba81f63092ec07c4ee8ebd9",
+            "bd9acf6bef05f94720f0fa9c5540bb9db7d6370c39e2bbbee31e408842985dae",
+            "410849f7c317307141d4cecd4d72fe7efb9655abaa0ee37374b2ec53a3588ee7",
+            "32a55f464387e37df8f74cf3de6a8e04626e19c2f4d5ec8931aee4b866329fb8",
+            "21f8a6f2f464ff14afbc52e4dcb965d7891a7c63fd37eb93f8f98477dcdfc7f9",
+            "6bc7b2350b59b02a44d2593ee7538590114544bc3a39fe9564ee49b387c883c4",
+            "228eb6b469ca3a475238455f11125b7edc826c6dc3ae727d023d1eb71d0e60d6",
+            "d6e7027dd62b265e83aaf306f095446efab2677e940a0fbb118cc91dd8226fdb",
+            "da26ce90128b1cfd747218cad4c7e86b83f6ab236598ce18aecc3b10426b1b71",
+            "5edea35aa869577c2fd14159534b08da061a7833665cf1cc28f400474c26be01",
+            "d55b72f926f7adaa5ea4f271ffc2f574e4859b05c16042f5b604e52f044a11d0",
+            "dd69de699de90b82cfb658fc304ae4f3131e841d56fd68eb20e17af73613a4d3",
+            "280bc622006d5ec28a42096b57f15f8238df27762c3f754d56dcd89f3aa02c25",
+            "3d8bc5cbcd2826489cdc80a64d586a4d220d975bc2848aa535bd1e4f17dc619f",
+          ],
+        },
+        key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+        signature:
+          "0xa3ac9f73a7314c0aad47bad875921f5c88d2af9440d6c309fc2f93dbf43bd8235e84b744cb1ff1c09c214b559ce3bd6eb148c2f68c677cb8408d96e9b5411dfb1c",
+      },
+    } as unknown as V4SignedWrappedDocument;
+
+    const digest = digestCredential(
+      OBFUSCATED_WRAPPED_DOCUMENT,
+      decodeSalt(OBFUSCATED_WRAPPED_DOCUMENT.proof.salts),
+      OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated
+    );
+    expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
   });
 });

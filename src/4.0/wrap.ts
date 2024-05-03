@@ -1,59 +1,83 @@
-import { hashToBuffer, isStringArray, SchemaValidationError } from "../shared/utils";
+import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { ContextUrl, SchemaId } from "../shared/@types/document";
-import { WrappedDocument } from "./types";
+import { ContextType, ContextUrl } from "../shared/@types/document";
+import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
-import { validateSchema as validate } from "../shared/validate";
-import { WrapDocumentOptionV4 } from "../shared/@types/wrap";
-import { OpenAttestationDocument } from "../__generated__/schema.4.0";
 import { encodeSalt, salt } from "./salt";
-import { validateW3C } from "./validate";
-import { getSchema } from "../shared/ajv";
+import { UnableToInterpretContextError, interpretContexts } from "./validate";
+import { ZodError } from "zod";
 
-export const wrapDocument = async <T extends OpenAttestationDocument>(
-  credential: T,
-  options: WrapDocumentOptionV4 // eslint-disable-line @typescript-eslint/no-unused-vars
-): Promise<WrappedDocument<T>> => {
-  const document = { ...credential };
-
-  // 1. Ensure that required @contexts are present and in the correct order
-  // @context: [Base, OA, ...]
-  const contexts = new Set(["https://www.w3.org/2018/credentials/v1", ContextUrl.v4_alpha]);
-
-  if (typeof document["@context"] === "string") {
-    contexts.add(document["@context"]);
-  } else if (isStringArray(document["@context"])) {
-    document["@context"].forEach((context) => contexts.add(context));
+export const wrapDocument = async <T extends V4Document>(
+  // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
+  document: NoExtraProperties<V4Document, T>
+): Promise<V4WrappedDocument<T>> => {
+  /* 1a. try OpenAttestation VC validation, since most user will be issuing oa v4*/
+  const oav4context = await V4Document.pick({ "@context": true }).passthrough().safeParseAsync(document); // Superficial check on user intention
+  let validatedRawDocument: W3cVerifiableCredential | undefined;
+  if (oav4context.success) {
+    const oav4 = await V4Document.safeParseAsync(document);
+    if (!oav4.success) {
+      throw new DataModelValidationError("Open Attestation v4.0", oav4.error);
+    }
+    validatedRawDocument = oav4.data;
   }
 
-  // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this:
-  document["@context"] = Array.from(contexts);
+  /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
+  if (!validatedRawDocument) {
+    const vc = await W3cVerifiableCredential.safeParseAsync(document);
+    if (!vc.success) {
+      throw new DataModelValidationError("Verifiable Credentials v2.0", vc.error);
+    }
+    validatedRawDocument = vc.data;
+  }
 
-  // 2. Ensure that required types are present and in the correct order
+  /* 2. Ensure provided @context are interpretable (e.g. valid @context URL, all types are mapped, etc.) */
+  await interpretContexts(validatedRawDocument);
+
+  /* 3. Context validation */
+  // Ensure that required contexts are present and in the correct order
+  // type: [Base, OA, ...]
+  const REQUIRED_CONTEXTS = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
+  const contexts = new Set<string>(REQUIRED_CONTEXTS);
+  if (typeof validatedRawDocument["@context"] === "string") {
+    contexts.add(validatedRawDocument["@context"]);
+  } else if (isStringArray(validatedRawDocument["@context"])) {
+    validatedRawDocument["@context"].forEach((context) => contexts.add(context));
+  }
+  REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
+  const finalContexts: V4Document["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
+
+  /* 4. Type validation */
+  // Ensure that required types are present and in the correct order
   // type: ["VerifiableCredential", "OpenAttestationCredential", ...]
-  const types = new Set(["VerifiableCredential", "OpenAttestationCredential"]);
-
-  if (typeof document["type"] === "string") {
-    types.add(document["type"]);
-  } else if (isStringArray(document["type"])) {
-    document["type"].forEach((type) => types.add(type));
+  const REQUIRED_TYPES = [ContextType.BaseContext, ContextType.V4AlphaContext] as const;
+  const types = new Set<string>([ContextType.BaseContext, ContextType.V4AlphaContext]);
+  if (typeof validatedRawDocument["type"] === "string") {
+    types.add(validatedRawDocument["type"]);
+  } else if (isStringArray(validatedRawDocument["type"])) {
+    types.forEach((type) => types.add(type));
   }
+  REQUIRED_TYPES.forEach((t) => types.delete(t));
+  const finalTypes: V4Document["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
 
-  // Since JavaScript Sets preserve insertion order and duplicated inserts do not affect the order, we can do this:
-  document["type"] = Array.from(types);
+  const documentReadyForWrapping = {
+    ...validatedRawDocument,
+    ...extractAndAssertAsV4DocumentProps(validatedRawDocument, ["issuer", "credentialStatus"]),
+    "@context": finalContexts,
+    type: finalTypes,
+  } satisfies W3cVerifiableCredential;
 
-  // 3. OA wrapping
-  const salts = salt(document);
-  const digest = digestCredential(document, salts, []);
+  /* 5.  OA wrapping */
+  const salts = salt(documentReadyForWrapping);
+  const digest = digestCredential(documentReadyForWrapping, salts, []);
 
   const batchBuffers = [digest].map(hashToBuffer);
 
   const merkleTree = new MerkleTree(batchBuffers);
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
-
-  const verifiableCredential: WrappedDocument<T> = {
-    ...document,
+  const verifiableCredential: V4WrappedDocument = {
+    ...documentReadyForWrapping,
     proof: {
       type: "OpenAttestationMerkleProofSignature2018",
       proofPurpose: "assertionMethod",
@@ -67,20 +91,15 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
     },
   };
 
-  const errors = validate(verifiableCredential, getSchema(SchemaId.v4));
-  if (errors.length > 0) {
-    throw new SchemaValidationError("Invalid document", errors, verifiableCredential);
-  }
-  await validateW3C(verifiableCredential);
-  return verifiableCredential;
+  return verifiableCredential as V4WrappedDocument<T>;
 };
 
-export const wrapDocuments = async <T extends OpenAttestationDocument>(
-  documents: T[],
-  options: WrapDocumentOptionV4
-): Promise<WrappedDocument<T>[]> => {
+export const wrapDocuments = async <T extends V4Document>(
+  // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
+  documents: NoExtraProperties<V4Document, T>[]
+): Promise<V4WrappedDocument<T>[]> => {
   // create individual verifiable credential
-  const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document, options)));
+  const verifiableCredentials = await Promise.all(documents.map((document) => wrapDocument(document)));
 
   // get all the target hashes to compute the merkle tree and the merkle root
   const merkleTree = new MerkleTree(
@@ -102,4 +121,33 @@ export const wrapDocuments = async <T extends OpenAttestationDocument>(
       },
     };
   });
+};
+
+/** Extract a set of properties from w3cVerifiableCredential but only include the ones
+ * that are defined in the original document. For example, if we extract
+ * "a" and "b" from { b: "something" } we should only get { b: "something" } NOT
+ * { a: undefined, b: "something" }. We also assert that the extracted properties
+ * are of V4Document type.
+ **/
+function extractAndAssertAsV4DocumentProps<K extends keyof W3cVerifiableCredential>(
+  original: W3cVerifiableCredential,
+  keys: K[]
+) {
+  const temp: Record<string, unknown> = {};
+  Object.entries(original).forEach(([k, v]) => {
+    if (keys.includes(k as K)) temp[k] = v;
+  });
+  return temp as { [key in K]: V4Document[key] };
+}
+
+class DataModelValidationError extends Error {
+  constructor(dataModel: "Open Attestation v4.0" | "Verifiable Credentials v2.0", public error: ZodError) {
+    super(`Input document does not conform to ${dataModel} Data Model: \n ${JSON.stringify(error.format(), null, 2)}`);
+    Object.setPrototypeOf(this, DataModelValidationError.prototype);
+  }
+}
+
+export const wrapDocumentErrors = {
+  DataModelValidationError,
+  UnableToInterpretContextError,
 };
