@@ -42,6 +42,7 @@ describe("V4.0 wrap document", () => {
           "https://www.w3.org/ns/credentials/v2",
           "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
         ],
+
         type: ["VerifiableCredential", "OpenAttestationCredential"],
         credentialSubject: {
           id: "0x1234567890123456789012345678901234567890",
@@ -54,9 +55,20 @@ describe("V4.0 wrap document", () => {
           identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
         } as V4Document["issuer"],
       })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Input document does not conform to OpenAttestation v4.0 Data Model: [{"code":"invalid_literal","expected":"OpenAttestationIssuer","path":["issuer","type"],"message":"Invalid literal value, expected \\"OpenAttestationIssuer\\""}]"`
-    );
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
+      "Input document does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [],
+        "issuer": {
+          "_errors": [],
+          "type": {
+            "_errors": [
+              "Invalid literal value, expected \\"OpenAttestationIssuer\\""
+            ]
+          }
+        }
+      }"
+    `);
   });
 
   test("given a valid v4 document but has an extra field, should throw", async () => {
@@ -66,6 +78,7 @@ describe("V4.0 wrap document", () => {
           "https://www.w3.org/ns/credentials/v2",
           "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
         ],
+
         type: ["VerifiableCredential", "OpenAttestationCredential"],
         credentialSubject: {
           id: "0x1234567890123456789012345678901234567890",
@@ -82,9 +95,14 @@ describe("V4.0 wrap document", () => {
         // this should not exist
         extraField: "extra",
       } as V4Document)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Input document does not conform to OpenAttestation v4.0 Data Model: [{"code":"unrecognized_keys","keys":["extraField"],"path":[],"message":"Unrecognized key(s) in object: 'extraField'"}]"`
-    );
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
+      "Input document does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [
+          "Unrecognized key(s) in object: 'extraField'"
+        ]
+      }"
+    `);
   });
 
   test("given a generic w3c vc, should wrap with context and type corrected", async () => {

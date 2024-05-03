@@ -51,9 +51,17 @@ describe("V4 E2E Test Scenarios", () => {
       const missingData = {
         ...omit(cloneDeep(DOCUMENT_ONE), "issuer"),
       };
-      await expect(wrapDocument(missingData as unknown as V4Document)).rejects.toThrow(
-        "Input document does not conform to OpenAttestation"
-      );
+      await expect(wrapDocument(missingData as unknown as V4Document)).rejects.toThrowErrorMatchingInlineSnapshot(`
+        "Input document does not conform to Open Attestation v4.0 Data Model: 
+         {
+          "_errors": [],
+          "issuer": {
+            "_errors": [
+              "Required"
+            ]
+          }
+        }"
+      `);
     });
 
     test("creates a wrapped document", async () => {

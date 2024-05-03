@@ -4,7 +4,8 @@ import { ContextType, ContextUrl } from "../shared/@types/document";
 import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { interpretContexts } from "./validate";
+import { UnableToInterpretContextError, interpretContexts } from "./validate";
+import { ZodError } from "zod";
 
 export const wrapDocument = async <T extends V4Document>(
   // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
@@ -16,9 +17,7 @@ export const wrapDocument = async <T extends V4Document>(
   if (oav4context.success) {
     const oav4 = await V4Document.safeParseAsync(document);
     if (!oav4.success) {
-      throw new Error(
-        `Input document does not conform to OpenAttestation v4.0 Data Model: ${JSON.stringify(oav4.error.issues)}`
-      );
+      throw new DataModelValidationError("Open Attestation v4.0", oav4.error);
     }
     validatedRawDocument = oav4.data;
   }
@@ -26,11 +25,9 @@ export const wrapDocument = async <T extends V4Document>(
   /* 1b. only if OA VC validation fail do we continue with W3C VC data model validation */
   if (!validatedRawDocument) {
     const vc = await W3cVerifiableCredential.safeParseAsync(document);
-    if (!vc.success)
-      throw new Error(
-        `Input document does not conform to Verifiable Credentials v2.0 Data Model: ${JSON.stringify(vc.error.issues)}`
-      );
-
+    if (!vc.success) {
+      throw new DataModelValidationError("Verifiable Credentials v2.0", vc.error);
+    }
     validatedRawDocument = vc.data;
   }
 
@@ -142,3 +139,15 @@ function extractAndAssertAsV4DocumentProps<K extends keyof W3cVerifiableCredenti
   });
   return temp as { [key in K]: V4Document[key] };
 }
+
+class DataModelValidationError extends Error {
+  constructor(dataModel: "Open Attestation v4.0" | "Verifiable Credentials v2.0", public error: ZodError) {
+    super(`Input document does not conform to ${dataModel} Data Model: \n ${JSON.stringify(error.format(), null, 2)}`);
+    Object.setPrototypeOf(this, DataModelValidationError.prototype);
+  }
+}
+
+export const wrapDocumentErrors = {
+  DataModelValidationError,
+  UnableToInterpretContextError,
+};

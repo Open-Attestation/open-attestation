@@ -31,13 +31,20 @@ const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
 
 export const interpretContexts = async (input: JsonLdDocument) => {
   const expanded = await expand(input, { documentLoader }).catch((e) => {
-    throw new Error(`Unable to interpret @context: ${JSON.stringify(e)}`);
+    throw new UnableToInterpretContextError(JSON.stringify(e, null, 2));
   });
 
   const type = (expanded[0]["@type"] as string[]) || [];
   const unknownTypes = type.filter((t) => t.startsWith("https://www.w3.org/ns/credentials/issuer-dependent#")); // Workaround as expansionMap no longer supported
 
   if (unknownTypes.length > 0) {
-    throw new Error(`Unable to interpret @context: type (${unknownTypes.map((t) => t.split("#")[1])}) is not mapped`);
+    throw new UnableToInterpretContextError(`Unknown types found: ${unknownTypes.map((t) => t.split("#")[1])}`);
   }
 };
+
+export class UnableToInterpretContextError extends Error {
+  constructor(details: string) {
+    super(`Unable to interpret @context:\n${details}`);
+    Object.setPrototypeOf(this, UnableToInterpretContextError.prototype);
+  }
+}
