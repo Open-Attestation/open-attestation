@@ -1,10 +1,11 @@
 import { ValidateFunction } from "ajv/dist/core";
 import { ErrorObject } from "ajv";
 import { getLogger } from "../logger";
-import { ContextUrl, SchemaId } from "../@types/document";
+import { SchemaId } from "../@types/document";
 // don't change this otherwise there is a cycle
 import { getData } from "../utils/utils";
 import { Kind } from "../utils/@types/diagnose";
+import { ContextUrl } from "../../4.0/validate/context";
 
 const logger = getLogger("validate");
 

@@ -1,6 +1,15 @@
 import { expand, Options, JsonLdDocument } from "jsonld";
 import { fetch } from "cross-fetch";
-import { ContextUrl } from "../../shared/@types/document";
+
+export const ContextUrl = {
+  v2_vc: "https://www.w3.org/ns/credentials/v2",
+  v4_alpha: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+} as const;
+
+export const ContextType = {
+  BaseContext: "VerifiableCredential",
+  V4AlphaContext: "OpenAttestationCredential",
+} as const;
 
 const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
 const contexts: Map<string, any> = new Map();

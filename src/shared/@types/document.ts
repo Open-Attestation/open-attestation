@@ -34,16 +34,6 @@ export enum SchemaId {
   v3 = "https://schema.openattestation.com/3.0/schema.json",
 }
 
-export const ContextUrl = {
-  v2_vc: "https://www.w3.org/ns/credentials/v2",
-  v4_alpha: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
-} as const;
-
-export const ContextType = {
-  BaseContext: "VerifiableCredential",
-  V4AlphaContext: "OpenAttestationCredential",
-} as const;
-
 export const OpenAttestationHexString = String.withConstraint(
   (value) => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
 );

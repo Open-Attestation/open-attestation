@@ -11,8 +11,9 @@ import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
 import { V4WrappedDocument } from "../../4.0/types";
+import { ContextUrl } from "../../4.0/validate/context";
 
-import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl } from "../@types/document";
+import { OpenAttestationDocument, WrappedDocument, SchemaId } from "../@types/document";
 import {
   isRawV2Document,
   isWrappedV2Document,
