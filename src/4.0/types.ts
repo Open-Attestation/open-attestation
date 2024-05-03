@@ -1,5 +1,5 @@
 import z from "zod";
-import { ContextUrl, ContextType } from "./validate/context";
+import { ContextUrl, ContextType } from "./context";
 
 // Custom URI validation function
 const URI_REGEX =

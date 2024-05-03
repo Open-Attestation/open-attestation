@@ -1,10 +1,9 @@
 import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
-import { ContextUrl, ContextType } from "./validate/context";
+import { ContextUrl, ContextType, UnableToInterpretContextError, interpretContexts } from "./context";
 import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { UnableToInterpretContextError, interpretContexts } from "./validate";
 import { ZodError } from "zod";
 
 export const wrapDocument = async <T extends V4Document>(

@@ -5,7 +5,7 @@ import { SchemaId } from "../@types/document";
 // don't change this otherwise there is a cycle
 import { getData } from "../utils/utils";
 import { Kind } from "../utils/@types/diagnose";
-import { ContextUrl } from "../../4.0/validate/context";
+import { ContextUrl } from "../../4.0/context";
 
 const logger = getLogger("validate");
 
