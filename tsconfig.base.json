@@ -1,0 +1,19 @@
+{
+  "ts-node": {
+    "files": true
+  },
+  "compilerOptions": {
+    "lib": ["es2019"],
+    "target": "es2019",
+    "moduleResolution": "node",
+    "strict": true,
+    "typeRoots": ["./src/@types", "./node_modules/@types"],
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "outDir": "./dist"
+  },
+  "include": ["./src/**/*"]
+}

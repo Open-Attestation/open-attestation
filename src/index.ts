@@ -143,3 +143,4 @@ export * from "./shared/signer";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
+export * as v4 from "./4.0/exports";

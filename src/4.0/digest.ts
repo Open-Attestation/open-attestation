@@ -2,7 +2,16 @@ import { sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
 import { V4Document, Salt } from "./types";
 import { LeafValue, traverseAndFlatten } from "./traverseAndFlatten";
-import { hashToBuffer } from "../shared/utils";
+import { Buffer } from "buffer/";
+
+// buffer is not available in the browser
+global.Buffer = global.Buffer || Buffer;
+
+export function hashToBuffer(hash: Buffer | string): Buffer {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore https://github.com/Microsoft/TypeScript/issues/23155
+  return Buffer.isBuffer(hash) && hash.length === 32 ? hash : Buffer.from(hash, "hex");
+}
 
 export const digestCredential = (document: V4Document, salts: Salt[], obfuscatedData: string[]) => {
   // find all leaf nodes in the document and hash them

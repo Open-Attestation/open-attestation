@@ -6,12 +6,29 @@
   "module": "dist/esm/index.js",
   "browser": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./4.0": {
+      "import": "./dist/esm/4.0/exports/index.js",
+      "require": "./dist/cjs/4.0/exports/index.js",
+      "types": "./dist/types/4.0/exports/index.d.ts"
+    },
+    "./4.0/*": {
+      "import": "./dist/esm/4.0/exports/*.js",
+      "require": "./dist/cjs/4.0/exports/*.js",
+      "types": "./dist/types/4.0/exports/*.d.ts"
+    }
+  },
   "scripts": {
     "benchmark:qr-code": "ts-node --transpile-only benchmarks/qr-code",
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:type",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs --project ./tsconfig.prod.json",
-    "build:esm": "tsc --module es2015 --outDir dist/esm --project ./tsconfig.prod.json",
-    "build:type": "tsc -d --emitDeclarationOnly --outDir dist/types --project ./tsconfig.prod.json",
+    "build:cjs": "tsc --project ./tsconfig.cjs.json",
+    "build:esm": "tsc --project ./tsconfig.esm.json",
+    "build:type": "tsc -project ./tsconfig.types.json",
     "build:umd": "rollup -c",
     "clean": "rm -rf dist/",
     "commit": "git-cz",
@@ -47,6 +64,7 @@
     "@types/jsonld": "^1.5.13",
     "@types/lodash": "^4.14.171",
     "@types/qrcode": "^1.4.1",
+    "@types/randombytes": "^2.0.3",
     "@types/uuid": "^8.3.1",
     "@types/validator": "^13.6.3",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
@@ -77,6 +95,7 @@
   },
   "dependencies": {
     "@govtechsg/jsonld": "^0.1.0",
+    "buffer": "^6.0.3",
     "cross-fetch": "^3.1.5",
     "debug": "^4.3.2",
     "ethers": "^5.7.2",
@@ -85,6 +104,7 @@
     "js-sha3": "^0.8.0",
     "jsonld": "^8.3.2",
     "lodash": "^4.17.21",
+    "randombytes": "^2.1.0",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",

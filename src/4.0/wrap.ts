@@ -1,10 +1,12 @@
-import { hashToBuffer, isStringArray } from "../shared/utils";
 import { MerkleTree } from "../shared/merkle";
 import { ContextUrl, ContextType, UnableToInterpretContextError, interpretContexts } from "./context";
 import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
-import { digestCredential } from "../4.0/digest";
+import { digestCredential, hashToBuffer } from "./digest";
 import { encodeSalt, salt } from "./salt";
 import { ZodError } from "zod";
+
+export const isStringArray = (input: unknown): input is string[] =>
+  Array.isArray(input) && input.every((i) => typeof i === "string");
 
 export const wrapDocument = async <T extends V4Document>(
   // NoExtraProperties prevents the user from passing in a document with extra properties, which is more aligned to our validation strategy of strict
