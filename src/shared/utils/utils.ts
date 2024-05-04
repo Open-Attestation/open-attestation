@@ -259,9 +259,6 @@ export const getObfuscatedData = (
   );
 };
 
-export const isStringArray = (input: unknown): input is string[] =>
-  Array.isArray(input) && input.every((i) => typeof i === "string");
-
 export const getVersion = (document: unknown): Version => {
   if (typeof document === "object" && document !== null) {
     if ("version" in document && typeof document.version === "string") {

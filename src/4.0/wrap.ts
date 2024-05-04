@@ -1,4 +1,4 @@
-import { hashToBuffer, isStringArray } from "../shared/utils";
+import { hashToBuffer } from "../shared/utils/hashing";
 import { MerkleTree } from "../shared/merkle";
 import { ContextUrl, ContextType, UnableToInterpretContextError, interpretContexts } from "./context";
 import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
@@ -150,3 +150,7 @@ export const wrapDocumentErrors = {
   DataModelValidationError,
   UnableToInterpretContextError,
 };
+
+function isStringArray(input: unknown): input is string[] {
+  return Array.isArray(input) && input.every((i) => typeof i === "string");
+}
