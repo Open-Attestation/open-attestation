@@ -2,7 +2,7 @@ import { ErrorObject } from "ajv";
 import { keccak256 } from "js-sha3";
 
 import * as v2 from "../../__generated__/schema.2.0";
-import { unsaltData } from "../../2.0/salt";
+import { getData } from "../../2.0/utils";
 import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
 
@@ -25,10 +25,6 @@ import {
 import { Version } from "./diagnose";
 
 export type Hash = string | Buffer;
-type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
-export const getData = <T extends WrappedDocumentV2<OpenAttestationDocumentV2>>(document: T): Extract<T> => {
-  return unsaltData(document.data);
-};
 
 /**
  * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
