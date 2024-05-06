@@ -88,8 +88,8 @@ describe("V4 sign", () => {
         }
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "Document has not been properly wrapped: 
-       {
+      "Document has not been properly wrapped:
+      {
         "_errors": [],
         "proof": {
           "_errors": [],
