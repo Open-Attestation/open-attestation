@@ -40,6 +40,7 @@
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "generate-v4-fixtures": "npx ts-node scripts/generateV4JsonFixtures.ts",
+    "generate-v4-json-schemas": "npx ts-node scripts/generateV4JsonSchemas.ts",
     "publish:schema": "./scripts/publishSchema.sh",
     "postinstall": "node scripts/postInstall; npm run generate-v4-fixtures",
     "prebuild": "node scripts/preBuild"
@@ -90,7 +91,8 @@
     "semantic-release": "^22.0.8",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "zod-to-json-schema": "^3.23.0"
   },
   "dependencies": {
     "@govtechsg/jsonld": "^0.1.0",
