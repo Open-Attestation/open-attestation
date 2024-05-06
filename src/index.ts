@@ -128,8 +128,7 @@ export async function signDocument<T extends v2.OpenAttestationDocument | v3.Ope
 
   if (results) return results as SignedWrappedDocument<T>;
 
-  // Unreachable code atm until utils.isWrappedV2Document & utils.isWrappedV3Document becomes more strict
-  throw new Error("Unsupported document type: Only OpenAttestation v2 or v3documents can be signed");
+  throw new Error("Unsupported document type: Only OpenAttestation v2 or v3 documents can be signed");
 }
 
 export { digestDocument } from "./2.0/digest";
