@@ -1,4 +1,4 @@
-import { Diagnose } from "src/shared/utils/@types/diagnose";
+import type { Diagnose } from "../shared/utils/@types/diagnose";
 import { V4WrappedDocument, V4SignedWrappedDocument, V4Document } from "./types";
 
 export const v4Diagnose: Diagnose = ({ document, kind, debug }) => {

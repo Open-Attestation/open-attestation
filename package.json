@@ -6,6 +6,23 @@
   "module": "dist/esm/index.js",
   "browser": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./4.0": {
+      "import": "./dist/esm/4.0/exports/index.js",
+      "require": "./dist/cjs/4.0/exports/index.js",
+      "types": "./dist/types/4.0/exports/index.d.ts"
+    },
+    "./4.0/*": {
+      "import": "./dist/esm/4.0/exports/*.js",
+      "require": "./dist/cjs/4.0/exports/*.js",
+      "types": "./dist/types/4.0/exports/*.d.ts"
+    }
+  },
   "scripts": {
     "benchmark:qr-code": "ts-node --transpile-only benchmarks/qr-code",
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:type",

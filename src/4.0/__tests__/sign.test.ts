@@ -1,8 +1,8 @@
-import { signDocument } from "../../index";
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { Wallet } from "ethers";
 import { WRAPPED_DOCUMENT_DID } from "../fixtures";
 import { V4SignedWrappedDocument } from "../types";
+import { signDocument } from "../sign";
 
 describe("V4 sign", () => {
   it("should sign a document", async () => {
@@ -87,8 +87,19 @@ describe("V4 sign", () => {
           private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5",
         }
       )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be signed"`
-    );
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
+      "Document has not been properly wrapped: 
+       {
+        "_errors": [],
+        "proof": {
+          "_errors": [],
+          "merkleRoot": {
+            "_errors": [
+              "Required"
+            ]
+          }
+        }
+      }"
+    `);
   });
 });

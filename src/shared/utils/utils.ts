@@ -2,7 +2,7 @@ import { ErrorObject } from "ajv";
 import { keccak256 } from "js-sha3";
 
 import * as v2 from "../../__generated__/schema.2.0";
-import { unsaltData } from "../../2.0/salt";
+import { getData } from "../../2.0/utils";
 import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
 
@@ -11,8 +11,9 @@ import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
 import { V4WrappedDocument } from "../../4.0/types";
+import { ContextUrl } from "../../4.0/context";
 
-import { OpenAttestationDocument, WrappedDocument, SchemaId, ContextUrl } from "../@types/document";
+import { OpenAttestationDocument, WrappedDocument, SchemaId } from "../@types/document";
 import {
   isRawV2Document,
   isWrappedV2Document,
@@ -24,10 +25,6 @@ import {
 import { Version } from "./diagnose";
 
 export type Hash = string | Buffer;
-type Extract<P> = P extends WrappedDocumentV2<infer T> ? T : never;
-export const getData = <T extends WrappedDocumentV2<OpenAttestationDocumentV2>>(document: T): Extract<T> => {
-  return unsaltData(document.data);
-};
 
 /**
  * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
@@ -257,9 +254,6 @@ export const getObfuscatedData = (
     "Unsupported document type: Can only retrieve obfuscated data from wrapped OpenAttestation v2 & v3 documents."
   );
 };
-
-export const isStringArray = (input: unknown): input is string[] =>
-  Array.isArray(input) && input.every((i) => typeof i === "string");
 
 export const getVersion = (document: unknown): Version => {
   if (typeof document === "object" && document !== null) {

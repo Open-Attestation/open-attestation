@@ -1,10 +1,9 @@
-import { hashToBuffer, isStringArray } from "../shared/utils";
+import { hashToBuffer } from "../shared/utils/hashing";
 import { MerkleTree } from "../shared/merkle";
-import { ContextType, ContextUrl } from "../shared/@types/document";
+import { ContextUrl, ContextType, UnableToInterpretContextError, interpretContexts } from "./context";
 import { NoExtraProperties, V4Document, V4WrappedDocument, W3cVerifiableCredential } from "./types";
 import { digestCredential } from "../4.0/digest";
 import { encodeSalt, salt } from "./salt";
-import { UnableToInterpretContextError, interpretContexts } from "./validate";
 import { ZodError } from "zod";
 
 export const wrapDocument = async <T extends V4Document>(
@@ -151,3 +150,7 @@ export const wrapDocumentErrors = {
   DataModelValidationError,
   UnableToInterpretContextError,
 };
+
+function isStringArray(input: unknown): input is string[] {
+  return Array.isArray(input) && input.every((i) => typeof i === "string");
+}

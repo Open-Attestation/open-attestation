@@ -1,5 +1,5 @@
 import z from "zod";
-import { ContextUrl, ContextType } from "../shared/@types/document";
+import { ContextUrl, ContextType } from "./context";
 
 // Custom URI validation function
 const URI_REGEX =
@@ -305,3 +305,15 @@ export type PartialDeep<T> = T extends string | number | bigint | boolean | null
   : {
       [K in keyof T]?: PartialDeep<T[K]>;
     };
+
+export const isV4Document = (document: unknown): document is V4Document => {
+  return V4Document.safeParse(document).success;
+};
+
+export const isV4WrappedDocument = (document: unknown): document is V4WrappedDocument => {
+  return V4WrappedDocument.safeParse(document).success;
+};
+
+export const isV4SignedWrappedDocument = (document: unknown): document is V4SignedWrappedDocument => {
+  return V4SignedWrappedDocument.safeParse(document).success;
+};

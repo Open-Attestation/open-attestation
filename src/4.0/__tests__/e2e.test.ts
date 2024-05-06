@@ -1,13 +1,8 @@
-import {
-  obfuscate,
-  validateSchema,
-  verifySignature,
-  _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocument as wrapDocument,
-  _unsafe_use_it_at_your_own_risk_v4_alpha_wrapDocuments as wrapDocuments,
-} from "../..";
+import { obfuscate, validateSchema, verifySignature } from "../..";
 import { cloneDeep, omit } from "lodash";
 import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID, WRAPPED_DOCUMENT_DID } from "../fixtures";
 import { V4Document } from "../types";
+import { wrapDocument, wrapDocuments } from "../wrap";
 
 const DOCUMENT_ONE = {
   ...RAW_DOCUMENT_DID,

@@ -2,7 +2,7 @@ import { sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
 import { V4Document, Salt } from "./types";
 import { LeafValue, traverseAndFlatten } from "./traverseAndFlatten";
-import { hashToBuffer } from "../shared/utils";
+import { hashToBuffer } from "../shared/utils/hashing";
 
 export const digestCredential = (document: V4Document, salts: Salt[], obfuscatedData: string[]) => {
   // find all leaf nodes in the document and hash them
