@@ -1,4 +1,5 @@
 import * as utils from "../utils";
+import * as hashingUtils from "../hashing";
 import { wrapDocument } from "../../..";
 import { OpenAttestationDocument, WrappedDocument } from "../../../shared/@types/document";
 import * as v2 from "../../../__generated__/schema.2.0";
@@ -16,7 +17,7 @@ import v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-
 describe("Util Functions", () => {
   describe("hashArray", () => {
     test("should work", () => {
-      const res = utils.hashArray(["a", "b", "1", 5]);
+      const res = hashingUtils.hashArray(["a", "b", "1", 5]);
 
       const expectedHashResults = [
         "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc",
@@ -31,7 +32,7 @@ describe("Util Functions", () => {
 
   describe("bufSortJoin", () => {
     test("should work", () => {
-      const res = utils.bufSortJoin(Buffer.from("c"), Buffer.from("b"), Buffer.from("a"));
+      const res = hashingUtils.bufSortJoin(Buffer.from("c"), Buffer.from("b"), Buffer.from("a"));
       const expectedResults = "616263";
       expect(res.toString("hex")).toEqual(expectedResults);
     });
@@ -39,35 +40,35 @@ describe("Util Functions", () => {
 
   describe("hashToBuffer", () => {
     test("should work", () => {
-      expect(utils.hashToBuffer("foo")).toEqual(Buffer.from("foo", "hex"));
+      expect(hashingUtils.hashToBuffer("foo")).toEqual(Buffer.from("foo", "hex"));
     });
 
     test("should do nothing if the input is a hash", () => {
       const originalBuffer = Buffer.from("foo", "utf8");
-      expect(utils.hashToBuffer(originalBuffer)).toEqual(originalBuffer);
+      expect(hashingUtils.hashToBuffer(originalBuffer)).toEqual(originalBuffer);
     });
   });
 
   describe("toBuffer", () => {
     test("should work", () => {
-      expect(utils.toBuffer("foo").toString("hex")).toEqual(
+      expect(hashingUtils.toBuffer("foo").toString("hex")).toEqual(
         "837fb5aa99ab7d0392fa43e61f529f072a693fd38032cd4a039793a9f9b4ea42"
       );
     });
 
     test("should do nothing if the input is a hash", () => {
-      const originalBuffer = utils.toBuffer("foo");
-      expect(utils.toBuffer(originalBuffer)).toEqual(originalBuffer);
+      const originalBuffer = hashingUtils.toBuffer("foo");
+      expect(hashingUtils.toBuffer(originalBuffer)).toEqual(originalBuffer);
     });
   });
 
   describe("combineHashBuffers", () => {
     test("should combine two hashes (in buffer format) and return result as a string", () => {
       expect(
-        utils
+        hashingUtils
           .combineHashBuffers(
-            utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"),
-            utils.hashToBuffer("9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2")
+            hashingUtils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"),
+            hashingUtils.hashToBuffer("9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2")
           )
           .toString("hex")
       ).toBe("6a4fe9cb57c9f79964c0408f25d70a73b3448bc6e975d0a905f0f8694764954b");
@@ -75,15 +76,17 @@ describe("Util Functions", () => {
 
     test("should return original hash if only one is given", () => {
       expect(
-        utils
-          .combineHashBuffers(utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"))
+        hashingUtils
+          .combineHashBuffers(
+            hashingUtils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
+          )
           .toString("hex")
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
       expect(
-        utils
+        hashingUtils
           .combineHashBuffers(
             undefined,
-            utils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
+            hashingUtils.hashToBuffer("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
           )
           .toString("hex")
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
@@ -93,7 +96,7 @@ describe("Util Functions", () => {
   describe("combineHashString", () => {
     test("should combine two hashes (in string format) and return result as a string", () => {
       expect(
-        utils.combineHashString(
+        hashingUtils.combineHashString(
           "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc",
           "9261495095bfbb82deedb97b2be90d0f4c0d9a03fdd90a9da62c1bbcc45d7eb2"
         )
@@ -101,11 +104,11 @@ describe("Util Functions", () => {
     });
 
     test("should return original hash if only one is given", () => {
-      expect(utils.combineHashString("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")).toBe(
+      expect(hashingUtils.combineHashString("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")).toBe(
         "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc"
       );
       expect(
-        utils.combineHashString(undefined, "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
+        hashingUtils.combineHashString(undefined, "660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc")
       ).toBe("660c9a8d0051d07b1abd38e8a6f68076d98fdf948abd2a13e2870fe08a1343cc");
     });
   });
