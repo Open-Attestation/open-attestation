@@ -1,1 +1,1 @@
-export { verify } from "../verify";
+export { verify as verifySignature } from "../verify";
