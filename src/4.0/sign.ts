@@ -20,22 +20,38 @@ export const signDocument = async <T extends V4Document>(
 
   const { proof: validatedProof } = parsedResults.data;
   const merkleRoot = `0x${validatedProof.merkleRoot}`;
-  const signature = await sign(algorithm, merkleRoot, keyOrSigner);
-  const proof: V4SignedWrappedDocument["proof"] = {
-    ...validatedProof,
-    key: "public" in keyOrSigner ? keyOrSigner.public : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
-    signature,
-  };
-  return { ...document, proof };
+
+  try {
+    const signature = await sign(algorithm, merkleRoot, keyOrSigner);
+    const proof: V4SignedWrappedDocument["proof"] = {
+      ...validatedProof,
+      key: "public" in keyOrSigner ? keyOrSigner.public : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
+      signature,
+    };
+    return { ...document, proof };
+  } catch (error) {
+    throw new CouldNotSignDocumentError(error);
+  }
 };
 
 class WrappedDocumentValidationError extends Error {
   constructor(public error: ZodError) {
-    super(`Document has not been properly wrapped: \n ${JSON.stringify(error.format(), null, 2)}`);
+    super(`Document has not been properly wrapped:\n${JSON.stringify(error.format(), null, 2)}`);
     Object.setPrototypeOf(this, WrappedDocumentValidationError.prototype);
+  }
+}
+
+/**
+ * Cases where this can be thrown includes: network error, invalid keys or signer
+ */
+class CouldNotSignDocumentError extends Error {
+  constructor(public error: unknown) {
+    super(`Could not sign document:\n${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
+    Object.setPrototypeOf(this, CouldNotSignDocumentError.prototype);
   }
 }
 
 export const signDocumentErrors = {
   WrappedDocumentValidationError,
+  CouldNotSignDocumentError,
 };
