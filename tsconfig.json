@@ -3,17 +3,23 @@
     "files": true
   },
   "compilerOptions": {
-    "lib": ["es2019"],
-    "target": "es5",
+    "strict": true,
+    // affects emission
     "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
-    "baseUrl": ".",
+    // affects emission
+    // 98% browser support (https://caniuse.com/?search=es6)
+    // Node >12 already supports ES2019 (https://node.green/#ES2019)
+    "target": "ES6",
+    // 96% browser support (https://caniuse.com/array-flat)
+    "lib": ["ES2019.Array"],
     "typeRoots": ["./src/@types", "./node_modules/@types"],
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    // affects emission
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": true,
+    "outDir": "./dist"
   },
   "include": ["./src/**/*"]
 }
