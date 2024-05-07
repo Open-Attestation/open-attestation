@@ -6,13 +6,11 @@
     "strict": true,
     // affects emission
     "module": "commonjs",
-
     "moduleResolution": "node",
     // affects emission
     // 98% browser support (https://caniuse.com/?search=es6)
     // Node >12 already supports ES2019 (https://node.green/#ES2019)
     "target": "ES6",
-
     // 96% browser support (https://caniuse.com/array-flat)
     "lib": ["ES2019.Array"],
     "typeRoots": ["./src/@types", "./node_modules/@types"],
@@ -20,7 +18,6 @@
     "resolveJsonModule": true,
     // affects emission
     "esModuleInterop": true,
-    
     "allowJs": true,
     "outDir": "./dist"
   },
