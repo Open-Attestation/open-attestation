@@ -1,6 +1,6 @@
 import { verify } from "../verify";
-import { DocumentBuilder } from "../documentBuilder";
-import { isSignedWrappedDocument, isWrappedDocument } from "../exports";
+import { DocumentBuilder, DocumentBuilderErrors } from "../documentBuilder";
+import { isSignedWrappedDocument, isWrappedDocument, signDocument } from "../exports";
 import { SAMPLE_SIGNING_KEYS } from "../fixtures";
 
 describe(`DocumentBuilder`, () => {
@@ -214,7 +214,11 @@ describe(`DocumentBuilder`, () => {
   });
 
   test("given additional properties in constructor payload, should not be added into the document", async () => {
-    const document = new DocumentBuilder({ content: { name: "John Doe" }, name: "Diploma", anotherProperty: "value" })
+    const signed = await new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+      anotherProperty: "value",
+    })
       .embeddedRenderer({
         rendererUrl: "https://example.com",
         templateName: "example",
@@ -223,14 +227,14 @@ describe(`DocumentBuilder`, () => {
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
         issuerName: "Example University",
-      });
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
 
-    const signed = await document.wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
     expect(signed).not.toHaveProperty("anotherProperty");
   });
 
   test("given attachment is added, should be added into the document", async () => {
-    const document = new DocumentBuilder({
+    const signed = await new DocumentBuilder({
       content: { name: "John Doe" },
       name: "Diploma",
       attachments: [
@@ -249,9 +253,9 @@ describe(`DocumentBuilder`, () => {
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
         issuerName: "Example University",
-      });
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
 
-    const signed = await document.wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
     expect(signed.attachments).toMatchInlineSnapshot(`
       [
         {
@@ -261,5 +265,59 @@ describe(`DocumentBuilder`, () => {
         },
       ]
     `);
+  });
+
+  test("given wrap only is called, should be able to sign the wrapped document with the standalone sign fn", async () => {
+    const wrapped = await new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+    })
+      .embeddedRenderer({
+        rendererUrl: "https://example.com",
+        templateName: "example",
+      })
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+      .justWrapWithoutSigning();
+
+    const signed = await signDocument(wrapped, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
+    expect(isSignedWrappedDocument(signed)).toBe(true);
+    expect(verify(signed)).toBe(true);
+  });
+
+  test("should not allow re-setting of values", async () => {
+    const builder = await new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+    });
+
+    const documentWithRenderMethod = builder.embeddedRenderer({
+      rendererUrl: "https://example.com",
+      templateName: "example",
+    });
+
+    expect(() =>
+      builder.embeddedRenderer({
+        rendererUrl: "https://another.com",
+        templateName: "another",
+      })
+    ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
+
+    documentWithRenderMethod.dnsTxtIssuance({
+      identityProofDomain: "example.com",
+      issuerId: "did:example:123",
+      issuerName: "Example University",
+    });
+
+    expect(() =>
+      documentWithRenderMethod.dnsTxtIssuance({
+        identityProofDomain: "another.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+    ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
   });
 });

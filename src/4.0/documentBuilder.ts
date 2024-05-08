@@ -33,6 +33,13 @@ class PropsValidationError extends Error {
   }
 }
 
+class ShouldNotModifyAfterSettingError extends Error {
+  constructor() {
+    super("Modifying what was already set can lead to unexpected behaviour, please consider creating a new instance");
+    Object.setPrototypeOf(this, ShouldNotModifyAfterSettingError.prototype);
+  }
+}
+
 type DocumentProps = {
   /** Human readable name of the document */
   name: string;
@@ -145,6 +152,8 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       /** Domain where DNS TXT record proof is located */
       identityProofDomain: string;
     }) => {
+      if (this.issuer) throw new ShouldNotModifyAfterSettingError();
+
       const parsedResults = DnsTextIssuanceProps.safeParse(props);
       if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
       const { issuerId, issuerName, identityProofDomain } = parsedResults.data;
@@ -180,6 +189,8 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     /** Template identifier to "select" the correct template on the renderer */
     templateName: string;
   }) => {
+    if (this.renderMethod) throw new ShouldNotModifyAfterSettingError();
+
     const parsedResults = EmbeddedRendererProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
     const { rendererUrl, templateName } = parsedResults.data;
@@ -196,6 +207,8 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   };
 
   public svgRenderer = (props: { urlOrEmbeddedSvg: string }) => {
+    if (this.renderMethod) throw new ShouldNotModifyAfterSettingError();
+
     const parsedResults = SvgRendererProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
     const { urlOrEmbeddedSvg } = parsedResults.data;
@@ -251,6 +264,7 @@ const { UnableToInterpretContextError } = wrapDocumentErrors;
 const { CouldNotSignDocumentError } = signDocumentErrors;
 export const DocumentBuilderErrors = {
   PropsValidationError,
+  ShouldNotModifyAfterSettingError,
   UnableToInterpretContextError,
   CouldNotSignDocumentError,
 };
