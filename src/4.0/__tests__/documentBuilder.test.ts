@@ -10,6 +10,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -88,6 +89,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -223,6 +225,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -249,6 +252,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -276,6 +280,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -284,6 +289,7 @@ describe(`DocumentBuilder`, () => {
       .justWrapWithoutSigning();
 
     const signed = await signDocument(wrapped, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
+
     expect(isSignedWrappedDocument(signed)).toBe(true);
     expect(verify(signed)).toBe(true);
   });
@@ -306,14 +312,14 @@ describe(`DocumentBuilder`, () => {
       })
     ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
 
-    documentWithRenderMethod.dnsTxtIssuance({
+    documentWithRenderMethod.noRevocation().dnsTxtIssuance({
       identityProofDomain: "example.com",
       issuerId: "did:example:123",
       issuerName: "Example University",
     });
 
     expect(() =>
-      documentWithRenderMethod.dnsTxtIssuance({
+      documentWithRenderMethod.noRevocation().dnsTxtIssuance({
         identityProofDomain: "another.com",
         issuerId: "did:example:123",
         issuerName: "Example University",
@@ -355,7 +361,7 @@ describe(`DocumentBuilder`, () => {
       let error;
       expect(() => {
         try {
-          builder.dnsTxtIssuance({
+          builder.noRevocation().dnsTxtIssuance({
             identityProofDomain: "example.com",
             issuerId: "invalid",
             issuerName: "Example University",
