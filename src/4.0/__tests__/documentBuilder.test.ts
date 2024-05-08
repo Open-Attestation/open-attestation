@@ -288,7 +288,7 @@ describe(`DocumentBuilder`, () => {
     expect(verify(signed)).toBe(true);
   });
 
-  test("should not allow re-setting of values", async () => {
+  test("given re-setting of values, should throw", async () => {
     const builder = await new DocumentBuilder({
       content: { name: "John Doe" },
       name: "Diploma",
@@ -319,5 +319,63 @@ describe(`DocumentBuilder`, () => {
         issuerName: "Example University",
       })
     ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
+  });
+
+  describe("given invalid props", () => {
+    test("given an invalid attachment, should throw", () => {
+      let error;
+      expect(() => {
+        try {
+          new DocumentBuilder({
+            content: { name: "John Doe" },
+            name: "Diploma",
+            attachments: [
+              {
+                data: "data",
+                fileName: "file",
+              } as any,
+            ],
+          });
+        } catch (e) {
+          error = e;
+          throw e;
+        }
+      }).toThrowError(DocumentBuilderErrors.PropsValidationError);
+      expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
+    });
+
+    test("given an invalid identity identifier, should throw", () => {
+      const builder = new DocumentBuilder({
+        content: { name: "John Doe" },
+        name: "Diploma",
+      }).embeddedRenderer({
+        rendererUrl: "https://example.com",
+        templateName: "example",
+      });
+      let error;
+      expect(() => {
+        try {
+          builder.dnsTxtIssuance({
+            identityProofDomain: "example.com",
+            issuerId: "invalid",
+            issuerName: "Example University",
+          });
+        } catch (e) {
+          error = e;
+          throw e;
+        }
+      }).toThrowErrorMatchingInlineSnapshot(`
+      "Invalid props: 
+       {
+        "_errors": [],
+        "issuerId": {
+          "_errors": [
+            "Invalid URI"
+          ]
+        }
+      }"
+    `);
+      expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
+    });
   });
 });

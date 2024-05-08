@@ -11,6 +11,14 @@ import {
 
 import { ZodError, z } from "zod";
 
+const SingleDocumentProps = z.object({
+  name: V4Document.shape.name.unwrap(),
+  content: z.record(z.unknown()),
+  attachments: V4Document.shape.attachments,
+});
+
+const DocumentProps = z.union([SingleDocumentProps, z.array(SingleDocumentProps)]);
+
 const EmbeddedRendererProps = z.object({
   rendererUrl: DecentralisedEmbeddedRenderer.shape.id,
   templateName: DecentralisedEmbeddedRenderer.shape.templateName,
@@ -60,7 +68,9 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   private issuer: V4Document["issuer"] | undefined;
 
   constructor(props: Props) {
-    this.documentMainProps = props;
+    const parsedResults = DocumentProps.safeParse(props);
+    if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
+    this.documentMainProps = parsedResults.data;
   }
 
   private wrap = async (): Promise<WrappedReturn<Props>> => {
@@ -224,38 +234,38 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   };
 }
 
-type SignedReturn<Data extends DocumentProps | DocumentProps[]> = Data extends Array<DocumentProps>
+type SignedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends Array<DocumentProps>
   ? Override<
       V4SignedWrappedDocument,
       {
-        name: Data[number]["name"];
-        credentialSubject: Data[number]["content"];
+        name: Props[number]["name"];
+        credentialSubject: Props[number]["content"];
       }
     >[]
-  : Data extends DocumentProps
+  : Props extends DocumentProps
   ? Override<
       V4SignedWrappedDocument,
       {
-        name: Data["name"];
-        credentialSubject: Data["content"];
+        name: Props["name"];
+        credentialSubject: Props["content"];
       }
     >
   : never;
 
-type WrappedReturn<Data extends DocumentProps | DocumentProps[]> = Data extends Array<DocumentProps>
+type WrappedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends Array<DocumentProps>
   ? Override<
       V4WrappedDocument,
       {
-        name: Data[number]["name"];
-        credentialSubject: Data[number]["content"];
+        name: Props[number]["name"];
+        credentialSubject: Props[number]["content"];
       }
     >[]
-  : Data extends DocumentProps
+  : Props extends DocumentProps
   ? Override<
       V4WrappedDocument,
       {
-        name: Data["name"];
-        credentialSubject: Data["content"];
+        name: Props["name"];
+        credentialSubject: Props["content"];
       }
     >
   : never;
