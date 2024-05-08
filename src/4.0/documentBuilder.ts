@@ -19,6 +19,10 @@ const SingleDocumentProps = z.object({
 
 const DocumentProps = z.union([SingleDocumentProps, z.array(SingleDocumentProps)]);
 
+const OscpRevocationProps = z.object({
+  oscpUrl: V4Document.shape.credentialStatus.unwrap().shape.id,
+});
+
 const EmbeddedRendererProps = z.object({
   rendererUrl: DecentralisedEmbeddedRenderer.shape.id,
   templateName: DecentralisedEmbeddedRenderer.shape.templateName,
@@ -57,25 +61,46 @@ type DocumentProps = {
   attachments?: V4Document["attachments"];
 };
 
+type State = {
+  documentMainProps: DocumentProps | DocumentProps[];
+  renderMethod: V4Document["renderMethod"];
+  issuer: V4Document["issuer"] | undefined;
+  credentialStatus: V4Document["credentialStatus"];
+};
+
 /**
  * A builder to simplify the creation of OAv4 document(s)
- * This builder assumes that All documents share the same issuer AND renderMethod
+ * This builder assumes that All documents share the same issuer, renderMethod and credentialStatus
  * If this builder cannot satisfy your use case, please use the underlying wrap and sign functions directly
  */
 export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
-  private documentMainProps: DocumentProps | DocumentProps[];
-  private renderMethod: V4Document["renderMethod"];
-  private issuer: V4Document["issuer"] | undefined;
-
+  private getState: () => State;
+  private setState: <Key extends keyof State>(key: Key, value: Pick<State, Key>[Key]) => void;
   constructor(props: Props) {
     const parsedResults = DocumentProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
-    this.documentMainProps = parsedResults.data;
+
+    // state is defined here as opposed to the instance so that any modification
+    // has to go through the setState function
+    const state: State = {
+      documentMainProps: parsedResults.data,
+      renderMethod: undefined,
+      issuer: undefined,
+      credentialStatus: undefined,
+    };
+
+    // for immutability
+    const hasBeenSet = new Set<keyof State>();
+    this.getState = () => state;
+    this.setState = (key, value) => {
+      if (hasBeenSet.has(key)) throw new ShouldNotModifyAfterSettingError();
+      hasBeenSet.add(key);
+      state[key] = value;
+    };
   }
 
   private wrap = async (): Promise<WrappedReturn<Props>> => {
-    const data = this.documentMainProps;
-    const issuer = this.issuer;
+    const { documentMainProps: data, issuer, renderMethod, credentialStatus } = this.getState();
 
     // this should never happen
     if (!issuer) throw new Error("Issuer is required");
@@ -91,8 +116,9 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
             issuer,
             name,
             credentialSubject: content,
-            renderMethod: this.renderMethod,
+            renderMethod,
             ...(attachments && { attachments }),
+            ...(credentialStatus && { credentialStatus }),
           } satisfies V4Document)
       );
 
@@ -112,8 +138,9 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       issuer,
       name,
       credentialSubject: content,
-      renderMethod: this.renderMethod,
+      renderMethod,
       ...(attachments && { attachments }),
+      ...(credentialStatus && { credentialStatus }),
     }) as unknown as WrappedReturn<Props>;
   };
 
@@ -162,13 +189,11 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       /** Domain where DNS TXT record proof is located */
       identityProofDomain: string;
     }) => {
-      if (this.issuer) throw new ShouldNotModifyAfterSettingError();
-
       const parsedResults = DnsTextIssuanceProps.safeParse(props);
       if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
       const { issuerId, issuerName, identityProofDomain } = parsedResults.data;
 
-      this.issuer = {
+      const issuer = {
         id: issuerId,
         name: issuerName,
         type: "OpenAttestationIssuer",
@@ -176,7 +201,8 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
           identityProofType: "DNS-TXT",
           identifier: identityProofDomain,
         },
-      };
+      } satisfies V4Document["issuer"];
+      this.setState("issuer", issuer);
 
       return {
         /**
@@ -191,7 +217,41 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
         justWrapWithoutSigning: this.wrap,
       };
     },
-  };
+  } satisfies Record<`${string}Issuance`, (...args: any[]) => any>;
+
+  private REVOCATION_METHODS = {
+    /**
+     * The document(s) can never be revoked
+     */
+    noRevocation: () => {
+      this.setState("credentialStatus", undefined);
+
+      return this.ISSUANCE_METHODS;
+    },
+    /**
+     * The document(s) can be revoked using an OCSP responder
+     */
+    oscpRevocation: (props: { oscpUrl: string }) => {
+      const parsedResults = OscpRevocationProps.safeParse(props);
+      if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
+      const { oscpUrl } = parsedResults.data;
+
+      const credentialStatus = {
+        id: oscpUrl,
+        type: "OpenAttestationOcspResponder",
+      } satisfies V4Document["credentialStatus"];
+      this.setState("credentialStatus", credentialStatus);
+
+      return this.ISSUANCE_METHODS;
+    },
+    /**
+     * The document(s) can be revoked using via a document store (smart contract)
+     */
+    documentStoreRevocation: () => {
+      // TODO: implement this
+      throw new Error("Not implemented");
+    },
+  } satisfies Record<`${string}Revocation`, (...args: any[]) => typeof this.ISSUANCE_METHODS>;
 
   public embeddedRenderer = (props: {
     /** URL where the renderer is hosted  */
@@ -199,38 +259,36 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     /** Template identifier to "select" the correct template on the renderer */
     templateName: string;
   }) => {
-    if (this.renderMethod) throw new ShouldNotModifyAfterSettingError();
-
     const parsedResults = EmbeddedRendererProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
     const { rendererUrl, templateName } = parsedResults.data;
 
-    this.renderMethod = [
+    const renderMethod = [
       {
         id: rendererUrl,
         type: "OpenAttestationEmbeddedRenderer",
         templateName,
       },
-    ];
+    ] satisfies V4Document["renderMethod"];
+    this.setState("renderMethod", renderMethod);
 
-    return this.ISSUANCE_METHODS;
+    return this.REVOCATION_METHODS;
   };
 
   public svgRenderer = (props: { urlOrEmbeddedSvg: string }) => {
-    if (this.renderMethod) throw new ShouldNotModifyAfterSettingError();
-
     const parsedResults = SvgRendererProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
     const { urlOrEmbeddedSvg } = parsedResults.data;
 
-    this.renderMethod = [
+    const renderMethod = [
       {
         id: urlOrEmbeddedSvg,
         type: "SvgRenderingTemplate2023",
       },
-    ];
+    ] satisfies V4Document["renderMethod"];
+    this.setState("renderMethod", renderMethod);
 
-    return this.ISSUANCE_METHODS;
+    return this.REVOCATION_METHODS;
   };
 }
 
