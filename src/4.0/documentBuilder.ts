@@ -1,9 +1,11 @@
 import { wrapDocument, wrapDocuments, wrapDocumentErrors } from "./wrap";
 import { signDocument, signDocumentErrors } from "./sign";
 import {
-  DecentralisedEmbeddedRenderer,
   Override,
+  DecentralisedEmbeddedRenderer,
   SvgRenderer,
+  OscpResponderRevocation,
+  RevocationStoreRevocation,
   V4Document,
   V4SignedWrappedDocument,
   V4WrappedDocument,
@@ -20,7 +22,11 @@ const SingleDocumentProps = z.object({
 const DocumentProps = z.union([SingleDocumentProps, z.array(SingleDocumentProps)]);
 
 const OscpRevocationProps = z.object({
-  oscpUrl: V4Document.shape.credentialStatus.unwrap().shape.id,
+  oscpUrl: OscpResponderRevocation.shape.id,
+});
+
+const RevocationStoreRevocationProps = z.object({
+  storeAddress: RevocationStoreRevocation.shape.id,
 });
 
 const EmbeddedRendererProps = z.object({
@@ -182,7 +188,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     // },
 
     dnsTxtIssuance: (props: {
-      /** A unique ID of the issuer that MUST BE in a URI */
+      /** A unique ID of the issuer that MUST BE a URI */
       issuerId: string;
       /** Human readable name of the issuer */
       issuerName: string;
@@ -219,6 +225,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     },
   } satisfies Record<`${string}Issuance`, (...args: any[]) => any>;
 
+  // add revocation methods here
   private REVOCATION_METHODS = {
     /**
      * The document(s) can never be revoked
@@ -231,7 +238,10 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     /**
      * The document(s) can be revoked using an OCSP responder
      */
-    oscpRevocation: (props: { oscpUrl: string }) => {
+    oscpRevocation: (props: {
+      /** URL of the OCSP responder */
+      oscpUrl: string;
+    }) => {
       const parsedResults = OscpRevocationProps.safeParse(props);
       if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
       const { oscpUrl } = parsedResults.data;
@@ -245,11 +255,24 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       return this.ISSUANCE_METHODS;
     },
     /**
-     * The document(s) can be revoked using via a document store (smart contract)
+     * The document(s) can be revoked using via a revocation store (smart contract)
      */
-    documentStoreRevocation: () => {
-      // TODO: implement this
-      throw new Error("Not implemented");
+    revocationStoreRevocation: (props: {
+      /** Smart contract address of the revocation store */
+      storeAddress: string;
+    }) => {
+      const parsedResults = RevocationStoreRevocationProps.safeParse(props);
+      if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
+      const { storeAddress } = parsedResults.data;
+
+      const credentialStatus = {
+        id: storeAddress,
+        type: "OpenAttestationRevocationStore",
+      } satisfies V4Document["credentialStatus"];
+
+      this.setState("credentialStatus", credentialStatus);
+
+      return this.ISSUANCE_METHODS;
     },
   } satisfies Record<`${string}Revocation`, (...args: any[]) => typeof this.ISSUANCE_METHODS>;
 
