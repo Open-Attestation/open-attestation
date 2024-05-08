@@ -43,7 +43,9 @@ type DocumentProps = {
 };
 
 /**
- * A builder to create documents
+ * A builder to simplify the creation of OAv4 document(s)
+ * This builder assumes that All documents share the same issuer AND renderMethod
+ * If this builder cannot satisfy your use case, please use the underlying wrap and sign functions directly
  */
 export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   private documentMainProps: DocumentProps | DocumentProps[];
@@ -109,6 +111,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     return signDocument(wrapped, "Secp256k1VerificationKey2018", props.signer) as Promise<SignedReturn<Props>>;
   };
 
+  // add issuance methods here
   private ISSUANCE_METHODS = {
     // not supported right now
     // blockchainIssuance: (props: {
@@ -251,41 +254,3 @@ export const DocumentBuilderErrors = {
   UnableToInterpretContextError,
   CouldNotSignDocumentError,
 };
-
-// Example usage
-// import { SAMPLE_SIGNING_KEYS } from "./fixtures";
-// new DocumentBuilder({
-//   name: "Republic of Singapore Driving Licence",
-//   content: {
-//     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
-//     type: ["DriversLicense"],
-//     name: "John Doe",
-//     licenses: [
-//       {
-//         class: "3",
-//         description: "Motor cars with unladen weight <= 3000kg",
-//         effectiveDate: "2013-05-16T00:00:00+08:00",
-//       },
-//       {
-//         class: "3A",
-//         description: "Motor cars with unladen weight <= 3000kg",
-//         effectiveDate: "2013-05-16T00:00:00+08:00",
-//       },
-//     ],
-//   },
-// })
-//   .embeddedRenderer({
-//     templateName: "GOVTECH_DEMO",
-//     rendererUrl: "https://demo-renderer.opencerts.io",
-//   })
-//   .dnsTxtIssuance({
-//     identityProofDomain: "example.openattestation.com",
-//     issuerName: "Government Technology Agency of Singapore (GovTech)",
-//     issuerId: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
-//   })
-//   .wrapAndSign({
-//     signer: SAMPLE_SIGNING_KEYS,
-//   })
-//   .then((signed) => {
-//     console.log(signed.credentialSubject);
-//   });
