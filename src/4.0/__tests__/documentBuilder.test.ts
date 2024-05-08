@@ -10,7 +10,9 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
-      .noRevocation()
+      .oscpRevocation({
+        oscpUrl: "https://oscp.example.com",
+      })
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -44,6 +46,12 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(signed.credentialStatus).toMatchInlineSnapshot(`
+        {
+          "id": "https://oscp.example.com",
+          "type": "OpenAttestationOcspResponder",
+        }
+      `);
       expect(isSignedWrappedDocument(signed)).toBe(true);
       expect(verify(signed)).toBe(true);
     });
@@ -74,6 +82,12 @@ describe(`DocumentBuilder`, () => {
             "type": "OpenAttestationEmbeddedRenderer",
           },
         ]
+      `);
+      expect(wrapped.credentialStatus).toMatchInlineSnapshot(`
+        {
+          "id": "https://oscp.example.com",
+          "type": "OpenAttestationOcspResponder",
+        }
       `);
       expect(isWrappedDocument(wrapped)).toBe(true);
       expect(isSignedWrappedDocument(wrapped)).toBe(false);
@@ -123,6 +137,7 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(signed[0].credentialStatus).toBeUndefined();
       expect(isSignedWrappedDocument(signed[0])).toBe(true);
       expect(verify(signed[0])).toBe(true);
 
@@ -151,6 +166,7 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(signed[1].credentialStatus).toBeUndefined();
       expect(isSignedWrappedDocument(signed[1])).toBe(true);
       expect(verify(signed[1])).toBe(true);
     });
