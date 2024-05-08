@@ -1,16 +1,54 @@
 # OpenAttestation
 
-OpenAttestation is a framework of attestation and notary for any document types on the blockchain.
+OpenAttestation is an open-sourced framework to endorse and verify documents using the blockchain.
 
 With OpenAttestation, you can issue and verify verifiable documents individually or in a batch using:
 
-* either smart contracts on the Ethereum blockchain
+- either smart contracts on the Ethereum blockchain
 
-* or digital signatures without the need to pay for Ethereum transactions
+- or digital signatures without the need to pay for Ethereum transactions
+
+## Note
+
+This document focuses on OpenAttestation v4.0 documents, if you are looking to issue v2.0 documents, please refer to the [previous readme](previous.md)
+
+## Requirements
+
+### Node.js
+
+V12 or higher
+
+#### Frontend frameworks/toolings
+
+##### CRA (Create React App)
+
+Should work out of the box
+
+##### vite
+
+```
+// vite.config.ts
+export default defineConfig({
+  ...
+  define: {
+    global: 'globalThis'
+  },
+})
+```
+
+##### Next
+
+Client side usage
+
+```
+npm i undici
+```
+
+Server side only usage should work out of the box
 
 ## Installation
 
-To install the OpenAttestation framework on your machine, run the command below:
+### Package manager via npm
 
 ```bash
 npm i @govtechsg/open-attestation
@@ -18,156 +56,227 @@ npm i @govtechsg/open-attestation
 
 ---
 
-## Usage
+## Basic Usage
 
-### Wrapping documents
+### Document creation
 
-The `wrapDocuments` function takes in an array of documents and returns the wrapped batch. Each document must be valid according to the [version of the schema used](#version-of-the-schema). It computes the merkle root of the batch and appends it to each document. This merkle root can be published on the blockchain and be queried against to prove the provenance of the document issued this way. Alternatively, the merkle root may be signed by the document issuer's private key, which may be cryptographically verified using the issuer's public key or Ethereum account to act as proof of issuance.
+#### 1. with `DocumentBuilder` (recommended)
 
-#### Version of the schema
-In future, this function may accept a second optional parameter to specify the version of open-attestation you want to use. Currently, open-attestation will use schema 2.0. See [Additional Information](#additional-information) for how to use experimental v3.0 documents, which aim to be compatible with the W3C's data model for [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/).
+`DocumentBuilder` is a class that simplifies the process of creating documents. Documents created via this class are less likely to have errors.
 
-#### Code example
+While `DocumentBuilder` should cover most use cases, users who require more control and flexiblity over the document creation process can use the `wrapDocument` and `signDocument` functions as described in the next section.
 
-The `wrapDocument` function is almost identical with `wrapDocuments`, but the first function accepts only one document.
+```typescript
+import { DocumentBuilder, DocumentBuilderErrors } from "@govtechsg/open-attestation/4.0/builder";
 
-The following code example shows how `wrapDocuments` works. You can also do some tweaking to apply it on `wrapDocument`.
+try {
+  const signedDocument = await new DocumentBuilder({
+    // name of the document
+    name: "Republic of Singapore Driving Licence",
+    // main content of the document
+    content: {
+      name: "John Doe",
+      licenses: [
+        {
+          class: "3",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+        {
+          class: "3A",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+      ],
+    },
+    // attachments if any
+    attachments: [
+      {
+        fileName: "sample.pdf",
+        mimeType: "application/pdf",
+        data: "base64 encoded data",
+      },
+    ],
+  })
+    .embeddedRenderer({
+      templateName: "GOVTECH_DEMO",
+      rendererUrl: "https://demo-renderer.opencerts.io",
+    })
+    .revocationStoreRevocation({
+      storeAddress: "0x1234567890123456789012345678901234567890",
+    })
+    .dnsTxtIssuance({
+      identityProofDomain: "example.openattestation.com",
+      issuerName: "Government Technology Agency of Singapore (GovTech)",
+      issuerId: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    })
+    .wrapAndSign({
+      signer: {
+        public: "0x12345678901234567890123456789012345678901234567890123456789012345678901234",
+        private: "0x1234567890123456789012345678901234567890123456789012345678901234",
+      },
+    });
+} catch (error) {
+  if (error instanceof DocumentBuilderErrors.CouldNotSignDocumentError) {
+    // handle error
+  }
+}
+```
 
-```js
-import { wrapDocuments } from "@govtechsg/open-attestation";
-const document = {
-  id: "SERIAL_NUMBER_123",
-  $template: {
-    name: "CUSTOM_TEMPLATE",
-    type: "EMBEDDED_RENDERER",
-    url: "https://localhost:3000/renderer",
+Batch creation is also supported with the limitation that all documents in the batch will share the same issuer and renderering method:
+
+```typescript
+const signedDocuments = await new DocumentBuilder([
+  {
+    name: "Republic of Singapore Driving Licence",
+    content: {
+      ...
+    },
   },
-  issuers: [
-    {
-      name: "DEMO STORE",
-      tokenRegistry: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
+  {
+    name: "Republic of Singapore Driving Licence",
+    content: {
+      ...
+    },
+  },
+])
+...
+```
+
+### 2. with `wrapDocument`, `wrapDocuments` and `signDocument`
+
+These lower-level functions provide the most flexibility over the document creation process and should be used when `DocumentBuilder` does not meet your requirements.
+
+```typescript
+import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
+import { signDocument, signDocumentErrors } from "@govtechsg/open-attestation/4.0/sign";
+
+try {
+  const wrappedDocument = await wrapDocument({
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+    ],
+    type: ["VerifiableCredential", "OpenAttestationCredential"],
+    validFrom: "2021-03-08T12:00:00+08:00",
+    name: "Republic of Singapore Driving Licence",
+    issuer: {
+      id: "urn:uuid:344a5b29-30ce-4b8f-a7dc-c1f056c86f5a",
+      type: "OpenAttestationIssuer",
+      name: "Government Technology Agency of Singapore (GovTech)",
       identityProof: {
-        type: "DNS-TXT",
-        location: "tradetrust.io",
+        identityProofType: "DNS-DID",
+        identifier: "example.openattestation.com",
       },
     },
-  ],
-  recipient: {
-    name: "Recipient Name",
-  },
-  unknownKey: "unknownValue",
-  attachments: [
-    {
-      filename: "sample.pdf",
-      type: "application/pdf",
-      data: "BASE64_ENCODED_FILE",
+    credentialSubject: {
+      id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+      name: "John Doe",
+      licenses: [
+        {
+          class: "3",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+        {
+          class: "3A",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+      ],
     },
-  ],
-};
+  });
 
-wrappedDocuments = wrapDocuments([document, { ...document, id: "different id" }]); // will ensure document is valid regarding open-attestation 2.0 schema
-console.log(wrappedDocuments);
+  const signedDocument = await signDocument(wrappedDocument, "Secp256k1VerificationKey2018", {
+    private: "0x1234567890123456789012345678901234567890123456789012345678901234",
+    public: "0x12345678901234567890123456789012345678901234567890123456789012345678901234",
+  });
+} catch (error) {
+  if (error instanceof wrapDocumentErrors.UnableToInterpretContextError) {
+    // network errors can occur when fetching the context
+  } else if (error instanceof signDocumentErrors.CouldNotSignDocumentError) {
+    // network errors can occur when signing using a remote Signer
+  }
+
+  throw error;
+}
 ```
 
-#### Differences between the two similar functions
+## Obfuscation
 
-Although `wrapDocument` and `wrapDocuments` are almost identical, there are minor differences.
+Obfuscation is a process that allows you to hide sensitive information in a document without invalidating the document's signature. This is useful when you need to share a document with a third party but want to protect certain information.
 
-- The `wrapDocuments` function returns an array and not an object.
-- Each element in the array is a wrapped document corresponding to the one provided as input.
-- Each element will share the same unique `merkleRoot` value in every batch wrap instance.
-- Each element has a unique `targetHash` value.
-- Similar to `wrapDocument`, every time you run `wrapDocuments`, it will create unique hashes (in front of every field in the data object).
+It is important to note that obfuscation can only be done on paths that are not required. For example, `issuer` and `proof` paths cannot be obfuscated as they are required for verification.
 
-### Signing a document
+### OpenAttestation v4.0 documents only
 
-The `signDocument` function takes a wrapped document, as well as a public/private key pair or an [Ethers.js Signer](https://docs.ethers.io/v5/api/signer/). The method will sign the merkle root from the wrapped document, append the signature to the document, and return it. Currently, it supports the signing algorithm below:
+```typescript
+import { obfuscate } from "@govtechsg/open-attestation/4.0/obfuscate";
 
-- `Secp256k1VerificationKey2018`
-
-#### Example with a public/private key pair
-
-The following code example of `signDocument` contains a public/private key pair.
-
-```js
-import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/open-attestation";
-await signDocument(wrappedV2Document, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
-  public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-  private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
-});
+const obfuscatedDocument = obfuscate(signedDocument, ["credentialSubject.name", "credentialSubject.licenses[0].class"]);
 ```
 
-#### Example with the signer
-The following code example of `signDocument` contains the signer information. 
+## Verification of signature
 
-```js
-import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/open-attestation";
-import { Wallet } from "ethers";
+### OpenAttestation v4 documents only
 
-const wallet = Wallet.fromMnemonic("tourist quality multiply denial diary height funny calm disease buddy speed gold");
-const { proof } = await signDocument(
-  wrappedDocumentV2,
-  SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
-  wallet
-);
+```typescript
+import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
+
+const valid = verifySignature(signedDocument); // true or false
 ```
 
-### Validating the document schema
+### any version of OpenAttestation documents
 
-The `validateSchema` function checks that the document conforms to OpenAttestation data structure.
-
-```js
-import { validateSchema } from "@govtechsg/open-attestation";
-const validatedSchema = validateSchema(wrappedDocument);
-console.log(validatedSchema);
-```
-
-### Verifying the document signature
-
-The `verifySignature` function checks that the signature of the document corresponds to the actual content in the document. In addition, it checks that the target hash (hash of the document content) is part of the set of documents wrapped in the batch using the proofs.
-
-```js
+```typescript
 import { verifySignature } from "@govtechsg/open-attestation";
-const verified = verifySignature(wrappedDocument);
-console.log(verified);
+
+const valid = verifySignature(signedDocument); // true or false
 ```
 
->**Note:** This method does not check against the blockchain or any registry if this document has been published. The merkle root of this document needs to be checked against a publicly accessible document store, which in the case of OpenAttestation is a smart contract on the blockchain.
+## Types
 
-### Retrieving the document data
+Typescript types for OpenAttestation v4 documents are provided in the package. They can be imported as follows:
 
-The `getData` function returns the original data stored in the document in a readable format.
-
-```js
-import { getData } from "@govtechsg/open-attestation";
-const data = getData(wrappedDocument);
-console.log(data);
+```typescript
+import type { WrappedDocument, SignedWrappedDocument } from "@govtechsg/open-attestation/4.0/types";
 ```
 
-### Utils
+## Utils
 
-A number of utility functions can be found under `utils`, which check whether a document is a valid OA file that has been wrapped or signed. The `diagnose` function can also be used for troubleshooting. 
-
-```js
-import { utils } from "@govtechsg/open-attestation";
-utils.isWrappedV3Document(document);
+```typescript
+import { isDocument, isWrappedDocument, isSignedWrappedDocument } from "@govtechsg/open-attestation/4.0/utils";
 ```
-You can replace `isWrappedV3Document` in the above example with the following values:
 
-- `isWrappedV2Document`: This is the type guard for the wrapped V2 document.
-- `isSignedWrappedV2Document`: This is the type guard for the signed V2 document.
-- `isSignedWrappedV3Document`: This is the type guard for the signed V3 document.
-- `isWrappedV3Document`: This is the type guard for the wrapped V3 document.
+### Guards
 
-In addition, the `diagnose` tool can find out why a document is not a valid OpenAttestation file (wrapped or signed document).
+1. `isDocument` - checks if the document is a valid OpenAttestation v4 document
+2. `isWrappedDocument` - checks if the document is a valid OpenAttestation v4 wrapped document
+3. `isSignedWrappedDocument` - checks if the document is a valid OpenAttestation v4 signed wrapped document
 
-### Obfuscating data
+### Imports
 
-The `obfuscateDocument` function removes a key-value pair from the document's data section, without causing the file hash to change. You can use this to generate a new document containing a subset of the original data.
+The recommended method to import is via a granular fashion:
 
-```js
-const newData = obfuscateDocument(wrappedDocument, "key1");
-console.log(newData);
+```typescript
+import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
+import { signDocument, signDocumentErrors } from "@govtechsg/open-attestation/4.0/sign";
+import { obfuscate } from "@govtechsg/open-attestation/4.0/obfuscate";
+import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
+import { isSignedWrappedDocument } from "@govtechsg/open-attestation/4.0/utils";
+```
+
+This would enable bundlers to tree shake code that otherwise is not needed.
+
+We do however understand that not all projects would support [package exports](https://webpack.js.org/guides/package-exports/), we do provide a fallback method:
+
+```typescript
+import { v4 } from '@govtechsg/open-attestation'
+await v4.wrapDocument(
+  {
+    ...
+  }
+)
 ```
 
 ## Development
@@ -178,40 +287,6 @@ To run tests, use the following command:
 npm run test
 ```
 
-### vc-test-suite
-
-You can run `vc-test-suite` against `open-attestation` by using the `npm run test:vc` command. It will:
-
-- clone https://github.com/w3c/vc-test-suite.git
-- copy the local configuration (`vc-test-suite-config.json`) into the cloned repository
-- install the latest version of `@govtechsg/open-attestation-cli`
-- monkey patch `open-attestation` in `@govtechsg/open-attestation-cli`
-  
-  "Monkey patch" means it will build the current version of the project, which will replace the one installed with `@govtechsg/open-attestation-cli`.
-
-#### Local debugging
-
-If you face a problem with one test and want to debug locally:
-
-1. Ensure the `vc-test-suite` folder is available from the root of the project. 
-
-    If not, run `npm run test:vc` first and perform the test again.
-
-1. Open `runVcTest.sh` and update `install_vc_test_suite=true` to `install_vc_test_suite=false`. 
-
-    This line will preserve the `vc-test-suite` folder untouched.
-
-You can now debug from the `vc-test-suite` folder the way you need.
-
 ## Additional information
 
 - If you find a bug, have a question, or want to share an idea, reach us at our [Github repository](https://github.com/Open-Attestation/open-attestation).
-- We are currently building a new version of the schema compatible with W3C VC. This is very experimental and whatever is available for V2 documents are also available for V3 documents:
-  - [OA schema v3](https://schema.openattestation.com/3.0/schema.json)
-  - Typings: `import {v3} from "@govtechsg/open-attestation"`.
-  - Type guard: `utils.isWrappedV3Document`.
-  - Wrapping: `__unsafe__use__it__at__your__own__risks__wrapDocument` 
-    - future usage: `wrapDocument(document, {version: "open-attestation/3.0"})`
-  - Example docs in `tests/fixtures/v3`
-- There are extra utilities available: 
-  - Refer to the [utils](https://github.com/Open-Attestation/open-attestation/blob/master/src/shared/utils/utils.ts) component for the full list of utilities. 
