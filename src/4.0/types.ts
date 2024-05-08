@@ -178,6 +178,17 @@ export const SvgRenderer = z.object({
     .optional(),
 });
 
+export const OscpResponderRevocation = z.object({
+  // Must have id match url pattern (OCSP endpoint)
+  id: z.string().url(),
+  type: z.literal("OpenAttestationOcspResponder"),
+});
+
+export const RevocationStoreRevocation = z.object({
+  id: z.string().startsWith("0x"),
+  type: z.literal("OpenAttestationRevocationStore"),
+});
+
 export const V4Document = _W3cVerifiableCredential
   .extend({
     "@context": z
@@ -204,14 +215,8 @@ export const V4Document = _W3cVerifiableCredential
       }),
     }),
 
-    // [Optional] OCSP Revocation
-    credentialStatus: z
-      .object({
-        // Must have id match url pattern (OCSP endpoint)
-        id: z.string().url(),
-        type: z.literal("OpenAttestationOcspResponder"),
-      })
-      .optional(),
+    // [Optional] Credential Status
+    credentialStatus: z.discriminatedUnion("type", [OscpResponderRevocation, RevocationStoreRevocation]).optional(),
 
     // [Optional] Render Method
     renderMethod: z.array(z.discriminatedUnion("type", [DecentralisedEmbeddedRenderer, SvgRenderer])).optional(),
