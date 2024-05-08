@@ -212,4 +212,54 @@ describe(`DocumentBuilder`, () => {
       expect(isSignedWrappedDocument(wrapped[1])).toBe(false);
     });
   });
+
+  test("given additional properties in constructor payload, should not be added into the document", async () => {
+    const document = new DocumentBuilder({ content: { name: "John Doe" }, name: "Diploma", anotherProperty: "value" })
+      .embeddedRenderer({
+        rendererUrl: "https://example.com",
+        templateName: "example",
+      })
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      });
+
+    const signed = await document.wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+    expect(signed).not.toHaveProperty("anotherProperty");
+  });
+
+  test("given attachment is added, should be added into the document", async () => {
+    const document = new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+      attachments: [
+        {
+          data: "data",
+          fileName: "file",
+          mimeType: "application/pdf",
+        },
+      ],
+    })
+      .embeddedRenderer({
+        rendererUrl: "https://example.com",
+        templateName: "example",
+      })
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      });
+
+    const signed = await document.wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+    expect(signed.attachments).toMatchInlineSnapshot(`
+      [
+        {
+          "data": "data",
+          "fileName": "file",
+          "mimeType": "application/pdf",
+        },
+      ]
+    `);
+  });
 });
