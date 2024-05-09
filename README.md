@@ -10,21 +10,21 @@ With OpenAttestation, you can issue and verify verifiable documents individually
 
 ## Note
 
-This document focuses on OpenAttestation v4.0 documents, if you are looking to issue v2.0 documents, please refer to the [previous readme](previous.md)
+This guide concentrates on OpenAttestation v4.0 documents. For issuing v2.0 documents, please refer to the [previous version of the documentation](previous.md)
 
 ## Requirements
 
 ### Node.js
 
-V12 or higher
+Version 12 or higher is required.
 
-#### Frontend frameworks/toolings
+#### Frontend Frameworks/Toolings
 
 ##### CRA (Create React App)
 
-Should work out of the box
+Compatible out of the box.
 
-##### vite
+##### Vite
 
 ```
 // vite.config.ts
@@ -38,17 +38,17 @@ export default defineConfig({
 
 ##### Next
 
-Client side usage
+- Client-side usage:
 
 ```
 npm i undici
 ```
 
-Server side only usage should work out of the box
+- Server-side usage should function out of the box.
 
 ## Installation
 
-### Package manager via npm
+### Via npm
 
 ```bash
 npm i @govtechsg/open-attestation
@@ -60,11 +60,9 @@ npm i @govtechsg/open-attestation
 
 ### Document creation
 
-#### 1. with `DocumentBuilder` (recommended)
+#### 1. Using `DocumentBuilder` (Recommended)
 
-`DocumentBuilder` is a class that simplifies the process of creating documents. Documents created via this class are less likely to have errors.
-
-While `DocumentBuilder` should cover most use cases, users who require more control and flexiblity over the document creation process can use the `wrapDocument` and `signDocument` functions as described in the next section.
+`DocumentBuilder` is a class designed to streamline the document creation process, reducing the likelihood of errors. While it should suffice for most use cases, those needing finer control may opt for the `wrapDocument` and `signDocument` functions, as described in the next section.
 
 ```typescript
 import { DocumentBuilder, DocumentBuilderErrors } from "@govtechsg/open-attestation/4.0/builder";
@@ -123,7 +121,7 @@ try {
 }
 ```
 
-Batch creation is also supported with the limitation that all documents in the batch will share the same issuer and renderering method:
+Batch creation is supported, though all documents in the batch must share the same issuer, revocation and rendering method:
 
 ```typescript
 const signedDocuments = await new DocumentBuilder([
@@ -145,7 +143,7 @@ const signedDocuments = await new DocumentBuilder([
 
 ### 2. with `wrapDocument`, `wrapDocuments` and `signDocument`
 
-These lower-level functions provide the most flexibility over the document creation process and should be used when `DocumentBuilder` does not meet your requirements.
+These lower-level functions offer maximum flexibility over the document creation process for scenarios where `DocumentBuilder` does not meet specific needs.
 
 ```typescript
 import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
@@ -204,11 +202,11 @@ try {
 
 ## Obfuscation
 
-Obfuscation is a process that allows you to hide sensitive information in a document without invalidating the document's signature. This is useful when you need to share a document with a third party but want to protect certain information.
+This process enables the concealment of sensitive information within a document without compromising the validity of its signature, useful when sharing with third parties.
 
-It is important to note that obfuscation can only be done on paths that are not required. For example, `issuer` and `proof` paths cannot be obfuscated as they are required for verification.
+It's crucial to understand that obfuscation can only be applied to non-essential data paths. Critical paths, such as issuer and proof, must remain unobscured as they are integral for the verification process.
 
-### OpenAttestation v4.0 documents only
+### Applicable only to OpenAttestation v4.0 documents
 
 ```typescript
 import { obfuscate } from "@govtechsg/open-attestation/4.0/obfuscate";
@@ -216,9 +214,9 @@ import { obfuscate } from "@govtechsg/open-attestation/4.0/obfuscate";
 const obfuscatedDocument = obfuscate(signedDocument, ["credentialSubject.name", "credentialSubject.licenses[0].class"]);
 ```
 
-## Verification of signature
+## Verification of Signature
 
-### OpenAttestation v4 documents only
+### Exclusive to OpenAttestation v4.0 documents
 
 ```typescript
 import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
@@ -226,7 +224,7 @@ import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
 const valid = verifySignature(signedDocument); // true or false
 ```
 
-### any version of OpenAttestation documents
+### Compatible with any version of OpenAttestation documents
 
 ```typescript
 import { verifySignature } from "@govtechsg/open-attestation";
@@ -236,7 +234,7 @@ const valid = verifySignature(signedDocument); // true or false
 
 ## Types
 
-Typescript types for OpenAttestation v4 documents are provided in the package. They can be imported as follows:
+TypeScript types for OpenAttestation v4 documents are included in the package and can be accessed as follows:
 
 ```typescript
 import type { WrappedDocument, SignedWrappedDocument } from "@govtechsg/open-attestation/4.0/types";
@@ -250,13 +248,13 @@ import { isDocument, isWrappedDocument, isSignedWrappedDocument } from "@govtech
 
 ### Guards
 
-1. `isDocument` - checks if the document is a valid OpenAttestation v4 document
-2. `isWrappedDocument` - checks if the document is a valid OpenAttestation v4 wrapped document
-3. `isSignedWrappedDocument` - checks if the document is a valid OpenAttestation v4 signed wrapped document
+1. `isDocument` - Checks if the document is a valid OpenAttestation v4 document
+2. `isWrappedDocument` - Checks if the document is a valid OpenAttestation v4 wrapped document
+3. `isSignedWrappedDocument` - Checks if the document is a valid OpenAttestation v4 signed wrapped document
 
-### Imports
+### Importing Methods
 
-The recommended method to import is via a granular fashion:
+For efficient code management, it's recommended to import methods in a granular manner, enabling better code optimization through tree shaking:
 
 ```typescript
 import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
@@ -266,9 +264,7 @@ import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
 import { isSignedWrappedDocument } from "@govtechsg/open-attestation/4.0/utils";
 ```
 
-This would enable bundlers to tree shake code that otherwise is not needed.
-
-We do however understand that not all projects would support [package exports](https://webpack.js.org/guides/package-exports/), we do provide a fallback method:
+Fallback methods for projects not supporting package exports:
 
 ```typescript
 import { v4 } from '@govtechsg/open-attestation'
@@ -281,7 +277,7 @@ await v4.wrapDocument(
 
 ## Development
 
-To run tests, use the following command:
+To execute tests:
 
 ```
 npm run test
