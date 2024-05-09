@@ -1,0 +1,4 @@
+{
+    "src/4.0/types.ts": ["npm run generate-v4-json-schemas", "git add src/4.0/jsonSchemas/__generated__"],
+    "*.{js,ts}": "eslint --fix"
+}
