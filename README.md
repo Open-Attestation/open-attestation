@@ -1,6 +1,6 @@
 # OpenAttestation
 
-OpenAttestation is an open-sourced framework to endorse and verify documents using the blockchain.
+OpenAttestation is an open source document endorsement and verification framework for verifiable documents and transferable records. Documents issued this way are cryptographically trustworthy and can be verified independently.
 
 With OpenAttestation, you can issue and verify verifiable documents individually or in a batch using:
 
@@ -60,7 +60,7 @@ npm i @govtechsg/open-attestation
 
 ### Document creation
 
-#### 1. Using `DocumentBuilder` (Recommended)
+#### Option 1. Using `DocumentBuilder` (Recommended)
 
 `DocumentBuilder` is a class designed to streamline the document creation process, reducing the likelihood of errors. While it should suffice for most use cases, those needing finer control may opt for the `wrapDocument` and `signDocument` functions, as described in the next section.
 
@@ -72,7 +72,7 @@ try {
     // name of the document
     name: "Republic of Singapore Driving Licence",
     // main content of the document
-    content: {
+    credentialSubject: {
       name: "John Doe",
       licenses: [
         {
@@ -127,13 +127,13 @@ Batch creation is supported, though all documents in the batch must share the sa
 const signedDocuments = await new DocumentBuilder([
   {
     name: "Republic of Singapore Driving Licence",
-    content: {
+    credentialSubject: {
       ...
     },
   },
   {
     name: "Republic of Singapore Driving Licence",
-    content: {
+    credentialSubject: {
       ...
     },
   },
@@ -141,7 +141,7 @@ const signedDocuments = await new DocumentBuilder([
 ...
 ```
 
-### 2. with `wrapDocument`, `wrapDocuments` and `signDocument`
+### Option 2. with `wrapDocument`, `wrapDocuments` and `signDocument`
 
 These lower-level functions offer maximum flexibility over the document creation process for scenarios where `DocumentBuilder` does not meet specific needs.
 
