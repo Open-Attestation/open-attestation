@@ -5,7 +5,6 @@ OpenAttestation is an open source document endorsement and verification framewor
 With OpenAttestation, you can issue and verify verifiable documents individually or in a batch using:
 
 - either smart contracts on the Ethereum blockchain
-
 - or digital signatures without the need to pay for Ethereum transactions
 
 ## Note
