@@ -15,7 +15,7 @@ import { ZodError, z } from "zod";
 
 const SingleDocumentProps = z.object({
   name: V4Document.shape.name.unwrap(),
-  content: z.record(z.unknown()),
+  credentialSubject: z.record(z.unknown()),
   attachments: V4Document.shape.attachments,
 });
 
@@ -75,15 +75,21 @@ class ShouldNotModifyAfterSettingError extends Error {
 type DocumentProps = {
   /**
    * Human readable name of the document.
+   *
+   * Maps to "name"
    */
   name: string;
   /**
    * Main content of the document.
+   *
+   * Maps to "credentialSubject"
    */
-  content: Record<string, unknown>;
+  credentialSubject: Record<string, unknown>;
   /**
    * Optional attachments that will be rendered out of the box with OpenAttestation's
    * Decentralised Renderer Components
+   *
+   * Maps to "attachments"
    */
   attachments?: V4Document["attachments"];
 };
@@ -131,7 +137,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     if (!issuer) throw new Error("Issuer is required");
     if (Array.isArray(data)) {
       const toWrap = data.map(
-        ({ name, content, attachments }) =>
+        ({ name, credentialSubject, attachments }) =>
           ({
             "@context": [
               "https://www.w3.org/ns/credentials/v2",
@@ -140,7 +146,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
             type: ["VerifiableCredential", "OpenAttestationCredential"],
             issuer,
             name,
-            credentialSubject: content,
+            credentialSubject,
             ...(renderMethod && { renderMethod }),
             ...(attachments && { attachments }),
             ...(credentialStatus && { credentialStatus }),
@@ -153,7 +159,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     // this should never happen
     if (!data) throw new Error("CredentialSubject is required");
 
-    const { name, content, attachments } = data;
+    const { name, credentialSubject, attachments } = data;
     return wrapDocument({
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
@@ -162,7 +168,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       type: ["VerifiableCredential", "OpenAttestationCredential"],
       issuer,
       name,
-      credentialSubject: content,
+      credentialSubject,
       ...(renderMethod && { renderMethod }),
       ...(attachments && { attachments }),
       ...(credentialStatus && { credentialStatus }),
@@ -208,18 +214,26 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
 
     /**
      * The document will be digitally signed, and identity proof will be provided via a DNS-TXT record.
+     *
+     * Sets "issuer.type" to "OpenAttestationIssuer" and "issuer.identityProof.identityProofType" to "DNS-TXT"
      */
     dnsTxtIssuance: (props: {
       /**
        * The unique identifier for the issuer, which must be formatted as a URI.
+       *
+       * Maps to "issuer.id"
        */
       issuerId: string;
       /**
        * The issuer's name in a human-readable format.
+       *
+       * Maps to "issuer.name"
        */
       issuerName: string;
       /**
        * The domain where the DNS TXT record, used for identity proof, is located.
+       *
+       * Maps to "issuer.identityProof.identifier"
        */
       identityProofDomain: string;
     }) => {
@@ -265,9 +279,15 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     },
     /**
      * The document(s) can be revoked using an OCSP responder, allowing for the verification of the revocation status through the specified URL.
+     *
+     * Sets "credentialStatus.type" to "OpenAttestationOcspResponder"
      */
     oscpRevocation: (props: {
-      /** URL of the OCSP responder. */
+      /**
+       * URL of the OCSP responder.
+       *
+       * Maps to "credentialStatus.id"
+       */
       oscpUrl: string;
     }) => {
       const parsedResults = OscpRevocationProps.safeParse(props);
@@ -284,9 +304,15 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     },
     /**
      * The document(s) can be revoked using a revocation store, implemented as a smart contract on the Ethereum blockchain.
+     *
+     * Sets "credentialStatus.type" to "OpenAttestationRevocationStore"
      */
     revocationStoreRevocation: (props: {
-      /** The Ethereum smart contract address to the revocation store. */
+      /**
+       * The Ethereum smart contract address to the revocation store.
+       *
+       * Maps to "credentialStatus.id"
+       */
       storeAddress: string;
     }) => {
       const parsedResults = RevocationStoreRevocationProps.safeParse(props);
@@ -307,11 +333,21 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   /**
    * Configures the document to be rendered using OpenAttestation's decentralized React components,
    * see (https://github.com/Open-Attestation/decentralized-renderer-react-components).
+   *
+   * Sets "renderMethod[0].type" to "OpenAttestationEmbeddedRenderer"
    */
   public embeddedRenderer = (props: {
-    /** The URL where the decentralized renderer is hosted. */
+    /**
+     * The URL where the decentralized renderer is hosted.
+     *
+     * Maps to "renderMethod[0].id"
+     */
     rendererUrl: string;
-    /** The identifier for the template used by the renderer to display the document correctly. */
+    /**
+     * The identifier for the template used by the renderer to display the document correctly.
+     *
+     * Maps to "renderMethod[0].templateName"
+     */
     templateName: string;
   }) => {
     const parsedResults = EmbeddedRendererProps.safeParse(props);
@@ -332,23 +368,36 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
 
   /**
    * Renders the document using an SVG handlebar template, either embedded directly or hosted remotely.
-   * The root object of the handlebar template corresponds to the content of the document,
-   * which is the "credentialSubject" in the final OpenAttestation document.
-   * For instance, if the document content includes { name: "John Doe" },
+   * The root object of the handlebar template corresponds to the credentialSubject of the document.
+   * For instance, if the document credentialSubject is { name: "John Doe" },
    * the handlebar template should reference the name as {{name}} to correctly map data fields.
+   *
+   * Sets "renderMethod[0].type" to "SvgRenderingTemplate2023"
    */
   public svgRenderer = (
     props:
       | {
           type: "REMOTE";
-          /** A URL that dereferences to an SVG handlebar template with an associated image/svg+xml media type. */
+          /**
+           * A URL that dereferences to an SVG handlebar template with an associated image/svg+xml media type.
+           *
+           * Maps to "renderMethod[0].id"
+           */
           svgUrl: string;
-          /**	An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12). */
+          /**
+           * An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12).
+           *
+           * Maps to "renderMethod[0].digestMultibase"
+           */
           digestMultibase?: string;
         }
       | {
           type: "EMBEDDED";
-          /** Directly provided SVG handlebar template content. */
+          /**
+           * Directly provided SVG handlebar template content.
+           *
+           * Maps to "renderMethod[0].id"
+           */
           svgTemplate: string;
         }
   ) => {
@@ -389,7 +438,7 @@ type SignedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends
       V4SignedWrappedDocument,
       {
         name: Props[number]["name"];
-        credentialSubject: Props[number]["content"];
+        credentialSubject: Props[number]["credentialSubject"];
       }
     >[]
   : Props extends DocumentProps
@@ -397,7 +446,7 @@ type SignedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends
       V4SignedWrappedDocument,
       {
         name: Props["name"];
-        credentialSubject: Props["content"];
+        credentialSubject: Props["credentialSubject"];
       }
     >
   : never;
@@ -407,7 +456,7 @@ type WrappedReturn<Props extends DocumentProps | DocumentProps[]> = Props extend
       V4WrappedDocument,
       {
         name: Props[number]["name"];
-        credentialSubject: Props[number]["content"];
+        credentialSubject: Props[number]["credentialSubject"];
       }
     >[]
   : Props extends DocumentProps
@@ -415,7 +464,7 @@ type WrappedReturn<Props extends DocumentProps | DocumentProps[]> = Props extend
       V4WrappedDocument,
       {
         name: Props["name"];
-        credentialSubject: Props["content"];
+        credentialSubject: Props["credentialSubject"];
       }
     >
   : never;
