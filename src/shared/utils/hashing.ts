@@ -1,5 +1,5 @@
 import { keccak256 } from "js-sha3";
-import { Buffer } from "buffer/index";
+import { Buffer } from "buffer/";
 
 export type Hash = string | Buffer;
 /**
