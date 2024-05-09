@@ -59,7 +59,7 @@ npm i @govtechsg/open-attestation
 
 ### Document creation
 
-### Option 1. with `wrapDocument`, `wrapDocuments` and `signDocument`
+#### Option 1. with `wrapDocument`, `wrapDocuments` and `signDocument`
 
 ```typescript
 import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
