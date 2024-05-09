@@ -307,7 +307,13 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     return this.REVOCATION_METHODS;
   };
 
-  /** Render via an SVG template, embedded or remote */
+  /**
+   * Render via an SVG handlebar template, embedded or remote
+   * the root object of the handlebar template should be the content of the document
+   * that is the "credentialSubject" of the final OpenAttestation document
+   * for example, if the content of the document is { name: "John Doe" }
+   * the handlebar template should refer to the name as {{name}}
+   */
   public svgRenderer = (
     props:
       | {
