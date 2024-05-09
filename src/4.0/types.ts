@@ -182,12 +182,12 @@ export const SvgRenderer = z.object({
 
 export const OscpResponderRevocation = z.object({
   // Must have id match url pattern (OCSP endpoint)
-  id: z.string().url(),
+  id: z.string().url().describe("URL of the OCSP responder endpoint"),
   type: z.literal("OpenAttestationOcspResponder"),
 });
 
 export const RevocationStoreRevocation = z.object({
-  id: EthereumAddress,
+  id: EthereumAddress.describe("Ethereum address of the revocation store contract"),
   type: z.literal("OpenAttestationRevocationStore"),
 });
 

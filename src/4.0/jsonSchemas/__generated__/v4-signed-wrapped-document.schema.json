@@ -165,7 +165,8 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uri"
+                  "format": "uri",
+                  "description": "URL of the OCSP responder endpoint"
                 },
                 "type": {
                   "type": "string",
@@ -183,7 +184,8 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "pattern": "^(0x)?[0-9a-fA-F]{40}$"
+                  "pattern": "^(0x)?[0-9a-fA-F]{40}$",
+                  "description": "Ethereum address of the revocation store contract"
                 },
                 "type": {
                   "type": "string",
