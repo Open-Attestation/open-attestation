@@ -59,9 +59,70 @@ npm i @govtechsg/open-attestation
 
 ### Document creation
 
-#### Option 1. Using `DocumentBuilder` (Recommended)
+### Option 1. with `wrapDocument`, `wrapDocuments` and `signDocument`
 
-`DocumentBuilder` is a class designed to streamline the document creation process, reducing the likelihood of errors. While it should suffice for most use cases, those needing finer control may opt for the `wrapDocument` and `signDocument` functions, as described in the next section.
+```typescript
+import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
+import { signDocument, signDocumentErrors } from "@govtechsg/open-attestation/4.0/sign";
+
+try {
+  const wrappedDocument = await wrapDocument({
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+    ],
+    type: ["VerifiableCredential", "OpenAttestationCredential"],
+    name: "Republic of Singapore Driving Licence",
+    issuer: {
+      id: "urn:uuid:344a5b29-30ce-4b8f-a7dc-c1f056c86f5a",
+      type: "OpenAttestationIssuer",
+      name: "Government Technology Agency of Singapore (GovTech)",
+      identityProof: {
+        identityProofType: "DNS-DID",
+        identifier: "example.openattestation.com",
+      },
+    },
+    credentialSubject: {
+      name: "John Doe",
+      licenses: [
+        {
+          class: "3",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+        {
+          class: "3A",
+          description: "Motor cars with unladen weight <= 3000kg",
+          effectiveDate: "2013-05-16T00:00:00+08:00",
+        },
+      ],
+    },
+    credentialStatus: {
+      type: "OpenAttestationRevocationStore",
+      id: "0x1234567890123456789012345678901234567890"
+    }
+  });
+
+  const signedDocument = await signDocument(wrappedDocument, "Secp256k1VerificationKey2018", {
+    private: "0x1234567890123456789012345678901234567890123456789012345678901234",
+    public: "0x12345678901234567890123456789012345678901234567890123456789012345678901234",
+  });
+} catch (error) {
+  if (error instanceof wrapDocumentErrors.UnableToInterpretContextError) {
+    // network errors can occur when fetching the context
+  } else if (error instanceof signDocumentErrors.CouldNotSignDocumentError) {
+    // network errors can occur when signing using a remote Signer
+  }
+
+  throw error;
+}
+```
+
+#### Option 2. Using `DocumentBuilder`
+
+`DocumentBuilder` is a class designed to streamline the document creation process, reducing the likelihood of errors. While it should suffice for most use cases, those needing finer control should use Option 1.
+
+The following example creates a document with the same content as the previous example:
 
 ```typescript
 import { DocumentBuilder, DocumentBuilderErrors } from "@govtechsg/open-attestation/4.0/builder";
@@ -95,17 +156,37 @@ try {
       },
     ],
   })
+    // Equivalent to setting "renderMethod" to:
+    // [
+    //   {
+    //     id: "https://demo-renderer.opencerts.io",
+    //     type: "OpenAttestationEmbeddedRenderer",
+    //     templateName: "GOVTECH_DEMO",
+    //   },
+    // ],
     .embeddedRenderer({
       templateName: "GOVTECH_DEMO",
       rendererUrl: "https://demo-renderer.opencerts.io",
     })
+    // Equivalent to setting "credentialStatus" to:
+    // {
+    //   type: "OpenAttestationRevocationStore",
+    //   id: "0x1234567890123456789012345678901234567890"
+    // },
     .revocationStoreRevocation({
       storeAddress: "0x1234567890123456789012345678901234567890",
     })
+    // Equivalent to setting "issuer" to:
+    // {
+    //   id: "urn:uuid:344a5b29-30ce-4b8f-a7dc-c1f056c86f5a",
+    //   type: "OpenAttestationIssuer",
+    //   name: "Government Technology Agency of Singapore (GovTech)",
+    //   identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
+    // },
     .dnsTxtIssuance({
       identityProofDomain: "example.openattestation.com",
       issuerName: "Government Technology Agency of Singapore (GovTech)",
-      issuerId: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+      issuerId: "urn:uuid:344a5b29-30ce-4b8f-a7dc-c1f056c86f5a",
     })
     .wrapAndSign({
       signer: {
@@ -138,65 +219,6 @@ const signedDocuments = await new DocumentBuilder([
   },
 ])
 ...
-```
-
-### Option 2. with `wrapDocument`, `wrapDocuments` and `signDocument`
-
-These lower-level functions offer maximum flexibility over the document creation process for scenarios where `DocumentBuilder` does not meet specific needs.
-
-```typescript
-import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
-import { signDocument, signDocumentErrors } from "@govtechsg/open-attestation/4.0/sign";
-
-try {
-  const wrappedDocument = await wrapDocument({
-    "@context": [
-      "https://www.w3.org/ns/credentials/v2",
-      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
-    ],
-    type: ["VerifiableCredential", "OpenAttestationCredential"],
-    validFrom: "2021-03-08T12:00:00+08:00",
-    name: "Republic of Singapore Driving Licence",
-    issuer: {
-      id: "urn:uuid:344a5b29-30ce-4b8f-a7dc-c1f056c86f5a",
-      type: "OpenAttestationIssuer",
-      name: "Government Technology Agency of Singapore (GovTech)",
-      identityProof: {
-        identityProofType: "DNS-DID",
-        identifier: "example.openattestation.com",
-      },
-    },
-    credentialSubject: {
-      id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
-      name: "John Doe",
-      licenses: [
-        {
-          class: "3",
-          description: "Motor cars with unladen weight <= 3000kg",
-          effectiveDate: "2013-05-16T00:00:00+08:00",
-        },
-        {
-          class: "3A",
-          description: "Motor cars with unladen weight <= 3000kg",
-          effectiveDate: "2013-05-16T00:00:00+08:00",
-        },
-      ],
-    },
-  });
-
-  const signedDocument = await signDocument(wrappedDocument, "Secp256k1VerificationKey2018", {
-    private: "0x1234567890123456789012345678901234567890123456789012345678901234",
-    public: "0x12345678901234567890123456789012345678901234567890123456789012345678901234",
-  });
-} catch (error) {
-  if (error instanceof wrapDocumentErrors.UnableToInterpretContextError) {
-    // network errors can occur when fetching the context
-  } else if (error instanceof signDocumentErrors.CouldNotSignDocumentError) {
-    // network errors can occur when signing using a remote Signer
-  }
-
-  throw error;
-}
 ```
 
 ## Obfuscation
