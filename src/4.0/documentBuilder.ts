@@ -52,6 +52,9 @@ const DnsTextIssuanceProps = z.object({
   identityProofDomain: V4Document.shape.issuer.shape.identityProof.shape.identifier,
 });
 
+/**
+ * Validation errors within properties.
+ */
 class PropsValidationError extends Error {
   constructor(public error: ZodError) {
     super(`Invalid props: \n ${JSON.stringify(error.format(), null, 2)}`);
@@ -59,6 +62,9 @@ class PropsValidationError extends Error {
   }
 }
 
+/**
+ * Error to indicate that modifications to set properties are not allowed.
+ */
 class ShouldNotModifyAfterSettingError extends Error {
   constructor() {
     super("Modifying what was already set can lead to unexpected behaviour, please consider creating a new instance");
@@ -67,11 +73,18 @@ class ShouldNotModifyAfterSettingError extends Error {
 }
 
 type DocumentProps = {
-  /** Human readable name of the document */
+  /**
+   * Human readable name of the document.
+   */
   name: string;
-  /** Main content of the document */
+  /**
+   * Main content of the document.
+   */
   content: Record<string, unknown>;
-  /** Attachments that will be rendered out of the box with decentralised renderer components */
+  /**
+   * Optional attachments that will be rendered out of the box with OpenAttestation's
+   * Decentralised Renderer Components
+   */
   attachments?: V4Document["attachments"];
 };
 
@@ -83,9 +96,9 @@ type State = {
 };
 
 /**
- * A builder to simplify the creation of OAv4 document(s)
- * This builder assumes that All documents share the same issuer, renderMethod and credentialStatus
- * If this builder cannot satisfy your use case, please use the underlying wrap and sign functions directly
+ * A builder class to facilitate the creation of OpenAttestation v4 documents.
+ * Assumes a shared issuer, render method, and credential status across all documents in batch mode.
+ * For use cases requiring direct control, consider using the lower-level wrap and sign functions.
  */
 export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   private getState: () => State;
@@ -94,8 +107,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     const parsedResults = DocumentProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
 
-    // state is defined here as opposed to the instance so that any modification
-    // has to go through the setState function
+    // define state here rather than in the instance to enforce immutability via setState.
     const state: State = {
       documentMainProps: parsedResults.data,
       renderMethod: undefined,
@@ -103,7 +115,6 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       credentialStatus: undefined,
     };
 
-    // for immutability
     const hasBeenSet = new Set<keyof State>();
     this.getState = () => state;
     this.setState = (key, value) => {
@@ -195,12 +206,21 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     //   };
     // },
 
+    /**
+     * The document will be digitally signed, and identity proof will be provided via a DNS-TXT record.
+     */
     dnsTxtIssuance: (props: {
-      /** A unique ID of the issuer that MUST BE a URI */
+      /**
+       * The unique identifier for the issuer, which must be formatted as a URI.
+       */
       issuerId: string;
-      /** Human readable name of the issuer */
+      /**
+       * The issuer's name in a human-readable format.
+       */
       issuerName: string;
-      /** Domain where DNS TXT record proof is located */
+      /**
+       * The domain where the DNS TXT record, used for identity proof, is located.
+       */
       identityProofDomain: string;
     }) => {
       const parsedResults = DnsTextIssuanceProps.safeParse(props);
@@ -220,13 +240,13 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
 
       return {
         /**
-         * wrap and signs the entire batch AT ONE GO, there is no internal batching
-         * logic so please use with caution, especially for large batches
+         * Wraps and signs the entire batch in a single operation. This method does not use internal batching logic,
+         * which could lead to too many concurrent remote calls when signing large batches. Use this function with caution in such scenarios.
          */
         wrapAndSign: this.sign,
         /**
-         * there are instances where you want to take control of the signing process
-         * for example you might want to sign in smaller batches
+         * Provides an option to wrap documents without signing them, allowing for more control over the signing process.
+         * This is particularly useful when you need to sign documents in smaller batches or at different stages.
          */
         justWrapWithoutSigning: this.wrap,
       };
@@ -236,7 +256,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   // add revocation methods here
   private REVOCATION_METHODS = {
     /**
-     * The document(s) can never be revoked
+     * The document(s) will be issued without the capability for revocation; they remain valid indefinitely.
      */
     noRevocation: () => {
       this.setState("credentialStatus", undefined);
@@ -244,10 +264,10 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       return this.ISSUANCE_METHODS;
     },
     /**
-     * The document(s) can be revoked using an OCSP responder
+     * The document(s) can be revoked using an OCSP responder, allowing for the verification of the revocation status through the specified URL.
      */
     oscpRevocation: (props: {
-      /** URL of the OCSP responder */
+      /** URL of the OCSP responder. */
       oscpUrl: string;
     }) => {
       const parsedResults = OscpRevocationProps.safeParse(props);
@@ -263,10 +283,10 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       return this.ISSUANCE_METHODS;
     },
     /**
-     * The document(s) can be revoked using via a revocation store (smart contract)
+     * The document(s) can be revoked using a revocation store, implemented as a smart contract on the Ethereum blockchain.
      */
     revocationStoreRevocation: (props: {
-      /** Smart contract address of the revocation store */
+      /** The Ethereum smart contract address to the revocation store. */
       storeAddress: string;
     }) => {
       const parsedResults = RevocationStoreRevocationProps.safeParse(props);
@@ -284,11 +304,14 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     },
   } satisfies Record<`${string}Revocation`, (...args: any[]) => typeof this.ISSUANCE_METHODS>;
 
-  /** Render via OpenAttestation Decentralised React Components*/
+  /**
+   * Configures the document to be rendered using OpenAttestation's decentralized React components,
+   * see (https://github.com/Open-Attestation/decentralized-renderer-react-components).
+   */
   public embeddedRenderer = (props: {
-    /** URL where the renderer is hosted  */
+    /** The URL where the decentralized renderer is hosted. */
     rendererUrl: string;
-    /** Template identifier to "select" the correct template on the renderer */
+    /** The identifier for the template used by the renderer to display the document correctly. */
     templateName: string;
   }) => {
     const parsedResults = EmbeddedRendererProps.safeParse(props);
@@ -308,11 +331,11 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   };
 
   /**
-   * Render via an SVG handlebar template, embedded or remote
-   * the root object of the handlebar template should be the content of the document
-   * that is the "credentialSubject" of the final OpenAttestation document
-   * for example, if the content of the document is { name: "John Doe" }
-   * the handlebar template should refer to the name as {{name}}
+   * Renders the document using an SVG handlebar template, either embedded directly or hosted remotely.
+   * The root object of the handlebar template corresponds to the content of the document,
+   * which is the "credentialSubject" in the final OpenAttestation document.
+   * For instance, if the document content includes { name: "John Doe" },
+   * the handlebar template should reference the name as {{name}} to correctly map data fields.
    */
   public svgRenderer = (
     props:
@@ -325,7 +348,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
         }
       | {
           type: "EMBEDDED";
-          /** SVG handlebar template */
+          /** Directly provided SVG handlebar template content. */
           svgTemplate: string;
         }
   ) => {
@@ -352,7 +375,9 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     return this.REVOCATION_METHODS;
   };
 
-  /** This document will not be rendered */
+  /**
+   * Disables rendering for the document.
+   */
   public noRenderer = () => {
     this.setState("renderMethod", undefined);
     return this.REVOCATION_METHODS;
