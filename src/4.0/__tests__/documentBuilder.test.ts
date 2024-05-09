@@ -252,6 +252,64 @@ describe(`DocumentBuilder`, () => {
     expect(signed).not.toHaveProperty("anotherProperty");
   });
 
+  test("given svg rendering method, should be added into the document", async () => {
+    const signed = await new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+      attachments: [
+        {
+          data: "data",
+          fileName: "file",
+          mimeType: "application/pdf",
+        },
+      ],
+    })
+      .svgRenderer({
+        type: "EMBEDDED",
+        svgTemplate: "<svg>{{ name }}</svg>",
+      })
+      .noRevocation()
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+
+    expect(signed.renderMethod).toMatchInlineSnapshot(`
+      [
+        {
+          "id": "<svg>{{ name }}</svg>",
+          "type": "SvgRenderingTemplate2023",
+        },
+      ]
+    `);
+  });
+
+  test("given no rendering method, should reflect in the output document", async () => {
+    const signed = await new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+      attachments: [
+        {
+          data: "data",
+          fileName: "file",
+          mimeType: "application/pdf",
+        },
+      ],
+    })
+      .noRenderer()
+      .noRevocation()
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+
+    expect(signed.renderMethod).toMatchInlineSnapshot(`undefined`);
+  });
+
   test("given attachment is added, should be added into the document", async () => {
     const signed = await new DocumentBuilder({
       content: { name: "John Doe" },

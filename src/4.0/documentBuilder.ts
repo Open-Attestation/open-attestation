@@ -34,9 +34,17 @@ const EmbeddedRendererProps = z.object({
   templateName: DecentralisedEmbeddedRenderer.shape.templateName,
 });
 
-const SvgRendererProps = z.object({
-  urlOrEmbeddedSvg: SvgRenderer.shape.id,
-});
+const SvgRendererProps = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("REMOTE"),
+    svgUrl: z.string().url(),
+    digestMultibase: SvgRenderer.shape.digestMultibase.optional(),
+  }),
+  z.object({
+    type: z.literal("EMBEDDED"),
+    svgTemplate: z.string(),
+  }),
+]);
 
 const DnsTextIssuanceProps = z.object({
   issuerId: V4Document.shape.issuer.shape.id,
@@ -144,7 +152,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       issuer,
       name,
       credentialSubject: content,
-      renderMethod,
+      ...(renderMethod && { renderMethod }),
       ...(attachments && { attachments }),
       ...(credentialStatus && { credentialStatus }),
     }) as unknown as WrappedReturn<Props>;
@@ -276,6 +284,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     },
   } satisfies Record<`${string}Revocation`, (...args: any[]) => typeof this.ISSUANCE_METHODS>;
 
+  /** Render via OpenAttestation Decentralised React Components*/
   public embeddedRenderer = (props: {
     /** URL where the renderer is hosted  */
     rendererUrl: string;
@@ -298,19 +307,48 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     return this.REVOCATION_METHODS;
   };
 
-  public svgRenderer = (props: { urlOrEmbeddedSvg: string }) => {
+  /** Render via an SVG template, embedded or remote */
+  public svgRenderer = (
+    props:
+      | {
+          type: "REMOTE";
+          /** A URL that dereferences to an SVG handlebar template with an associated image/svg+xml media type. */
+          svgUrl: string;
+          /**	An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12). */
+          digestMultibase?: string;
+        }
+      | {
+          type: "EMBEDDED";
+          /** SVG handlebar template */
+          svgTemplate: string;
+        }
+  ) => {
     const parsedResults = SvgRendererProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
-    const { urlOrEmbeddedSvg } = parsedResults.data;
 
-    const renderMethod = [
-      {
-        id: urlOrEmbeddedSvg,
-        type: "SvgRenderingTemplate2023",
-      },
-    ] satisfies V4Document["renderMethod"];
+    const renderMethod =
+      parsedResults.data.type === "EMBEDDED"
+        ? [
+            {
+              id: parsedResults.data.svgTemplate,
+              type: "SvgRenderingTemplate2023" as const,
+            },
+          ]
+        : ([
+            {
+              id: parsedResults.data.svgUrl,
+              type: "SvgRenderingTemplate2023" as const,
+              digestMultibase: parsedResults.data.digestMultibase,
+            },
+          ] satisfies V4Document["renderMethod"]);
     this.setState("renderMethod", renderMethod);
 
+    return this.REVOCATION_METHODS;
+  };
+
+  /** This document will not be rendered */
+  public noRenderer = () => {
+    this.setState("renderMethod", undefined);
     return this.REVOCATION_METHODS;
   };
 }
