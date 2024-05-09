@@ -35,7 +35,7 @@ export default defineConfig({
 })
 ```
 
-##### Next
+##### Next.js
 
 - Client-side usage:
 
