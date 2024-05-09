@@ -99,8 +99,8 @@ try {
     },
     credentialStatus: {
       type: "OpenAttestationRevocationStore",
-      id: "0x1234567890123456789012345678901234567890"
-    }
+      id: "0x1234567890123456789012345678901234567890",
+    },
   });
 
   const signedDocument = await signDocument(wrappedDocument, "Secp256k1VerificationKey2018", {
@@ -264,7 +264,32 @@ import type { WrappedDocument, SignedWrappedDocument } from "@govtechsg/open-att
 ## Utils
 
 ```typescript
-import { isDocument, isWrappedDocument, isSignedWrappedDocument } from "@govtechsg/open-attestation/4.0/utils";
+import {
+  isDocument,
+  isWrappedDocument,
+  isSignedWrappedDocument,
+  computeDigestMultibase,
+} from "@govtechsg/open-attestation/4.0/utils";
+```
+
+### `computeDigestMultibase`
+
+Function to compute a SHA-256 digest of the provided data and encodes it in Base58 with a 'z' prefix. This is particular useful when computing for the `digestMultibase` of a remote svg template. See [Verifiable Credential Rendering Methods](https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023).
+
+```typescript
+const svgTemplateResponse = await fetch("https://example.com/svg-template.svg");
+const digestMultibase = await computeDigestMultibase(await svgTemplateResponse.arrayBuffer());
+const wrappedDocument = await wrapDocument(
+  {
+    ...
+    {
+      id: "https://example.com/svg-template.svg",
+      type: "SvgRenderingTemplate2023",
+      digestMultibase: digestMultibase,
+    }
+    ...
+  })
+
 ```
 
 ### Guards
