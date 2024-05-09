@@ -130,7 +130,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
             issuer,
             name,
             credentialSubject: content,
-            renderMethod,
+            ...(renderMethod && { renderMethod }),
             ...(attachments && { attachments }),
             ...(credentialStatus && { credentialStatus }),
           } satisfies V4Document)
