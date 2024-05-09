@@ -1,7 +1,7 @@
 import { Salt } from "./types";
-import { randomBytes } from "crypto";
 import { Base64 } from "js-base64";
 import { traverseAndFlatten } from "./traverseAndFlatten";
+import randomBytes from "randombytes";
 
 const ENTROPY_IN_BYTES = 32;
 
