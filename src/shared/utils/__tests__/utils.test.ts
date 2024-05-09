@@ -13,6 +13,7 @@ import v3WrappedDidDocument from "../../../../test/fixtures/v3/did-wrapped.json"
 import v2WrappedDidDocumentOscpResponder from "../../../../test/fixtures/v2/did-signed-ocsp-responder.json";
 import v2WrappedTransferableDocument from "../../../../test/fixtures/v2/wrapped-transferable-document.json";
 import v3WrappedTransferableDocument from "../../../../test/fixtures/v3/wrapped-transferable-document.json";
+import { Buffer } from "buffer/";
 
 describe("Util Functions", () => {
   describe("hashArray", () => {
