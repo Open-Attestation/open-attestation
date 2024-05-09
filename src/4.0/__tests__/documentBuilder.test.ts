@@ -10,6 +10,9 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .oscpRevocation({
+        oscpUrl: "https://oscp.example.com",
+      })
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -43,6 +46,12 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(signed.credentialStatus).toMatchInlineSnapshot(`
+        {
+          "id": "https://oscp.example.com",
+          "type": "OpenAttestationOcspResponder",
+        }
+      `);
       expect(isSignedWrappedDocument(signed)).toBe(true);
       expect(verify(signed)).toBe(true);
     });
@@ -74,6 +83,12 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(wrapped.credentialStatus).toMatchInlineSnapshot(`
+        {
+          "id": "https://oscp.example.com",
+          "type": "OpenAttestationOcspResponder",
+        }
+      `);
       expect(isWrappedDocument(wrapped)).toBe(true);
       expect(isSignedWrappedDocument(wrapped)).toBe(false);
     });
@@ -88,6 +103,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -121,6 +137,7 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(signed[0].credentialStatus).toBeUndefined();
       expect(isSignedWrappedDocument(signed[0])).toBe(true);
       expect(verify(signed[0])).toBe(true);
 
@@ -149,6 +166,7 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
+      expect(signed[1].credentialStatus).toBeUndefined();
       expect(isSignedWrappedDocument(signed[1])).toBe(true);
       expect(verify(signed[1])).toBe(true);
     });
@@ -223,6 +241,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -249,6 +268,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -267,6 +287,40 @@ describe(`DocumentBuilder`, () => {
     `);
   });
 
+  test("given revocation store revocation is added, should be added into credential status of the document", async () => {
+    const signed = await new DocumentBuilder({
+      content: { name: "John Doe" },
+      name: "Diploma",
+      attachments: [
+        {
+          data: "data",
+          fileName: "file",
+          mimeType: "application/pdf",
+        },
+      ],
+    })
+      .embeddedRenderer({
+        rendererUrl: "https://example.com",
+        templateName: "example",
+      })
+      .revocationStoreRevocation({
+        storeAddress: "0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+      })
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+
+    expect(signed.credentialStatus).toMatchInlineSnapshot(`
+      {
+        "id": "0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+        "type": "OpenAttestationRevocationStore",
+      }
+    `);
+  });
+
   test("given wrap only is called, should be able to sign the wrapped document with the standalone sign fn", async () => {
     const wrapped = await new DocumentBuilder({
       content: { name: "John Doe" },
@@ -276,6 +330,7 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://example.com",
         templateName: "example",
       })
+      .noRevocation()
       .dnsTxtIssuance({
         identityProofDomain: "example.com",
         issuerId: "did:example:123",
@@ -284,6 +339,7 @@ describe(`DocumentBuilder`, () => {
       .justWrapWithoutSigning();
 
     const signed = await signDocument(wrapped, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
+
     expect(isSignedWrappedDocument(signed)).toBe(true);
     expect(verify(signed)).toBe(true);
   });
@@ -306,14 +362,19 @@ describe(`DocumentBuilder`, () => {
       })
     ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
 
-    documentWithRenderMethod.dnsTxtIssuance({
+    const documentWithNoRevocation = documentWithRenderMethod.noRevocation();
+    expect(() => documentWithRenderMethod.oscpRevocation({ oscpUrl: "https://oscp.example.com" })).toThrowError(
+      DocumentBuilderErrors.ShouldNotModifyAfterSettingError
+    );
+
+    documentWithNoRevocation.dnsTxtIssuance({
       identityProofDomain: "example.com",
       issuerId: "did:example:123",
       issuerName: "Example University",
     });
 
     expect(() =>
-      documentWithRenderMethod.dnsTxtIssuance({
+      documentWithNoRevocation.dnsTxtIssuance({
         identityProofDomain: "another.com",
         issuerId: "did:example:123",
         issuerName: "Example University",
@@ -348,10 +409,12 @@ describe(`DocumentBuilder`, () => {
       const builder = new DocumentBuilder({
         content: { name: "John Doe" },
         name: "Diploma",
-      }).embeddedRenderer({
-        rendererUrl: "https://example.com",
-        templateName: "example",
-      });
+      })
+        .embeddedRenderer({
+          rendererUrl: "https://example.com",
+          templateName: "example",
+        })
+        .noRevocation();
       let error;
       expect(() => {
         try {
@@ -365,16 +428,49 @@ describe(`DocumentBuilder`, () => {
           throw e;
         }
       }).toThrowErrorMatchingInlineSnapshot(`
-      "Invalid props: 
-       {
-        "_errors": [],
-        "issuerId": {
-          "_errors": [
-            "Invalid URI"
-          ]
+              "Invalid props: 
+               {
+                "_errors": [],
+                "issuerId": {
+                  "_errors": [
+                    "Invalid URI"
+                  ]
+                }
+              }"
+          `);
+      expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
+    });
+
+    test("given an invalid ethereum address for revocation store, should throw", () => {
+      const builder = new DocumentBuilder({
+        content: { name: "John Doe" },
+        name: "Diploma",
+      }).embeddedRenderer({
+        rendererUrl: "https://example.com",
+        templateName: "example",
+      });
+
+      let error;
+      expect(() => {
+        try {
+          builder.revocationStoreRevocation({
+            storeAddress: "0x123",
+          });
+        } catch (e) {
+          error = e;
+          throw e;
         }
-      }"
-    `);
+      }).toThrowErrorMatchingInlineSnapshot(`
+        "Invalid props: 
+         {
+          "_errors": [],
+          "storeAddress": {
+            "_errors": [
+              "Invalid Ethereum address"
+            ]
+          }
+        }"
+      `);
       expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
     });
   });
