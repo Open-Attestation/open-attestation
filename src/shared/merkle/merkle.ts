@@ -1,4 +1,5 @@
 import { Hash, hashArray, toBuffer, hashToBuffer, combineHashBuffers } from "../utils/hashing";
+import { Buffer } from "buffer/";
 
 function getNextLayer(elements: Buffer[]) {
   return elements.reduce((layer: Buffer[], element, index, arr) => {

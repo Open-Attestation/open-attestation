@@ -59,7 +59,7 @@ export const wrapDocuments = <T extends OpenAttestationDocument = OpenAttestatio
   return documents.map((document) => {
     const merkleProof = merkleTree
       .getProof(hashToBuffer(document.signature.targetHash))
-      .map((buffer: Buffer) => buffer.toString("hex"));
+      .map((buffer) => buffer.toString("hex"));
     return {
       ...document,
       signature: {
