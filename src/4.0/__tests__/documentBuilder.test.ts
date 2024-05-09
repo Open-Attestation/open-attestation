@@ -5,7 +5,7 @@ import { SAMPLE_SIGNING_KEYS } from "../fixtures";
 
 describe(`DocumentBuilder`, () => {
   describe("given a single document", () => {
-    const document = new DocumentBuilder({ content: { name: "John Doe" }, name: "Diploma" })
+    const document = new DocumentBuilder({ credentialSubject: { name: "John Doe" }, name: "Diploma" })
       .embeddedRenderer({
         rendererUrl: "https://example.com",
         templateName: "example",
@@ -96,8 +96,8 @@ describe(`DocumentBuilder`, () => {
 
   describe("given a multiple documents", () => {
     const document = new DocumentBuilder([
-      { content: { name: "John Doe" }, name: "Diploma" },
-      { content: { name: "Jane Foster" }, name: "Degree" },
+      { credentialSubject: { name: "John Doe" }, name: "Diploma" },
+      { credentialSubject: { name: "Jane Foster" }, name: "Degree" },
     ])
       .embeddedRenderer({
         rendererUrl: "https://example.com",
@@ -233,7 +233,7 @@ describe(`DocumentBuilder`, () => {
 
   test("given additional properties in constructor payload, should not be added into the document", async () => {
     const signed = await new DocumentBuilder({
-      content: { name: "John Doe" },
+      credentialSubject: { name: "John Doe" },
       name: "Diploma",
       anotherProperty: "value",
     })
@@ -252,9 +252,67 @@ describe(`DocumentBuilder`, () => {
     expect(signed).not.toHaveProperty("anotherProperty");
   });
 
+  test("given svg rendering method, should be added into the document", async () => {
+    const signed = await new DocumentBuilder({
+      credentialSubject: { name: "John Doe" },
+      name: "Diploma",
+      attachments: [
+        {
+          data: "data",
+          fileName: "file",
+          mimeType: "application/pdf",
+        },
+      ],
+    })
+      .svgRenderer({
+        type: "EMBEDDED",
+        svgTemplate: "<svg>{{ name }}</svg>",
+      })
+      .noRevocation()
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+
+    expect(signed.renderMethod).toMatchInlineSnapshot(`
+      [
+        {
+          "id": "<svg>{{ name }}</svg>",
+          "type": "SvgRenderingTemplate2023",
+        },
+      ]
+    `);
+  });
+
+  test("given no rendering method, should reflect in the output document", async () => {
+    const signed = await new DocumentBuilder({
+      credentialSubject: { name: "John Doe" },
+      name: "Diploma",
+      attachments: [
+        {
+          data: "data",
+          fileName: "file",
+          mimeType: "application/pdf",
+        },
+      ],
+    })
+      .noRenderer()
+      .noRevocation()
+      .dnsTxtIssuance({
+        identityProofDomain: "example.com",
+        issuerId: "did:example:123",
+        issuerName: "Example University",
+      })
+      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+
+    expect(signed.renderMethod).toMatchInlineSnapshot(`undefined`);
+  });
+
   test("given attachment is added, should be added into the document", async () => {
     const signed = await new DocumentBuilder({
-      content: { name: "John Doe" },
+      credentialSubject: { name: "John Doe" },
       name: "Diploma",
       attachments: [
         {
@@ -289,7 +347,7 @@ describe(`DocumentBuilder`, () => {
 
   test("given revocation store revocation is added, should be added into credential status of the document", async () => {
     const signed = await new DocumentBuilder({
-      content: { name: "John Doe" },
+      credentialSubject: { name: "John Doe" },
       name: "Diploma",
       attachments: [
         {
@@ -323,7 +381,7 @@ describe(`DocumentBuilder`, () => {
 
   test("given wrap only is called, should be able to sign the wrapped document with the standalone sign fn", async () => {
     const wrapped = await new DocumentBuilder({
-      content: { name: "John Doe" },
+      credentialSubject: { name: "John Doe" },
       name: "Diploma",
     })
       .embeddedRenderer({
@@ -346,7 +404,7 @@ describe(`DocumentBuilder`, () => {
 
   test("given re-setting of values, should throw", async () => {
     const builder = await new DocumentBuilder({
-      content: { name: "John Doe" },
+      credentialSubject: { name: "John Doe" },
       name: "Diploma",
     });
 
@@ -388,7 +446,7 @@ describe(`DocumentBuilder`, () => {
       expect(() => {
         try {
           new DocumentBuilder({
-            content: { name: "John Doe" },
+            credentialSubject: { name: "John Doe" },
             name: "Diploma",
             attachments: [
               {
@@ -407,7 +465,7 @@ describe(`DocumentBuilder`, () => {
 
     test("given an invalid identity identifier, should throw", () => {
       const builder = new DocumentBuilder({
-        content: { name: "John Doe" },
+        credentialSubject: { name: "John Doe" },
         name: "Diploma",
       })
         .embeddedRenderer({
@@ -443,7 +501,7 @@ describe(`DocumentBuilder`, () => {
 
     test("given an invalid ethereum address for revocation store, should throw", () => {
       const builder = new DocumentBuilder({
-        content: { name: "John Doe" },
+        credentialSubject: { name: "John Doe" },
         name: "Diploma",
       }).embeddedRenderer({
         rendererUrl: "https://example.com",
