@@ -43,7 +43,7 @@
     "generate-v4-fixtures": "npx ts-node scripts/generateV4JsonFixtures.ts",
     "generate-v4-json-schemas": "npx ts-node scripts/generateV4JsonSchemas.ts",
     "publish:schema": "./scripts/publishSchema.sh",
-    "postinstall": "node scripts/postInstall; npm run generate-v4-fixtures",
+    "postinstall": "node scripts/postInstall;",
     "prebuild": "node scripts/preBuild",
     "prepare": "husky install"
   },
