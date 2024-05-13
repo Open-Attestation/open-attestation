@@ -15,8 +15,7 @@ import { ZodError, z } from "zod";
 
 const SingleDocumentProps = z.object({
   name: V4Document.shape.name.unwrap(),
-  credentialSubject: z.record(z.unknown()),
-  attachments: V4Document.shape.attachments,
+  credentialSubject: V4Document.shape.credentialSubject,
 });
 
 const DocumentProps = z.union([SingleDocumentProps, z.array(SingleDocumentProps)]);
@@ -84,14 +83,7 @@ type DocumentProps = {
    *
    * Maps to "credentialSubject"
    */
-  credentialSubject: Record<string, unknown>;
-  /**
-   * Optional attachments that will be rendered out of the box with OpenAttestation's
-   * Decentralised Renderer Components
-   *
-   * Maps to "attachments"
-   */
-  attachments?: V4Document["attachments"];
+  credentialSubject: z.infer<typeof V4Document.shape.credentialSubject>;
 };
 
 type State = {
@@ -137,7 +129,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     if (!issuer) throw new Error("Issuer is required");
     if (Array.isArray(data)) {
       const toWrap = data.map(
-        ({ name, credentialSubject, attachments }) =>
+        ({ name, credentialSubject }) =>
           ({
             "@context": [
               "https://www.w3.org/ns/credentials/v2",
@@ -148,7 +140,6 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
             name,
             credentialSubject,
             ...(renderMethod && { renderMethod }),
-            ...(attachments && { attachments }),
             ...(credentialStatus && { credentialStatus }),
           } satisfies V4Document)
       );
@@ -159,7 +150,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     // this should never happen
     if (!data) throw new Error("CredentialSubject is required");
 
-    const { name, credentialSubject, attachments } = data;
+    const { name, credentialSubject } = data;
     return wrapDocument({
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
@@ -170,7 +161,6 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       name,
       credentialSubject,
       ...(renderMethod && { renderMethod }),
-      ...(attachments && { attachments }),
       ...(credentialStatus && { credentialStatus }),
     }) as unknown as WrappedReturn<Props>;
   };

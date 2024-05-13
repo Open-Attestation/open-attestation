@@ -144,19 +144,38 @@
           "format": "date-time"
         },
         "credentialSubject": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": {}
-            },
-            {
+          "type": "object",
+          "properties": {
+            "attachments": {
               "type": "array",
               "items": {
                 "type": "object",
-                "additionalProperties": {}
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "Base64 encoding of this attachment"
+                  },
+                  "filename": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Name of this attachment, with appropriate extensions"
+                  },
+                  "mimeType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Media type (or MIME type) of this attachment"
+                  }
+                },
+                "required": [
+                  "data",
+                  "filename",
+                  "mimeType"
+                ],
+                "additionalProperties": false
               }
             }
-          ]
+          },
+          "additionalProperties": true
         },
         "credentialStatus": {
           "anyOf": [
@@ -366,34 +385,6 @@
                 "additionalProperties": false
               }
             ]
-          }
-        },
-        "attachments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "data": {
-                "type": "string",
-                "description": "Base64 encoding of this attachment"
-              },
-              "fileName": {
-                "type": "string",
-                "minLength": 1,
-                "description": "Name of this attachment, with appropriate extensions"
-              },
-              "mimeType": {
-                "type": "string",
-                "minLength": 1,
-                "description": "Media type (or MIME type) of this attachment"
-              }
-            },
-            "required": [
-              "data",
-              "fileName",
-              "mimeType"
-            ],
-            "additionalProperties": false
           }
         }
       },

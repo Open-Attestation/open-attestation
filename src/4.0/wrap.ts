@@ -61,7 +61,7 @@ export const wrapDocument = async <T extends V4Document>(
 
   const documentReadyForWrapping = {
     ...validatedRawDocument,
-    ...extractAndAssertAsV4DocumentProps(validatedRawDocument, ["issuer", "credentialStatus"]),
+    ...extractAndAssertAsV4DocumentProps(validatedRawDocument, ["issuer", "credentialStatus", "credentialSubject"]),
     "@context": finalContexts,
     type: finalTypes,
   } satisfies W3cVerifiableCredential;

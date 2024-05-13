@@ -6,13 +6,16 @@ import { wrapDocument } from "../wrap";
 
 const RAW_DOCUMENT = {
   ...RAW_DOCUMENT_DID,
-  attachments: [
-    {
-      mimeType: "image/png",
-      fileName: "aaa",
-      data: "abcd",
-    },
-  ],
+  credentialSubject: {
+    ...RAW_DOCUMENT_DID.credentialSubject,
+    attachments: [
+      {
+        mimeType: "image/png",
+        filename: "aaa",
+        data: "abcd",
+      },
+    ],
+  },
 } satisfies V4Document;
 
 describe("V4.0 guard", () => {

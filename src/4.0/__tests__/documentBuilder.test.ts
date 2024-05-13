@@ -254,15 +254,17 @@ describe(`DocumentBuilder`, () => {
 
   test("given svg rendering method, should be added into the document", async () => {
     const signed = await new DocumentBuilder({
-      credentialSubject: { name: "John Doe" },
+      credentialSubject: {
+        name: "John Doe",
+        attachments: [
+          {
+            data: "data",
+            filename: "file",
+            mimeType: "application/pdf",
+          },
+        ],
+      },
       name: "Diploma",
-      attachments: [
-        {
-          data: "data",
-          fileName: "file",
-          mimeType: "application/pdf",
-        },
-      ],
     })
       .svgRenderer({
         type: "EMBEDDED",
@@ -288,15 +290,17 @@ describe(`DocumentBuilder`, () => {
 
   test("given no rendering method, should reflect in the output document", async () => {
     const signed = await new DocumentBuilder({
-      credentialSubject: { name: "John Doe" },
+      credentialSubject: {
+        name: "John Doe",
+        attachments: [
+          {
+            data: "data",
+            filename: "file",
+            mimeType: "application/pdf",
+          },
+        ],
+      },
       name: "Diploma",
-      attachments: [
-        {
-          data: "data",
-          fileName: "file",
-          mimeType: "application/pdf",
-        },
-      ],
     })
       .noRenderer()
       .noRevocation()
@@ -312,15 +316,17 @@ describe(`DocumentBuilder`, () => {
 
   test("given attachment is added, should be added into the document", async () => {
     const signed = await new DocumentBuilder({
-      credentialSubject: { name: "John Doe" },
+      credentialSubject: {
+        name: "John Doe",
+        attachments: [
+          {
+            data: "data",
+            filename: "file",
+            mimeType: "application/pdf",
+          },
+        ],
+      },
       name: "Diploma",
-      attachments: [
-        {
-          data: "data",
-          fileName: "file",
-          mimeType: "application/pdf",
-        },
-      ],
     })
       .embeddedRenderer({
         rendererUrl: "https://example.com",
@@ -334,11 +340,11 @@ describe(`DocumentBuilder`, () => {
       })
       .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
 
-    expect(signed.attachments).toMatchInlineSnapshot(`
+    expect(signed.credentialSubject.attachments).toMatchInlineSnapshot(`
       [
         {
           "data": "data",
-          "fileName": "file",
+          "filename": "file",
           "mimeType": "application/pdf",
         },
       ]
@@ -446,14 +452,16 @@ describe(`DocumentBuilder`, () => {
       expect(() => {
         try {
           new DocumentBuilder({
-            credentialSubject: { name: "John Doe" },
+            credentialSubject: {
+              name: "John Doe",
+              attachments: [
+                {
+                  data: "data",
+                  fileName: "file",
+                } as any,
+              ],
+            },
             name: "Diploma",
-            attachments: [
-              {
-                data: "data",
-                fileName: "file",
-              } as any,
-            ],
           });
         } catch (e) {
           error = e;
