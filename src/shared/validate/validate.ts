@@ -13,7 +13,7 @@ export const validateSchema = (document: any, validator: ValidateFunction, kind?
     throw new Error("No schema validator provided");
   }
 
-  // FIXME: Unable to use isWrappedV4Document() type guard here because it also calls validateSchema (endless recursive call)
+  // FIXME: Unable to use isWrappedV4OpenAttestationDocument() type guard here because it also calls validateSchema (endless recursive call)
   // Need a better way to determine whether a document needs to be unwrapped first
   const valid = validator(
     (Array.isArray(document["@context"]) && document["@context"].includes(ContextUrl.v2_vc)) ||

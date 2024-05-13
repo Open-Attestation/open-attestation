@@ -1,4 +1,4 @@
-import { V4Document, V4WrappedDocument, W3cVerifiableCredential } from "../types";
+import { V4OpenAttestationDocument, V4WrappedDocument, W3cVerifiableCredential } from "../types";
 import { wrapDocument } from "../wrap";
 
 describe("V4.0 wrap document", () => {
@@ -53,7 +53,7 @@ describe("V4.0 wrap document", () => {
           id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
           name: "Government Technology Agency of Singapore (GovTech)",
           identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
-        } as V4Document["issuer"],
+        } as V4OpenAttestationDocument["issuer"],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
       "Input document does not conform to Open Attestation v4.0 Data Model: 
@@ -94,7 +94,7 @@ describe("V4.0 wrap document", () => {
         },
         // this should not exist
         extraField: "extra",
-      } as V4Document)
+      } as V4OpenAttestationDocument)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
       "Input document does not conform to Open Attestation v4.0 Data Model: 
        {
@@ -118,7 +118,7 @@ describe("V4.0 wrap document", () => {
         id: "https://example.com/issuer/123",
       },
     };
-    const wrapped = await wrapDocument(genericW3cVc as unknown as V4Document);
+    const wrapped = await wrapDocument(genericW3cVc as unknown as V4OpenAttestationDocument);
     const parsedResults = V4WrappedDocument.pick({ "@context": true, type: true }).passthrough().safeParse(wrapped);
     expect(parsedResults.success).toBe(true);
     expect(wrapped.proof.merkleRoot.length).toBe(64);

@@ -66,7 +66,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
     return validate(document, getSchema(SchemaId.v2)).length === 0;
   else if (utils.isWrappedV3Document(document) || document?.version === SchemaId.v3)
     return validate(document, getSchema(SchemaId.v3)).length === 0;
-  else if (utils.isWrappedV4Document(document)) {
+  else if (utils.isWrappedV4OpenAttestationDocument(document)) {
     return v4Diagnose({ document, kind: "wrapped", debug: false, mode: "strict" }).length === 0;
   }
 
@@ -76,7 +76,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
 export function verifySignature<T extends WrappedDocument<OpenAttestationDocument>>(document: T) {
   if (utils.isWrappedV2Document(document)) return verify(document);
   else if (utils.isWrappedV3Document(document)) return verifyV3(document);
-  else if (utils.isWrappedV4Document(document)) return verifyV4(document);
+  else if (utils.isWrappedV4OpenAttestationDocument(document)) return verifyV4(document);
 
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be signature verified");
 }
@@ -103,7 +103,7 @@ export function obfuscate<T extends V4WrappedDocument>(
 export function obfuscate<T extends OpenAttestationDocument>(document: WrappedDocument<T>, fields: string[] | string) {
   if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields);
   else if (utils.isWrappedV3Document(document)) return obfuscateVerifiableCredentialV3(document, fields);
-  else if (utils.isWrappedV4Document(document)) return obfuscateVerifiableCredentialV4(document, fields);
+  else if (utils.isWrappedV4OpenAttestationDocument(document)) return obfuscateVerifiableCredentialV4(document, fields);
 
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be obfuscated");
 }

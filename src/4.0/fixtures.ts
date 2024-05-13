@@ -1,4 +1,4 @@
-import { V4Document, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
+import { V4OpenAttestationDocument, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
 
 const ISSUER_ID = "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89" as const;
 export const SAMPLE_SIGNING_KEYS = {
@@ -44,7 +44,7 @@ export const RAW_DOCUMENT_DID = freezeObject({
       },
     ],
   },
-} satisfies V4Document);
+} satisfies V4OpenAttestationDocument);
 
 export const RAW_DOCUMENT_DID_OSCP = freezeObject({
   "@context": [
@@ -88,7 +88,7 @@ export const RAW_DOCUMENT_DID_OSCP = freezeObject({
       },
     ],
   },
-} satisfies V4Document);
+} satisfies V4OpenAttestationDocument);
 
 export const BATCHED_RAW_DOCUMENTS_DID = freezeObject([
   {
@@ -170,7 +170,7 @@ export const BATCHED_RAW_DOCUMENTS_DID = freezeObject([
       },
     ],
   },
-] satisfies V4Document[]);
+] satisfies V4OpenAttestationDocument[]);
 
 export const WRAPPED_DOCUMENT_DID = freezeObject({
   "@context": [

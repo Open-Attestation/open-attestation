@@ -1,10 +1,11 @@
 import type { Diagnose } from "../shared/utils/@types/diagnose";
-import { V4WrappedDocument, V4SignedWrappedDocument, V4Document } from "./types";
+import { V4WrappedDocument, V4SignedWrappedDocument, V4OpenAttestationDocument } from "./types";
 
 export const v4Diagnose: Diagnose = ({ document, kind, debug }) => {
-  let Validator: typeof V4Document | typeof V4WrappedDocument | typeof V4SignedWrappedDocument = V4Document;
+  let Validator: typeof V4OpenAttestationDocument | typeof V4WrappedDocument | typeof V4SignedWrappedDocument =
+    V4OpenAttestationDocument;
   if (kind === "raw") {
-    Validator = V4Document;
+    Validator = V4OpenAttestationDocument;
   } else if (kind === "wrapped") {
     Validator = V4WrappedDocument;
   } else {

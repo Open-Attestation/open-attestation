@@ -6,7 +6,7 @@ import {
   SvgRenderer,
   OscpResponderRevocation,
   RevocationStoreRevocation,
-  V4Document,
+  V4OpenAttestationDocument,
   V4SignedWrappedDocument,
   V4WrappedDocument,
 } from "./types";
@@ -14,8 +14,8 @@ import {
 import { ZodError, z } from "zod";
 
 const SingleDocumentProps = z.object({
-  name: V4Document.shape.name.unwrap(),
-  credentialSubject: V4Document.shape.credentialSubject,
+  name: V4OpenAttestationDocument.shape.name.unwrap(),
+  credentialSubject: V4OpenAttestationDocument.shape.credentialSubject,
 });
 
 const DocumentProps = z.union([SingleDocumentProps, z.array(SingleDocumentProps)]);
@@ -46,9 +46,9 @@ const SvgRendererProps = z.discriminatedUnion("type", [
 ]);
 
 const DnsTextIssuanceProps = z.object({
-  issuerId: V4Document.shape.issuer.shape.id,
-  issuerName: V4Document.shape.issuer.shape.name,
-  identityProofDomain: V4Document.shape.issuer.shape.identityProof.shape.identifier,
+  issuerId: V4OpenAttestationDocument.shape.issuer.shape.id,
+  issuerName: V4OpenAttestationDocument.shape.issuer.shape.name,
+  identityProofDomain: V4OpenAttestationDocument.shape.issuer.shape.identityProof.shape.identifier,
 });
 
 /**
@@ -83,14 +83,14 @@ type DocumentProps = {
    *
    * Maps to "credentialSubject"
    */
-  credentialSubject: z.infer<typeof V4Document.shape.credentialSubject>;
+  credentialSubject: z.infer<typeof V4OpenAttestationDocument.shape.credentialSubject>;
 };
 
 type State = {
   documentMainProps: DocumentProps | DocumentProps[];
-  renderMethod: V4Document["renderMethod"];
-  issuer: V4Document["issuer"] | undefined;
-  credentialStatus: V4Document["credentialStatus"];
+  renderMethod: V4OpenAttestationDocument["renderMethod"];
+  issuer: V4OpenAttestationDocument["issuer"] | undefined;
+  credentialStatus: V4OpenAttestationDocument["credentialStatus"];
 };
 
 /**
@@ -141,7 +141,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
             credentialSubject,
             ...(renderMethod && { renderMethod }),
             ...(credentialStatus && { credentialStatus }),
-          } satisfies V4Document)
+          } satisfies V4OpenAttestationDocument)
       );
 
       return wrapDocuments(toWrap) as unknown as WrappedReturn<Props>;
@@ -239,7 +239,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
           identityProofType: "DNS-TXT",
           identifier: identityProofDomain,
         },
-      } satisfies V4Document["issuer"];
+      } satisfies V4OpenAttestationDocument["issuer"];
       this.setState("issuer", issuer);
 
       return {
@@ -287,7 +287,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       const credentialStatus = {
         id: oscpUrl,
         type: "OpenAttestationOcspResponder",
-      } satisfies V4Document["credentialStatus"];
+      } satisfies V4OpenAttestationDocument["credentialStatus"];
       this.setState("credentialStatus", credentialStatus);
 
       return this.ISSUANCE_METHODS;
@@ -312,7 +312,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       const credentialStatus = {
         id: storeAddress,
         type: "OpenAttestationRevocationStore",
-      } satisfies V4Document["credentialStatus"];
+      } satisfies V4OpenAttestationDocument["credentialStatus"];
 
       this.setState("credentialStatus", credentialStatus);
 
@@ -350,7 +350,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
         type: "OpenAttestationEmbeddedRenderer",
         templateName,
       },
-    ] satisfies V4Document["renderMethod"];
+    ] satisfies V4OpenAttestationDocument["renderMethod"];
     this.setState("renderMethod", renderMethod);
 
     return this.REVOCATION_METHODS;
@@ -408,7 +408,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
               type: "SvgRenderingTemplate2023" as const,
               digestMultibase: parsedResults.data.digestMultibase,
             },
-          ] satisfies V4Document["renderMethod"]);
+          ] satisfies V4OpenAttestationDocument["renderMethod"]);
     this.setState("renderMethod", renderMethod);
 
     return this.REVOCATION_METHODS;
