@@ -2,7 +2,6 @@ import { ethers, Signer } from "ethers";
 
 import { getSchema } from "./shared/ajv";
 import * as utils from "./shared/utils";
-import { SchemaValidationError } from "./shared/utils";
 import { validateSchema as validate } from "./shared/validate";
 import { SchemaId, WrappedDocument, OpenAttestationDocument, SignedWrappedDocument } from "./shared/@types/document";
 import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
@@ -31,7 +30,7 @@ import {
   obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4,
 } from "./4.0/obfuscate";
 import { v4Diagnose } from "./4.0/diagnose";
-import { V4WrappedDocument } from "./4.0/types";
+import { V4WrappedDocument, isV4WrappedDocument } from "./4.0/types";
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
   data: T,
@@ -66,7 +65,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
     return validate(document, getSchema(SchemaId.v2)).length === 0;
   else if (utils.isWrappedV3Document(document) || document?.version === SchemaId.v3)
     return validate(document, getSchema(SchemaId.v3)).length === 0;
-  else if (utils.isWrappedV4OpenAttestationDocument(document)) {
+  else if (isV4WrappedDocument(document)) {
     return v4Diagnose({ document, kind: "wrapped", debug: false, mode: "strict" }).length === 0;
   }
 
@@ -76,7 +75,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
 export function verifySignature<T extends WrappedDocument<OpenAttestationDocument>>(document: T) {
   if (utils.isWrappedV2Document(document)) return verify(document);
   else if (utils.isWrappedV3Document(document)) return verifyV3(document);
-  else if (utils.isWrappedV4OpenAttestationDocument(document)) return verifyV4(document);
+  else if (isV4WrappedDocument(document)) return verifyV4(document);
 
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be signature verified");
 }
@@ -88,29 +87,19 @@ export function digest(document: OpenAttestationDocumentV3, salts: v3.Salt[], ob
   );
 }
 
-export function obfuscate<T extends OpenAttestationDocumentV2>(
-  document: WrappedDocument<T>,
-  fields: string[] | string
-): WrappedDocument<T>;
-export function obfuscate<T extends OpenAttestationDocumentV3>(
-  document: WrappedDocument<T>,
-  fields: string[] | string
-): WrappedDocument<T>;
-export function obfuscate<T extends V4WrappedDocument>(
+type ObfuscateReturn<T> = T extends V4WrappedDocument ? ObfuscateVerifiableCredentialResult<T> : T;
+export function obfuscate<T extends WrappedDocument<OpenAttestationDocument>>(
   document: T,
   fields: string[] | string
-): ObfuscateVerifiableCredentialResult<T>;
-export function obfuscate<T extends OpenAttestationDocument>(document: WrappedDocument<T>, fields: string[] | string) {
-  if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields);
-  else if (utils.isWrappedV3Document(document)) return obfuscateVerifiableCredentialV3(document, fields);
-  else if (utils.isWrappedV4OpenAttestationDocument(document)) return obfuscateVerifiableCredentialV4(document, fields);
+): ObfuscateReturn<T> {
+  if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields) as ObfuscateReturn<T>;
+  else if (utils.isWrappedV3Document(document))
+    return obfuscateVerifiableCredentialV3(document, fields) as ObfuscateReturn<T>;
+  else if (isV4WrappedDocument(document))
+    return obfuscateVerifiableCredentialV4(document, fields) as ObfuscateReturn<T>;
 
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be obfuscated");
 }
-
-export const isSchemaValidationError = (error: any): error is SchemaValidationError => {
-  return !!error.validationErrors;
-};
 
 export async function signDocument<T extends v2.OpenAttestationDocument | v3.OpenAttestationDocument>(
   document: WrappedDocument<T> | SignedWrappedDocument<T>,
