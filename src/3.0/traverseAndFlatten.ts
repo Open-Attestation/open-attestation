@@ -7,6 +7,9 @@ interface Options<T> {
   path?: string;
 }
 
+/**
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ */
 export function traverseAndFlatten<T>(data: any[], options: Options<T>): T[];
 export function traverseAndFlatten<T>(data: string | number | boolean | null, options: Options<T>): T;
 export function traverseAndFlatten<T>(data: any, options: Options<T>): T[]; // hmmmm this is probably wrong but it works for the moment :)
