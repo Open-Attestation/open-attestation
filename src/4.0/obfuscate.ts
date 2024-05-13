@@ -71,7 +71,11 @@ export type ObfuscateVerifiableCredentialResult<T extends V4WrappedDocument> = O
   {
     credentialSubject: Override<
       PartialDeep<T["credentialSubject"]>,
-      { attachments?: V4WrappedDocument["credentialSubject"]["attachments"] }
+      {
+        attachments?: T["credentialSubject"]["attachments"] extends Array<unknown>
+          ? T["credentialSubject"]["attachments"]
+          : undefined;
+      }
     >;
   }
 >;
