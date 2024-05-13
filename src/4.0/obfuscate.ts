@@ -68,7 +68,12 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
 
 export type ObfuscateVerifiableCredentialResult<T extends V4WrappedDocument> = Override<
   T,
-  { credentialSubject: PartialDeep<T["credentialSubject"]> }
+  {
+    credentialSubject: Override<
+      PartialDeep<T["credentialSubject"]>,
+      { attachments?: V4WrappedDocument["credentialSubject"]["attachments"] }
+    >;
+  }
 >;
 export const obfuscateVerifiableCredential = <T extends V4WrappedDocument | V4SignedWrappedDocument>(
   document: T,
