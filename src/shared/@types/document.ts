@@ -18,15 +18,15 @@ export type WrappedDocument<T extends OpenAttestationDocument> = T extends OpenA
   ? WrappedDocumentV2<T>
   : T extends OpenAttestationDocumentV3
   ? WrappedDocumentV3<T>
-  : T extends V4Document
-  ? V4WrappedDocument<T>
+  : T extends V4WrappedDocument
+  ? T
   : unknown;
 export type SignedWrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
   ? SignedWrappedDocumentV2<T>
   : T extends OpenAttestationDocumentV3
   ? SignedWrappedDocumentV3<T>
-  : T extends V4Document
-  ? V4SignedWrappedDocument<T>
+  : T extends V4SignedWrappedDocument
+  ? T
   : unknown;
 
 export enum SchemaId {

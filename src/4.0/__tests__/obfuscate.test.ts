@@ -9,7 +9,7 @@ import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED, WRAPPED_DOCUM
 import { hashLeafNode } from "../digest";
 import { getObfuscatedData, isObfuscated } from "../../shared/utils";
 
-const makeV4RawDocument = <T extends Pick<V4Document, "credentialSubject" | "attachments">>(props: T) =>
+const makeV4RawDocument = <T extends Pick<V4Document, "credentialSubject">>(props: T) =>
   ({
     ...RAW_DOCUMENT_DID,
     ...(props as T),
@@ -134,7 +134,7 @@ describe("privacy", () => {
     });
 
     test("given an entire array of objects to remove, should remove the array itself, then for every item, add each of its key's hash into privacy.obfuscated", async () => {
-      const PATH_TO_REMOVE = "attachments";
+      const PATH_TO_REMOVE = "credentialSubject.attachments";
       const wrappedDocument = await wrapDocument(
         makeV4RawDocument({
           credentialSubject: {
@@ -142,19 +142,19 @@ describe("privacy", () => {
               { foo: "bar", doo: "foo" },
               { foo: "baz", doo: "faz" },
             ],
+            attachments: [
+              {
+                mimeType: "image/png",
+                filename: "aaa",
+                data: "abcd",
+              },
+              {
+                mimeType: "image/png",
+                filename: "bbb",
+                data: "abcd",
+              },
+            ],
           },
-          attachments: [
-            {
-              mimeType: "image/png",
-              fileName: "aaa",
-              data: "abcd",
-            },
-            {
-              mimeType: "image/png",
-              fileName: "bbb",
-              data: "abcd",
-            },
-          ],
         })
       );
       const obfuscatedDocument = await obfuscateVerifiableCredential(wrappedDocument, PATH_TO_REMOVE);
@@ -163,12 +163,12 @@ describe("privacy", () => {
       expect(verified).toBe(true);
 
       [
-        "attachments[0].mimeType",
-        "attachments[0].fileName",
-        "attachments[0].data",
-        "attachments[1].mimeType",
-        "attachments[1].fileName",
-        "attachments[1].data",
+        "credentialSubject.attachments[0].mimeType",
+        "credentialSubject.attachments[0].filename",
+        "credentialSubject.attachments[0].data",
+        "credentialSubject.attachments[1].mimeType",
+        "credentialSubject.attachments[1].filename",
+        "credentialSubject.attachments[1].data",
       ].forEach((expectedRemovedField) => {
         const value = get(wrappedDocument, expectedRemovedField);
         const salt = findSaltByPath(wrappedDocument.proof.salts, expectedRemovedField);
@@ -180,7 +180,7 @@ describe("privacy", () => {
         );
         expect(findSaltByPath(obfuscatedDocument.proof.salts, expectedRemovedField)).toBeUndefined();
       });
-      expect(obfuscatedDocument.attachments).toBeUndefined();
+      expect(obfuscatedDocument.credentialSubject.attachments).toBeUndefined();
       expect(obfuscatedDocument.proof.privacy.obfuscated).toHaveLength(6);
     });
 
@@ -213,28 +213,33 @@ describe("privacy", () => {
               { foo: "bar", doo: "foo" },
               { foo: "baz", doo: "faz" },
             ],
+            attachments: [
+              {
+                mimeType: "image/png",
+                filename: "aaa",
+                data: "abcd",
+              },
+              {
+                mimeType: "image/png",
+                filename: "bbb",
+                data: "abcd",
+              },
+              {
+                mimeType: "image/png",
+                filename: "ccc",
+                data: "abcd",
+              },
+            ],
           },
-          attachments: [
-            {
-              mimeType: "image/png",
-              fileName: "aaa",
-              data: "abcd",
-            },
-            {
-              mimeType: "image/png",
-              fileName: "bbb",
-              data: "abcd",
-            },
-            {
-              mimeType: "image/png",
-              fileName: "ccc",
-              data: "abcd",
-            },
-          ],
         })
       );
 
-      expect(() => obfuscateVerifiableCredential(wrappedDocument, ["attachments[0]", "attachments[2]"])).toThrow();
+      expect(() =>
+        obfuscateVerifiableCredential(wrappedDocument, [
+          "credentialSubject.attachments[0]",
+          "credentialSubject.attachments[2]",
+        ])
+      ).toThrow();
     });
 
     test("given a path to remove all elements in an object, should throw", async () => {

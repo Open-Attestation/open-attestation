@@ -186,6 +186,13 @@ export const OscpResponderRevocation = z.object({
   type: z.literal("OpenAttestationOcspResponder"),
 });
 
+// [Optional] Attachments
+export const Attachment = z.object({
+  data: z.string().describe("Base64 encoding of this attachment"),
+  filename: z.string().min(1).describe("Name of this attachment, with appropriate extensions"),
+  mimeType: z.string().min(1).describe("Media type (or MIME type) of this attachment"),
+});
+
 export const RevocationStoreRevocation = z.object({
   id: EthereumAddress.describe("Ethereum address of the revocation store contract"),
   type: z.literal("OpenAttestationRevocationStore"),
@@ -217,22 +224,20 @@ export const V4Document = _W3cVerifiableCredential
       }),
     }),
 
+    credentialSubject: z
+      .object({
+        attachments: z.array(Attachment).optional(),
+      })
+      .passthrough()
+      .refine((obj) => Object.keys(obj).length > 0, {
+        message: "Must have at least one key",
+      }),
+
     // [Optional] Credential Status
     credentialStatus: z.discriminatedUnion("type", [OscpResponderRevocation, RevocationStoreRevocation]).optional(),
 
     // [Optional] Render Method
     renderMethod: z.array(z.discriminatedUnion("type", [DecentralisedEmbeddedRenderer, SvgRenderer])).optional(),
-
-    // [Optional] Attachments
-    attachments: z
-      .array(
-        z.object({
-          data: z.string().describe("Base64 encoding of this attachment"),
-          fileName: z.string().min(1).describe("Name of this attachment, with appropriate extensions"),
-          mimeType: z.string().min(1).describe("Media type (or MIME type) of this attachment"),
-        })
-      )
-      .optional(),
   })
   .strict();
 
