@@ -198,7 +198,7 @@ export const RevocationStoreRevocation = z.object({
   type: z.literal("OpenAttestationRevocationStore"),
 });
 
-export const V4Document = _W3cVerifiableCredential
+export const V4OpenAttestationDocument = _W3cVerifiableCredential
   .extend({
     "@context": z
 
@@ -252,26 +252,29 @@ const WrappedProof = z.object({
 });
 const WrappedDocumentExtrasShape = { proof: WrappedProof.passthrough() } as const;
 // V4WrappedDocument should never allow extra root properties
-export const V4WrappedDocument = V4Document.extend(WrappedDocumentExtrasShape).strict();
+export const V4WrappedDocument = V4OpenAttestationDocument.extend(WrappedDocumentExtrasShape).strict();
 
 const SignedWrappedProof = WrappedProof.extend({ key: z.string(), signature: z.string() });
 const SignedWrappedDocumentExtrasShape = { proof: SignedWrappedProof } as const;
 // V4SignedWrappedDocument should never allow extra root properties
-export const V4SignedWrappedDocument = V4Document.extend(SignedWrappedDocumentExtrasShape).strict();
+export const V4SignedWrappedDocument = V4OpenAttestationDocument.extend(SignedWrappedDocumentExtrasShape).strict();
 
 export type W3cVerifiableCredential = z.infer<typeof _W3cVerifiableCredential>;
 
 // AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
 // still being assignable to the base type. For example, if we accidentally extend and
 // replaced '@context' to a boolean, this would fail the assertion.
-export type V4Document = AssertStricterOrEqual<W3cVerifiableCredential, z.infer<typeof V4Document>>;
+export type V4OpenAttestationDocument = AssertStricterOrEqual<
+  W3cVerifiableCredential,
+  z.infer<typeof V4OpenAttestationDocument>
+>;
 
-export type V4WrappedDocument<T extends V4Document = V4Document> = Override<
+export type V4WrappedDocument<T extends V4OpenAttestationDocument = V4OpenAttestationDocument> = Override<
   T,
   Pick<z.infer<typeof V4WrappedDocument>, keyof typeof WrappedDocumentExtrasShape>
 >;
 
-export type V4SignedWrappedDocument<T extends V4Document = V4Document> = Override<
+export type V4SignedWrappedDocument<T extends V4OpenAttestationDocument = V4OpenAttestationDocument> = Override<
   T,
   Pick<z.infer<typeof V4SignedWrappedDocument>, keyof typeof SignedWrappedDocumentExtrasShape>
 >;
@@ -313,8 +316,8 @@ export type PartialDeep<T> = T extends string | number | bigint | boolean | null
       [K in keyof T]?: PartialDeep<T[K]>;
     };
 
-export const isV4Document = (document: unknown): document is V4Document => {
-  return V4Document.safeParse(document).success;
+export const isV4OpenAttestationDocument = (document: unknown): document is V4OpenAttestationDocument => {
+  return V4OpenAttestationDocument.safeParse(document).success;
 };
 
 export const isV4WrappedDocument = (document: unknown): document is V4WrappedDocument => {

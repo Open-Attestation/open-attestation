@@ -7,7 +7,7 @@ import {
   OpenAttestationDocument as OpenAttestationDocumentV3,
   WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
-import { V4WrappedDocument, V4SignedWrappedDocument, V4Document } from "../../4.0/types";
+import { V4WrappedDocument, V4SignedWrappedDocument, V4OpenAttestationDocument } from "../../4.0/types";
 import { diagnose } from "./diagnose";
 import { Mode } from "./@types/diagnose";
 
@@ -40,10 +40,10 @@ export const isRawV3Document = (
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isRawV4Document = (
+export const isRawV4OpenAttestationDocument = (
   document: any,
   { mode }: { mode: Mode } = { mode: "non-strict" }
-): document is V4Document => {
+): document is V4OpenAttestationDocument => {
   return diagnose({ version: "4.0", kind: "raw", document, debug: false, mode }).length === 0;
 };
 
@@ -76,7 +76,7 @@ export const isWrappedV3Document = <T extends OpenAttestationDocumentV3 = OpenAt
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isWrappedV4Document = <T extends V4Document = V4Document>(
+export const isWrappedV4OpenAttestationDocument = <T extends V4OpenAttestationDocument = V4OpenAttestationDocument>(
   document: unknown,
   { mode }: { mode: Mode } = { mode: "non-strict" }
 ): document is V4WrappedDocument<T> => {
@@ -112,7 +112,7 @@ export const isSignedWrappedV3Document = (
  * @param document
  * @param mode strict or non-strict. Strict will perform additional check on the data. For instance strict validation will ensure that a target hash is a 32 bytes hex string while non strict validation will just check that target hash is a string.
  */
-export const isSignedWrappedV4Document = <T extends V4SignedWrappedDocument = V4SignedWrappedDocument>(
+export const isSignedWrappedV4OpenAttestationDocument = <T extends V4SignedWrappedDocument = V4SignedWrappedDocument>(
   document: unknown,
   { mode }: { mode: Mode } = { mode: "non-strict" }
 ): document is T => {

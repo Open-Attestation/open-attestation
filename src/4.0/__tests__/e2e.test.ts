@@ -1,7 +1,7 @@
 import { obfuscate, validateSchema, verifySignature } from "../..";
 import { cloneDeep, omit } from "lodash";
 import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID, WRAPPED_DOCUMENT_DID } from "../fixtures";
-import { V4Document } from "../types";
+import { V4OpenAttestationDocument } from "../types";
 import { wrapDocument, wrapDocuments } from "../wrap";
 
 const DOCUMENT_ONE = {
@@ -10,7 +10,7 @@ const DOCUMENT_ONE = {
     ...RAW_DOCUMENT_DID.credentialSubject,
     key1: "test",
   },
-} satisfies V4Document;
+} satisfies V4OpenAttestationDocument;
 const DOCUMENT_TWO = {
   ...RAW_DOCUMENT_DID,
   credentialSubject: {
@@ -18,7 +18,7 @@ const DOCUMENT_TWO = {
     key1: "hello",
     key2: "item2",
   },
-} satisfies V4Document;
+} satisfies V4OpenAttestationDocument;
 
 const DOCUMENT_THREE = {
   ...RAW_DOCUMENT_DID,
@@ -29,7 +29,7 @@ const DOCUMENT_THREE = {
     key3: 3.14159,
     key4: false,
   },
-} satisfies V4Document;
+} satisfies V4OpenAttestationDocument;
 
 const DOCUMENT_FOUR = {
   ...RAW_DOCUMENT_DID,
@@ -38,7 +38,7 @@ const DOCUMENT_FOUR = {
     key1: "item2",
   },
 };
-const DATUM = [DOCUMENT_ONE, DOCUMENT_TWO, DOCUMENT_THREE, DOCUMENT_FOUR] satisfies V4Document[];
+const DATUM = [DOCUMENT_ONE, DOCUMENT_TWO, DOCUMENT_THREE, DOCUMENT_FOUR] satisfies V4OpenAttestationDocument[];
 
 describe("V4 E2E Test Scenarios", () => {
   describe("Issuing a single document", () => {
@@ -46,7 +46,8 @@ describe("V4 E2E Test Scenarios", () => {
       const missingData = {
         ...omit(cloneDeep(DOCUMENT_ONE), "issuer"),
       };
-      await expect(wrapDocument(missingData as unknown as V4Document)).rejects.toThrowErrorMatchingInlineSnapshot(`
+      await expect(wrapDocument(missingData as unknown as V4OpenAttestationDocument)).rejects
+        .toThrowErrorMatchingInlineSnapshot(`
         "Input document does not conform to Open Attestation v4.0 Data Model: 
          {
           "_errors": [],
@@ -113,7 +114,7 @@ describe("V4 E2E Test Scenarios", () => {
           ...DATUM,
           {
             laurent: "task force, assemble!!",
-          } as unknown as V4Document,
+          } as unknown as V4OpenAttestationDocument,
         ];
         await expect(wrapDocuments(malformedDatum)).rejects.toThrow(
           "Input document does not conform to Verifiable Credentials"
@@ -171,7 +172,7 @@ describe("V4 E2E Test Scenarios", () => {
       const credential = {
         ...RAW_DOCUMENT_DID,
         issuer: modifiedIssuer,
-      } satisfies V4Document;
+      } satisfies V4OpenAttestationDocument;
       expect(validateSchema(credential)).toStrictEqual(false);
     });
 

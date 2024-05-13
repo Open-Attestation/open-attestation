@@ -1,7 +1,12 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { RAW_DOCUMENT_DID } from "../fixtures";
 import { signDocument } from "../sign";
-import { W3cVerifiableCredential, V4Document, V4WrappedDocument, V4SignedWrappedDocument } from "../types";
+import {
+  W3cVerifiableCredential,
+  V4OpenAttestationDocument,
+  V4WrappedDocument,
+  V4SignedWrappedDocument,
+} from "../types";
 import { wrapDocument } from "../wrap";
 
 const RAW_DOCUMENT = {
@@ -16,7 +21,7 @@ const RAW_DOCUMENT = {
       },
     ],
   },
-} satisfies V4Document;
+} satisfies V4OpenAttestationDocument;
 
 describe("V4.0 guard", () => {
   let WRAPPED_DOCUMENT: V4WrappedDocument;
@@ -41,7 +46,7 @@ describe("V4.0 guard", () => {
     });
 
     test("should pass document validation without removal of any data", () => {
-      const results = V4Document.parse(RAW_DOCUMENT_DID);
+      const results = V4OpenAttestationDocument.parse(RAW_DOCUMENT_DID);
       expect(results).toEqual(RAW_DOCUMENT_DID);
     });
 
@@ -90,8 +95,8 @@ describe("V4.0 guard", () => {
     });
 
     test("should pass document validation without removal of any data", () => {
-      const v4Document: V4Document = WRAPPED_DOCUMENT;
-      const results = V4Document.parse(v4Document);
+      const v4Document: V4OpenAttestationDocument = WRAPPED_DOCUMENT;
+      const results = V4OpenAttestationDocument.parse(v4Document);
       expect(results).toEqual(WRAPPED_DOCUMENT);
     });
 
@@ -138,8 +143,8 @@ describe("V4.0 guard", () => {
     });
 
     test("should pass document validation without removal of any data", () => {
-      const v4Document: V4Document = SIGNED_WRAPPED_DOCUMENT;
-      const results = V4Document.parse(v4Document);
+      const v4Document: V4OpenAttestationDocument = SIGNED_WRAPPED_DOCUMENT;
+      const results = V4OpenAttestationDocument.parse(v4Document);
       expect(results).toEqual(SIGNED_WRAPPED_DOCUMENT);
     });
 

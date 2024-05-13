@@ -3,17 +3,17 @@ import { obfuscateVerifiableCredential } from "../obfuscate";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
 import { wrapDocument } from "../wrap";
-import { Salt, V4Document, V4WrappedDocument } from "../types";
+import { Salt, V4OpenAttestationDocument, V4WrappedDocument } from "../types";
 import { verifySignature } from "../../";
 import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED, WRAPPED_DOCUMENT_DID } from "../fixtures";
 import { hashLeafNode } from "../digest";
 import { getObfuscatedData, isObfuscated } from "../../shared/utils";
 
-const makeV4RawDocument = <T extends Pick<V4Document, "credentialSubject">>(props: T) =>
+const makeV4RawDocument = <T extends Pick<V4OpenAttestationDocument, "credentialSubject">>(props: T) =>
   ({
     ...RAW_DOCUMENT_DID,
     ...(props as T),
-  } satisfies V4Document);
+  } satisfies V4OpenAttestationDocument);
 
 const findSaltByPath = (salts: string, path: string): Salt | undefined => {
   return decodeSalt(salts).find((salt) => salt.path === path);
