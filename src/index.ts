@@ -30,7 +30,7 @@ import {
   obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4,
 } from "./4.0/obfuscate";
 import { v4Diagnose } from "./4.0/diagnose";
-import { V4WrappedDocument } from "./4.0/types";
+import { V4WrappedDocument, isV4WrappedDocument } from "./4.0/types";
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
   data: T,
@@ -65,7 +65,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
     return validate(document, getSchema(SchemaId.v2)).length === 0;
   else if (utils.isWrappedV3Document(document) || document?.version === SchemaId.v3)
     return validate(document, getSchema(SchemaId.v3)).length === 0;
-  else if (utils.isWrappedV4OpenAttestationDocument(document)) {
+  else if (isV4WrappedDocument(document)) {
     return v4Diagnose({ document, kind: "wrapped", debug: false, mode: "strict" }).length === 0;
   }
 
@@ -75,7 +75,7 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
 export function verifySignature<T extends WrappedDocument<OpenAttestationDocument>>(document: T) {
   if (utils.isWrappedV2Document(document)) return verify(document);
   else if (utils.isWrappedV3Document(document)) return verifyV3(document);
-  else if (utils.isWrappedV4OpenAttestationDocument(document)) return verifyV4(document);
+  else if (isV4WrappedDocument(document)) return verifyV4(document);
 
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be signature verified");
 }
@@ -95,7 +95,7 @@ export function obfuscate<T extends WrappedDocument<OpenAttestationDocument>>(
   if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields) as ObfuscateReturn<T>;
   else if (utils.isWrappedV3Document(document))
     return obfuscateVerifiableCredentialV3(document, fields) as ObfuscateReturn<T>;
-  else if (utils.isWrappedV4OpenAttestationDocument(document))
+  else if (isV4WrappedDocument(document))
     return obfuscateVerifiableCredentialV4(document, fields) as ObfuscateReturn<T>;
 
   throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be obfuscated");
