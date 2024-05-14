@@ -62,8 +62,12 @@ npm i @govtechsg/open-attestation
 #### Option 1. with `wrapDocument`, `wrapDocuments` and `signDocument`
 
 ```typescript
-import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
-import { signDocument, signDocumentErrors } from "@govtechsg/open-attestation/4.0/sign";
+// granular imports are possible too
+// import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
+// import { signDocument, signDocumentErrors } from "@govtechsg/open-attestation/4.0/sign";
+
+import { v4 } from "@govtechsg/open-attestation";
+const { wrapDocument, wrapDocumentErrors, signDocument, signDocumentErrors } = v4;
 
 try {
   const wrappedDocument = await wrapDocument({
@@ -96,6 +100,14 @@ try {
           effectiveDate: "2013-05-16T00:00:00+08:00",
         },
       ],
+      // attachments if any
+      attachments: [
+        {
+          filename: "sample.pdf",
+          mimeType: "application/pdf",
+          data: "base64 encoded data",
+        },
+      ],
     },
     credentialStatus: {
       type: "OpenAttestationRevocationStore",
@@ -125,7 +137,10 @@ try {
 The following example creates a document with the same content as the previous example:
 
 ```typescript
-import { DocumentBuilder, DocumentBuilderErrors } from "@govtechsg/open-attestation/4.0/builder";
+// granular imports are possible too
+// import { DocumentBuilder, DocumentBuilderErrors } from "@govtechsg/open-attestation/4.0/builder";
+import { v4 } from "@govtechsg/open-attestation";
+const { DocumentBuilder, DocumentBuilderErrors } = v4;
 
 try {
   const signedDocument = await new DocumentBuilder({
@@ -146,15 +161,15 @@ try {
           effectiveDate: "2013-05-16T00:00:00+08:00",
         },
       ],
+      // attachments if any
+      attachments: [
+        {
+          filename: "sample.pdf",
+          mimeType: "application/pdf",
+          data: "base64 encoded data",
+        },
+      ],
     },
-    // attachments if any
-    attachments: [
-      {
-        fileName: "sample.pdf",
-        mimeType: "application/pdf",
-        data: "base64 encoded data",
-      },
-    ],
   })
     // Equivalent to setting "renderMethod" to:
     // [
@@ -230,7 +245,10 @@ It's crucial to understand that obfuscation can only be applied to non-essential
 ### Applicable only to OpenAttestation v4.0 documents
 
 ```typescript
-import { obfuscate } from "@govtechsg/open-attestation/4.0/obfuscate";
+// granular imports are possible too
+// import { obfuscate } from "@govtechsg/open-attestation/4.0/obfuscate";
+import { v4 } from "@govtechsg/open-attestation";
+const { obfuscate } = v4;
 
 const obfuscatedDocument = obfuscate(signedDocument, ["credentialSubject.name", "credentialSubject.licenses[0].class"]);
 ```
@@ -240,7 +258,10 @@ const obfuscatedDocument = obfuscate(signedDocument, ["credentialSubject.name", 
 ### Exclusive to OpenAttestation v4.0 documents
 
 ```typescript
-import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
+// granular imports are possible too
+// import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
+import { v4 } from "@govtechsg/open-attestation";
+const { verifySignature } = v4;
 
 const valid = verifySignature(signedDocument); // true or false
 ```
@@ -258,18 +279,25 @@ const valid = verifySignature(signedDocument); // true or false
 TypeScript types for OpenAttestation v4 documents are included in the package and can be accessed as follows:
 
 ```typescript
-import type { WrappedDocument, SignedWrappedDocument } from "@govtechsg/open-attestation/4.0/types";
+// granular imports are possible too
+// import type { WrappedDocument, SignedWrappedDocument } from "@govtechsg/open-attestation/4.0/types";
+import type { v4 } from "@govtechsg/open-attestation";
+const { WrappedDocument, SignedWrappedDocument } = v4;
 ```
 
 ## Utils
 
 ```typescript
-import {
-  isDocument,
-  isWrappedDocument,
-  isSignedWrappedDocument,
-  computeDigestMultibase,
-} from "@govtechsg/open-attestation/4.0/utils";
+// granular imports are possible too
+// import {
+//   isOpenAttestationDocument,
+//   isWrappedDocument,
+//   isSignedWrappedDocument,
+//   computeDigestMultibase,
+// } from "@govtechsg/open-attestation/4.0/utils";
+
+import { v4 } from "@govtechsg/open-attestation";
+const { isOpenAttestationDocument, isWrappedDocument, isSignedWrappedDocument, computeDigestMultibase } = v4;
 ```
 
 ### `computeDigestMultibase`
@@ -294,7 +322,7 @@ const wrappedDocument = await wrapDocument(
 
 ### Guards
 
-1. `isDocument` - Checks if the document is a valid OpenAttestation v4 document
+1. `isOpenAttestationDocument` - Checks if the document is a valid OpenAttestation v4 document
 2. `isWrappedDocument` - Checks if the document is a valid OpenAttestation v4 wrapped document
 3. `isSignedWrappedDocument` - Checks if the document is a valid OpenAttestation v4 signed wrapped document
 
