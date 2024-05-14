@@ -3,9 +3,6 @@ import { digestCredential } from "./digest";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt, salt } from "./salt";
 
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export const verify = <T extends WrappedDocument>(document: T): document is WrappedDocument<T> => {
   if (!document.proof) {
     return false;

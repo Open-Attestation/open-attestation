@@ -21,28 +21,15 @@ const illegalCharactersCheck = (data: Record<string, any>) => {
 
 // Using 32 bytes of entropy as compared to 16 bytes in uuid
 // Using hex encoding as compared to base64 for constant string length
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export const secureRandomString = () => randomBytes(ENTROPY_IN_BYTES).toString("hex");
 
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export const salt = (data: any): Salt[] => {
   // Check for illegal characters e.g. '.', '[' or ']'
   illegalCharactersCheck(data);
   return traverseAndFlatten(data, { iteratee: ({ path }) => ({ value: secureRandomString(), path }) });
 };
 
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export const encodeSalt = (salts: Salt[]): string => Base64.encode(JSON.stringify(salts));
-
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export const decodeSalt = (salts: string): Salt[] => {
   const decoded: Salt[] = JSON.parse(Base64.decode(salts));
   decoded.forEach((salt) => {

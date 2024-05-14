@@ -21,9 +21,6 @@ import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
 import { ethers, Signer } from "ethers";
 import { getSchema } from "./shared/ajv";
 
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
   data: T,
   options?: WrapDocumentOptionV3
@@ -31,9 +28,6 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends 
   return wrapV3Document(data, options ?? { version: SchemaId.v3 });
 }
 
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends OpenAttestationDocumentV3>(
   dataArray: T[],
   options?: WrapDocumentOptionV3
@@ -81,9 +75,6 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
   return !!error.validationErrors;
 };
 
-/**
- * @deprecated signing of v3 documents will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export async function signDocument<T extends v3.OpenAttestationDocument>(
   document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,

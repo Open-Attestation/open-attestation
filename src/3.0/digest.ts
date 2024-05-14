@@ -3,9 +3,6 @@ import { keccak256 } from "js-sha3";
 import { Salt } from "./types";
 import { OpenAttestationDocument } from "../__generated__/schema.3.0";
 
-/**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
- */
 export const digestCredential = (document: OpenAttestationDocument, salts: Salt[], obfuscatedData: string[]) => {
   // Prepare array of hashes from visible data
   const hashedUnhashedDataArray = salts
