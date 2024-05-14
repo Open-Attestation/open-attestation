@@ -328,7 +328,7 @@ const wrappedDocument = await wrapDocument(
 
 ### Importing Methods
 
-For efficient code management, it's recommended to import methods in a granular manner, enabling better code optimization through tree shaking:
+For projects supporting package exports, it is recommended to import the methods as:
 
 ```typescript
 import { wrapDocument, wrapDocumentErrors } from "@govtechsg/open-attestation/4.0/wrap";
@@ -338,7 +338,7 @@ import { verifySignature } from "@govtechsg/open-attestation/4.0/verify";
 import { isSignedWrappedDocument } from "@govtechsg/open-attestation/4.0/utils";
 ```
 
-Fallback methods for projects not supporting package exports:
+Fallback method for projects not supporting package exports:
 
 ```typescript
 import { v4 } from '@govtechsg/open-attestation'
