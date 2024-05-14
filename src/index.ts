@@ -46,6 +46,9 @@ export function wrapDocuments<T extends OpenAttestationDocumentV2>(
   return wrapDocumentsV2(dataArray, { externalSchemaId: options?.externalSchemaId });
 }
 
+/**
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ */
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
   data: T,
   options?: WrapDocumentOptionV3
@@ -53,6 +56,9 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends 
   return wrapDocumentV3(data, options ?? { version: SchemaId.v3 });
 }
 
+/**
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ */
 export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends OpenAttestationDocumentV3>(
   dataArray: T[],
   options?: WrapDocumentOptionV3
