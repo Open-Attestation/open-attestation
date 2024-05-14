@@ -9,6 +9,9 @@ import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "../shared/@types/sign";
 import { isSignedWrappedV3Document } from "../shared/utils";
 import { ethers } from "ethers";
 
+/**
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ */
 export const signDocument = async <T extends OpenAttestationDocument>(
   document: SignedWrappedDocument<T> | WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
