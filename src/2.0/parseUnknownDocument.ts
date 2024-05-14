@@ -26,7 +26,7 @@ const isPotentialV2 = (document: unknown): document is PartialDeep<SignedWrapped
 const isPotentialV2OpenAttestationDocument = (document: unknown): document is PartialDeep<OpenAttestationDocument> => {
   return (document as OpenAttestationDocument).$template !== undefined;
 };
-export function v2ParseUnknownDocument(document: unknown): V2ParsedDocument | null {
+export function v2ParseUnknownDocument(document: unknown): V2ParsedDocument | "invalid" | undefined {
   if (isPotentialV2(document)) {
     if (document.proof) {
       if (isSignedWrappedV2Document(document)) {
@@ -36,7 +36,7 @@ export function v2ParseUnknownDocument(document: unknown): V2ParsedDocument | nu
           document,
         };
       }
-      return null;
+      return "invalid";
     }
     if (isWrappedV2Document(document)) {
       return {
@@ -45,7 +45,7 @@ export function v2ParseUnknownDocument(document: unknown): V2ParsedDocument | nu
         document,
       };
     }
-    return null;
+    return "invalid";
   }
 
   if (isPotentialV2OpenAttestationDocument(document)) {
@@ -57,6 +57,4 @@ export function v2ParseUnknownDocument(document: unknown): V2ParsedDocument | nu
       };
     }
   }
-
-  return null;
 }

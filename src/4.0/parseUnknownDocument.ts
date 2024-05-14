@@ -27,7 +27,7 @@ type V4ParsedDocument =
 const isPotentialV4 = (document: unknown): document is PartialDeep<V4SignedWrappedDocument> => {
   return V4OpenAttestationDocument.pick({ "@context": true }).passthrough().safeParse(document).success;
 };
-export function v4ParseUnknownDocument(document: unknown): V4ParsedDocument | null {
+export function v4ParseUnknownDocument(document: unknown): V4ParsedDocument | "invalid" | undefined {
   if (isPotentialV4(document)) {
     if (document.proof) {
       // only wrapped/signedWrapped document has proof
@@ -40,7 +40,7 @@ export function v4ParseUnknownDocument(document: unknown): V4ParsedDocument | nu
             document,
           };
         }
-        return null;
+        return "invalid";
       }
       if (isV4WrappedDocument(document)) {
         return {
@@ -49,7 +49,7 @@ export function v4ParseUnknownDocument(document: unknown): V4ParsedDocument | nu
           document,
         };
       }
-      return null;
+      return "invalid";
     }
     if (isV4OpenAttestationDocument(document)) {
       return {
@@ -58,7 +58,6 @@ export function v4ParseUnknownDocument(document: unknown): V4ParsedDocument | nu
         document,
       };
     }
-    return null;
+    return "invalid";
   }
-  return null;
 }
