@@ -81,6 +81,9 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
   return !!error.validationErrors;
 };
 
+/**
+ * @deprecated signing of v3 documents will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ */
 export async function signDocument<T extends v3.OpenAttestationDocument>(
   document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
