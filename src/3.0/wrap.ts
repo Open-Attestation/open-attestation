@@ -46,7 +46,7 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
 
   const merkleTree = new MerkleTree(batchBuffers);
   const merkleRoot = merkleTree.getRoot().toString("hex");
-  const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
+  const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer) => buffer.toString("hex"));
 
   const verifiableCredential: WrappedDocument<T> = {
     ...document,
@@ -89,7 +89,7 @@ export const wrapDocuments = async <T extends OpenAttestationDocument>(
   // for each document, update the merkle root and add the proofs needed
   return verifiableCredentials.map((verifiableCredential) => {
     const digest = verifiableCredential.proof.targetHash;
-    const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer: Buffer) => buffer.toString("hex"));
+    const merkleProof = merkleTree.getProof(hashToBuffer(digest)).map((buffer) => buffer.toString("hex"));
 
     return {
       ...verifiableCredential,

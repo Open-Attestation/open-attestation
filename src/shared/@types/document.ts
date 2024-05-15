@@ -11,17 +11,22 @@ import {
 } from "../../3.0/types";
 import { Literal, Static, String } from "runtypes";
 import { isHexString } from "@ethersproject/bytes";
+import { V4OpenAttestationDocument, V4SignedWrappedDocument, V4WrappedDocument } from "../../4.0/types";
 
-export type OpenAttestationDocument = OpenAttestationDocumentV2 | OpenAttestationDocumentV3;
+export type OpenAttestationDocument = OpenAttestationDocumentV2 | OpenAttestationDocumentV3 | V4OpenAttestationDocument;
 export type WrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
   ? WrappedDocumentV2<T>
   : T extends OpenAttestationDocumentV3
   ? WrappedDocumentV3<T>
+  : T extends V4WrappedDocument
+  ? T
   : unknown;
 export type SignedWrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
   ? SignedWrappedDocumentV2<T>
   : T extends OpenAttestationDocumentV3
   ? SignedWrappedDocumentV3<T>
+  : T extends V4SignedWrappedDocument
+  ? T
   : unknown;
 
 export enum SchemaId {

@@ -1,0 +1,61 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+  ],
+  "name": "Republic of Singapore Driving Licence",
+  "type": [
+    "VerifiableCredential",
+    "OpenAttestationCredential"
+  ],
+  "issuer": {
+    "id": "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+    "type": "OpenAttestationIssuer",
+    "name": "Government Technology Agency of Singapore (GovTech)",
+    "identityProof": {
+      "identityProofType": "DNS-DID",
+      "identifier": "example.openattestation.com"
+    }
+  },
+  "validFrom": "2021-03-08T12:00:00+08:00",
+  "credentialSubject": {
+    "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    "type": [
+      "DriversLicense"
+    ],
+    "name": "John Doe",
+    "licenses": [
+      {
+        "class": "3",
+        "effectiveDate": "2013-05-16T00:00:00+08:00"
+      },
+      {
+        "class": "3A",
+        "description": "Motor cars with unladen weight <= 3000kg",
+        "effectiveDate": "2013-05-16T00:00:00+08:00"
+      }
+    ]
+  },
+  "proof": {
+    "type": "OpenAttestationMerkleProofSignature2018",
+    "proofPurpose": "assertionMethod",
+    "targetHash": "4b178a75faf7d7ecff1341ee1e0907810df23c88a217b814eb12c2a4454631ec",
+    "proofs": [],
+    "merkleRoot": "4b178a75faf7d7ecff1341ee1e0907810df23c88a217b814eb12c2a4454631ec",
+    "salts": "W3sidmFsdWUiOiIyMzkyMzE4OGQ0MzIwYzlkMGEyZGY0MjU2ZTQ2ZTkzZTgzM2FlMWQ4YTU5YzFlYmQ5MTBkOTUxNDc1MjNiMjhmIiwicGF0aCI6IkBjb250ZXh0WzBdIn0seyJ2YWx1ZSI6IjZjMGEzZTZmZDI0NTEyZjg5MWE4ZDY0N2RlZGU1NmIwYjBlMTNkZDcxOTVmMDRiM2EwMzY2ZDZmNDk5OWFkMTAiLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiMWFhNDY3NmQwY2FjZGU1ZTljY2MyZmNiYzc1OWRjZTJlNWFhOGY5YTg1ODI5NzFlNjNlM2MzZmVjMzE2OWNiOSIsInBhdGgiOiJuYW1lIn0seyJ2YWx1ZSI6IjZmYjU2MDJkYjg1MjY1M2Y2NDg0M2I0ODcyNTNmNGU3ZWI2NzlmZDY3Mjg4NjNmMWRkNjcyY2U1ZWEzMDAzM2YiLCJwYXRoIjoidHlwZVswXSJ9LHsidmFsdWUiOiJkMmZiMGQ4YzBlMzFkNmIwZDgxODQ1NGYyZDgxNGZkOTg3ODFjNjk4ZDA0OTg3MGJmOTAwNzA2M2Y4ZDAyNjNlIiwicGF0aCI6InR5cGVbMV0ifSx7InZhbHVlIjoiNzBjNDk0MzM5ZDQxZjZkOTBmY2ViNzg5ODk2ZjExMTVjMDI1NWY2Njg4Yzg1MGQxNmUxMGRiNzhhZmJjOWYyMSIsInBhdGgiOiJpc3N1ZXIuaWQifSx7InZhbHVlIjoiMDkyYThhMTc0NjYwNjA0YTdmZWNiOTgyNGVhNmMwYTk3ZjMyODM2MzE0MmVjMTg3NWUzZTBjZTFhNzFjZTc1ZSIsInBhdGgiOiJpc3N1ZXIudHlwZSJ9LHsidmFsdWUiOiJmZTM5YTA3ZDYwNDVmZDdlMWQxMjRlOTc1ZmQxNjYxZTQ5NzNlM2Q0NDdkMjBiOTdmZmE0YWRkMDA0YzcyZjhhIiwicGF0aCI6Imlzc3Vlci5uYW1lIn0seyJ2YWx1ZSI6IjljY2ZlNzNkMjllZDhmYTU2MWRiMTE5NjZhN2RiZWNhY2JhYTNlOWNmNDI5OTg4Y2VjMzNmNTRkOTQ0NTdhYzIiLCJwYXRoIjoiaXNzdWVyLmlkZW50aXR5UHJvb2YuaWRlbnRpdHlQcm9vZlR5cGUifSx7InZhbHVlIjoiMDNhNWMwMDYyMzFlNWQ1MjJhNmYzOGFkNDE3YjEzYmQyYzgwMjVhZjY5ZGVhYTA0MzkwMjkwNjljNjEzMjE3ZCIsInBhdGgiOiJpc3N1ZXIuaWRlbnRpdHlQcm9vZi5pZGVudGlmaWVyIn0seyJ2YWx1ZSI6IjNjNzhjMzdlMDA2ZjZlMTkyY2ZhZmZjYzM0NzZhODk0MmMxODNiY2JkN2NlMjJlYjhkZWNmNGQ0YTI5OGJmZmIiLCJwYXRoIjoidmFsaWRGcm9tIn0seyJ2YWx1ZSI6IjNiMDI3MjkwOThmMTQxY2I3Y2E5OGM2ZmIxODMyZjVhYmMyN2JmZDA5NTlkNzk5ZjUzNDRkYzVjZWY2YmMyMTQiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMzQyYmMwYWM0MjU3MmExY2U1N2YxMjcwZGRhNTlmMDFlMzZiMTM5NzhlOTdhODgzMzMxMGVjZGMyYTgzOGUyNCIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC50eXBlWzBdIn0seyJ2YWx1ZSI6IjlmZGIwN2YwNGNiOTllZWViZTVjODFiZmRkZmIwMDRiNWVlMTVmZTBhMGE4ZDIyNjYzZmMxZGRkMzk5NmI3MjgiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubmFtZSJ9LHsidmFsdWUiOiJlMTY0NTBiODVmNjJlY2JkMTgyODg4ZDQ0YjIzZGQ1YTVkZTdiNjBiN2UzZWI5YzQ1NDRmZjYzM2E4MzBlNTkxIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzBdLmNsYXNzIn0seyJ2YWx1ZSI6IjZjZWRmYjg5MTM3MTI3NzYwNjZlNjJkMjE1OTFjY2M0NGNiOTM5ZmNlODA0ZWI2Y2E1MWViNmUyMWE0Zjc3NTAiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMF0uZWZmZWN0aXZlRGF0ZSJ9LHsidmFsdWUiOiIxY2ZjMzA0ZjczZGUxZTUxYWMxZjA3M2RiNWI1MGIxMzRjMjY4Y2M0Y2YyMTQyMGZlYTJmNDYzNWJjM2U5ZTMxIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzFdLmNsYXNzIn0seyJ2YWx1ZSI6ImZhMWQxMDYwZDU3OTU1NWFkZGNiMGQ1OGRiODIzZDAzMzljZDU4YjBlMzk3YTcyY2ViNjQ4M2U2NzYzYzI4MWIiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMV0uZGVzY3JpcHRpb24ifSx7InZhbHVlIjoiNTkwNTA4N2JlOTVhNGFiMzI2NDRkMmQ2M2MxNGIxODhlNGU3MTg2MDdjNWI2MTlkZjc0MjYyMWU2NzdkNmVhZCIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1sxXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjM0YWUzN2JhMzY2NzNkNzMzNDg4YTc5ZDM2ZGQyNDQwZDc2YjMwYTBlMjBjZDM1NGI2Mjk1OGU5Y2U1NjUwODciLCJwYXRoIjoicmVuZGVyTWV0aG9kWzBdLmlkIn0seyJ2YWx1ZSI6IjFjNjUzNmJiNDA1NTgzMjEzMDdmNjcxNTE3ODIwNzc1NmEwZTcwYjUxNTcwMTNkOTFiMDdjMTFlZTg3Yzc2MmIiLCJwYXRoIjoicmVuZGVyTWV0aG9kWzBdLnR5cGUifSx7InZhbHVlIjoiMmNhODYyYzA3Y2M5MGU3M2IwN2ZkMTJlNGIzNjg4YzQ0ZGQ3OTkyN2UwMzlkNDVlOTY3NGMzNGZmMjJjMGE1MSIsInBhdGgiOiJyZW5kZXJNZXRob2RbMF0udGVtcGxhdGVOYW1lIn1d",
+    "privacy": {
+      "obfuscated": [
+        "0394c26c5be1bde929bf5aec2e076fc6843ace379be541c30707dab467baa59f"
+      ]
+    },
+    "key": "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+    "signature": "0x1744f9615fa8d725cf4ae14f2654762dd8e0ee88a9b6d8af13cec688019a7a501e9bae10fa407fdbe359977f8124a26a0061a0ef0ea212c42fd1d91e0998928d1c"
+  },
+  "renderMethod": [
+    {
+      "id": "https://demo-renderer.opencerts.io",
+      "type": "OpenAttestationEmbeddedRenderer",
+      "templateName": "GOVTECH_DEMO"
+    }
+  ]
+}
