@@ -50,7 +50,7 @@ npm i undici
 ### Via npm
 
 ```bash
-npm i @govtechsg/open-attestation
+npm i @govtechsg/open-attestation@beta
 ```
 
 ---
