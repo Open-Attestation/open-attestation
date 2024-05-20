@@ -13,7 +13,7 @@ import { Kind, Mode } from "./@types/diagnose";
 
 type Version = "2.0" | "3.0";
 
-interface DiagnoseError {
+export interface DiagnoseError {
   message: string;
 }
 
