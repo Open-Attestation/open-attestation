@@ -15,7 +15,7 @@ This guide concentrates on OpenAttestation v4.0 documents. For issuing v2.0 docu
 
 ### Node.js
 
-Version 12 or higher is required.
+Version 14.18 or higher is required.
 
 #### Frontend Frameworks/Toolings
 
