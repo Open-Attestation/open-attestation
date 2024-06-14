@@ -36,9 +36,9 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@commitlint/cli": "^17.6.7",
-    "@commitlint/config-conventional": "^17.6.7",
-    "@commitlint/prompt": "^17.6.7",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@commitlint/prompt": "^18.4.3",
     "@rollup/plugin-json": "^4.1.0",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.5.3",
@@ -70,7 +70,7 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "semantic-release": "^22.0.8",
     "ts-jest": "^29.1.1",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   },
   "dependencies": {
@@ -78,7 +78,7 @@
     "ajv-formats": "^2.1.1",
     "cross-fetch": "^3.1.5",
     "debug": "^4.3.2",
-    "ethers": "^5.7.2",
+    "ethers": "^6.9.0",
     "flatley": "^5.2.0",
     "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
