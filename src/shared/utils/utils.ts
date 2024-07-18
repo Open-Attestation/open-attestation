@@ -208,7 +208,7 @@ export const getVersion = (document: unknown): Version => {
           return "3.0";
       }
     } else if ("@context" in document && Array.isArray(document["@context"])) {
-      if (document["@context"].includes(ContextUrl.v4_alpha)) {
+      if (document["@context"].includes(ContextUrl.oa_vc_v4)) {
         return "4.0";
       }
     }

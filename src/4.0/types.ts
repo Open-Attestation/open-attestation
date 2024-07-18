@@ -13,7 +13,7 @@ const _W3cVerifiableCredential = z.object({
     z.record(z.any()),
     z.string(),
     // If array: First item must be baseContext, while remaining items can be string or object
-    z.tuple([z.literal(ContextUrl.v2_vc)]).rest(z.union([z.string(), z.record(z.any())])),
+    z.tuple([z.literal(ContextUrl.w3c_vc_v2)]).rest(z.union([z.string(), z.record(z.any())])),
   ]),
 
   // [Optional]
@@ -203,13 +203,13 @@ export const V4OpenAttestationDocument = _W3cVerifiableCredential
     "@context": z
 
       // Must be an array that starts with [baseContext, v4Context, ...]
-      .tuple([z.literal(ContextUrl.v2_vc), z.literal(ContextUrl.v4_alpha)])
+      .tuple([z.literal(ContextUrl.w3c_vc_v2), z.literal(ContextUrl.oa_vc_v4)])
       // Remaining items can be string or object
       .rest(z.union([z.string(), z.record(z.any())])),
 
     type: z
       // Must be an array that starts with [VerifiableCredential, OpenAttestationCredential, ...]
-      .tuple([z.literal(ContextType.BaseContext), z.literal(ContextType.V4AlphaContext)])
+      .tuple([z.literal(ContextType.BaseContext), z.literal(ContextType.OAV4Context)])
       // Remaining items can be string
       .rest(z.string()),
 

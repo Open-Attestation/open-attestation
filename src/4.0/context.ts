@@ -2,16 +2,16 @@ import { expand, Options, JsonLdDocument } from "jsonld";
 import { fetch } from "cross-fetch";
 
 export const ContextUrl = {
-  v2_vc: "https://www.w3.org/ns/credentials/v2",
-  v4_alpha: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+  w3c_vc_v2: "https://www.w3.org/ns/credentials/v2",
+  oa_vc_v4: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
 } as const;
 
 export const ContextType = {
   BaseContext: "VerifiableCredential",
-  V4AlphaContext: "OpenAttestationCredential",
+  OAV4Context: "OpenAttestationCredential",
 } as const;
 
-const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
+const preloadedContextList = [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4];
 const contexts: Map<string, any> = new Map();
 
 // Preload frequently used contexts
