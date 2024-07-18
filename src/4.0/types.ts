@@ -7,6 +7,10 @@ const URI_REGEX =
 const Uri = z.string().regex(URI_REGEX, { message: "Invalid URI" });
 const ETHEREUM_ADDRESS_REGEX = /^(0x)?[0-9a-fA-F]{40}$/;
 const EthereumAddress = z.string().regex(ETHEREUM_ADDRESS_REGEX, { message: "Invalid Ethereum address" });
+const OA_V4_CONTEXT_LIKE = z.union([
+  z.literal(ContextUrl.oa_vc_v4),
+  z.string().startsWith(ContextUrl.oa_vc_v4.split("/context.json")[0]),
+]);
 
 const _W3cVerifiableCredential = z.object({
   "@context": z.union([
@@ -201,9 +205,8 @@ export const RevocationStoreRevocation = z.object({
 export const V4OpenAttestationDocument = _W3cVerifiableCredential
   .extend({
     "@context": z
-
-      // Must be an array that starts with [baseContext, v4Context, ...]
-      .tuple([z.literal(ContextUrl.w3c_vc_v2), z.literal(ContextUrl.oa_vc_v4)])
+      // Must be an array that starts with [baseContext, oaV4ContextLike, ...]
+      .tuple([z.literal(ContextUrl.w3c_vc_v2), OA_V4_CONTEXT_LIKE])
       // Remaining items can be string or object
       .rest(z.union([z.string(), z.record(z.any())])),
 
