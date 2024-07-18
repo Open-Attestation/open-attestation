@@ -3,7 +3,7 @@ import { fetch } from "cross-fetch";
 
 export const ContextUrl = {
   w3c_vc_v2: "https://www.w3.org/ns/credentials/v2",
-  oa_vc_v4: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+  oa_vc_v4: "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
 } as const;
 
 export const ContextType = {
