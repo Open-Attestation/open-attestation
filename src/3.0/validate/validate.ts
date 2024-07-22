@@ -56,7 +56,7 @@ const documentLoader = async (url: string) => {
     for (const url of preloadedContextList) {
       contexts.set(
         url,
-        fetch(url, { headers: { accept: "application/json" } }).then((res: any) => res.json())
+        fetch(url, { headers: { accept: "application/json, application/ld+json" } }).then((res: any) => res.json())
       );
     }
   }
