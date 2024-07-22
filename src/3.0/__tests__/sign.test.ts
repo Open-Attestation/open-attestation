@@ -1,7 +1,7 @@
 import { signDocument, v3 } from "../../index";
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import rawWrappedDocumentV3 from "../../../test/fixtures/v3/did-wrapped.json";
-import { Wallet } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 
 const wrappedDocumentV3 = rawWrappedDocumentV3 as v3.WrappedDocument;
 

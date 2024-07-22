@@ -74,11 +74,14 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@ethersproject/abstract-signer": "^5.7.0",
+    "@ethersproject/bytes": "^5.7.0",
+    "@ethersproject/logger": "^5.7.0",
+    "@ethersproject/wallet": "^5.7.0",
     "@govtechsg/jsonld": "^0.1.0",
     "ajv-formats": "^2.1.1",
     "cross-fetch": "^3.1.5",
     "debug": "^4.3.2",
-    "ethers": "^5.7.2",
     "flatley": "^5.2.0",
     "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
