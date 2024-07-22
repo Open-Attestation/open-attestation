@@ -1,4 +1,4 @@
-import { logger } from "ethers";
+import { Logger } from "@ethersproject/logger";
 import { SchemaId } from "../@types/document";
 import { validateSchema as validate } from "../validate";
 import {
@@ -9,8 +9,12 @@ import {
 import { ArrayProof, Signature, SignatureStrict } from "../../2.0/types";
 import { getSchema } from "../ajv";
 import { Kind, Mode } from "./@types/diagnose";
+import { version } from "ethers";
 
 type Version = "2.0" | "3.0";
+
+//https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/ethers/src.ts/ethers.ts#L36
+const ethersLogger = new Logger(version);
 
 interface DiagnoseError {
   message: string;
@@ -19,7 +23,7 @@ interface DiagnoseError {
 const handleError = (debug: boolean, ...messages: string[]) => {
   if (debug) {
     for (const message of messages) {
-      logger.info(message);
+      ethersLogger.info(message);
     }
   }
   return messages.map((message) => ({ message }));

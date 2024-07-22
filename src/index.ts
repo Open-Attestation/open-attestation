@@ -18,7 +18,7 @@ import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
 import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SchemaValidationError } from "./shared/utils";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
-import { ethers, Signer } from "ethers";
+import { ethers, AbstractSigner as Signer } from "ethers";
 import { getSchema } from "./shared/ajv";
 
 /**
@@ -100,7 +100,7 @@ export async function signDocument(
   keyOrSigner: SigningKey | ethers.Signer
 ) {
   // rj was worried it could happen deep in the code, so I moved it to the boundaries
-  if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {
+  if (!SigningKey.guard(keyOrSigner) && !(keyOrSigner instanceof Signer)) {
     throw new Error(`Either a keypair or ethers.js Signer must be provided`);
   }
   switch (true) {

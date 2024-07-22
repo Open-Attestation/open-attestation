@@ -1,7 +1,7 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { signDocument, v2 } from "../../index";
 import rawWrappedDocumentV2 from "../../../test/fixtures/v2/did-wrapped.json";
-import { Wallet } from "ethers";
+import { HDNodeWallet as Wallet } from "ethers";
 
 const wrappedDocumentV2 = rawWrappedDocumentV2 as v2.WrappedDocument;
 
@@ -20,7 +20,7 @@ describe("v2", () => {
     );
   });
   it("should sign a document with a wallet", async () => {
-    const wallet = Wallet.fromMnemonic(
+    const wallet = Wallet.fromPhrase(
       "tourist quality multiply denial diary height funny calm disease buddy speed gold"
     );
     const { proof } = await signDocument(
