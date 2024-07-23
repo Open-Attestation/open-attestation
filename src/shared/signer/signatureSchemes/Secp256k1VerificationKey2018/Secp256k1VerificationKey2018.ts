@@ -1,14 +1,16 @@
-import { Wallet, ethers } from "ethers";
+import { ethers } from "ethers";
 import { SigningFunction, SigningKey, SigningOptions } from "../../../@types/sign";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Wallet } from "@ethersproject/wallet";
 
 export const name = "Secp256k1VerificationKey2018";
 
 export const sign: SigningFunction = (
   message: string,
-  keyOrSigner: SigningKey | ethers.Signer,
+  keyOrSigner: SigningKey | Signer,
   options: SigningOptions = {}
 ): Promise<string> => {
-  let signer: ethers.Signer;
+  let signer: Signer;
   if (SigningKey.guard(keyOrSigner)) {
     const wallet = new Wallet(keyOrSigner.private);
     if (!keyOrSigner.public.toLowerCase().includes(wallet.address.toLowerCase())) {

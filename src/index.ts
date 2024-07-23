@@ -18,8 +18,8 @@ import { obfuscateVerifiableCredential } from "./3.0/obfuscate";
 import { WrapDocumentOptionV2, WrapDocumentOptionV3 } from "./shared/@types/wrap";
 import { SchemaValidationError } from "./shared/utils";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "./shared/@types/sign";
-import { ethers, AbstractSigner as Signer } from "ethers";
 import { getSchema } from "./shared/ajv";
+import { Signer } from "@ethersproject/abstract-signer";
 
 /**
  * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
@@ -87,20 +87,20 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
 export async function signDocument<T extends v3.OpenAttestationDocument>(
   document: v3.SignedWrappedDocument<T> | v3.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ): Promise<v3.SignedWrappedDocument<T>>;
 export async function signDocument<T extends v2.OpenAttestationDocument>(
   document: v2.SignedWrappedDocument<T> | v2.WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ): Promise<v2.SignedWrappedDocument<T>>;
 export async function signDocument(
   document: any,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ) {
   // rj was worried it could happen deep in the code, so I moved it to the boundaries
-  if (!SigningKey.guard(keyOrSigner) && !(keyOrSigner instanceof Signer)) {
+  if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {
     throw new Error(`Either a keypair or ethers.js Signer must be provided`);
   }
   switch (true) {

@@ -74,6 +74,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@ethersproject/wallet": "^5.7.0",
+    "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/logger": "^5.7.0",
     "@govtechsg/jsonld": "^0.1.0",
     "ajv-formats": "^2.1.1",
