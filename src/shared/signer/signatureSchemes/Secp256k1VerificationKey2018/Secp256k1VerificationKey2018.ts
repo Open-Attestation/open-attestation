@@ -1,14 +1,16 @@
-import { Wallet, utils, ethers } from "ethers";
 import { SigningFunction, SigningKey, SigningOptions } from "../../../@types/sign";
+import { Signer } from "@ethersproject/abstract-signer";
+import { arrayify } from "@ethersproject/bytes";
+import { Wallet } from "@ethersproject/wallet";
 
 export const name = "Secp256k1VerificationKey2018";
 
 export const sign: SigningFunction = (
   message: string,
-  keyOrSigner: SigningKey | ethers.Signer,
+  keyOrSigner: SigningKey | Signer,
   options: SigningOptions = {}
 ): Promise<string> => {
-  let signer: ethers.Signer;
+  let signer: Signer;
   if (SigningKey.guard(keyOrSigner)) {
     const wallet = new Wallet(keyOrSigner.private);
     if (!keyOrSigner.public.toLowerCase().includes(wallet.address.toLowerCase())) {
@@ -18,5 +20,6 @@ export const sign: SigningFunction = (
   } else {
     signer = keyOrSigner;
   }
-  return signer.signMessage(options.signAsString ? message : utils.arrayify(message));
+  // see https://docs.ethers.org/v6/migrating/ under hex-conversion
+  return signer.signMessage(options.signAsString ? message : arrayify(message));
 };
