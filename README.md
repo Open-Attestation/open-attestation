@@ -102,7 +102,7 @@ The following code example of `signDocument` contains the signer information.
 
 ```js
 import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/open-attestation";
-import { Wallet } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 
 const wallet = Wallet.fromMnemonic("tourist quality multiply denial diary height funny calm disease buddy speed gold");
 const { proof } = await signDocument(
