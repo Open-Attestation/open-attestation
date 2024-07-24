@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { Signer } from "@ethersproject/abstract-signer";
 import { Record, Static, String } from "runtypes";
 
 export enum SUPPORTED_SIGNING_ALGORITHM {
@@ -6,7 +6,7 @@ export enum SUPPORTED_SIGNING_ALGORITHM {
 }
 export interface SigningOptions {
   signAsString?: boolean;
-  signer?: ethers.Signer;
+  signer?: Signer;
 }
 export const SigningKey = Record({
   private: String,
@@ -15,8 +15,4 @@ export const SigningKey = Record({
 
 export type SigningKey = Static<typeof SigningKey>;
 
-export type SigningFunction = (
-  message: string,
-  key: SigningKey | ethers.Signer,
-  options?: SigningOptions
-) => Promise<string>;
+export type SigningFunction = (message: string, key: SigningKey | Signer, options?: SigningOptions) => Promise<string>;

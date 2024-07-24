@@ -10,8 +10,8 @@ import {
   WrappedDocument as WrappedDocumentV3,
 } from "../../3.0/types";
 import { Literal, Static, String } from "runtypes";
-import { ethers } from "ethers";
 import { V4OpenAttestationDocument, V4SignedWrappedDocument, V4WrappedDocument } from "../../4.0/types";
+import { isHexString } from "@ethersproject/bytes";
 
 export type OpenAttestationDocument = OpenAttestationDocumentV2 | OpenAttestationDocumentV3 | V4OpenAttestationDocument;
 export type WrappedDocument<T extends OpenAttestationDocument> = T extends OpenAttestationDocumentV2
@@ -35,7 +35,7 @@ export enum SchemaId {
 }
 
 export const OpenAttestationHexString = String.withConstraint(
-  (value) => ethers.utils.isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
+  (value) => isHexString(`0x${value}`, 32) || `${value} has not the expected length of 32 bytes`
 );
 
 export const SignatureAlgorithm = Literal("OpenAttestationMerkleProofSignature2018");

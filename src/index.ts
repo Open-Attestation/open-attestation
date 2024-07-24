@@ -1,4 +1,4 @@
-import { ethers, Signer } from "ethers";
+import { Signer } from "@ethersproject/abstract-signer";
 
 import { getSchema } from "./shared/ajv";
 import * as utils from "./shared/utils";
@@ -110,7 +110,7 @@ export function obfuscate<T extends WrappedDocument<OpenAttestationDocument>>(
 export async function signDocument<T extends v2.OpenAttestationDocument | v3.OpenAttestationDocument>(
   document: WrappedDocument<T> | SignedWrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: SigningKey | ethers.Signer
+  keyOrSigner: SigningKey | Signer
 ): Promise<SignedWrappedDocument<T>> {
   // rj was worried it could happen deep in the code, so I moved it to the boundaries
   if (!SigningKey.guard(keyOrSigner) && !Signer.isSigner(keyOrSigner)) {

@@ -3,12 +3,12 @@ import { sign } from "../shared/signer";
 import { OpenAttestationDocument, SignedWrappedDocument } from "./types";
 import { isSignedWrappedV2Document } from "../shared/utils";
 import { SigningKey, SUPPORTED_SIGNING_ALGORITHM } from "../shared/@types/sign";
-import { ethers } from "ethers";
+import { Signer } from "@ethersproject/abstract-signer";
 
 export const signDocument = async <T extends OpenAttestationDocument>(
   document: SignedWrappedDocument<T> | WrappedDocument<T>,
   algorithm: SUPPORTED_SIGNING_ALGORITHM,
-  keyOrSigner: ethers.Signer | SigningKey
+  keyOrSigner: Signer | SigningKey
 ): Promise<SignedWrappedDocument<T>> => {
   const merkleRoot = `0x${document.signature.merkleRoot}`;
   const signature = await sign(algorithm, merkleRoot, keyOrSigner);
