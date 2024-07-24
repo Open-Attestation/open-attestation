@@ -303,7 +303,9 @@ describe("privacy", () => {
     test("should return array of hashes when there is obfuscated data in document", () => {
       const obfuscatedData = getObfuscatedData(SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED);
       expect(obfuscatedData.length).toBe(1);
-      expect(obfuscatedData?.[0]).toBe("0394c26c5be1bde929bf5aec2e076fc6843ace379be541c30707dab467baa59f");
+      expect(obfuscatedData?.[0]).toMatchInlineSnapshot(
+        `"7f2ecdae29b49b3a971d5acdfbbf9225a193e735ce41b89b0d84cca801794fc9"`
+      );
     });
   });
 

@@ -1,7 +1,7 @@
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+    "https://schemata.openattestation.com/com/openattestation/4.0/context.json"
   ],
   "type": [
     "VerifiableCredential",
@@ -10,7 +10,7 @@
   "validFrom": "2021-03-08T12:00:00+08:00",
   "name": "Republic of Singapore Driving Licence",
   "issuer": {
-    "id": "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89",
+    "id": "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     "type": "OpenAttestationIssuer",
     "name": "Government Technology Agency of Singapore (GovTech)",
     "identityProof": {

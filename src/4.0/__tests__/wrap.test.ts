@@ -6,7 +6,7 @@ describe("V4.0 wrap document", () => {
     const wrapped = await wrapDocument({
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
-        "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+        "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
       ],
       type: ["VerifiableCredential", "OpenAttestationCredential"],
       credentialSubject: {
@@ -40,7 +40,7 @@ describe("V4.0 wrap document", () => {
       wrapDocument({
         "@context": [
           "https://www.w3.org/ns/credentials/v2",
-          "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+          "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
         ],
 
         type: ["VerifiableCredential", "OpenAttestationCredential"],
@@ -76,7 +76,7 @@ describe("V4.0 wrap document", () => {
       wrapDocument({
         "@context": [
           "https://www.w3.org/ns/credentials/v2",
-          "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+          "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
         ],
 
         type: ["VerifiableCredential", "OpenAttestationCredential"],
