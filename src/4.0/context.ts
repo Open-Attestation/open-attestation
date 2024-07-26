@@ -1,6 +1,6 @@
 import { fetch } from "cross-fetch";
 import { expand, Options, JsonLdDocument } from "jsonld";
-import { HARDCODED_CONTEXTS } from "./contexts/hardcodedContexts";
+import { contextsMap } from "./contexts/__generated__";
 
 export const ContextUrl = {
   w3c_vc_v2: "https://www.w3.org/ns/credentials/v2",
@@ -12,7 +12,7 @@ export const ContextType = {
   OAV4Context: "OpenAttestationCredential",
 } as const;
 
-const contextCache: Map<string, any> = new Map();
+const contextCache: Map<string, Record<any, any>> = new Map();
 
 let isFirstLoad = true;
 // https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
@@ -21,8 +21,9 @@ const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
   // On first load: Preload hardcoded contexts so that no network call is necessary
   if (isFirstLoad) {
     isFirstLoad = false;
-    for (const url of Object.values(ContextUrl)) {
-      contextCache.set(url, HARDCODED_CONTEXTS[url]);
+    for (const [url, value] of contextsMap) {
+      const parsed = JSON.parse(value);
+      contextCache.set(url, parsed);
     }
   }
   if (contextCache.get(url)) {
