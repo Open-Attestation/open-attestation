@@ -18,7 +18,7 @@ let isFirstLoad = true;
 // https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
 // FIXME: @types/json-ld seems to be outdated as callback is supposed to be options
 const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
-  // On first load: Preload hardcoded contexts so that no network call is necessary
+  // On first load: Preload frequently used contexts so that no network request will be made on runtime
   if (isFirstLoad) {
     isFirstLoad = false;
     for (const [url, value] of contextsMap) {
@@ -56,13 +56,4 @@ export class UnableToInterpretContextError extends Error {
     super(`Unable to interpret @context:\n${details}`);
     Object.setPrototypeOf(this, UnableToInterpretContextError.prototype);
   }
-}
-
-/**
- * Convert URL to a filename-safe string
- * @param url string
- * @returns string
- */
-export function urlToSafeFilename(url: string) {
-  return url.replace(/[/\\?%*:|"<>]/g, "-");
 }
