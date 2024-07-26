@@ -1,35 +1,35 @@
-import { expand, Options, JsonLdDocument } from "jsonld";
 import { fetch } from "cross-fetch";
+import { expand, Options, JsonLdDocument } from "jsonld";
+import { contextsMap } from "./contexts/__generated__";
 
 export const ContextUrl = {
-  v2_vc: "https://www.w3.org/ns/credentials/v2",
-  v4_alpha: "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+  w3c_vc_v2: "https://www.w3.org/ns/credentials/v2",
+  oa_vc_v4: "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
 } as const;
 
 export const ContextType = {
   BaseContext: "VerifiableCredential",
-  V4AlphaContext: "OpenAttestationCredential",
+  OAV4Context: "OpenAttestationCredential",
 } as const;
 
-const preloadedContextList = [ContextUrl.v2_vc, ContextUrl.v4_alpha];
-const contexts: Map<string, any> = new Map();
+const contextCache: Map<string, Record<any, any>> = new Map();
 
-// Preload frequently used contexts
-// https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
 let isFirstLoad = true;
+// https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
 // FIXME: @types/json-ld seems to be outdated as callback is supposed to be options
 const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
+  // On first load: Preload frequently used contexts so that no network request will be made on runtime
   if (isFirstLoad) {
     isFirstLoad = false;
-    for (const url of preloadedContextList) {
-      const document = await fetch(url).then((res) => res.json());
-      contexts.set(url, document);
+    for (const [url, value] of contextsMap) {
+      const parsed = JSON.parse(value);
+      contextCache.set(url, parsed);
     }
   }
-  if (contexts.get(url)) {
+  if (contextCache.get(url)) {
     return {
       contextUrl: undefined, // this is for a context via a link header
-      document: contexts.get(url), // this is the actual document that was loaded
+      document: contextCache.get(url), // this is the actual document that was loaded
       documentUrl: url, // this is the actual context URL after redirects
     };
   } else {

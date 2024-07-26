@@ -8,9 +8,9 @@ import { obfuscateVerifiableCredential } from "../obfuscate";
 const ROOT_CREDENTIAL_TARGET_HASH = ROOT_CREDENTIAL.proof.targetHash;
 
 describe("V4 digestCredential", () => {
-  test("given all testobfuscated documents are generated from the ROOT_CREDENTIAL, ROOT_CREDENTIAL_TARGET_HASH should match snapshot", () => {
+  test("given that obfuscated documents are generated from the ROOT_CREDENTIAL, ROOT_CREDENTIAL_TARGET_HASH should match snapshot", () => {
     expect(ROOT_CREDENTIAL_TARGET_HASH).toMatchInlineSnapshot(
-      `"dd55a7d96d47e58350f2cfb03ebdf3f859684c9f97ba75eed55b1bdcc761c5aa"`
+      `"0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc"`
     );
   });
 
@@ -66,7 +66,7 @@ describe("V4 digestCredential", () => {
       `);
     expect(OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated).toMatchInlineSnapshot(`
       [
-        "410849f7c317307141d4cecd4d72fe7efb9655abaa0ee37374b2ec53a3588ee7",
+        "31744f7aac0af84e23e752611279933657ff78a9065330f8c5029ec5205979a3",
       ]
     `);
 
@@ -105,9 +105,9 @@ describe("V4 digestCredential", () => {
       `);
     expect(OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated).toMatchInlineSnapshot(`
       [
-        "410849f7c317307141d4cecd4d72fe7efb9655abaa0ee37374b2ec53a3588ee7",
-        "21f8a6f2f464ff14afbc52e4dcb965d7891a7c63fd37eb93f8f98477dcdfc7f9",
-        "228eb6b469ca3a475238455f11125b7edc826c6dc3ae727d023d1eb71d0e60d6",
+        "31744f7aac0af84e23e752611279933657ff78a9065330f8c5029ec5205979a3",
+        "f49443c7e5fcb9f20dad4463a5e0b2cb3e341c430d4792cb87cb11bce0efd9b0",
+        "7f2ecdae29b49b3a971d5acdfbbf9225a193e735ce41b89b0d84cca801794fc9",
       ]
     `);
 
@@ -128,40 +128,40 @@ describe("V4 digestCredential", () => {
       proof: {
         type: "OpenAttestationMerkleProofSignature2018",
         proofPurpose: "assertionMethod",
-        targetHash: "dd55a7d96d47e58350f2cfb03ebdf3f859684c9f97ba75eed55b1bdcc761c5aa",
+        targetHash: "0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc",
         proofs: [],
-        merkleRoot: "dd55a7d96d47e58350f2cfb03ebdf3f859684c9f97ba75eed55b1bdcc761c5aa",
+        merkleRoot: "0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc",
         salts: "W10=",
         privacy: {
           obfuscated: [
-            "0fd4ac5ade244ee2fe47437ea43cd142479540b878fffc86662600fce4d47ef5",
-            "0cc6e4c50bb090af720d224a9bd73be4c0d72831fc701907339693cdcb34ede3",
-            "d2afadbec39872577eae0d5e4ea3b590608cab744f214a2f703f65a5b41683cb",
-            "569b596d71fb145e9c87be1b301da3cbc89cfc104627f6dd95c8123f7974e9c6",
-            "5dee7aa2b48b9a5edae5042459c7c3eeaa8c5b13132b1477641c727a89471b36",
-            "2a1ff14be659821afa68edc245f67b9e25331b450715b41348ed2405334d5abd",
-            "0f1d172b5352464121dffc550e16f64b8019637e39768c506fd2e517a0da305d",
-            "ff4eeed1d7bb70aef646d46dc75b3408cf019e0daeaf2ef0313974690d8beef2",
-            "2a4e9fd43be0221af2f02a6b959edf704b630559268a0b2a657fe046e282fbb8",
-            "bbdf2b05cc0bd2a64fc3483211806e2f863bea05fba81f63092ec07c4ee8ebd9",
-            "bd9acf6bef05f94720f0fa9c5540bb9db7d6370c39e2bbbee31e408842985dae",
-            "410849f7c317307141d4cecd4d72fe7efb9655abaa0ee37374b2ec53a3588ee7",
-            "32a55f464387e37df8f74cf3de6a8e04626e19c2f4d5ec8931aee4b866329fb8",
-            "21f8a6f2f464ff14afbc52e4dcb965d7891a7c63fd37eb93f8f98477dcdfc7f9",
-            "6bc7b2350b59b02a44d2593ee7538590114544bc3a39fe9564ee49b387c883c4",
-            "228eb6b469ca3a475238455f11125b7edc826c6dc3ae727d023d1eb71d0e60d6",
-            "d6e7027dd62b265e83aaf306f095446efab2677e940a0fbb118cc91dd8226fdb",
-            "da26ce90128b1cfd747218cad4c7e86b83f6ab236598ce18aecc3b10426b1b71",
-            "5edea35aa869577c2fd14159534b08da061a7833665cf1cc28f400474c26be01",
-            "d55b72f926f7adaa5ea4f271ffc2f574e4859b05c16042f5b604e52f044a11d0",
-            "dd69de699de90b82cfb658fc304ae4f3131e841d56fd68eb20e17af73613a4d3",
-            "280bc622006d5ec28a42096b57f15f8238df27762c3f754d56dcd89f3aa02c25",
-            "3d8bc5cbcd2826489cdc80a64d586a4d220d975bc2848aa535bd1e4f17dc619f",
+            "fb3e116ab528a97d055822754f9ccd1ca5d2962a74d533cc34f066e65a93c76f",
+            "fe5c8db00ea1f1b4cfcbc29d00810cd6e18f715b98d3660090ee30cf88b4375c",
+            "27c33bf2f9e5ba4d94c017569174f1432f8887994bfaa70a50c0cf42e62e9f3e",
+            "5094d0467785684f843648d3edbd1e370df296327796a13b18112e0941bbf14e",
+            "a4723abfc6809faa72d62d44bb9a11d35e93a780c7a5cb69cdd3693c45960367",
+            "62858cb5907188767134ec958c6cdfd17e44e52f1511e56b06670fe1b0588160",
+            "f0250ff7053e849fda119078d5d5dd6689eb7751a74cab71aa11f92941d22aa9",
+            "d1741f3c9b8bde24eea271870f8200c6c627a94739051d7b7a480e0aaff60bc0",
+            "6da741164cefb41160b23388b3ee9b0944fab0bedd70b63e20cee0af3fabe565",
+            "780e835a67653d28f0582d8fb3a1980709b178841fe4d1f6019be0f49db41ac3",
+            "5c91f334f63f258e4ba299da14880019711538169512e5c6449fbfca7edd7110",
+            "31744f7aac0af84e23e752611279933657ff78a9065330f8c5029ec5205979a3",
+            "ab0957fe8747ac06749268e6398bd4cf67a8a22bf0e67eaacc030bcb5f11e3ed",
+            "f49443c7e5fcb9f20dad4463a5e0b2cb3e341c430d4792cb87cb11bce0efd9b0",
+            "0df8aa79b275612b491103b10804276364da6dc49f398faa7be2190de1d60cd2",
+            "7f2ecdae29b49b3a971d5acdfbbf9225a193e735ce41b89b0d84cca801794fc9",
+            "0eccbf844ac0b68bdd5de85894dce6ecb429f36f4e21630ff70d487a92b2e75f",
+            "135c5417e9baec64bbe977f9244496aae4a452bf58177b4fd9064c8afdfe483a",
+            "b8e8cc46e99c58420e5819ed9f80b90489b2db72f6eb94dc84d1f6a15a331030",
+            "b5554487209f1b99fc73190a8f32e3b2087a6e310f3d05f7c8f7c1f488565b0c",
+            "c38928d0bad7d71f6e2a7aa33b4983afbeaa9e3c990de6137385b30fc6d5a9ac",
+            "856d307b40543221d78ba858c6438f4f3e773ab2a81f3140bdff8bc21e30b0d5",
+            "2be8c866f23b27108c9f2d9acfc21bfef5f61124a2272eb3cee1e94cd79c68c0",
           ],
         },
-        key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+        key: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90#controller",
         signature:
-          "0xa3ac9f73a7314c0aad47bad875921f5c88d2af9440d6c309fc2f93dbf43bd8235e84b744cb1ff1c09c214b559ce3bd6eb148c2f68c677cb8408d96e9b5411dfb1c",
+          "0x949b76d8df493a56c1cf21303a74d6a54904461c1c10f4619b43ad7d339c64467c61eb4c0873f279cd21d5bdd044d3af5318f14d63f57acbd4cde30f271f3eb71c",
       },
     } as unknown as V4SignedWrappedDocument;
 

@@ -14,7 +14,7 @@
             },
             {
               "type": "string",
-              "const": "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+              "const": "https://schemata.openattestation.com/com/openattestation/4.0/context.json"
             }
           ],
           "additionalItems": {

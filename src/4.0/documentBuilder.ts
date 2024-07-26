@@ -10,6 +10,7 @@ import {
   V4SignedWrappedDocument,
   V4WrappedDocument,
 } from "./types";
+import { ContextType, ContextUrl } from "./context";
 
 import { ZodError, z } from "zod";
 
@@ -131,11 +132,8 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       const toWrap = data.map(
         ({ name, credentialSubject }) =>
           ({
-            "@context": [
-              "https://www.w3.org/ns/credentials/v2",
-              "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
-            ],
-            type: ["VerifiableCredential", "OpenAttestationCredential"],
+            "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
+            type: [ContextType.BaseContext, ContextType.OAV4Context],
             issuer,
             name,
             credentialSubject,
@@ -152,11 +150,8 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
 
     const { name, credentialSubject } = data;
     return wrapDocument({
-      "@context": [
-        "https://www.w3.org/ns/credentials/v2",
-        "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
-      ],
-      type: ["VerifiableCredential", "OpenAttestationCredential"],
+      "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
+      type: [ContextType.BaseContext, ContextType.OAV4Context],
       issuer,
       name,
       credentialSubject,

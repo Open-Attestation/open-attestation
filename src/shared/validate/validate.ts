@@ -16,8 +16,8 @@ export const validateSchema = (document: any, validator: ValidateFunction, kind?
   // FIXME: Unable to use isWrappedV4OpenAttestationDocument() type guard here because it also calls validateSchema (endless recursive call)
   // Need a better way to determine whether a document needs to be unwrapped first
   const valid = validator(
-    (Array.isArray(document["@context"]) && document["@context"].includes(ContextUrl.v2_vc)) ||
-      (Array.isArray(document["@context"]) && document["@context"].includes(ContextUrl.v4_alpha)) ||
+    (Array.isArray(document["@context"]) && document["@context"].includes(ContextUrl.w3c_vc_v2)) ||
+      (Array.isArray(document["@context"]) && document["@context"].includes(ContextUrl.oa_vc_v4)) ||
       document.version === SchemaId.v3 ||
       kind === "raw"
       ? document

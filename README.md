@@ -73,7 +73,7 @@ try {
   const wrappedDocument = await wrapDocument({
     "@context": [
       "https://www.w3.org/ns/credentials/v2",
-      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+      "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
     ],
     type: ["VerifiableCredential", "OpenAttestationCredential"],
     name: "Republic of Singapore Driving Licence",

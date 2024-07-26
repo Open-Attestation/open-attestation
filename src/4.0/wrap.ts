@@ -36,7 +36,7 @@ export const wrapDocument = async <T extends V4OpenAttestationDocument>(
   /* 3. Context validation */
   // Ensure that required contexts are present and in the correct order
   // type: [Base, OA, ...]
-  const REQUIRED_CONTEXTS = [ContextUrl.v2_vc, ContextUrl.v4_alpha] as const;
+  const REQUIRED_CONTEXTS = [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4] as const;
   const contexts = new Set<string>(REQUIRED_CONTEXTS);
   if (typeof validatedRawDocument["@context"] === "string") {
     contexts.add(validatedRawDocument["@context"]);
@@ -49,8 +49,8 @@ export const wrapDocument = async <T extends V4OpenAttestationDocument>(
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order
   // type: ["VerifiableCredential", "OpenAttestationCredential", ...]
-  const REQUIRED_TYPES = [ContextType.BaseContext, ContextType.V4AlphaContext] as const;
-  const types = new Set<string>([ContextType.BaseContext, ContextType.V4AlphaContext]);
+  const REQUIRED_TYPES = [ContextType.BaseContext, ContextType.OAV4Context] as const;
+  const types = new Set<string>([ContextType.BaseContext, ContextType.OAV4Context]);
   if (typeof validatedRawDocument["type"] === "string") {
     types.add(validatedRawDocument["type"]);
   } else if (isStringArray(validatedRawDocument["type"])) {

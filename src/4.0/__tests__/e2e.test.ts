@@ -64,7 +64,7 @@ describe("V4 E2E Test Scenarios", () => {
       const wrappedDocument = await wrapDocument(RAW_DOCUMENT_DID);
       expect(wrappedDocument["@context"]).toEqual([
         "https://www.w3.org/ns/credentials/v2",
-        "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+        "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
       ]);
       expect(wrappedDocument.type).toEqual(["VerifiableCredential", "OpenAttestationCredential"]);
       expect(wrappedDocument.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
