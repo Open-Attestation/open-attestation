@@ -13,16 +13,8 @@
               "const": "https://www.w3.org/ns/credentials/v2"
             },
             {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "const": "https://schemata.openattestation.com/com/openattestation/4.0/context.json"
-                },
-                {
-                  "type": "string",
-                  "pattern": "^https\\:\\/\\/schemata\\.openattestation\\.com\\/com\\/openattestation\\/4\\.0"
-                }
-              ]
+              "type": "string",
+              "const": "https://schemata.openattestation.com/com/openattestation/4.0/context.json"
             }
           ],
           "additionalItems": {
