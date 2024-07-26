@@ -40,6 +40,7 @@
     "test:vc": "scripts/runVcTest.sh",
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
+    "fetch-v4-contexts": "npx ts-node scripts/fetchV4Contexts.ts",
     "generate-v4-fixtures": "npx ts-node scripts/generateV4JsonFixtures.ts",
     "generate-v4-json-schemas": "npx ts-node scripts/generateV4JsonSchemas.ts",
     "publish:schema": "./scripts/publishSchema.sh",
