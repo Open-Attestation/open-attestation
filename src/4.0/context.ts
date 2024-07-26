@@ -1,6 +1,6 @@
 import { fetch } from "cross-fetch";
-import { readFile } from "fs/promises";
 import { expand, Options, JsonLdDocument } from "jsonld";
+import { HARDCODED_CONTEXTS } from "./contexts/hardcodedContexts";
 
 export const ContextUrl = {
   w3c_vc_v2: "https://www.w3.org/ns/credentials/v2",
@@ -12,25 +12,17 @@ export const ContextType = {
   OAV4Context: "OpenAttestationCredential",
 } as const;
 
-const PREFETECHED_CONTEXT_LIST = Object.values(ContextUrl);
 const contextCache: Map<string, any> = new Map();
 
 let isFirstLoad = true;
 // https://github.com/digitalbazaar/jsonld.js?tab=readme-ov-file#custom-document-loader
 // FIXME: @types/json-ld seems to be outdated as callback is supposed to be options
 const documentLoader: Options.DocLoader["documentLoader"] = async (url, _) => {
-  // On first load: Preload frequently used contexts from "src/4.0/contexts/__generated__/*"
+  // On first load: Preload hardcoded contexts so that no network call is necessary
   if (isFirstLoad) {
     isFirstLoad = false;
-    for (const url of PREFETECHED_CONTEXT_LIST) {
-      try {
-        const filename = urlToSafeFilename(url);
-        const document = await readFile(`../4.0/contexts/__generated__/${filename}`, "utf-8");
-        const parsed = JSON.parse(document);
-        contextCache.set(url, parsed);
-      } catch (e) {
-        console.warn(`Unable to prefetch context from ${url}`, e);
-      }
+    for (const url of Object.values(ContextUrl)) {
+      contextCache.set(url, HARDCODED_CONTEXTS[url]);
     }
   }
   if (contextCache.get(url)) {
