@@ -10,7 +10,14 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
 
   // fields to remove will contain the list of each expanded keys from the fields passed in parameter, it's for instance useful in case of
   // object obfuscation, where the object itself is not part of the salts, but each individual keys are
-  const toBeRemovedLeafNodes = traverseAndFlatten(pick(data, fieldsAsArray), ({ path }) => path);
+  const toBeRemovedLeafNodes = traverseAndFlatten(
+    pick(data, fieldsAsArray),
+    ({ path }) => path,
+    "",
+    // not picking from an array can lead to unpicked items being left as undefined
+    // these 'undefined' leaf nodes should be removed and not lead to an exception
+    true
+  );
   const salts = decodeSalt(data.proof.salts);
 
   const obfuscatedData = toBeRemovedLeafNodes.map((field) => {
