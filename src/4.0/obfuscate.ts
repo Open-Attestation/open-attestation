@@ -14,7 +14,7 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
     pick(data, fieldsAsArray),
     ({ path }) => path,
     "",
-    // not picking from an array can lead to unpicked items being left as undefined
+    // picking from an array can lead to unpicked items being left as undefined
     // these 'undefined' leaf nodes should be removed and not lead to an exception
     true
   );
