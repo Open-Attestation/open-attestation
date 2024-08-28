@@ -65,10 +65,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "id",
-                "type"
-              ],
+              "required": ["id", "type"],
               "additionalProperties": true
             },
             {
@@ -83,10 +80,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "id",
-                  "type"
-                ],
+                "required": ["id", "type"],
                 "additionalProperties": true
               }
             }
@@ -110,29 +104,17 @@
               "properties": {
                 "identityProofType": {
                   "type": "string",
-                  "enum": [
-                    "DNS-TXT",
-                    "DNS-DID",
-                    "DID"
-                  ]
+                  "enum": ["DNS-TXT", "DNS-DID", "DID"]
                 },
                 "identifier": {
                   "type": "string"
                 }
               },
-              "required": [
-                "identityProofType",
-                "identifier"
-              ],
+              "required": ["identityProofType", "identifier"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "id",
-            "type",
-            "name",
-            "identityProof"
-          ],
+          "required": ["id", "type", "name", "identityProof"],
           "additionalProperties": false
         },
         "validFrom": {
@@ -166,11 +148,7 @@
                     "description": "Media type (or MIME type) of this attachment"
                   }
                 },
-                "required": [
-                  "data",
-                  "filename",
-                  "mimeType"
-                ],
+                "required": ["data", "filename", "mimeType"],
                 "additionalProperties": false
               }
             }
@@ -192,10 +170,7 @@
                   "const": "OpenAttestationOcspResponder"
                 }
               },
-              "required": [
-                "id",
-                "type"
-              ],
+              "required": ["id", "type"],
               "additionalProperties": false
             },
             {
@@ -211,10 +186,7 @@
                   "const": "OpenAttestationRevocationStore"
                 }
               },
-              "required": [
-                "id",
-                "type"
-              ],
+              "required": ["id", "type"],
               "additionalProperties": false
             }
           ]
@@ -231,9 +203,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "additionalProperties": true
             },
             {
@@ -248,9 +218,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "additionalProperties": true
               }
             }
@@ -268,9 +236,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "additionalProperties": true
             },
             {
@@ -285,9 +251,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "additionalProperties": true
               }
             }
@@ -302,9 +266,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "type"
-              ],
+              "required": ["type"],
               "additionalProperties": true
             },
             {
@@ -316,9 +278,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "additionalProperties": true
               }
             }
@@ -344,11 +304,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "id",
-                  "type",
-                  "templateName"
-                ],
+                "required": ["id", "type", "templateName"],
                 "additionalProperties": false
               },
               {
@@ -378,22 +334,35 @@
                     "description": "An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12)."
                   }
                 },
-                "required": [
-                  "id",
-                  "type"
-                ],
+                "required": ["id", "type"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "OpenAttestationLocalPDFRenderer"
+                  },
+                  "templateName": {
+                    "type": "string"
+                  },
+                  "hashType": {
+                    "type": "string",
+                    "enum": ["Keccak256"]
+                  },
+                  "hashValue": {
+                    "type": "string"
+                  }
+                },
+                "required": ["type", "templateName", "hashType", "hashValue"],
                 "additionalProperties": false
               }
             ]
           }
         }
       },
-      "required": [
-        "@context",
-        "type",
-        "issuer",
-        "credentialSubject"
-      ],
+      "required": ["@context", "type", "issuer", "credentialSubject"],
       "additionalProperties": false
     }
   },
