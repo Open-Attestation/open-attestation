@@ -234,7 +234,9 @@ export const V4OpenAttestationDocument = _W3cVerifiableCredential
       }),
 
     // [Optional] Credential Status
-    credentialStatus: z.discriminatedUnion("type", [OscpResponderRevocation, RevocationStoreRevocation]).optional(),
+    credentialStatus: z
+      .union([OscpResponderRevocation, RevocationStoreRevocation, z.object({ type: z.string() }).passthrough()])
+      .optional(),
 
     // [Optional] Render Method
     renderMethod: z.array(z.discriminatedUnion("type", [DecentralisedEmbeddedRenderer, SvgRenderer])).optional(),
