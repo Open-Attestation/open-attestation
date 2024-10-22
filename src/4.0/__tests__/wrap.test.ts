@@ -32,7 +32,7 @@ describe("V4.0 wrap document", () => {
     expect(proof.proofs).toEqual([]);
     expect(proof.salts.length).toBeGreaterThan(0);
     expect(proof.targetHash.length).toBe(64);
-    expect(proof.type).toBe("OpenAttestationMerkleProofSignature2018");
+    expect(proof.type).toBe("OpenAttestationHashProof2018");
   });
 
   test("given a document with explicit v4 contexts, but does not conform to the V4 document schema, should throw", async () => {
@@ -127,6 +127,6 @@ describe("V4.0 wrap document", () => {
     expect(wrapped.proof.proofs).toEqual([]);
     expect(wrapped.proof.salts.length).toBeGreaterThan(0);
     expect(wrapped.proof.targetHash.length).toBe(64);
-    expect(wrapped.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
+    expect(wrapped.proof.type).toBe("OpenAttestationHashProof2018");
   });
 });

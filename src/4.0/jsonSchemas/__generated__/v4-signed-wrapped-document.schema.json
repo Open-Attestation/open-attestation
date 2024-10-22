@@ -298,7 +298,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "const": "OpenAttestationMerkleProofSignature2018"
+              "const": "OpenAttestationHashProof2018"
             },
             "proofPurpose": {
               "type": "string",

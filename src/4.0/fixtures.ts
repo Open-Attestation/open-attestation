@@ -198,7 +198,7 @@ export const WRAPPED_DOCUMENT_DID = freezeObject({
     { id: "https://demo-renderer.opencerts.io", type: "OpenAttestationEmbeddedRenderer", templateName: "GOVTECH_DEMO" },
   ],
   proof: {
-    type: "OpenAttestationMerkleProofSignature2018",
+    type: "OpenAttestationHashProof2018",
     proofPurpose: "assertionMethod",
     targetHash: "0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc",
     proofs: [],
@@ -245,7 +245,7 @@ export const WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
     { id: "https://demo-renderer.opencerts.io", type: "OpenAttestationEmbeddedRenderer", templateName: "GOVTECH_DEMO" },
   ],
   proof: {
-    type: "OpenAttestationMerkleProofSignature2018",
+    type: "OpenAttestationHashProof2018",
     proofPurpose: "assertionMethod",
     targetHash: "0f60b3ef4b9b826de4753c4e68bb5ac9fdd2496549f901331a9d07464469366c",
     proofs: [],
@@ -296,7 +296,7 @@ export const BATCHED_WRAPPED_DOCUMENTS_DID = freezeObject([
       },
     ],
     proof: {
-      type: "OpenAttestationMerkleProofSignature2018",
+      type: "OpenAttestationHashProof2018",
       proofPurpose: "assertionMethod",
       targetHash: "d744b98a001ed34fa133762206e312b5105478f0cc25bf86c3a2a35866597264",
       proofs: ["63edb5b6919143505c522fc96d31bac58ce7b4aa57d366d2df2026c5bb425a64"],
@@ -340,7 +340,7 @@ export const BATCHED_WRAPPED_DOCUMENTS_DID = freezeObject([
       },
     ],
     proof: {
-      type: "OpenAttestationMerkleProofSignature2018",
+      type: "OpenAttestationHashProof2018",
       proofPurpose: "assertionMethod",
       targetHash: "63edb5b6919143505c522fc96d31bac58ce7b4aa57d366d2df2026c5bb425a64",
       proofs: ["d744b98a001ed34fa133762206e312b5105478f0cc25bf86c3a2a35866597264"],
@@ -388,7 +388,7 @@ export const SIGNED_WRAPPED_DOCUMENT_DID = freezeObject({
     { id: "https://demo-renderer.opencerts.io", type: "OpenAttestationEmbeddedRenderer", templateName: "GOVTECH_DEMO" },
   ],
   proof: {
-    type: "OpenAttestationMerkleProofSignature2018",
+    type: "OpenAttestationHashProof2018",
     proofPurpose: "assertionMethod",
     targetHash: "0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc",
     proofs: [],
@@ -438,7 +438,7 @@ export const SIGNED_WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
     { id: "https://demo-renderer.opencerts.io", type: "OpenAttestationEmbeddedRenderer", templateName: "GOVTECH_DEMO" },
   ],
   proof: {
-    type: "OpenAttestationMerkleProofSignature2018",
+    type: "OpenAttestationHashProof2018",
     proofPurpose: "assertionMethod",
     targetHash: "0f60b3ef4b9b826de4753c4e68bb5ac9fdd2496549f901331a9d07464469366c",
     proofs: [],
@@ -480,7 +480,7 @@ export const SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED = freezeObject({
     ],
   },
   proof: {
-    type: "OpenAttestationMerkleProofSignature2018",
+    type: "OpenAttestationHashProof2018",
     proofPurpose: "assertionMethod",
     targetHash: "0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc",
     proofs: [],
@@ -537,7 +537,7 @@ export const BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID = freezeObject([
       },
     ],
     proof: {
-      type: "OpenAttestationMerkleProofSignature2018",
+      type: "OpenAttestationHashProof2018",
       proofPurpose: "assertionMethod",
       targetHash: "d744b98a001ed34fa133762206e312b5105478f0cc25bf86c3a2a35866597264",
       proofs: ["63edb5b6919143505c522fc96d31bac58ce7b4aa57d366d2df2026c5bb425a64"],
@@ -584,7 +584,7 @@ export const BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID = freezeObject([
       },
     ],
     proof: {
-      type: "OpenAttestationMerkleProofSignature2018",
+      type: "OpenAttestationHashProof2018",
       proofPurpose: "assertionMethod",
       targetHash: "63edb5b6919143505c522fc96d31bac58ce7b4aa57d366d2df2026c5bb425a64",
       proofs: ["d744b98a001ed34fa133762206e312b5105478f0cc25bf86c3a2a35866597264"],

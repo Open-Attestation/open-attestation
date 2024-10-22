@@ -82,7 +82,7 @@ export const wrapDocument = async <T extends V4OpenAttestationDocument>(
   const verifiableCredential: V4WrappedDocument = {
     ...documentReadyForWrapping,
     proof: {
-      type: "OpenAttestationMerkleProofSignature2018",
+      type: "OpenAttestationHashProof2018",
       proofPurpose: "assertionMethod",
       targetHash: digest,
       proofs: merkleProof,
