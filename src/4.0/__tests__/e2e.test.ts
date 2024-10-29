@@ -67,7 +67,7 @@ describe("V4 E2E Test Scenarios", () => {
         "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
       ]);
       expect(wrappedDocument.type).toEqual(["VerifiableCredential", "OpenAttestationCredential"]);
-      expect(wrappedDocument.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
+      expect(wrappedDocument.proof.type).toBe("OpenAttestationHashProof2018");
       expect(wrappedDocument.proof.targetHash).toBeDefined();
       expect(wrappedDocument.proof.merkleRoot).toBeDefined();
       expect(wrappedDocument.proof.proofs).toEqual([]);
@@ -125,8 +125,8 @@ describe("V4 E2E Test Scenarios", () => {
         const wrappedDocuments = await wrapDocuments(DATUM);
         wrappedDocuments.forEach((doc, i: number) => {
           expect(doc.type).toEqual(["VerifiableCredential", "OpenAttestationCredential"]);
-          expect(doc.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
-          expect(doc.proof.type).toBe("OpenAttestationMerkleProofSignature2018");
+          expect(doc.proof.type).toBe("OpenAttestationHashProof2018");
+          expect(doc.proof.type).toBe("OpenAttestationHashProof2018");
           expect(doc.credentialSubject.key1).toEqual(expect.stringContaining(DATUM[i].credentialSubject.key1));
           expect(doc.proof.targetHash).toBeDefined();
           expect(doc.proof.merkleRoot).toBeDefined();

@@ -46,7 +46,7 @@
       }
     ],
     "proof": {
-      "type": "OpenAttestationMerkleProofSignature2018",
+      "type": "OpenAttestationHashProof2018",
       "proofPurpose": "assertionMethod",
       "targetHash": "d744b98a001ed34fa133762206e312b5105478f0cc25bf86c3a2a35866597264",
       "proofs": [
@@ -103,7 +103,7 @@
       }
     ],
     "proof": {
-      "type": "OpenAttestationMerkleProofSignature2018",
+      "type": "OpenAttestationHashProof2018",
       "proofPurpose": "assertionMethod",
       "targetHash": "63edb5b6919143505c522fc96d31bac58ce7b4aa57d366d2df2026c5bb425a64",
       "proofs": [

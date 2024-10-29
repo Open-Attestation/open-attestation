@@ -126,7 +126,7 @@ describe("V4 digestCredential", () => {
     const OBFUSCATED_WRAPPED_DOCUMENT = {
       // no visible fields
       proof: {
-        type: "OpenAttestationMerkleProofSignature2018",
+        type: "OpenAttestationHashProof2018",
         proofPurpose: "assertionMethod",
         targetHash: "0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc",
         proofs: [],

@@ -242,7 +242,7 @@ export const V4OpenAttestationDocument = _W3cVerifiableCredential
   .strict();
 
 const WrappedProof = z.object({
-  type: z.literal("OpenAttestationMerkleProofSignature2018"),
+  type: z.literal("OpenAttestationHashProof2018"),
   proofPurpose: z.literal("assertionMethod"),
   targetHash: z.string(),
   proofs: z.array(z.string()),
