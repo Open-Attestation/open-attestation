@@ -157,11 +157,27 @@
             "type": {
               "type": "string",
               "description": "Type of renderer template",
-              "enum": ["EMBEDDED_RENDERER"]
+              "enum": ["EMBEDDED_RENDERER", "LOCAL_PDF_RENDERER"]
             },
             "url": {
               "type": "string",
               "description": "URL of a decentralised renderer to render this document"
+            },
+            "hash": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["Keccak256"],
+                  "description": "Type of hashing algorithm used for generating the proof value of the local file"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Proof value of the local file"
+                }
+              },
+              "required": ["type", "value"],
+              "additionalProperties": true
             }
           },
           "required": ["name", "type"]
