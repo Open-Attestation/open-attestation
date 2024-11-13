@@ -4,7 +4,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { V4OpenAttestationDocument, V4WrappedDocument, V4SignedWrappedDocument } from "./types";
 import type { ZodError } from "zod";
 
-export const signDocument = async <T extends V4OpenAttestationDocument>(
+export const signVC = async <T extends V4OpenAttestationDocument>(
   document: V4SignedWrappedDocument<T> | V4WrappedDocument<T>,
   algorithm: "Secp256k1VerificationKey2018",
   keyOrSigner: SigningKey | Signer

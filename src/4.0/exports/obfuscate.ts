@@ -1,1 +1,1 @@
-export { obfuscateVerifiableCredential as obfuscate, obfuscateErrors } from "../obfuscate";
+export { obfuscateVC as obfuscateVerifiableCredential, obfuscateErrors } from "../obfuscate";

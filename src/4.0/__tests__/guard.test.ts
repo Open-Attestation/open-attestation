@@ -1,13 +1,13 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { RAW_DOCUMENT_DID } from "../fixtures";
-import { signDocument } from "../sign";
+import { signVC } from "../sign";
 import {
   W3cVerifiableCredential,
   V4OpenAttestationDocument,
   V4WrappedDocument,
   V4SignedWrappedDocument,
 } from "../types";
-import { wrapDocument } from "../wrap";
+import { digestVC } from "../digest";
 
 const RAW_DOCUMENT = {
   ...RAW_DOCUMENT_DID,
@@ -27,15 +27,11 @@ describe("V4.0 guard", () => {
   let WRAPPED_DOCUMENT: V4WrappedDocument;
   let SIGNED_WRAPPED_DOCUMENT: V4SignedWrappedDocument;
   beforeAll(async () => {
-    WRAPPED_DOCUMENT = await wrapDocument(RAW_DOCUMENT);
-    SIGNED_WRAPPED_DOCUMENT = await signDocument(
-      WRAPPED_DOCUMENT,
-      SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
-      {
-        public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-        private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
-      }
-    );
+    WRAPPED_DOCUMENT = await digestVC(RAW_DOCUMENT);
+    SIGNED_WRAPPED_DOCUMENT = await signVC(WRAPPED_DOCUMENT, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+      public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
+    });
   });
 
   describe("given a raw document", () => {

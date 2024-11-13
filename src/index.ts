@@ -24,11 +24,8 @@ import { digestCredential as digestCredentialV3 } from "./3.0/digest";
 import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV3 } from "./3.0/obfuscate";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
 
-import { verify as verifyV4 } from "./4.0/verify";
-import {
-  ObfuscateVerifiableCredentialResult,
-  obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4,
-} from "./4.0/obfuscate";
+import { validateDigest as verifyV4 } from "./4.0/validate";
+import { ObfuscateVerifiableCredentialResult, obfuscateVC as obfuscateVerifiableCredentialV4 } from "./4.0/obfuscate";
 import { v4Diagnose } from "./4.0/diagnose";
 import { V4WrappedDocument, isV4WrappedDocument } from "./4.0/types";
 

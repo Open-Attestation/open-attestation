@@ -1,9 +1,9 @@
 import { V4WrappedDocument } from "./types";
-import { SaltNotFoundError, digestCredential } from "./digest";
+import { SaltNotFoundError, genTargetHash } from "./hash";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt } from "./salt";
 
-export const verify = <T extends V4WrappedDocument>(document: T): document is T => {
+export const validateDigest = <T extends V4WrappedDocument>(document: T): document is T => {
   if (!document.proof) {
     return false;
   }
@@ -15,7 +15,7 @@ export const verify = <T extends V4WrappedDocument>(document: T): document is T 
 
   // Checks target hash
   try {
-    const digest = digestCredential(documentWithoutProof, decodedSalts, document.proof.privacy.obfuscated);
+    const digest = genTargetHash(documentWithoutProof, decodedSalts, document.proof.privacy.obfuscated);
     const targetHash = document.proof.targetHash;
     if (digest !== targetHash) return false;
 

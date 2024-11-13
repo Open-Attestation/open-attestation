@@ -1,5 +1,5 @@
-import { wrapDocument, wrapDocuments, wrapDocumentErrors } from "./wrap";
-import { signDocument, signDocumentErrors } from "./sign";
+import { digestVC, digestVCs, wrapDocumentErrors } from "./digest";
+import { signVC, signDocumentErrors } from "./sign";
 import {
   Override,
   DecentralisedEmbeddedRenderer,
@@ -142,14 +142,14 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
           } satisfies V4OpenAttestationDocument)
       );
 
-      return wrapDocuments(toWrap) as unknown as WrappedReturn<Props>;
+      return digestVCs(toWrap) as unknown as WrappedReturn<Props>;
     }
 
     // this should never happen
     if (!data) throw new Error("CredentialSubject is required");
 
     const { name, credentialSubject } = data;
-    return wrapDocument({
+    return digestVC({
       "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
       type: [ContextType.BaseContext, ContextType.OAV4Context],
       issuer,
@@ -160,15 +160,15 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     }) as unknown as WrappedReturn<Props>;
   };
 
-  private sign = async (props: { signer: Parameters<typeof signDocument>[2] }): Promise<SignedReturn<Props>> => {
+  private sign = async (props: { signer: Parameters<typeof signVC>[2] }): Promise<SignedReturn<Props>> => {
     const wrapped = await this.wrap();
     if (Array.isArray(wrapped)) {
-      return Promise.all(wrapped.map((d) => signDocument(d, "Secp256k1VerificationKey2018", props.signer))) as Promise<
+      return Promise.all(wrapped.map((d) => signVC(d, "Secp256k1VerificationKey2018", props.signer))) as Promise<
         SignedReturn<Props>
       >;
     }
 
-    return signDocument(wrapped, "Secp256k1VerificationKey2018", props.signer) as Promise<SignedReturn<Props>>;
+    return signVC(wrapped, "Secp256k1VerificationKey2018", props.signer) as Promise<SignedReturn<Props>>;
   };
 
   // add issuance methods here

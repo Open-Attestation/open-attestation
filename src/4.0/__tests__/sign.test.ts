@@ -2,11 +2,11 @@ import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { Wallet } from "@ethersproject/wallet";
 import { WRAPPED_DOCUMENT_DID } from "../fixtures";
 import { V4SignedWrappedDocument } from "../types";
-import { signDocument } from "../sign";
+import { signVC } from "../sign";
 
-describe("V4 sign", () => {
+describe("V4.0 sign", () => {
   it("should sign a document", async () => {
-    const signedWrappedDocument = await signDocument(
+    const signedWrappedDocument = await signVC(
       WRAPPED_DOCUMENT_DID,
       SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
       {
@@ -29,7 +29,7 @@ describe("V4 sign", () => {
     const wallet = Wallet.fromMnemonic(
       "tourist quality multiply denial diary height funny calm disease buddy speed gold"
     );
-    const signedWrappedDocument = await signDocument(
+    const signedWrappedDocument = await signVC(
       WRAPPED_DOCUMENT_DID,
       SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
       wallet
@@ -47,7 +47,7 @@ describe("V4 sign", () => {
   });
 
   it("should a signed document to be resigned", async () => {
-    const signedDocument = await signDocument(
+    const signedDocument = await signVC(
       WRAPPED_DOCUMENT_DID,
       SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
       {
@@ -56,7 +56,7 @@ describe("V4 sign", () => {
       }
     );
 
-    const resignedDocument = await signDocument(
+    const resignedDocument = await signVC(
       WRAPPED_DOCUMENT_DID,
       SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
       {
@@ -70,13 +70,13 @@ describe("V4 sign", () => {
 
   it("should throw error if a key or signer is invalid", async () => {
     await expect(
-      signDocument(WRAPPED_DOCUMENT_DID, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {} as any)
+      signVC(WRAPPED_DOCUMENT_DID, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {} as any)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"Either a keypair or ethers.js Signer must be provided"`);
   });
 
   it("should throw error if proof is malformed", async () => {
     await expect(
-      signDocument(
+      signVC(
         {
           ...WRAPPED_DOCUMENT_DID,
           proof: { ...WRAPPED_DOCUMENT_DID.proof, merkleRoot: undefined as unknown as string },

@@ -1,7 +1,7 @@
 import { salt, decodeSalt } from "../salt";
 import { Base64 } from "js-base64";
 
-describe("V4.0 digest", () => {
+describe("V4.0 salt", () => {
   describe("salt", () => {
     test("handles shadowed keys correctly (type 1: root, dot notation)", () => {
       const document = {

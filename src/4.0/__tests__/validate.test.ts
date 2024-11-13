@@ -1,7 +1,7 @@
 import { cloneDeep } from "lodash";
 import { BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID, SIGNED_WRAPPED_DOCUMENT_DID } from "../fixtures";
 import { V4SignedWrappedDocument } from "../types";
-import { verify } from "../verify";
+import { validateDigest } from "../validate";
 
 const TEST_DOCUMENTS = {
   "Documents without proofs mean these documents are wrapped individually (i.e. targetHash == merkleRoot)":
@@ -10,11 +10,11 @@ const TEST_DOCUMENTS = {
     BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID[0],
 } as const;
 
-describe("V4 verify", () => {
+describe("V4.0 validate", () => {
   Object.entries(TEST_DOCUMENTS).forEach(([description, document]) => {
     describe(`${description}`, () => {
       test("given a document wiht unaltered data, should return true", () => {
-        expect(verify(document)).toBe(true);
+        expect(validateDigest(document)).toBe(true);
       });
 
       describe("tempering", () => {
@@ -22,7 +22,7 @@ describe("V4 verify", () => {
           const newName = "Fake Name";
           expect(document.issuer.name).not.toBe(newName);
           expect(
-            verify({
+            validateDigest({
               ...document,
               issuer: {
                 ...document.issuer,
@@ -36,7 +36,7 @@ describe("V4 verify", () => {
           const { name, ...issuerWithoutName } = document.issuer;
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               issuer: {
                 ...issuerWithoutName,
@@ -57,7 +57,7 @@ describe("V4 verify", () => {
           expect(modifiedCredentialSubject.licenses[2].description).toBeDefined();
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               credentialSubject: modifiedCredentialSubject,
             })
@@ -71,7 +71,7 @@ describe("V4 verify", () => {
           expect(modifiedCredentialSubject.licenses[0].description).toBeUndefined();
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               credentialSubject: modifiedCredentialSubject,
             })
@@ -81,7 +81,7 @@ describe("V4 verify", () => {
         describe("given insertion of an empty object, should return false", () => {
           test("given insertion into an object", () => {
             expect(
-              verify({
+              validateDigest({
                 ...document,
                 credentialSubject: {
                   ...document.credentialSubject,
@@ -98,7 +98,7 @@ describe("V4 verify", () => {
             expect(modifiedCredentialSubject.licenses[2]).toEqual({});
 
             expect(
-              verify({
+              validateDigest({
                 ...document,
                 credentialSubject: modifiedCredentialSubject,
               })
@@ -109,7 +109,7 @@ describe("V4 verify", () => {
         describe("given insertion of an empty array, should return false", () => {
           test("given insertion into an object", () => {
             expect(
-              verify({
+              validateDigest({
                 ...document,
                 credentialSubject: {
                   ...document.credentialSubject,
@@ -126,7 +126,7 @@ describe("V4 verify", () => {
             expect(modifiedCredentialSubject.licenses[2]).toEqual([]);
 
             expect(
-              verify({
+              validateDigest({
                 ...document,
                 credentialSubject: modifiedCredentialSubject,
               })
@@ -136,7 +136,7 @@ describe("V4 verify", () => {
 
         test("given insertion of a null value into an object, should return false", () => {
           expect(
-            verify({
+            validateDigest({
               ...document,
               credentialSubject: {
                 ...document.credentialSubject,
@@ -151,7 +151,7 @@ describe("V4 verify", () => {
           expect(modifiedCredentialSubject.licenses[2]).toEqual({});
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               credentialSubject: modifiedCredentialSubject,
             })
@@ -165,7 +165,7 @@ describe("V4 verify", () => {
           expect(modifiedCredentialSubject.licenses[2]).toBe(null);
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               credentialSubject: modifiedCredentialSubject,
             })
@@ -179,7 +179,7 @@ describe("V4 verify", () => {
           expect(typeof modifiedCredentialSubject.licenses[0].class).toBe("number");
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               credentialSubject: modifiedCredentialSubject,
             })
@@ -196,7 +196,7 @@ describe("V4 verify", () => {
           expect(modifiedCredentialSubject.id).toBeUndefined();
 
           expect(
-            verify({
+            validateDigest({
               ...document,
               id,
               credentialSubject: modifiedCredentialSubject,

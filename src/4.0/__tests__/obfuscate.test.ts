@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { obfuscateVerifiableCredential } from "../obfuscate";
+import { obfuscateVC } from "../obfuscate";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
-import { wrapDocument } from "../wrap";
+import { digestVC } from "../digest";
 import { Salt, V4OpenAttestationDocument, V4WrappedDocument } from "../types";
 import { verifySignature } from "../../";
 import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED, WRAPPED_DOCUMENT_DID } from "../fixtures";
-import { hashLeafNode } from "../digest";
+import { hashLeafNode } from "../hash";
 import { getObfuscatedData, isObfuscated } from "../../shared/utils";
 
 const makeV4RawDocument = <T extends Pick<V4OpenAttestationDocument, "credentialSubject">>(props: T) =>
@@ -43,14 +43,14 @@ const expectRemovedFieldsWithoutArrayNotation = (
   expect(obfuscatedDocument).not.toHaveProperty(field);
 };
 
-describe("privacy", () => {
-  describe("obfuscateDocument", () => {
+describe("V4.0 obfuscate", () => {
+  describe("obfuscateVC", () => {
     test("removes one field from the root object", async () => {
       const PATH_TO_REMOVE = "name";
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({ credentialSubject: { id: "S1234567A", name: "John Doe" } })
       );
-      const obfuscatedDocument = obfuscateVerifiableCredential(wrappedDocument, PATH_TO_REMOVE);
+      const obfuscatedDocument = obfuscateVC(wrappedDocument, PATH_TO_REMOVE);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
@@ -60,17 +60,17 @@ describe("privacy", () => {
 
     test("removes paths that result in an invalid wrapped document, should throw", async () => {
       const PATHS_TO_REMOVE = ["credentialSubject", "renderMethod.0.id", "name"];
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({ credentialSubject: { id: "S1234567A", name: "John Doe" } })
       );
-      expect(() => obfuscateVerifiableCredential(wrappedDocument, PATHS_TO_REMOVE)).toThrowError(
+      expect(() => obfuscateVC(wrappedDocument, PATHS_TO_REMOVE)).toThrowError(
         `"credentialSubject", "renderMethod.0.id"`
       );
     });
 
     test("removes one key of an object from an array", async () => {
       const PATH_TO_REMOVE = "credentialSubject.arrayOfObject[0].foo" as const;
-      const newDocument = await wrapDocument(
+      const newDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
@@ -83,7 +83,7 @@ describe("privacy", () => {
           },
         })
       );
-      const obfuscatedDocument = await obfuscateVerifiableCredential(newDocument, PATH_TO_REMOVE);
+      const obfuscatedDocument = await obfuscateVC(newDocument, PATH_TO_REMOVE);
 
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -103,7 +103,7 @@ describe("privacy", () => {
 
     test("given an object is to be removed, should remove the object itself, as well as add each of its key's hash into privacy.obfuscated", async () => {
       const PATH_TO_REMOVE = "credentialSubject.hee";
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             hee: { foo: "bar", doo: "foo" },
@@ -111,7 +111,7 @@ describe("privacy", () => {
           },
         })
       );
-      const obfuscatedDocument = obfuscateVerifiableCredential(wrappedDocument, PATH_TO_REMOVE);
+      const obfuscatedDocument = obfuscateVC(wrappedDocument, PATH_TO_REMOVE);
 
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -135,7 +135,7 @@ describe("privacy", () => {
 
     test("given an entire array of objects to remove, should remove the array itself, then for every item, add each of its key's hash into privacy.obfuscated", async () => {
       const PATH_TO_REMOVE = "credentialSubject.attachments";
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             arrayOfObject: [
@@ -157,7 +157,7 @@ describe("privacy", () => {
           },
         })
       );
-      const obfuscatedDocument = await obfuscateVerifiableCredential(wrappedDocument, PATH_TO_REMOVE);
+      const obfuscatedDocument = await obfuscateVC(wrappedDocument, PATH_TO_REMOVE);
 
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
@@ -186,7 +186,7 @@ describe("privacy", () => {
 
     test("given multiple fields to be removed, should remove fields and add their hash into privacy.obfuscated", async () => {
       const PATHS_TO_REMOVE = ["credentialSubject.key1", "credentialSubject.key2"];
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             key1: "value1",
@@ -195,7 +195,7 @@ describe("privacy", () => {
           },
         })
       );
-      const obfuscatedDocument = await obfuscateVerifiableCredential(wrappedDocument, PATHS_TO_REMOVE);
+      const obfuscatedDocument = await obfuscateVC(wrappedDocument, PATHS_TO_REMOVE);
       const verified = verifySignature(obfuscatedDocument);
       expect(verified).toBe(true);
 
@@ -206,7 +206,7 @@ describe("privacy", () => {
     });
 
     test("given a path to remove an entire item from an array, should throw", async () => {
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             arrayOfObject: [
@@ -235,15 +235,12 @@ describe("privacy", () => {
       );
 
       expect(() =>
-        obfuscateVerifiableCredential(wrappedDocument, [
-          "credentialSubject.attachments[0]",
-          "credentialSubject.attachments[2]",
-        ])
+        obfuscateVC(wrappedDocument, ["credentialSubject.attachments[0]", "credentialSubject.attachments[2]"])
       ).toThrow();
     });
 
     test("given a path to remove all elements in an object, should throw", async () => {
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             arrayOfObject: [
@@ -258,22 +255,20 @@ describe("privacy", () => {
       );
 
       expect(() =>
-        obfuscateVerifiableCredential(wrappedDocument, [
+        obfuscateVC(wrappedDocument, [
           "credentialSubject.arrayOfObject[0].foo",
           "credentialSubject.arrayOfObject[0].doo",
         ])
       ).toThrowErrorMatchingInlineSnapshot(
         `"Obfuscation of "credentialSubject.arrayOfObject[0].doo" has resulted in an empty {}, this is currently not supported. Alternatively, if the object is not part of an array, you may choose to obfuscate the parent of "credentialSubject.arrayOfObject[0].doo"."`
       );
-      expect(() =>
-        obfuscateVerifiableCredential(wrappedDocument, ["credentialSubject.object.foo"])
-      ).toThrowErrorMatchingInlineSnapshot(
+      expect(() => obfuscateVC(wrappedDocument, ["credentialSubject.object.foo"])).toThrowErrorMatchingInlineSnapshot(
         `"Obfuscation of "credentialSubject.object.foo" has resulted in an empty {}, this is currently not supported. Alternatively, if the object is not part of an array, you may choose to obfuscate the parent of "credentialSubject.object.foo"."`
       );
     });
 
     test("is transitive", async () => {
-      const wrappedDocument = await wrapDocument(
+      const wrappedDocument = await digestVC(
         makeV4RawDocument({
           credentialSubject: {
             key1: "value1",
@@ -282,9 +277,9 @@ describe("privacy", () => {
           },
         })
       );
-      const intermediateDoc = obfuscateVerifiableCredential(wrappedDocument, "key1");
-      const finalDoc1 = obfuscateVerifiableCredential(intermediateDoc, "key2");
-      const finalDoc2 = obfuscateVerifiableCredential(wrappedDocument, ["key1", "key2"]);
+      const intermediateDoc = obfuscateVC(wrappedDocument, "key1");
+      const finalDoc1 = obfuscateVC(intermediateDoc, "key2");
+      const finalDoc2 = obfuscateVC(wrappedDocument, ["key1", "key2"]);
 
       expect(finalDoc1).toEqual(finalDoc2);
       expect(intermediateDoc).not.toHaveProperty("key1");

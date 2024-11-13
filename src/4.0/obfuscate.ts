@@ -2,7 +2,7 @@ import { cloneDeep, get, unset, pick, toPath } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
 import { Override, PartialDeep, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
-import { hashLeafNode } from "./digest";
+import { hashLeafNode } from "./hash";
 
 const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
@@ -86,12 +86,12 @@ export type ObfuscateVerifiableCredentialResult<T extends V4WrappedDocument> = O
     >;
   }
 >;
-export const obfuscateVerifiableCredential = <T extends V4WrappedDocument | V4SignedWrappedDocument>(
-  document: T,
+export const obfuscateVC = <T extends V4WrappedDocument | V4SignedWrappedDocument>(
+  vc: T,
   fields: string[] | string
 ): ObfuscateVerifiableCredentialResult<T> => {
-  const { data, obfuscatedData } = obfuscate(document, fields);
-  const currentObfuscatedData = document.proof.privacy.obfuscated;
+  const { data, obfuscatedData } = obfuscate(vc, fields);
+  const currentObfuscatedData = vc.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
   // assert that obfuscated is still compliant to our schema

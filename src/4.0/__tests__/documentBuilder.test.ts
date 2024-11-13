@@ -1,9 +1,9 @@
-import { verify } from "../verify";
+import { validateDigest } from "../validate";
 import { DocumentBuilder, DocumentBuilderErrors } from "../documentBuilder";
-import { isSignedWrappedDocument, isWrappedDocument, signDocument } from "../exports";
+import { isSignedWrappedDocument, isWrappedDocument, signVC } from "../exports";
 import { SAMPLE_SIGNING_KEYS } from "../fixtures";
 
-describe(`DocumentBuilder`, () => {
+describe(`V4.0 DocumentBuilder`, () => {
   describe("given a single document", () => {
     const document = new DocumentBuilder({ credentialSubject: { name: "John Doe" }, name: "Diploma" })
       .embeddedRenderer({
@@ -53,7 +53,7 @@ describe(`DocumentBuilder`, () => {
         }
       `);
       expect(isSignedWrappedDocument(signed)).toBe(true);
-      expect(verify(signed)).toBe(true);
+      expect(validateDigest(signed)).toBe(true);
     });
 
     test("given wrap is called, return a wrapped document", async () => {
@@ -139,7 +139,7 @@ describe(`DocumentBuilder`, () => {
       `);
       expect(signed[0].credentialStatus).toBeUndefined();
       expect(isSignedWrappedDocument(signed[0])).toBe(true);
-      expect(verify(signed[0])).toBe(true);
+      expect(validateDigest(signed[0])).toBe(true);
 
       expect(signed[1].issuer).toMatchInlineSnapshot(`
         {
@@ -168,7 +168,7 @@ describe(`DocumentBuilder`, () => {
       `);
       expect(signed[1].credentialStatus).toBeUndefined();
       expect(isSignedWrappedDocument(signed[1])).toBe(true);
-      expect(verify(signed[1])).toBe(true);
+      expect(validateDigest(signed[1])).toBe(true);
     });
 
     test("given wrap is called, return a list of wrapped document", async () => {
@@ -402,10 +402,10 @@ describe(`DocumentBuilder`, () => {
       })
       .justWrapWithoutSigning();
 
-    const signed = await signDocument(wrapped, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
+    const signed = await signVC(wrapped, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
 
     expect(isSignedWrappedDocument(signed)).toBe(true);
-    expect(verify(signed)).toBe(true);
+    expect(validateDigest(signed)).toBe(true);
   });
 
   test("given re-setting of values, should throw", async () => {
