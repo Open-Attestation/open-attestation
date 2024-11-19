@@ -1,15 +1,17 @@
 import type { Diagnose } from "../shared/utils/@types/diagnose";
-import { V4WrappedDocument, V4SignedWrappedDocument, V4OpenAttestationDocument } from "./types";
+import { OAVerifiableCredential, DigestedOAVerifiableCredential, SignedOAVerifiableCredential } from "./types";
 
 export const v4Diagnose: Diagnose = ({ document, kind, debug }) => {
-  let Validator: typeof V4OpenAttestationDocument | typeof V4WrappedDocument | typeof V4SignedWrappedDocument =
-    V4OpenAttestationDocument;
+  let Validator:
+    | typeof OAVerifiableCredential
+    | typeof DigestedOAVerifiableCredential
+    | typeof SignedOAVerifiableCredential = OAVerifiableCredential;
   if (kind === "raw") {
-    Validator = V4OpenAttestationDocument;
+    Validator = OAVerifiableCredential;
   } else if (kind === "wrapped") {
-    Validator = V4WrappedDocument;
+    Validator = DigestedOAVerifiableCredential;
   } else {
-    Validator = V4SignedWrappedDocument;
+    Validator = SignedOAVerifiableCredential;
   }
 
   const results = Validator.safeParse(document);

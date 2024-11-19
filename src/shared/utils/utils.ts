@@ -2,14 +2,9 @@ import { ErrorObject } from "ajv";
 
 import * as v2 from "../../__generated__/schema.2.0";
 import { getData } from "../../2.0/utils";
-import { WrappedDocument as WrappedDocumentV2 } from "../../2.0/types";
-import { OpenAttestationDocument as OpenAttestationDocumentV2 } from "../../__generated__/schema.2.0";
 
 import * as v3 from "../../__generated__/schema.3.0";
-import { WrappedDocument as WrappedDocumentV3 } from "../../3.0/types";
-import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "../../__generated__/schema.3.0";
 
-import { V4WrappedDocument } from "../../4.0/types";
 import { ContextUrl } from "../../4.0/context";
 
 import { OpenAttestationDocument, WrappedDocument, SchemaId } from "../@types/document";
@@ -18,8 +13,9 @@ import {
   isWrappedV2Document,
   isRawV3Document,
   isWrappedV3Document,
-  isWrappedV4Document,
-  isRawV4Document,
+  isOAVerifiableCredential,
+  isDigestedOAVerifiableCredential,
+  isSignedOAVerifiableCredential,
 } from "./guard";
 import { Version } from "./diagnose";
 
@@ -31,7 +27,7 @@ export function getIssuerAddress(document: any): any {
     return document.openAttestationMetadata.proof.value;
   }
   // TODO: OA v4 proof schema not updated to support document store issuance yet
-  // else if (isWrappedV4Document(document)) {
+  // else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
   //   return document.proof.?
   // }
   throw new Error(
@@ -39,10 +35,11 @@ export function getIssuerAddress(document: any): any {
   );
 }
 
-export const getMerkleRoot = (document: any): string => {
+export const getMerkleRoot = (document: unknown): string => {
   if (isWrappedV2Document(document)) return document.signature.merkleRoot;
   else if (isWrappedV3Document(document)) return document.proof.merkleRoot;
-  else if (isWrappedV4Document(document)) return document.proof.merkleRoot;
+  else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document))
+    return document.proof.merkleRoot;
 
   throw new Error(
     "Unsupported document type: Only can retrieve merkle root from wrapped OpenAttestation v2, v3 & v4 documents."
@@ -52,7 +49,8 @@ export const getMerkleRoot = (document: any): string => {
 export const getTargetHash = (document: any): string => {
   if (isWrappedV2Document(document)) return document.signature.targetHash;
   else if (isWrappedV3Document(document)) return document.proof.targetHash;
-  else if (isWrappedV4Document(document)) return document.proof.targetHash;
+  else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document))
+    return document.proof.targetHash;
 
   throw new Error(
     "Unsupported document type: Only can retrieve target hash from wrapped OpenAttestation v2, v3 & v4 documents."
@@ -70,7 +68,7 @@ export const getTemplateURL = (document: any): string | undefined => {
     else return document.$template?.url;
   } else if (isRawV3Document(document) || isWrappedV3Document(document)) {
     return document.openAttestationMetadata.template?.url;
-  } else if (isRawV4Document(document) || isWrappedV4Document(document)) {
+  } else if (isOAVerifiableCredential(document) || isDigestedOAVerifiableCredential(document)) {
     return document.renderMethod && document.renderMethod[0].id;
   }
 
@@ -80,7 +78,7 @@ export const getTemplateURL = (document: any): string | undefined => {
 };
 
 export const getDocumentData = (document: WrappedDocument<OpenAttestationDocument>): OpenAttestationDocument => {
-  if (isWrappedV3Document(document) || isWrappedV4Document(document)) {
+  if (isWrappedV3Document(document)) {
     const omit = (keys: any, obj: any): any =>
       Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
     return omit(["proof"], document);
@@ -100,7 +98,7 @@ export const isTransferableAsset = (document: any): boolean => {
   );
 };
 
-export const isDocumentRevokable = (document: any): boolean => {
+export const isDocumentRevokable = (document: unknown): boolean => {
   if (isTransferableAsset(document)) {
     return false;
   } else if (isWrappedV2Document(document)) {
@@ -123,7 +121,7 @@ export const isDocumentRevokable = (document: any): boolean => {
       !!document.openAttestationMetadata.proof.value;
 
     return isDocumentStoreRevokableV3 || isDidRevokableV3;
-  } else if (isWrappedV4Document(document)) {
+  } else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
     if (typeof document.issuer === "string" || !document.credentialStatus) return false;
     const isDidRevokableV4 =
       document.issuer.identityProof?.identityProofType === "DNS-DID"
@@ -160,17 +158,12 @@ export const isSchemaValidationError = (error: any): error is SchemaValidationEr
 // make it available for consumers
 export { keccak256 } from "js-sha3";
 
-export const isObfuscated = (
-  document:
-    | WrappedDocumentV2<OpenAttestationDocumentV2>
-    | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | V4WrappedDocument
-): boolean => {
+export const isObfuscated = (document: unknown): boolean => {
   if (isWrappedV2Document(document)) {
     return !!document.privacy?.obfuscatedData?.length;
   } else if (isWrappedV3Document(document)) {
     return !!document.proof.privacy.obfuscated.length;
-  } else if (isWrappedV4Document(document)) {
+  } else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
     return !!document.proof.privacy.obfuscated.length;
   }
 
@@ -179,17 +172,12 @@ export const isObfuscated = (
   );
 };
 
-export const getObfuscatedData = (
-  document:
-    | WrappedDocumentV2<OpenAttestationDocumentV2>
-    | WrappedDocumentV3<OpenAttestationDocumentV3>
-    | V4WrappedDocument
-): string[] => {
+export const getObfuscatedData = (document: unknown): string[] => {
   if (isWrappedV2Document(document)) {
     return document.privacy?.obfuscatedData || [];
   } else if (isWrappedV3Document(document)) {
     return document.proof.privacy.obfuscated || [];
-  } else if (isWrappedV4Document(document)) {
+  } else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
     return document.proof.privacy.obfuscated || [];
   }
 

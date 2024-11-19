@@ -1,21 +1,21 @@
-import { V4WrappedDocument } from "./types";
+import { Digested } from "./types";
 import { SaltNotFoundError, genTargetHash } from "./hash";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt } from "./salt";
 
-export const validateDigest = <T extends V4WrappedDocument>(document: T): document is T => {
+export const validateDigest = <T extends Digested>(document: T): document is T => {
   if (!document.proof) {
     return false;
   }
 
   // Remove proof from document
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  const { proof, ...documentWithoutProof } = document;
+  const { proof, ...vcWithoutProof } = document;
   const decodedSalts = decodeSalt(document.proof.salts);
 
   // Checks target hash
   try {
-    const digest = genTargetHash(documentWithoutProof, decodedSalts, document.proof.privacy.obfuscated);
+    const digest = genTargetHash(vcWithoutProof, decodedSalts, document.proof.privacy.obfuscated);
     const targetHash = document.proof.targetHash;
     if (digest !== targetHash) return false;
 

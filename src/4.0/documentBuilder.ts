@@ -1,25 +1,25 @@
-import { digestVC, digestVCs, wrapDocumentErrors } from "./digest";
-import { signVC, signDocumentErrors } from "./sign";
+import { digestVc, digestVcs, wrapVcErrors } from "./digest";
+import { signVc, signVcErrors } from "./sign";
 import {
   Override,
   DecentralisedEmbeddedRenderer,
   SvgRenderer,
   OscpResponderRevocation,
   RevocationStoreRevocation,
-  V4OpenAttestationDocument,
-  V4SignedWrappedDocument,
-  V4WrappedDocument,
+  OAVerifiableCredential,
+  Signed,
+  Digested,
 } from "./types";
 import { ContextType, ContextUrl } from "./context";
 
 import { ZodError, z } from "zod";
 
-const SingleDocumentProps = z.object({
-  name: V4OpenAttestationDocument.shape.name.unwrap(),
-  credentialSubject: V4OpenAttestationDocument.shape.credentialSubject,
+const SingleVcProps = z.object({
+  name: OAVerifiableCredential.shape.name.unwrap(),
+  credentialSubject: OAVerifiableCredential.shape.credentialSubject,
 });
 
-const DocumentProps = z.union([SingleDocumentProps, z.array(SingleDocumentProps)]);
+const VcProps = z.union([SingleVcProps, z.array(SingleVcProps)]);
 
 const OscpRevocationProps = z.object({
   oscpUrl: OscpResponderRevocation.shape.id,
@@ -47,9 +47,9 @@ const SvgRendererProps = z.discriminatedUnion("type", [
 ]);
 
 const DnsTextIssuanceProps = z.object({
-  issuerId: V4OpenAttestationDocument.shape.issuer.shape.id,
-  issuerName: V4OpenAttestationDocument.shape.issuer.shape.name,
-  identityProofDomain: V4OpenAttestationDocument.shape.issuer.shape.identityProof.shape.identifier,
+  issuerId: OAVerifiableCredential.shape.issuer.shape.id,
+  issuerName: OAVerifiableCredential.shape.issuer.shape.name,
+  identityProofDomain: OAVerifiableCredential.shape.issuer.shape.identityProof.shape.identifier,
 });
 
 /**
@@ -72,43 +72,43 @@ class ShouldNotModifyAfterSettingError extends Error {
   }
 }
 
-type DocumentProps = {
+type VcProps = {
   /**
-   * Human readable name of the document.
+   * Human readable name of the VC.
    *
    * Maps to "name"
    */
   name: string;
   /**
-   * Main content of the document.
+   * Main content of the VC.
    *
    * Maps to "credentialSubject"
    */
-  credentialSubject: z.infer<typeof V4OpenAttestationDocument.shape.credentialSubject>;
+  credentialSubject: z.infer<typeof OAVerifiableCredential.shape.credentialSubject>;
 };
 
 type State = {
-  documentMainProps: DocumentProps | DocumentProps[];
-  renderMethod: V4OpenAttestationDocument["renderMethod"];
-  issuer: V4OpenAttestationDocument["issuer"] | undefined;
-  credentialStatus: V4OpenAttestationDocument["credentialStatus"];
+  vcMainProps: VcProps | VcProps[];
+  renderMethod: OAVerifiableCredential["renderMethod"];
+  issuer: OAVerifiableCredential["issuer"] | undefined;
+  credentialStatus: OAVerifiableCredential["credentialStatus"];
 };
 
 /**
- * A builder class to facilitate the creation of OpenAttestation v4 documents.
- * Assumes a shared issuer, render method, and credential status across all documents in batch mode.
+ * A builder class to facilitate the creation of OpenAttestation v4 VCs.
+ * Assumes a shared issuer, render method, and credential status across all VCs in batch mode.
  * For use cases requiring direct control, consider using the lower-level wrap and sign functions.
  */
-export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
+export class VcBuilder<Props extends VcProps | VcProps[]> {
   private getState: () => State;
   private setState: <Key extends keyof State>(key: Key, value: Pick<State, Key>[Key]) => void;
   constructor(props: Props) {
-    const parsedResults = DocumentProps.safeParse(props);
+    const parsedResults = VcProps.safeParse(props);
     if (!parsedResults.success) throw new PropsValidationError(parsedResults.error);
 
     // define state here rather than in the instance to enforce immutability via setState.
     const state: State = {
-      documentMainProps: parsedResults.data,
+      vcMainProps: parsedResults.data,
       renderMethod: undefined,
       issuer: undefined,
       credentialStatus: undefined,
@@ -123,13 +123,13 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     };
   }
 
-  private wrap = async (): Promise<WrappedReturn<Props>> => {
-    const { documentMainProps: data, issuer, renderMethod, credentialStatus } = this.getState();
+  private digest = async (): Promise<DigestedReturn<Props>> => {
+    const { vcMainProps: data, issuer, renderMethod, credentialStatus } = this.getState();
 
     // this should never happen
     if (!issuer) throw new Error("Issuer is required");
     if (Array.isArray(data)) {
-      const toWrap = data.map(
+      const toDigest = data.map(
         ({ name, credentialSubject }) =>
           ({
             "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
@@ -139,17 +139,17 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
             credentialSubject,
             ...(renderMethod && { renderMethod }),
             ...(credentialStatus && { credentialStatus }),
-          } satisfies V4OpenAttestationDocument)
+          } satisfies OAVerifiableCredential)
       );
 
-      return digestVCs(toWrap) as unknown as WrappedReturn<Props>;
+      return digestVcs(toDigest) as unknown as DigestedReturn<Props>;
     }
 
     // this should never happen
     if (!data) throw new Error("CredentialSubject is required");
 
     const { name, credentialSubject } = data;
-    return digestVC({
+    return digestVc({
       "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
       type: [ContextType.BaseContext, ContextType.OAV4Context],
       issuer,
@@ -157,18 +157,48 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       credentialSubject,
       ...(renderMethod && { renderMethod }),
       ...(credentialStatus && { credentialStatus }),
-    }) as unknown as WrappedReturn<Props>;
+    }) as unknown as DigestedReturn<Props>;
   };
 
-  private sign = async (props: { signer: Parameters<typeof signVC>[2] }): Promise<SignedReturn<Props>> => {
-    const wrapped = await this.wrap();
-    if (Array.isArray(wrapped)) {
-      return Promise.all(wrapped.map((d) => signVC(d, "Secp256k1VerificationKey2018", props.signer))) as Promise<
-        SignedReturn<Props>
-      >;
+  private sign = async (props: { signer: Parameters<typeof signVc>[2] }): Promise<SignedReturn<Props>> => {
+    const { vcMainProps: data, issuer, renderMethod, credentialStatus } = this.getState();
+
+    // this should never happen
+    if (!issuer) throw new Error("Issuer is required");
+    if (Array.isArray(data)) {
+      return Promise.all(
+        data.map(({ name, credentialSubject }) =>
+          signVc(
+            {
+              "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
+              type: [ContextType.BaseContext, ContextType.OAV4Context],
+              issuer,
+              name,
+              credentialSubject,
+              ...(renderMethod && { renderMethod }),
+              ...(credentialStatus && { credentialStatus }),
+            } satisfies OAVerifiableCredential,
+            "Secp256k1VerificationKey2018",
+            props.signer
+          )
+        )
+      ) as unknown as Promise<SignedReturn<Props>>;
     }
 
-    return signVC(wrapped, "Secp256k1VerificationKey2018", props.signer) as Promise<SignedReturn<Props>>;
+    const { name, credentialSubject } = data;
+    return signVc(
+      {
+        "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
+        type: [ContextType.BaseContext, ContextType.OAV4Context],
+        issuer,
+        name,
+        credentialSubject,
+        ...(renderMethod && { renderMethod }),
+        ...(credentialStatus && { credentialStatus }),
+      } satisfies OAVerifiableCredential,
+      "Secp256k1VerificationKey2018",
+      props.signer
+    ) as unknown as SignedReturn<Props>;
   };
 
   // add issuance methods here
@@ -198,7 +228,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
     // },
 
     /**
-     * The document will be digitally signed, and identity proof will be provided via a DNS-TXT record.
+     * The VC will be digitally signed, and identity proof will be provided via a DNS-TXT record.
      *
      * Sets "issuer.type" to "OpenAttestationIssuer" and "issuer.identityProof.identityProofType" to "DNS-TXT"
      */
@@ -234,20 +264,12 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
           identityProofType: "DNS-TXT",
           identifier: identityProofDomain,
         },
-      } satisfies V4OpenAttestationDocument["issuer"];
+      } satisfies OAVerifiableCredential["issuer"];
       this.setState("issuer", issuer);
 
       return {
-        /**
-         * Wraps and signs the entire batch in a single operation. This method does not use internal batching logic,
-         * which could lead to too many concurrent remote calls when signing large batches. Use this function with caution in such scenarios.
-         */
-        wrapAndSign: this.sign,
-        /**
-         * Provides an option to wrap documents without signing them, allowing for more control over the signing process.
-         * This is particularly useful when you need to sign documents in smaller batches or at different stages.
-         */
-        justWrapWithoutSigning: this.wrap,
+        sign: this.sign,
+        digest: this.digest,
       };
     },
   } satisfies Record<`${string}Issuance`, (...args: any[]) => any>;
@@ -255,7 +277,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   // add revocation methods here
   private REVOCATION_METHODS = {
     /**
-     * The document(s) will be issued without the capability for revocation; they remain valid indefinitely.
+     * The VC(s) will be issued without the capability for revocation; they remain valid indefinitely.
      */
     noRevocation: () => {
       this.setState("credentialStatus", undefined);
@@ -263,7 +285,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       return this.ISSUANCE_METHODS;
     },
     /**
-     * The document(s) can be revoked using an OCSP responder, allowing for the verification of the revocation status through the specified URL.
+     * The VC(s) can be revoked using an OCSP responder, allowing for the verification of the revocation status through the specified URL.
      *
      * Sets "credentialStatus.type" to "OpenAttestationOcspResponder"
      */
@@ -282,13 +304,13 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       const credentialStatus = {
         id: oscpUrl,
         type: "OpenAttestationOcspResponder",
-      } satisfies V4OpenAttestationDocument["credentialStatus"];
+      } satisfies OAVerifiableCredential["credentialStatus"];
       this.setState("credentialStatus", credentialStatus);
 
       return this.ISSUANCE_METHODS;
     },
     /**
-     * The document(s) can be revoked using a revocation store, implemented as a smart contract on the Ethereum blockchain.
+     * The VC(s) can be revoked using a revocation store, implemented as a smart contract on the Ethereum blockchain.
      *
      * Sets "credentialStatus.type" to "OpenAttestationRevocationStore"
      */
@@ -307,7 +329,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
       const credentialStatus = {
         id: storeAddress,
         type: "OpenAttestationRevocationStore",
-      } satisfies V4OpenAttestationDocument["credentialStatus"];
+      } satisfies OAVerifiableCredential["credentialStatus"];
 
       this.setState("credentialStatus", credentialStatus);
 
@@ -316,7 +338,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   } satisfies Record<`${string}Revocation`, (...args: any[]) => typeof this.ISSUANCE_METHODS>;
 
   /**
-   * Configures the document to be rendered using OpenAttestation's decentralized React components,
+   * Configures the VC to be rendered using OpenAttestation's decentralized React components,
    * see (https://github.com/Open-Attestation/decentralized-renderer-react-components).
    *
    * Sets "renderMethod[0].type" to "OpenAttestationEmbeddedRenderer"
@@ -329,7 +351,7 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
      */
     rendererUrl: string;
     /**
-     * The identifier for the template used by the renderer to display the document correctly.
+     * The identifier for the template used by the renderer to display the VC correctly.
      *
      * Maps to "renderMethod[0].templateName"
      */
@@ -345,16 +367,16 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
         type: "OpenAttestationEmbeddedRenderer",
         templateName,
       },
-    ] satisfies V4OpenAttestationDocument["renderMethod"];
+    ] satisfies OAVerifiableCredential["renderMethod"];
     this.setState("renderMethod", renderMethod);
 
     return this.REVOCATION_METHODS;
   };
 
   /**
-   * Renders the document using an SVG handlebar template, either embedded directly or hosted remotely.
-   * The root object of the handlebar template corresponds to the credentialSubject of the document.
-   * For instance, if the document credentialSubject is { name: "John Doe" },
+   * Renders the VC using an SVG handlebar template, either embedded directly or hosted remotely.
+   * The root object of the handlebar template corresponds to the credentialSubject of the VC.
+   * For instance, if the VC credentialSubject is { name: "John Doe" },
    * the handlebar template should reference the name as {{name}} to correctly map data fields.
    *
    * Sets "renderMethod[0].type" to "SvgRenderingTemplate2023"
@@ -403,14 +425,14 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
               type: "SvgRenderingTemplate2023" as const,
               digestMultibase: parsedResults.data.digestMultibase,
             },
-          ] satisfies V4OpenAttestationDocument["renderMethod"]);
+          ] satisfies OAVerifiableCredential["renderMethod"]);
     this.setState("renderMethod", renderMethod);
 
     return this.REVOCATION_METHODS;
   };
 
   /**
-   * Disables rendering for the document.
+   * Disables rendering for the VC.
    */
   public noRenderer = () => {
     this.setState("renderMethod", undefined);
@@ -418,17 +440,17 @@ export class DocumentBuilder<Props extends DocumentProps | DocumentProps[]> {
   };
 }
 
-type SignedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends Array<DocumentProps>
+type SignedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcProps>
   ? Override<
-      V4SignedWrappedDocument,
+      Signed,
       {
         name: Props[number]["name"];
         credentialSubject: Props[number]["credentialSubject"];
       }
     >[]
-  : Props extends DocumentProps
+  : Props extends VcProps
   ? Override<
-      V4SignedWrappedDocument,
+      Signed,
       {
         name: Props["name"];
         credentialSubject: Props["credentialSubject"];
@@ -436,17 +458,17 @@ type SignedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends
     >
   : never;
 
-type WrappedReturn<Props extends DocumentProps | DocumentProps[]> = Props extends Array<DocumentProps>
+type DigestedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcProps>
   ? Override<
-      V4WrappedDocument,
+      Digested,
       {
         name: Props[number]["name"];
         credentialSubject: Props[number]["credentialSubject"];
       }
     >[]
-  : Props extends DocumentProps
+  : Props extends VcProps
   ? Override<
-      V4WrappedDocument,
+      Digested,
       {
         name: Props["name"];
         credentialSubject: Props["credentialSubject"];
@@ -454,11 +476,12 @@ type WrappedReturn<Props extends DocumentProps | DocumentProps[]> = Props extend
     >
   : never;
 
-const { UnableToInterpretContextError } = wrapDocumentErrors;
-const { CouldNotSignDocumentError } = signDocumentErrors;
-export const DocumentBuilderErrors = {
+const { UnableToInterpretContextError } = wrapVcErrors;
+const { CouldNotSignVcError, VcProofNotEmptyError } = signVcErrors;
+export const VcBuilderErrors = {
   PropsValidationError,
   ShouldNotModifyAfterSettingError,
   UnableToInterpretContextError,
-  CouldNotSignDocumentError,
+  CouldNotSignVcError,
+  VcProofNotEmptyError,
 };

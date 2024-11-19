@@ -1,7 +1,7 @@
 {
-  "$ref": "#/definitions/v4Document",
+  "$ref": "#/definitions/DigestedOAVerifiableCredential",
   "definitions": {
-    "v4Document": {
+    "DigestedOAVerifiableCredential": {
       "type": "object",
       "properties": {
         "@context": {
@@ -59,7 +59,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4Document/properties/id"
+                  "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -77,7 +77,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4Document/properties/id"
+                    "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -96,7 +96,7 @@
           "type": "object",
           "properties": {
             "id": {
-              "$ref": "#/definitions/v4Document/properties/id"
+              "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
             },
             "type": {
               "type": "string",
@@ -225,7 +225,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4Document/properties/id"
+                  "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -242,7 +242,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4Document/properties/id"
+                    "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -262,7 +262,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4Document/properties/id"
+                  "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -279,7 +279,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4Document/properties/id"
+                    "$ref": "#/definitions/DigestedOAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -294,35 +294,57 @@
           ]
         },
         "proof": {
-          "anyOf": [
-            {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "OpenAttestationHashProof2018"
+            },
+            "proofPurpose": {
+              "type": "string",
+              "const": "assertionMethod"
+            },
+            "targetHash": {
+              "type": "string"
+            },
+            "proofs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "merkleRoot": {
+              "type": "string"
+            },
+            "salts": {
+              "type": "string"
+            },
+            "privacy": {
               "type": "object",
               "properties": {
-                "type": {
-                  "type": "string"
+                "obfuscated": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
               "required": [
-                "type"
+                "obfuscated"
               ],
-              "additionalProperties": true
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": true
-              }
+              "additionalProperties": false
             }
-          ]
+          },
+          "required": [
+            "type",
+            "proofPurpose",
+            "targetHash",
+            "proofs",
+            "merkleRoot",
+            "salts",
+            "privacy"
+          ],
+          "additionalProperties": true
         },
         "renderMethod": {
           "type": "array",
@@ -392,7 +414,8 @@
         "@context",
         "type",
         "issuer",
-        "credentialSubject"
+        "credentialSubject",
+        "proof"
       ],
       "additionalProperties": false
     }

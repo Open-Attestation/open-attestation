@@ -1,1 +1,1 @@
-export { digestVC, digestVCs, wrapDocumentErrors } from "../digest";
+export { digestVc, digestVcs, wrapVcErrors as wrapDocumentErrors } from "../digest";

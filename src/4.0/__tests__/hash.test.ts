@@ -1,8 +1,8 @@
 import { genTargetHash } from "../hash";
 import { decodeSalt } from "../salt";
 import { SIGNED_WRAPPED_DOCUMENT_DID as ROOT_CREDENTIAL } from "../fixtures";
-import { V4SignedWrappedDocument } from "../types";
-import { obfuscateVC } from "../obfuscate";
+import { Signed } from "../types";
+import { obfuscateOAVerifiableCredential } from "../obfuscate";
 
 // All obfuscated documents are generated from the ROOT_CREDENTIAL
 const ROOT_CREDENTIAL_TARGET_HASH = ROOT_CREDENTIAL.proof.targetHash;
@@ -43,7 +43,7 @@ describe("V4.0 hash", () => {
   });
 
   test("given a document with ONE element obfuscated, should digest and match the root credential's target hash", () => {
-    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateVC(ROOT_CREDENTIAL, "credentialSubject.id");
+    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateOAVerifiableCredential(ROOT_CREDENTIAL, "credentialSubject.id");
     expect(OBFUSCATED_WRAPPED_DOCUMENT.credentialSubject).toMatchInlineSnapshot(`
         {
           "licenses": [
@@ -80,7 +80,7 @@ describe("V4.0 hash", () => {
   });
 
   test("given a document with THREE elements obfuscated, should digest and match the root credential's target hash", () => {
-    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateVC(ROOT_CREDENTIAL, [
+    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateOAVerifiableCredential(ROOT_CREDENTIAL, [
       "credentialSubject.id",
       "credentialSubject.name",
       "credentialSubject.licenses[0].description",
@@ -163,7 +163,7 @@ describe("V4.0 hash", () => {
         signature:
           "0x949b76d8df493a56c1cf21303a74d6a54904461c1c10f4619b43ad7d339c64467c61eb4c0873f279cd21d5bdd044d3af5318f14d63f57acbd4cde30f271f3eb71c",
       },
-    } as unknown as V4SignedWrappedDocument;
+    } as unknown as Signed;
 
     const digest = genTargetHash(
       OBFUSCATED_WRAPPED_DOCUMENT,

@@ -1,8 +1,13 @@
-import { obfuscate, validateSchema, verifySignature } from "../..";
 import { cloneDeep, omit } from "lodash";
+import {
+  digestVc,
+  digestVcs,
+  obfuscateOAVerifiableCredential,
+  validateDigest,
+  isDigestedOAVerifiableCredential,
+} from "../exports";
+import type { OAVerifiableCredential } from "../exports";
 import { RAW_DOCUMENT_DID, SIGNED_WRAPPED_DOCUMENT_DID, WRAPPED_DOCUMENT_DID } from "../fixtures";
-import { V4OpenAttestationDocument } from "../types";
-import { digestVC, digestVCs } from "../digest";
 
 const DOCUMENT_ONE = {
   ...RAW_DOCUMENT_DID,
@@ -10,7 +15,7 @@ const DOCUMENT_ONE = {
     ...RAW_DOCUMENT_DID.credentialSubject,
     key1: "test",
   },
-} satisfies V4OpenAttestationDocument;
+} satisfies OAVerifiableCredential;
 const DOCUMENT_TWO = {
   ...RAW_DOCUMENT_DID,
   credentialSubject: {
@@ -18,7 +23,7 @@ const DOCUMENT_TWO = {
     key1: "hello",
     key2: "item2",
   },
-} satisfies V4OpenAttestationDocument;
+} satisfies OAVerifiableCredential;
 
 const DOCUMENT_THREE = {
   ...RAW_DOCUMENT_DID,
@@ -29,7 +34,7 @@ const DOCUMENT_THREE = {
     key3: 3.14159,
     key4: false,
   },
-} satisfies V4OpenAttestationDocument;
+} satisfies OAVerifiableCredential;
 
 const DOCUMENT_FOUR = {
   ...RAW_DOCUMENT_DID,
@@ -38,7 +43,7 @@ const DOCUMENT_FOUR = {
     key1: "item2",
   },
 };
-const DATUM = [DOCUMENT_ONE, DOCUMENT_TWO, DOCUMENT_THREE, DOCUMENT_FOUR] satisfies V4OpenAttestationDocument[];
+const DATUM = [DOCUMENT_ONE, DOCUMENT_TWO, DOCUMENT_THREE, DOCUMENT_FOUR] satisfies OAVerifiableCredential[];
 
 describe("V4.0 E2E Test Scenarios", () => {
   describe("Issuing a single document", () => {
@@ -46,7 +51,7 @@ describe("V4.0 E2E Test Scenarios", () => {
       const missingData = {
         ...omit(cloneDeep(DOCUMENT_ONE), "issuer"),
       };
-      await expect(digestVC(missingData as unknown as V4OpenAttestationDocument)).rejects
+      await expect(digestVc(missingData as unknown as OAVerifiableCredential)).rejects
         .toThrowErrorMatchingInlineSnapshot(`
         "Input document does not conform to Open Attestation v4.0 Data Model: 
          {
@@ -61,7 +66,7 @@ describe("V4.0 E2E Test Scenarios", () => {
     });
 
     test("creates a wrapped document", async () => {
-      const wrappedDocument = await digestVC(RAW_DOCUMENT_DID);
+      const wrappedDocument = await digestVc(RAW_DOCUMENT_DID);
       expect(wrappedDocument["@context"]).toEqual([
         "https://www.w3.org/ns/credentials/v2",
         "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -75,37 +80,39 @@ describe("V4.0 E2E Test Scenarios", () => {
     });
 
     test("checks that document is wrapped correctly", async () => {
-      const wrappedDocument = await digestVC(DOCUMENT_ONE);
-      const verified = verifySignature(wrappedDocument);
+      const wrappedDocument = await digestVc(DOCUMENT_ONE);
+      const verified = validateDigest(wrappedDocument);
       expect(verified).toBe(true);
     });
 
     test("checks that document conforms to the schema", async () => {
-      const wrappedDocument = await digestVC(DOCUMENT_ONE);
-      expect(validateSchema(wrappedDocument)).toBe(true);
+      const wrappedDocument = await digestVc(DOCUMENT_ONE);
+      expect(isDigestedOAVerifiableCredential(wrappedDocument)).toBe(true);
     });
 
     test("does not allow for the same merkle root to be generated", async () => {
       // This test takes some time to run, so we set the timeout to 14s
-      const wrappedDocument = await digestVC(DOCUMENT_ONE);
-      const newDocument = await digestVC(DOCUMENT_ONE);
+      const wrappedDocument = await digestVc(DOCUMENT_ONE);
+      const newDocument = await digestVc(DOCUMENT_ONE);
       expect(wrappedDocument.proof.merkleRoot).not.toBe(newDocument.proof.merkleRoot);
     }, 14000);
 
     test("obfuscate data correctly", async () => {
-      const newDocument = await digestVC(DOCUMENT_THREE);
+      const newDocument = await digestVc(DOCUMENT_THREE);
       expect(newDocument.credentialSubject.key2).toBeDefined();
-      const obfuscatedDocument = obfuscate(newDocument, ["credentialSubject.key2"]);
-      expect(verifySignature(obfuscatedDocument)).toBe(true);
-      expect(validateSchema(obfuscatedDocument)).toBe(true);
+      const obfuscatedDocument = obfuscateOAVerifiableCredential(newDocument, ["credentialSubject.key2"]);
+      expect(validateDigest(obfuscatedDocument)).toBe(true);
+      expect(isDigestedOAVerifiableCredential(obfuscatedDocument)).toBe(true);
       expect(obfuscatedDocument.credentialSubject.key2).toBeUndefined();
     });
 
     test("obfuscate data transistively", async () => {
-      const newDocument = await digestVC(DOCUMENT_THREE);
-      const intermediateDocument = obfuscate(newDocument, ["credentialSubject.key2"]);
-      const obfuscatedDocument = obfuscate(intermediateDocument, ["credentialSubject.key3"]);
-      expect(obfuscate(newDocument, ["credentialSubject.key2", "credentialSubject.key3"])).toEqual(obfuscatedDocument);
+      const newDocument = await digestVc(DOCUMENT_THREE);
+      const intermediateDocument = obfuscateOAVerifiableCredential(newDocument, ["credentialSubject.key2"]);
+      const obfuscatedDocument = obfuscateOAVerifiableCredential(intermediateDocument, ["credentialSubject.key3"]);
+      expect(
+        obfuscateOAVerifiableCredential(newDocument, ["credentialSubject.key2", "credentialSubject.key3"])
+      ).toEqual(obfuscatedDocument);
     });
 
     describe("Issuing a batch of documents", () => {
@@ -114,15 +121,15 @@ describe("V4.0 E2E Test Scenarios", () => {
           ...DATUM,
           {
             laurent: "task force, assemble!!",
-          } as unknown as V4OpenAttestationDocument,
+          } as unknown as OAVerifiableCredential,
         ];
-        await expect(digestVCs(malformedDatum)).rejects.toThrow(
+        await expect(digestVcs(malformedDatum)).rejects.toThrow(
           "Input document does not conform to Verifiable Credentials"
         );
       });
 
       test("creates a batch of documents if all are in the right format", async () => {
-        const wrappedDocuments = await digestVCs(DATUM);
+        const wrappedDocuments = await digestVcs(DATUM);
         wrappedDocuments.forEach((doc, i: number) => {
           expect(doc.type).toEqual(["VerifiableCredential", "OpenAttestationCredential"]);
           expect(doc.proof.type).toBe("OpenAttestationHashProof2018");
@@ -135,35 +142,35 @@ describe("V4.0 E2E Test Scenarios", () => {
       });
 
       test("checks that documents are wrapped correctly", async () => {
-        const wrappedDocuments = await digestVCs(DATUM);
-        const verified = wrappedDocuments.reduce((prev, curr) => verifySignature(curr) && prev, true);
+        const wrappedDocuments = await digestVcs(DATUM);
+        const verified = wrappedDocuments.reduce((prev, curr) => validateDigest(curr) && prev, true);
         expect(verified).toBe(true);
       });
 
       test("checks that documents conforms to the schema", async () => {
-        const wrappedDocuments = await digestVCs(DATUM);
+        const wrappedDocuments = await digestVcs(DATUM);
         const validatedSchema = wrappedDocuments.reduce(
-          (prev: boolean, curr: any) => validateSchema(curr) && prev,
+          (prev: boolean, curr: any) => isDigestedOAVerifiableCredential(curr) && prev,
           true
         );
         expect(validatedSchema).toBe(true);
       });
 
       test("does not allow for same merkle root to be generated", async () => {
-        const wrappedDocuments = await digestVCs(DATUM);
-        const newWrappedDocuments = await digestVCs(DATUM);
+        const wrappedDocuments = await digestVcs(DATUM);
+        const newWrappedDocuments = await digestVcs(DATUM);
         expect(wrappedDocuments[0].proof.merkleRoot).not.toBe(newWrappedDocuments[0].proof.merkleRoot);
       });
     });
   });
 
-  describe("validate", () => {
+  describe("validate schema", () => {
     test("should return true when document is a valid wrapped v4 document and identityProof is DNS-DID", () => {
-      expect(validateSchema(WRAPPED_DOCUMENT_DID)).toStrictEqual(true);
+      expect(isDigestedOAVerifiableCredential(WRAPPED_DOCUMENT_DID)).toStrictEqual(true);
     });
 
     test("should return true when signed document is a valid signed wrapped v4 document and identityProof is DNS-DID", () => {
-      expect(validateSchema(SIGNED_WRAPPED_DOCUMENT_DID)).toStrictEqual(true);
+      expect(isDigestedOAVerifiableCredential(SIGNED_WRAPPED_DOCUMENT_DID)).toStrictEqual(true);
     });
 
     test("should return false when document is invalid due to no DNS-DID identifier", () => {
@@ -172,30 +179,8 @@ describe("V4.0 E2E Test Scenarios", () => {
       const credential = {
         ...RAW_DOCUMENT_DID,
         issuer: modifiedIssuer,
-      } satisfies V4OpenAttestationDocument;
-      expect(validateSchema(credential)).toStrictEqual(false);
-    });
-
-    test("should default to 2.0 when document is valid and version is undefined", () => {
-      expect(
-        validateSchema({
-          version: undefined,
-          data: {
-            issuers: [
-              {
-                name: "issuer.name",
-                certificateStore: "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d",
-              },
-            ],
-          },
-          signature: {
-            merkleRoot: "0xabc",
-            proof: [],
-            targetHash: "0xabc",
-            type: "SHA3MerkleProof",
-          },
-        })
-      ).toStrictEqual(true);
+      } satisfies OAVerifiableCredential;
+      expect(isDigestedOAVerifiableCredential(credential)).toStrictEqual(false);
     });
   });
 
@@ -210,7 +195,7 @@ describe("V4.0 E2E Test Scenarios", () => {
           key4: "خحثىشففثسفشفهخى",
         },
       };
-      const wrapped = await digestVC(document);
+      const wrapped = await digestVc(document);
       expect(wrapped.proof.merkleRoot).toBeTruthy();
       expect(wrapped.credentialSubject.key1).toBe(document.credentialSubject.key1);
       expect(wrapped.credentialSubject.key2).toBe(document.credentialSubject.key2);

@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID, SIGNED_WRAPPED_DOCUMENT_DID } from "../fixtures";
-import { V4SignedWrappedDocument } from "../types";
+import { Signed } from "../types";
 import { validateDigest } from "../validate";
 
 const TEST_DOCUMENTS = {
@@ -41,7 +41,7 @@ describe("V4.0 validate", () => {
               issuer: {
                 ...issuerWithoutName,
                 fakename: name, // Key was originally "name"
-              } as unknown as V4SignedWrappedDocument["issuer"],
+              } as unknown as Signed["issuer"],
             })
           ).toBe(false);
         });

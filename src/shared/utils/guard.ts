@@ -83,7 +83,7 @@ export const isSignedWrappedV3Document = (
 };
 
 export {
-  isV4OpenAttestationDocument as isRawV4Document,
-  isV4WrappedDocument as isWrappedV4Document,
-  isV4SignedWrappedDocument as isSignedWrappedV4Document,
+  isOAVerifiableCredential,
+  isDigestedOAVerifiableCredential,
+  isSignedOAVerifiableCredential,
 } from "../../4.0/types";

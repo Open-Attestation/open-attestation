@@ -1,9 +1,9 @@
-import { V4OpenAttestationDocument, V4WrappedDocument, W3cVerifiableCredential } from "../types";
-import { digestVC } from "../digest";
+import { OAVerifiableCredential, DigestedOAVerifiableCredential, W3cVerifiableCredential } from "../types";
+import { digestVc } from "../digest";
 
 describe("V4.0 digest", () => {
   test("given a valid v4 document, should wrap correctly", async () => {
-    const wrapped = await digestVC({
+    const wrapped = await digestVc({
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
         "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -21,7 +21,7 @@ describe("V4.0 digest", () => {
         identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
       },
     });
-    const parsedResults = V4WrappedDocument.safeParse(wrapped);
+    const parsedResults = DigestedOAVerifiableCredential.safeParse(wrapped);
     if (!parsedResults.success) {
       throw new Error("Parsing failed");
     }
@@ -37,7 +37,7 @@ describe("V4.0 digest", () => {
 
   test("given a document with explicit v4 contexts, but does not conform to the V4 document schema, should throw", async () => {
     await expect(
-      digestVC({
+      digestVc({
         "@context": [
           "https://www.w3.org/ns/credentials/v2",
           "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -53,7 +53,7 @@ describe("V4.0 digest", () => {
           id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
           name: "Government Technology Agency of Singapore (GovTech)",
           identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
-        } as V4OpenAttestationDocument["issuer"],
+        } as OAVerifiableCredential["issuer"],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
       "Input document does not conform to Open Attestation v4.0 Data Model: 
@@ -73,7 +73,7 @@ describe("V4.0 digest", () => {
 
   test("given a valid v4 document but has an extra field, should throw", async () => {
     await expect(
-      digestVC({
+      digestVc({
         "@context": [
           "https://www.w3.org/ns/credentials/v2",
           "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -94,7 +94,7 @@ describe("V4.0 digest", () => {
         },
         // this should not exist
         extraField: "extra",
-      } as V4OpenAttestationDocument)
+      } as OAVerifiableCredential)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
       "Input document does not conform to Open Attestation v4.0 Data Model: 
        {
@@ -118,8 +118,10 @@ describe("V4.0 digest", () => {
         id: "https://example.com/issuer/123",
       },
     };
-    const wrapped = await digestVC(genericW3cVc as unknown as V4OpenAttestationDocument);
-    const parsedResults = V4WrappedDocument.pick({ "@context": true, type: true }).passthrough().safeParse(wrapped);
+    const wrapped = await digestVc(genericW3cVc as unknown as OAVerifiableCredential);
+    const parsedResults = DigestedOAVerifiableCredential.pick({ "@context": true, type: true })
+      .passthrough()
+      .safeParse(wrapped);
     expect(parsedResults.success).toBe(true);
     expect(wrapped.proof.merkleRoot.length).toBe(64);
     expect(wrapped.proof.privacy.obfuscated).toEqual([]);

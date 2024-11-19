@@ -1,7 +1,7 @@
 {
-  "$ref": "#/definitions/v4SignedWrappedDocument",
+  "$ref": "#/definitions/OAVerifiableCredential",
   "definitions": {
-    "v4SignedWrappedDocument": {
+    "OAVerifiableCredential": {
       "type": "object",
       "properties": {
         "@context": {
@@ -59,7 +59,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -77,7 +77,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+                    "$ref": "#/definitions/OAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -96,7 +96,7 @@
           "type": "object",
           "properties": {
             "id": {
-              "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+              "$ref": "#/definitions/OAVerifiableCredential/properties/id"
             },
             "type": {
               "type": "string",
@@ -225,7 +225,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -242,7 +242,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+                    "$ref": "#/definitions/OAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -262,7 +262,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -279,7 +279,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4SignedWrappedDocument/properties/id"
+                    "$ref": "#/definitions/OAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -294,65 +294,35 @@
           ]
         },
         "proof": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "const": "OpenAttestationHashProof2018"
-            },
-            "proofPurpose": {
-              "type": "string",
-              "const": "assertionMethod"
-            },
-            "targetHash": {
-              "type": "string"
-            },
-            "proofs": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "merkleRoot": {
-              "type": "string"
-            },
-            "salts": {
-              "type": "string"
-            },
-            "privacy": {
+          "anyOf": [
+            {
               "type": "object",
               "properties": {
-                "obfuscated": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                "type": {
+                  "type": "string"
                 }
               },
               "required": [
-                "obfuscated"
+                "type"
               ],
-              "additionalProperties": false
+              "additionalProperties": true
             },
-            "key": {
-              "type": "string"
-            },
-            "signature": {
-              "type": "string"
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "additionalProperties": true
+              }
             }
-          },
-          "required": [
-            "type",
-            "proofPurpose",
-            "targetHash",
-            "proofs",
-            "merkleRoot",
-            "salts",
-            "privacy",
-            "key",
-            "signature"
-          ],
-          "additionalProperties": false
+          ]
         },
         "renderMethod": {
           "type": "array",
@@ -422,8 +392,7 @@
         "@context",
         "type",
         "issuer",
-        "credentialSubject",
-        "proof"
+        "credentialSubject"
       ],
       "additionalProperties": false
     }
