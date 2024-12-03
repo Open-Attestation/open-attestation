@@ -4,78 +4,78 @@ import { Base64 } from "js-base64";
 describe("V4.0 salt", () => {
   describe("salt", () => {
     test("handles shadowed keys correctly (type 1: root, dot notation)", () => {
-      const document = {
+      const vc = {
         "credentialSubject.alumniOf":
           "0xSomeMaliciousDocumentStore, this would be at credentialSubject.alumniOf after flatMap if uncaught",
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Key names must not have . in them");
     });
     test("handles shadowed keys correctly (type 2: root, array index)", () => {
-      const document = {
+      const vc = {
         "type[1]": "MaliciousCredential, this would be at type[1] after flatMap if uncaught",
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Key names must not have '[' or ']' in them");
     });
     test("handles shadowed keys correctly (type 3: nested as object, dot notation)", () => {
-      const document = {
+      const vc = {
         nested: {
           "credentialSubject.alumniOf":
             "0xSomeMaliciousDocumentStore, this would be at nested.credentialSubject.alumniOf after flatMap if uncaught",
         },
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Key names must not have . in them");
     });
     test("handles shadowed keys correctly (type 4: nested as object, array index)", () => {
-      const document = {
+      const vc = {
         nested: { "type[1]": "this would be at nested.type[1] after flatMap if uncaught" },
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Key names must not have '[' or ']' in them");
     });
     test("handles shadowed keys correctly (type 5: nested as array, dot notation)", () => {
-      const document = {
+      const vc = {
         nested: [{ "shadowed.key": "this would be at nested[0].shadowed.key after flatMap if uncaught" }],
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Key names must not have . in them");
     });
     test("handles shadowed keys correctly (type 6: nested as array, array index)", () => {
-      const document = {
+      const vc = {
         nested: [{ "type[1]": "this would be at nested[0].type[1] after flatMap if uncaught" }],
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Key names must not have '[' or ']' in them");
     });
 
     test("handles null values correctly", () => {
-      const document = {
+      const vc = {
         grades: null,
       };
-      const salted = salt(document);
+      const salted = salt(vc);
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades" }));
     });
     test("handles undefined values correctly", () => {
-      const document = {
+      const vc = {
         grades: undefined,
       };
       expect(() => {
-        salt(document);
+        salt(vc);
       }).toThrow("Unexpected data 'undefined' in 'grades'"); // Cannot convert undefined or null to object?
     });
     test("handles numbers and booleans correctly", () => {
-      const document = {
+      const vc = {
         grades: ["A+", 100, 50.28, true, "B+"],
       };
-      const salted = salt(document);
+      const salted = salt(vc);
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[0]" }));
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[1]" }));
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[2]" }));
@@ -83,10 +83,10 @@ describe("V4.0 salt", () => {
       expect(salted).toContainEqual(expect.objectContaining({ path: "grades[4]" }));
     });
     test("throw on sparse arrays (we do not support obfuscation of array item as JSON turns empty slots into null values)", () => {
-      const document = {
+      const vc = {
         grades: ["A+", 100, , , , true, "B+"],
       };
-      expect(() => salt(document)).toThrow(`Unexpected data 'undefined'`);
+      expect(() => salt(vc)).toThrow(`Unexpected data 'undefined'`);
     });
   });
 

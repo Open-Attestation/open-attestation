@@ -37,7 +37,7 @@ const obfuscate = (_data: Digested | Signed, fields: string[] | string) => {
     const isRemoved = unset(data, path);
     if (isRemoved) {
       // assertions to ensure that obfuscation does not result in additional leaf nodes
-      // that would render the resultant document as invalid
+      // that would render the resultant vc as invalid
       path.pop();
       if (path.length > 0) {
         const parent = get(data, path);
@@ -87,11 +87,11 @@ export type ObfuscateOAVerifiableCredentialResult<T extends Digested> = Override
   }
 >;
 export const obfuscateOAVerifiableCredential = <T extends Digested | Signed>(
-  document: T,
+  vc: T,
   fields: string[] | string
 ): ObfuscateOAVerifiableCredentialResult<T> => {
-  const { data, obfuscatedData } = obfuscate(document, fields);
-  const currentObfuscatedData = document.proof.privacy.obfuscated;
+  const { data, obfuscatedData } = obfuscate(vc, fields);
+  const currentObfuscatedData = vc.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
   // assert that obfuscated is still compliant to our schema
@@ -115,7 +115,7 @@ export const obfuscateOAVerifiableCredential = <T extends Digested | Signed>(
 class CannotObfuscateProtectedPathsError extends Error {
   constructor(public paths: string[]) {
     super(
-      `The resultant obfuscated document is not compliant with the OA v4 Verifiable Credential data model, please ensure that the following path(s) are not obfuscated: ${paths
+      `The resultant obfuscated VC is not compliant with the OA v4 Verifiable Credential data model, please ensure that the following path(s) are not obfuscated: ${paths
         .map((val) => `"${val}"`)
         .join(", ")}`
     );

@@ -158,7 +158,7 @@ const Salt = z.object({ value: z.string(), path: z.string() });
 
 export const DecentralisedEmbeddedRenderer = z.object({
   // Must have id match url pattern
-  id: z.string().url().describe("URL of a decentralised renderer to render this document"),
+  id: z.string().url().describe("URL of a decentralised renderer to render this VC"),
   type: z.literal("OpenAttestationEmbeddedRenderer"),
   templateName: z.string(),
 });
@@ -326,14 +326,14 @@ export type PartialDeep<T> = T extends string | number | bigint | boolean | null
       [K in keyof T]?: PartialDeep<T[K]>;
     };
 
-export const isOAVerifiableCredential = (document: unknown): document is OAVerifiableCredential => {
-  return OAVerifiableCredential.safeParse(document).success;
+export const isOAVerifiableCredential = (vc: unknown): vc is OAVerifiableCredential => {
+  return OAVerifiableCredential.safeParse(vc).success;
 };
 
-export const isDigestedOAVerifiableCredential = (document: unknown): document is Digested => {
-  return DigestedOAVerifiableCredential.safeParse(document).success;
+export const isDigestedOAVerifiableCredential = (vc: unknown): vc is Digested => {
+  return DigestedOAVerifiableCredential.safeParse(vc).success;
 };
 
-export const isSignedOAVerifiableCredential = (document: unknown): document is Signed => {
-  return SignedOAVerifiableCredential.safeParse(document).success;
+export const isSignedOAVerifiableCredential = (vc: unknown): vc is Signed => {
+  return SignedOAVerifiableCredential.safeParse(vc).success;
 };

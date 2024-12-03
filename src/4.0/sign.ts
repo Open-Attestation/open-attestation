@@ -13,8 +13,8 @@ export const signVc = async <T extends OAVerifiableCredential | W3cVerifiableCre
   /* 1. Input VC needs to be digested first */
   let validatedProof: Digested["proof"];
   if (!unsignedVc.proof) {
-    const wrappedDocument = await digestVc(unsignedVc);
-    validatedProof = wrappedDocument.proof;
+    const digestedVc = await digestVc(unsignedVc);
+    validatedProof = digestedVc.proof;
   } else {
     // Do not accept a VC that already has proof object defined
     throw new VcProofNotEmptyError(new Error("Either an unsigned or undigested VC must be provided"));
@@ -57,7 +57,7 @@ class VcProofNotEmptyError extends Error {
  */
 class CouldNotSignVcError extends Error {
   constructor(public error: unknown) {
-    super(`Could not sign document:\n${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
+    super(`Could not sign VC:\n${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
     Object.setPrototypeOf(this, CouldNotSignVcError.prototype);
   }
 }

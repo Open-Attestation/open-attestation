@@ -1,20 +1,20 @@
 import { genTargetHash } from "../hash";
 import { decodeSalt } from "../salt";
-import { SIGNED_WRAPPED_DOCUMENT_DID as ROOT_CREDENTIAL } from "../fixtures";
+import { SIGNED_VC_DID as ROOT_CREDENTIAL } from "../fixtures";
 import { Signed } from "../types";
 import { obfuscateOAVerifiableCredential } from "../obfuscate";
 
-// All obfuscated documents are generated from the ROOT_CREDENTIAL
+// All obfuscated VCs are generated from the ROOT_CREDENTIAL
 const ROOT_CREDENTIAL_TARGET_HASH = ROOT_CREDENTIAL.proof.targetHash;
 
 describe("V4.0 hash", () => {
-  test("given that obfuscated documents are generated from the ROOT_CREDENTIAL, ROOT_CREDENTIAL_TARGET_HASH should match snapshot", () => {
+  test("given that obfuscated VCs are generated from the ROOT_CREDENTIAL, ROOT_CREDENTIAL_TARGET_HASH should match snapshot", () => {
     expect(ROOT_CREDENTIAL_TARGET_HASH).toMatchInlineSnapshot(
       `"0b1f90bc8e87cfce8ec49cea60d406291ad130ddedc26e866a8c4f2152747abc"`
     );
   });
 
-  test("given a document with ALL FIELDS VISIBLE, should digest and match the root credential's target hash", () => {
+  test("given a VC with ALL FIELDS VISIBLE, should digest and match the root credential's target hash", () => {
     expect(ROOT_CREDENTIAL.credentialSubject).toMatchInlineSnapshot(`
         {
           "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
@@ -42,9 +42,9 @@ describe("V4.0 hash", () => {
     expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
   });
 
-  test("given a document with ONE element obfuscated, should digest and match the root credential's target hash", () => {
-    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateOAVerifiableCredential(ROOT_CREDENTIAL, "credentialSubject.id");
-    expect(OBFUSCATED_WRAPPED_DOCUMENT.credentialSubject).toMatchInlineSnapshot(`
+  test("given a VC with ONE element obfuscated, should digest and match the root credential's target hash", () => {
+    const OBFUSCATED_DIGESTED_VC = obfuscateOAVerifiableCredential(ROOT_CREDENTIAL, "credentialSubject.id");
+    expect(OBFUSCATED_DIGESTED_VC.credentialSubject).toMatchInlineSnapshot(`
         {
           "licenses": [
             {
@@ -64,28 +64,28 @@ describe("V4.0 hash", () => {
           ],
         }
       `);
-    expect(OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated).toMatchInlineSnapshot(`
+    expect(OBFUSCATED_DIGESTED_VC.proof.privacy.obfuscated).toMatchInlineSnapshot(`
       [
         "31744f7aac0af84e23e752611279933657ff78a9065330f8c5029ec5205979a3",
       ]
     `);
 
     const digest = genTargetHash(
-      OBFUSCATED_WRAPPED_DOCUMENT,
-      decodeSalt(OBFUSCATED_WRAPPED_DOCUMENT.proof.salts),
-      OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated
+      OBFUSCATED_DIGESTED_VC,
+      decodeSalt(OBFUSCATED_DIGESTED_VC.proof.salts),
+      OBFUSCATED_DIGESTED_VC.proof.privacy.obfuscated
     );
     expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
-    expect(digest).toBe(OBFUSCATED_WRAPPED_DOCUMENT.proof.targetHash);
+    expect(digest).toBe(OBFUSCATED_DIGESTED_VC.proof.targetHash);
   });
 
-  test("given a document with THREE elements obfuscated, should digest and match the root credential's target hash", () => {
-    const OBFUSCATED_WRAPPED_DOCUMENT = obfuscateOAVerifiableCredential(ROOT_CREDENTIAL, [
+  test("given a VC with THREE elements obfuscated, should digest and match the root credential's target hash", () => {
+    const OBFUSCATED_DIGESTED_VC = obfuscateOAVerifiableCredential(ROOT_CREDENTIAL, [
       "credentialSubject.id",
       "credentialSubject.name",
       "credentialSubject.licenses[0].description",
     ]);
-    expect(OBFUSCATED_WRAPPED_DOCUMENT.credentialSubject).toMatchInlineSnapshot(`
+    expect(OBFUSCATED_DIGESTED_VC.credentialSubject).toMatchInlineSnapshot(`
         {
           "licenses": [
             {
@@ -103,7 +103,7 @@ describe("V4.0 hash", () => {
           ],
         }
       `);
-    expect(OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated).toMatchInlineSnapshot(`
+    expect(OBFUSCATED_DIGESTED_VC.proof.privacy.obfuscated).toMatchInlineSnapshot(`
       [
         "31744f7aac0af84e23e752611279933657ff78a9065330f8c5029ec5205979a3",
         "f49443c7e5fcb9f20dad4463a5e0b2cb3e341c430d4792cb87cb11bce0efd9b0",
@@ -112,18 +112,18 @@ describe("V4.0 hash", () => {
     `);
 
     const digest = genTargetHash(
-      OBFUSCATED_WRAPPED_DOCUMENT,
-      decodeSalt(OBFUSCATED_WRAPPED_DOCUMENT.proof.salts),
-      OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated
+      OBFUSCATED_DIGESTED_VC,
+      decodeSalt(OBFUSCATED_DIGESTED_VC.proof.salts),
+      OBFUSCATED_DIGESTED_VC.proof.privacy.obfuscated
     );
     expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
-    expect(digest).toBe(OBFUSCATED_WRAPPED_DOCUMENT.proof.targetHash);
+    expect(digest).toBe(OBFUSCATED_DIGESTED_VC.proof.targetHash);
   });
 
-  test("given a document with NO VISIBLE FIELDS, should digest and match the root credential's target hash", () => {
+  test("given a VC with NO VISIBLE FIELDS, should digest and match the root credential's target hash", () => {
     // this has to be manually generated, since obfuscateVerifiableCredential does not allow obfuscating fields that
-    // result in a non compliant V4 OA document
-    const OBFUSCATED_WRAPPED_DOCUMENT = {
+    // result in a non compliant V4 OA VC
+    const OBFUSCATED_DIGESTED_VC = {
       // no visible fields
       proof: {
         type: "OpenAttestationHashProof2018",
@@ -166,9 +166,9 @@ describe("V4.0 hash", () => {
     } as unknown as Signed;
 
     const digest = genTargetHash(
-      OBFUSCATED_WRAPPED_DOCUMENT,
-      decodeSalt(OBFUSCATED_WRAPPED_DOCUMENT.proof.salts),
-      OBFUSCATED_WRAPPED_DOCUMENT.proof.privacy.obfuscated
+      OBFUSCATED_DIGESTED_VC,
+      decodeSalt(OBFUSCATED_DIGESTED_VC.proof.salts),
+      OBFUSCATED_DIGESTED_VC.proof.privacy.obfuscated
     );
     expect(digest).toBe(ROOT_CREDENTIAL_TARGET_HASH);
   });

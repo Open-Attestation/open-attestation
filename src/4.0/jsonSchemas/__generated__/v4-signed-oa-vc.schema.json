@@ -364,7 +364,7 @@
                   "id": {
                     "type": "string",
                     "format": "uri",
-                    "description": "URL of a decentralised renderer to render this document"
+                    "description": "URL of a decentralised renderer to render this VC"
                   },
                   "type": {
                     "type": "string",

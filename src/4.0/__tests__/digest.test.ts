@@ -2,8 +2,8 @@ import { OAVerifiableCredential, DigestedOAVerifiableCredential, W3cVerifiableCr
 import { digestVc } from "../digest";
 
 describe("V4.0 digest", () => {
-  test("given a valid v4 document, should wrap correctly", async () => {
-    const wrapped = await digestVc({
+  test("given a valid v4 VC, should digest correctly", async () => {
+    const digested = await digestVc({
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
         "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -21,7 +21,7 @@ describe("V4.0 digest", () => {
         identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
       },
     });
-    const parsedResults = DigestedOAVerifiableCredential.safeParse(wrapped);
+    const parsedResults = DigestedOAVerifiableCredential.safeParse(digested);
     if (!parsedResults.success) {
       throw new Error("Parsing failed");
     }
@@ -35,7 +35,7 @@ describe("V4.0 digest", () => {
     expect(proof.type).toBe("OpenAttestationHashProof2018");
   });
 
-  test("given a document with explicit v4 contexts, but does not conform to the V4 document schema, should throw", async () => {
+  test("given a VC with explicit v4 contexts, but does not conform to the V4 VC schema, should throw", async () => {
     await expect(
       digestVc({
         "@context": [
@@ -56,7 +56,7 @@ describe("V4.0 digest", () => {
         } as OAVerifiableCredential["issuer"],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "Input document does not conform to Open Attestation v4.0 Data Model: 
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
        {
         "_errors": [],
         "issuer": {
@@ -71,7 +71,7 @@ describe("V4.0 digest", () => {
     `);
   });
 
-  test("given a valid v4 document but has an extra field, should throw", async () => {
+  test("given a valid v4 VC but has an extra field, should throw", async () => {
     await expect(
       digestVc({
         "@context": [
@@ -96,7 +96,7 @@ describe("V4.0 digest", () => {
         extraField: "extra",
       } as OAVerifiableCredential)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "Input document does not conform to Open Attestation v4.0 Data Model: 
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
        {
         "_errors": [
           "Unrecognized key(s) in object: 'extraField'"
@@ -105,7 +105,7 @@ describe("V4.0 digest", () => {
     `);
   });
 
-  test("given a generic w3c vc, should wrap with context and type corrected", async () => {
+  test("given a generic W3C VC, should digest with context and type corrected", async () => {
     const genericW3cVc: W3cVerifiableCredential = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential"],
@@ -118,17 +118,17 @@ describe("V4.0 digest", () => {
         id: "https://example.com/issuer/123",
       },
     };
-    const wrapped = await digestVc(genericW3cVc as unknown as OAVerifiableCredential);
+    const digested = await digestVc(genericW3cVc as unknown as OAVerifiableCredential);
     const parsedResults = DigestedOAVerifiableCredential.pick({ "@context": true, type: true })
       .passthrough()
-      .safeParse(wrapped);
+      .safeParse(digested);
     expect(parsedResults.success).toBe(true);
-    expect(wrapped.proof.merkleRoot.length).toBe(64);
-    expect(wrapped.proof.privacy.obfuscated).toEqual([]);
-    expect(wrapped.proof.proofPurpose).toBe("assertionMethod");
-    expect(wrapped.proof.proofs).toEqual([]);
-    expect(wrapped.proof.salts.length).toBeGreaterThan(0);
-    expect(wrapped.proof.targetHash.length).toBe(64);
-    expect(wrapped.proof.type).toBe("OpenAttestationHashProof2018");
+    expect(digested.proof.merkleRoot.length).toBe(64);
+    expect(digested.proof.privacy.obfuscated).toEqual([]);
+    expect(digested.proof.proofPurpose).toBe("assertionMethod");
+    expect(digested.proof.proofs).toEqual([]);
+    expect(digested.proof.salts.length).toBeGreaterThan(0);
+    expect(digested.proof.targetHash.length).toBe(64);
+    expect(digested.proof.type).toBe("OpenAttestationHashProof2018");
   });
 });

@@ -4,17 +4,17 @@ import { W3cVerifiableCredential, Salt } from "./types";
 import { LeafValue, traverseAndFlatten } from "./traverseAndFlatten";
 import { hashToBuffer } from "../shared/utils/hashing";
 
-export const genTargetHash = (document: W3cVerifiableCredential, salts: Salt[], obfuscatedData: string[]) => {
-  // find all leaf nodes in the document and hash them
+export const genTargetHash = (vc: W3cVerifiableCredential, salts: Salt[], obfuscatedData: string[]) => {
+  // find all leaf nodes in the vc and hash them
   // proof is not part of the digest
-  const { proof: _, ...documentWithoutProof } = document;
+  const { proof: _, ...vcWithoutProof } = vc;
   const saltsMap = new Map(salts.map((salt) => [salt.path, salt.value]));
-  const isEmptyDocument = Object.keys(documentWithoutProof).length === 0;
+  const isEmptyVc = Object.keys(vcWithoutProof).length === 0;
   const hashedLeafNodes =
-    // skip if document without proof is empty as it will treat the empty document as a leaf node
-    isEmptyDocument
+    // skip if vc without proof is empty as it will treat the empty vc as a leaf node
+    isEmptyVc
       ? []
-      : traverseAndFlatten(documentWithoutProof, ({ value, path }) => {
+      : traverseAndFlatten(vcWithoutProof, ({ value, path }) => {
           const salt = saltsMap.get(path);
           if (!salt) throw new SaltNotFoundError(path);
           return hashLeafNode({ path, salt, value });

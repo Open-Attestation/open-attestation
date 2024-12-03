@@ -7,8 +7,8 @@ export const SAMPLE_SIGNING_KEYS = {
   private: "0xcd27dc84c82c5814e7edac518edd5f263e7db7f25adb7a1afe13996a95583cf2",
 } as const;
 
-/* RAW */
-export const RAW_DOCUMENT_DID = freezeObject({
+/* Raw */
+export const RAW_VC_DID = freezeObject({
   "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
   type: ["VerifiableCredential", "OpenAttestationCredential"],
   validFrom: "2021-03-08T12:00:00+08:00",
@@ -45,7 +45,7 @@ export const RAW_DOCUMENT_DID = freezeObject({
   },
 } satisfies OAVerifiableCredential);
 
-export const RAW_DOCUMENT_DID_OSCP = freezeObject({
+export const RAW_VC_DID_OSCP = freezeObject({
   "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
   type: ["VerifiableCredential", "OpenAttestationCredential"],
   validFrom: "2021-03-08T12:00:00+08:00",
@@ -86,7 +86,7 @@ export const RAW_DOCUMENT_DID_OSCP = freezeObject({
   },
 } satisfies OAVerifiableCredential);
 
-export const BATCHED_RAW_DOCUMENTS_DID = freezeObject([
+export const RAW_BATCHED_VC_DID = freezeObject([
   {
     "@context": [ContextUrl.w3c_vc_v2, ContextUrl.oa_vc_v4],
     name: "Republic of Singapore Driving Licence",
@@ -163,7 +163,7 @@ export const BATCHED_RAW_DOCUMENTS_DID = freezeObject([
 ] satisfies OAVerifiableCredential[]);
 
 /* Digested */
-export const WRAPPED_DOCUMENT_DID = freezeObject({
+export const DIGESTED_VC_DID = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -209,7 +209,7 @@ export const WRAPPED_DOCUMENT_DID = freezeObject({
   },
 } satisfies Digested<OAVerifiableCredential>);
 
-export const WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
+export const DIGESTED_VC_DID_OSCP = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -256,7 +256,7 @@ export const WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
   },
 } satisfies Digested<OAVerifiableCredential>);
 
-export const BATCHED_WRAPPED_DOCUMENTS_DID = freezeObject([
+export const DIGESTED_BATCHED_VC_DID = freezeObject([
   {
     "@context": [
       "https://www.w3.org/ns/credentials/v2",
@@ -353,7 +353,7 @@ export const BATCHED_WRAPPED_DOCUMENTS_DID = freezeObject([
 ] satisfies Digested<OAVerifiableCredential>[]);
 
 /* Signed */
-export const SIGNED_WRAPPED_DOCUMENT_DID = freezeObject({
+export const SIGNED_VC_DID = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -402,7 +402,7 @@ export const SIGNED_WRAPPED_DOCUMENT_DID = freezeObject({
   },
 } satisfies Signed<OAVerifiableCredential>);
 
-export const SIGNED_WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
+export const SIGNED_VC_DID_OSCP = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -452,7 +452,7 @@ export const SIGNED_WRAPPED_DOCUMENT_DID_OSCP = freezeObject({
   },
 } satisfies Signed<OAVerifiableCredential>);
 
-export const SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED = freezeObject({
+export const SIGNED_VC_DID_OBFUSCATED = freezeObject({
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
@@ -497,7 +497,7 @@ export const SIGNED_WRAPPED_DOCUMENT_DID_OBFUSCATED = freezeObject({
   ],
 } satisfies Signed<OAVerifiableCredential>);
 
-export const BATCHED_SIGNED_WRAPPED_DOCUMENTS_DID = freezeObject([
+export const SIGNED_BATCHED_VC_DID = freezeObject([
   {
     "@context": [
       "https://www.w3.org/ns/credentials/v2",
