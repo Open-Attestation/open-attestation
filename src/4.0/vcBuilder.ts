@@ -7,8 +7,8 @@ import {
   OscpResponderRevocation,
   RevocationStoreRevocation,
   OAVerifiableCredential,
-  Signed,
-  Digested,
+  OASigned,
+  OADigested,
 } from "./types";
 import { ContextType, ContextUrl } from "./context";
 
@@ -442,7 +442,7 @@ export class VcBuilder<Props extends VcProps | VcProps[]> {
 
 type SignedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcProps>
   ? Override<
-      Signed,
+      OASigned,
       {
         name: Props[number]["name"];
         credentialSubject: Props[number]["credentialSubject"];
@@ -450,7 +450,7 @@ type SignedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcPro
     >[]
   : Props extends VcProps
   ? Override<
-      Signed,
+      OASigned,
       {
         name: Props["name"];
         credentialSubject: Props["credentialSubject"];
@@ -460,7 +460,7 @@ type SignedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcPro
 
 type DigestedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcProps>
   ? Override<
-      Digested,
+      OADigested,
       {
         name: Props[number]["name"];
         credentialSubject: Props[number]["credentialSubject"];
@@ -468,7 +468,7 @@ type DigestedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcP
     >[]
   : Props extends VcProps
   ? Override<
-      Digested,
+      OADigested,
       {
         name: Props["name"];
         credentialSubject: Props["credentialSubject"];

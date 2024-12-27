@@ -152,6 +152,10 @@ const _W3cVerifiableCredential = z.object({
 });
 // W3cVerifiableCredential should always allow extra root properties
 export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
+export const UnsignedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: z.undefined().optional(),
+});
+export type UnsignedW3cVerifiableCredential = z.infer<typeof UnsignedW3cVerifiableCredential>;
 
 const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
 const Salt = z.object({ value: z.string(), path: z.string() });
@@ -198,6 +202,20 @@ export const RevocationStoreRevocation = z.object({
   type: z.literal("OpenAttestationRevocationStore"),
 });
 
+const UnsignedOADigestedProof = z.object({
+  type: z.literal("OpenAttestationHashProof2018"),
+  proofPurpose: z.literal("assertionMethod"),
+  targetHash: z.string(),
+  proofs: z.array(z.string()),
+  merkleRoot: z.string(),
+  salts: z.string(),
+  privacy: z.object({ obfuscated: z.array(z.string()) }),
+});
+
+const OASignedProof = UnsignedOADigestedProof.extend({ key: z.string(), signature: z.string() });
+
+const OAProof = z.union([UnsignedOADigestedProof, OASignedProof]);
+
 export const OAVerifiableCredential = _W3cVerifiableCredential
   .extend({
     "@context": z
@@ -238,30 +256,39 @@ export const OAVerifiableCredential = _W3cVerifiableCredential
 
     // [Optional] Render Method
     renderMethod: z.array(z.discriminatedUnion("type", [DecentralisedEmbeddedRenderer, SvgRenderer])).optional(),
+
+    proof: OAProof.optional(),
   })
   .strict();
 
-const DigestedProof = z.object({
-  type: z.literal("OpenAttestationHashProof2018"),
-  proofPurpose: z.literal("assertionMethod"),
-  targetHash: z.string(),
-  proofs: z.array(z.string()),
-  merkleRoot: z.string(),
-  salts: z.string(),
-  privacy: z.object({ obfuscated: z.array(z.string()) }),
+export const OADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: OAProof,
 });
-const DigestedOAVerifiableCredentialExtrasShape = { proof: DigestedProof.passthrough() } as const;
-// DigestedOAVerifiableCredential should never allow extra root properties
-export const DigestedOAVerifiableCredential = OAVerifiableCredential.extend(
-  DigestedOAVerifiableCredentialExtrasShape
-).strict();
+type OADigestedOAVerifiableCredential = z.infer<typeof OADigestedOAVerifiableCredential>;
 
-const SignedProof = DigestedProof.extend({ key: z.string(), signature: z.string() });
-const SignedOAVerifiableCredentialExtrasShape = { proof: SignedProof } as const;
-// SignedOAVerifiableCredential should never allow extra root properties
-export const SignedOAVerifiableCredential = OAVerifiableCredential.extend(
-  SignedOAVerifiableCredentialExtrasShape
-).strict();
+const OADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: OAProof,
+});
+type OADigestedW3cVerifiableCredential = z.infer<typeof OADigestedW3cVerifiableCredential>;
+
+const UnsignedOADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: UnsignedOADigestedProof,
+});
+export type UnsignedOaDigestedW3cVerifiableCredential = z.infer<typeof UnsignedOADigestedW3cVerifiableCredential>;
+
+export const UnsignedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: z.undefined().optional(),
+});
+export type UnsignedOAVerifiableCredential = z.infer<typeof UnsignedOAVerifiableCredential>;
+
+export const SignedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: OASignedProof,
+});
+
+const OASignedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: OASignedProof,
+});
+type OASignedW3cVerifiableCredential = z.infer<typeof OASignedW3cVerifiableCredential>;
 
 export type W3cVerifiableCredential = z.infer<typeof _W3cVerifiableCredential>;
 
@@ -279,14 +306,19 @@ export type OAVerifiableCredential = AssertStricterOrEqual<
 //   ? W3cVerifiableCredential
 //   : T;
 
-export type Digested<T extends OAVerifiableCredential | W3cVerifiableCredential = OAVerifiableCredential> = Override<
+export type OADigested<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
   T,
-  Pick<z.infer<typeof DigestedOAVerifiableCredential>, keyof typeof DigestedOAVerifiableCredentialExtrasShape>
+  Pick<OADigestedW3cVerifiableCredential, "proof">
 >;
 
-export type Signed<T extends OAVerifiableCredential | W3cVerifiableCredential = OAVerifiableCredential> = Override<
+export type UnsignedOADigested<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
   T,
-  Pick<z.infer<typeof SignedOAVerifiableCredential>, keyof typeof SignedOAVerifiableCredentialExtrasShape>
+  Pick<UnsignedOaDigestedW3cVerifiableCredential, "proof">
+>;
+
+export type OASigned<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
+  T,
+  Pick<OASignedW3cVerifiableCredential, "proof">
 >;
 
 type IdentityProofType = z.infer<typeof IdentityProofType>;
@@ -330,10 +362,10 @@ export const isOAVerifiableCredential = (vc: unknown): vc is OAVerifiableCredent
   return OAVerifiableCredential.safeParse(vc).success;
 };
 
-export const isDigestedOAVerifiableCredential = (vc: unknown): vc is Digested => {
-  return DigestedOAVerifiableCredential.safeParse(vc).success;
+export const isDigestedOAVerifiableCredential = (vc: unknown): vc is OADigested => {
+  return OADigestedOAVerifiableCredential.safeParse(vc).success;
 };
 
-export const isSignedOAVerifiableCredential = (vc: unknown): vc is Signed => {
+export const isSignedOAVerifiableCredential = (vc: unknown): vc is OASigned => {
   return SignedOAVerifiableCredential.safeParse(vc).success;
 };

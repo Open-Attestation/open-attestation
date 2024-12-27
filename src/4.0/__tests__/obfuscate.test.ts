@@ -3,7 +3,7 @@ import { obfuscateOAVerifiableCredential } from "../obfuscate";
 import { get } from "lodash";
 import { decodeSalt } from "../salt";
 import { digestVc } from "../digest";
-import { Salt, OAVerifiableCredential, Digested } from "../types";
+import { Salt, OAVerifiableCredential, OADigested } from "../types";
 import { validateDigest } from "../validate";
 import { RAW_VC_DID, SIGNED_VC_DID_OBFUSCATED, DIGESTED_VC_DID } from "../fixtures";
 import { hashLeafNode } from "../hash";
@@ -25,7 +25,7 @@ const findSaltByPath = (salts: string, path: string): Salt | undefined => {
  * - the salt bound to the field has been removed
  * - the field has been removed
  */
-const expectRemovedFieldsWithoutArrayNotation = (field: string, vc: Digested, obfuscatedVc: Digested) => {
+const expectRemovedFieldsWithoutArrayNotation = (field: string, vc: OADigested, obfuscatedVc: OADigested) => {
   const value = get(vc, field);
   const salt = findSaltByPath(vc.proof.salts, field);
 

@@ -1,10 +1,10 @@
 import { cloneDeep, get, unset, pick, toPath } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
-import { Override, PartialDeep, Signed, Digested, DigestedOAVerifiableCredential } from "./types";
+import { Override, PartialDeep, OASigned, OADigested, OADigestedOAVerifiableCredential } from "./types";
 import { hashLeafNode } from "./hash";
 
-const obfuscate = (_data: Digested | Signed, fields: string[] | string) => {
+const obfuscate = (_data: OADigested | OASigned, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
   const fieldsAsArray = ([] as string[]).concat(fields);
 
@@ -73,7 +73,7 @@ const obfuscate = (_data: Digested | Signed, fields: string[] | string) => {
   };
 };
 
-export type ObfuscateOAVerifiableCredentialResult<T extends Digested> = Override<
+export type ObfuscateOAVerifiableCredentialResult<T extends OADigested> = Override<
   T,
   {
     credentialSubject: Override<
@@ -86,7 +86,7 @@ export type ObfuscateOAVerifiableCredentialResult<T extends Digested> = Override
     >;
   }
 >;
-export const obfuscateOAVerifiableCredential = <T extends Digested | Signed>(
+export const obfuscateOAVerifiableCredential = <T extends OADigested | OASigned>(
   vc: T,
   fields: string[] | string
 ): ObfuscateOAVerifiableCredentialResult<T> => {
@@ -95,7 +95,7 @@ export const obfuscateOAVerifiableCredential = <T extends Digested | Signed>(
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
   // assert that obfuscated is still compliant to our schema
-  const parsedResults = DigestedOAVerifiableCredential.safeParse({
+  const parsedResults = OADigestedOAVerifiableCredential.safeParse({
     ...data,
     proof: {
       ...data.proof,

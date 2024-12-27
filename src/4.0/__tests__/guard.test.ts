@@ -5,9 +5,9 @@ import { signVc } from "../sign";
 import {
   W3cVerifiableCredential,
   OAVerifiableCredential,
-  Digested,
-  DigestedOAVerifiableCredential,
-  Signed,
+  OADigested,
+  OADigestedOAVerifiableCredential,
+  OASigned,
   SignedOAVerifiableCredential,
 } from "../types";
 
@@ -26,8 +26,8 @@ const RAW_VC = {
 } satisfies OAVerifiableCredential;
 
 describe("V4.0 guard", () => {
-  let DIGESTED_VC: Digested;
-  let SIGNED_VC: Signed;
+  let DIGESTED_VC: OADigested;
+  let SIGNED_VC: OASigned;
   beforeAll(async () => {
     DIGESTED_VC = await digestVc(RAW_VC);
     SIGNED_VC = await signVc(RAW_VC, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
@@ -49,7 +49,7 @@ describe("V4.0 guard", () => {
     });
 
     test("should fail digested VC validation", () => {
-      const results = DigestedOAVerifiableCredential.safeParse(RAW_VC_DID);
+      const results = OADigestedOAVerifiableCredential.safeParse(RAW_VC_DID);
       expect(results.success).toBe(false);
       expect((results as { error: unknown }).error).toMatchInlineSnapshot(`
           [ZodError: [
@@ -99,7 +99,7 @@ describe("V4.0 guard", () => {
     });
 
     test("should pass digested VC validation without removal of any data", () => {
-      const results = DigestedOAVerifiableCredential.parse(DIGESTED_VC);
+      const results = OADigestedOAVerifiableCredential.parse(DIGESTED_VC);
       expect(results).toEqual(DIGESTED_VC);
     });
 
@@ -147,8 +147,8 @@ describe("V4.0 guard", () => {
     });
 
     test("should pass digested VC validation without removal of any data", () => {
-      const oaDigestedVc: Digested = SIGNED_VC;
-      const results = DigestedOAVerifiableCredential.parse(oaDigestedVc);
+      const oaDigestedVc: OADigested = SIGNED_VC;
+      const results = OADigestedOAVerifiableCredential.parse(oaDigestedVc);
       expect(results).toEqual(SIGNED_VC);
     });
 

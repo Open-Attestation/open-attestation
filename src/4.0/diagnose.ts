@@ -1,15 +1,15 @@
 import type { Diagnose } from "../shared/utils/@types/diagnose";
-import { OAVerifiableCredential, DigestedOAVerifiableCredential, SignedOAVerifiableCredential } from "./types";
+import { OAVerifiableCredential, OADigestedOAVerifiableCredential, SignedOAVerifiableCredential } from "./types";
 
 export const v4Diagnose: Diagnose = ({ document, kind, debug }) => {
   let Validator:
     | typeof OAVerifiableCredential
-    | typeof DigestedOAVerifiableCredential
+    | typeof OADigestedOAVerifiableCredential
     | typeof SignedOAVerifiableCredential = OAVerifiableCredential;
   if (kind === "raw") {
     Validator = OAVerifiableCredential;
   } else if (kind === "wrapped") {
-    Validator = DigestedOAVerifiableCredential;
+    Validator = OADigestedOAVerifiableCredential;
   } else {
     Validator = SignedOAVerifiableCredential;
   }

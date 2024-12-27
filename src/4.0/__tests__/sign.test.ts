@@ -1,7 +1,7 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { Wallet } from "@ethersproject/wallet";
 import { RAW_VC_DID } from "../fixtures";
-import { SignedOAVerifiableCredential } from "../types";
+import { SignedOAVerifiableCredential, UnsignedOAVerifiableCredential } from "../types";
 import { signVc, signVcErrors } from "../sign";
 
 describe("V4.0 sign", () => {
@@ -43,10 +43,14 @@ describe("V4.0 sign", () => {
     let error;
     await expect(async () => {
       try {
-        await signVc(signedVc, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
-          public: "did:ethr:0xb6De3744E1259e1aB692f5a277f053B79429c5a2#controller",
-          private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5",
-        });
+        await signVc(
+          signedVc as unknown as UnsignedOAVerifiableCredential,
+          SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
+          {
+            public: "did:ethr:0xb6De3744E1259e1aB692f5a277f053B79429c5a2#controller",
+            private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5",
+          }
+        );
       } catch (e) {
         error = e;
         throw e;
@@ -55,7 +59,7 @@ describe("V4.0 sign", () => {
       "VC has already has proof object defined:
       Either an unsigned or undigested VC must be provided"
     `);
-    expect(error).toBeInstanceOf(signVcErrors.VcProofNotEmptyError);
+    expect(error).toBeInstanceOf(signVcErrors.DataModelValidationError);
   });
   it("should throw error if a key or signer is invalid", async () => {
     await expect(
