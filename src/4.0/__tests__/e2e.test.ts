@@ -1,13 +1,8 @@
 import { cloneDeep, omit } from "lodash";
-import {
-  digestVc,
-  digestVcs,
-  obfuscateOAVerifiableCredential,
-  validateDigest,
-  isDigestedOAVerifiableCredential,
-} from "../exports";
+import { digestVc, digestVcs, obfuscateOAVerifiableCredential, validateDigest } from "../exports";
 import type { OAVerifiableCredential } from "../exports";
 import { RAW_VC_DID, SIGNED_VC_DID, DIGESTED_VC_DID } from "../fixtures";
+import { isOADigestedOAVerifiableCredential, ProoflessOAVerifiableCredential } from "../types";
 
 const VC_ONE = {
   ...RAW_VC_DID,
@@ -51,7 +46,7 @@ describe("V4.0 E2E Test Scenarios", () => {
       const missingData = {
         ...omit(cloneDeep(VC_ONE), "issuer"),
       };
-      await expect(digestVc(missingData as unknown as OAVerifiableCredential)).rejects
+      await expect(digestVc(missingData as unknown as ProoflessOAVerifiableCredential)).rejects
         .toThrowErrorMatchingInlineSnapshot(`
         "Input VC does not conform to Open Attestation v4.0 Data Model: 
          {
@@ -87,7 +82,7 @@ describe("V4.0 E2E Test Scenarios", () => {
 
     test("checks that VC conforms to the schema", async () => {
       const digested = await digestVc(VC_ONE);
-      expect(isDigestedOAVerifiableCredential(digested)).toBe(true);
+      expect(isOADigestedOAVerifiableCredential(digested)).toBe(true);
     });
 
     test("does not allow for the same merkle root to be generated", async () => {
@@ -102,7 +97,7 @@ describe("V4.0 E2E Test Scenarios", () => {
       expect(newDigested.credentialSubject.key2).toBeDefined();
       const obfuscatedVc = obfuscateOAVerifiableCredential(newDigested, ["credentialSubject.key2"]);
       expect(validateDigest(obfuscatedVc)).toBe(true);
-      expect(isDigestedOAVerifiableCredential(obfuscatedVc)).toBe(true);
+      expect(isOADigestedOAVerifiableCredential(obfuscatedVc)).toBe(true);
       expect(obfuscatedVc.credentialSubject.key2).toBeUndefined();
     });
 
@@ -121,7 +116,7 @@ describe("V4.0 E2E Test Scenarios", () => {
           ...DATUM,
           {
             laurent: "task force, assemble!!",
-          } as unknown as OAVerifiableCredential,
+          } as unknown as ProoflessOAVerifiableCredential,
         ];
         await expect(digestVcs(malformedDatum)).rejects.toThrowErrorMatchingInlineSnapshot(`
           "Input VC does not conform to Verifiable Credentials v2.0 Data Model: 
@@ -178,7 +173,7 @@ describe("V4.0 E2E Test Scenarios", () => {
       test("checks that VCs conforms to the schema", async () => {
         const digestedVcs = await digestVcs(DATUM);
         const validatedSchema = digestedVcs.reduce(
-          (prev: boolean, curr: any) => isDigestedOAVerifiableCredential(curr) && prev,
+          (prev: boolean, curr: any) => isOADigestedOAVerifiableCredential(curr) && prev,
           true
         );
         expect(validatedSchema).toBe(true);
@@ -194,11 +189,11 @@ describe("V4.0 E2E Test Scenarios", () => {
 
   describe("validate schema", () => {
     test("should return true when VC is a valid digested v4 VC and identityProof is DNS-DID", () => {
-      expect(isDigestedOAVerifiableCredential(DIGESTED_VC_DID)).toStrictEqual(true);
+      expect(isOADigestedOAVerifiableCredential(DIGESTED_VC_DID)).toStrictEqual(true);
     });
 
     test("should return true when signed VC is a valid signed v4 VC and identityProof is DNS-DID", () => {
-      expect(isDigestedOAVerifiableCredential(SIGNED_VC_DID)).toStrictEqual(true);
+      expect(isOADigestedOAVerifiableCredential(SIGNED_VC_DID)).toStrictEqual(true);
     });
 
     test("should return false when VC is invalid due to no DNS-DID identifier", () => {
@@ -208,7 +203,7 @@ describe("V4.0 E2E Test Scenarios", () => {
         ...RAW_VC_DID,
         issuer: modifiedIssuer,
       } satisfies OAVerifiableCredential;
-      expect(isDigestedOAVerifiableCredential(credential)).toStrictEqual(false);
+      expect(isOADigestedOAVerifiableCredential(credential)).toStrictEqual(false);
     });
   });
 

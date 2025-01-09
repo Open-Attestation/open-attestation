@@ -1,4 +1,9 @@
-import { OAVerifiableCredential, DigestedOAVerifiableCredential, W3cVerifiableCredential } from "../types";
+import {
+  OAVerifiableCredential,
+  ProoflessOAVerifiableCredential,
+  UnsignedOADigestedOAVerifiableCredential,
+  W3cVerifiableCredential,
+} from "../types";
 import { digestVc } from "../digest";
 
 describe("V4.0 digest", () => {
@@ -21,7 +26,7 @@ describe("V4.0 digest", () => {
         identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
       },
     });
-    const parsedResults = DigestedOAVerifiableCredential.safeParse(digested);
+    const parsedResults = UnsignedOADigestedOAVerifiableCredential.safeParse(digested);
     if (!parsedResults.success) {
       throw new Error("Parsing failed");
     }
@@ -94,7 +99,7 @@ describe("V4.0 digest", () => {
         },
         // this should not exist
         extraField: "extra",
-      } as OAVerifiableCredential)
+      } as ProoflessOAVerifiableCredential)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
       "Input VC does not conform to Open Attestation v4.0 Data Model: 
        {
@@ -118,8 +123,8 @@ describe("V4.0 digest", () => {
         id: "https://example.com/issuer/123",
       },
     };
-    const digested = await digestVc(genericW3cVc as unknown as OAVerifiableCredential);
-    const parsedResults = DigestedOAVerifiableCredential.pick({ "@context": true, type: true })
+    const digested = await digestVc(genericW3cVc as unknown as ProoflessOAVerifiableCredential);
+    const parsedResults = UnsignedOADigestedOAVerifiableCredential.pick({ "@context": true, type: true })
       .passthrough()
       .safeParse(digested);
     expect(parsedResults.success).toBe(true);
