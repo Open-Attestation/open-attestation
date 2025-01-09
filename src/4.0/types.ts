@@ -150,8 +150,6 @@ const _W3cVerifiableCredential = z.object({
     ])
     .optional(),
 });
-// W3cVerifiableCredential should always allow extra root properties
-export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
 
 const OAIdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
 const OASalt = z.object({ value: z.string(), path: z.string() });
@@ -269,6 +267,8 @@ export const OASignedOAVerifiableCredential = OAVerifiableCredential.extend({
   proof: OASignedProof,
 });
 
+// W3cVerifiableCredential should always allow extra root properties
+export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
 export const ProoflessW3cVerifiableCredential = W3cVerifiableCredential.extend({ proof: z.undefined().optional() });
 export const OADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
   proof: OAProof,
