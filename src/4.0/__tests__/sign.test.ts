@@ -56,10 +56,17 @@ describe("V4.0 sign", () => {
         throw e;
       }
     }).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "VC has already has proof object defined:
-      Either an unsigned or undigested VC must be provided"
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [],
+        "proof": {
+          "_errors": [
+            "VC has to be unsigned"
+          ]
+        }
+      }"
     `);
-    expect(error).toBeInstanceOf(signVcErrors.VcProofNotEmptyError);
+    expect(error).toBeInstanceOf(signVcErrors.DataModelValidationError);
   });
   it("should throw error if a key or signer is invalid", async () => {
     await expect(

@@ -416,10 +416,17 @@ describe(`V4.0 VcBuilder`, () => {
         throw e;
       }
     }).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "VC has already has proof object defined:
-      Either an unsigned or undigested VC must be provided"
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [],
+        "proof": {
+          "_errors": [
+            "VC has to be unsigned"
+          ]
+        }
+      }"
     `);
-    expect(error).toBeInstanceOf(VcBuilderErrors.VcProofNotEmptyError);
+    expect(error).toBeInstanceOf(VcBuilderErrors.DataModelValidationError);
   });
 
   test("given re-setting of values, should throw", async () => {
