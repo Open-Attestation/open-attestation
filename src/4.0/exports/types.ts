@@ -1,1 +1,1 @@
-export type { OAVerifiableCredential, Digested, Signed } from "../types";
+export type { OAVerifiableCredential as OAVerifiableCredential, OADigested, OASigned } from "../types";

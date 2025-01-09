@@ -1,7 +1,11 @@
 import fs from "fs";
 import path from "path";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { OAVerifiableCredential, DigestedOAVerifiableCredential, SignedOAVerifiableCredential } from "../src/4.0/types";
+import {
+  OAVerifiableCredential,
+  OADigestedOAVerifiableCredential,
+  OASignedOAVerifiableCredential,
+} from "../src/4.0/types";
 
 const OUTPUT_DIR = path.resolve("./src/4.0/jsonSchemas/__generated__");
 
@@ -19,13 +23,13 @@ const ZOD_SCHEMAS = [
   },
   {
     filename: "v4-digested-oa-vc.schema.json",
-    schemaName: "DigestedOAVerifiableCredential",
-    zodSchema: DigestedOAVerifiableCredential,
+    schemaName: "OADigestedOAVerifiableCredential",
+    zodSchema: OADigestedOAVerifiableCredential,
   },
   {
     filename: "v4-signed-oa-vc.schema.json",
-    schemaName: "SignedOAVerifiableCredential",
-    zodSchema: SignedOAVerifiableCredential,
+    schemaName: "OASignedOAVerifiableCredential",
+    zodSchema: OASignedOAVerifiableCredential,
   },
 ];
 

@@ -84,6 +84,6 @@ export const isSignedWrappedV3Document = (
 
 export {
   isOAVerifiableCredential,
-  isDigestedOAVerifiableCredential,
-  isSignedOAVerifiableCredential,
+  isOADigestedOAVerifiableCredential,
+  isOASignedOAVerifiableCredential,
 } from "../../4.0/types";

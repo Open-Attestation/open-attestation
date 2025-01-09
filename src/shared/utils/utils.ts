@@ -14,8 +14,8 @@ import {
   isRawV3Document,
   isWrappedV3Document,
   isOAVerifiableCredential,
-  isDigestedOAVerifiableCredential,
-  isSignedOAVerifiableCredential,
+  isOADigestedOAVerifiableCredential,
+  isOASignedOAVerifiableCredential,
 } from "./guard";
 import { Version } from "./diagnose";
 
@@ -27,7 +27,7 @@ export function getIssuerAddress(document: any): any {
     return document.openAttestationMetadata.proof.value;
   }
   // TODO: OA v4 proof schema not updated to support document store issuance yet
-  // else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
+  // else if (isOADigestedOAVerifiableCredential(document) || isOASignedOAVerifiableCredential(document)) {
   //   return document.proof.?
   // }
   throw new Error(
@@ -38,7 +38,7 @@ export function getIssuerAddress(document: any): any {
 export const getMerkleRoot = (document: unknown): string => {
   if (isWrappedV2Document(document)) return document.signature.merkleRoot;
   else if (isWrappedV3Document(document)) return document.proof.merkleRoot;
-  else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document))
+  else if (isOADigestedOAVerifiableCredential(document) || isOASignedOAVerifiableCredential(document))
     return document.proof.merkleRoot;
 
   throw new Error(
@@ -49,7 +49,7 @@ export const getMerkleRoot = (document: unknown): string => {
 export const getTargetHash = (document: any): string => {
   if (isWrappedV2Document(document)) return document.signature.targetHash;
   else if (isWrappedV3Document(document)) return document.proof.targetHash;
-  else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document))
+  else if (isOADigestedOAVerifiableCredential(document) || isOASignedOAVerifiableCredential(document))
     return document.proof.targetHash;
 
   throw new Error(
@@ -68,7 +68,7 @@ export const getTemplateURL = (document: any): string | undefined => {
     else return document.$template?.url;
   } else if (isRawV3Document(document) || isWrappedV3Document(document)) {
     return document.openAttestationMetadata.template?.url;
-  } else if (isOAVerifiableCredential(document) || isDigestedOAVerifiableCredential(document)) {
+  } else if (isOAVerifiableCredential(document) || isOADigestedOAVerifiableCredential(document)) {
     return document.renderMethod && document.renderMethod[0].id;
   }
 
@@ -121,7 +121,7 @@ export const isDocumentRevokable = (document: unknown): boolean => {
       !!document.openAttestationMetadata.proof.value;
 
     return isDocumentStoreRevokableV3 || isDidRevokableV3;
-  } else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
+  } else if (isOADigestedOAVerifiableCredential(document) || isOASignedOAVerifiableCredential(document)) {
     if (typeof document.issuer === "string" || !document.credentialStatus) return false;
     const isDidRevokableV4 =
       document.issuer.identityProof?.identityProofType === "DNS-DID"
@@ -163,7 +163,7 @@ export const isObfuscated = (document: unknown): boolean => {
     return !!document.privacy?.obfuscatedData?.length;
   } else if (isWrappedV3Document(document)) {
     return !!document.proof.privacy.obfuscated.length;
-  } else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
+  } else if (isOADigestedOAVerifiableCredential(document) || isOASignedOAVerifiableCredential(document)) {
     return !!document.proof.privacy.obfuscated.length;
   }
 
@@ -177,7 +177,7 @@ export const getObfuscatedData = (document: unknown): string[] => {
     return document.privacy?.obfuscatedData || [];
   } else if (isWrappedV3Document(document)) {
     return document.proof.privacy.obfuscated || [];
-  } else if (isDigestedOAVerifiableCredential(document) || isSignedOAVerifiableCredential(document)) {
+  } else if (isOADigestedOAVerifiableCredential(document) || isOASignedOAVerifiableCredential(document)) {
     return document.proof.privacy.obfuscated || [];
   }
 
