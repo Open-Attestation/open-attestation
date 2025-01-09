@@ -1,4 +1,4 @@
-import { digestVc, digestVcs, wrapVcErrors } from "./digest";
+import { digestVc, digestVcs } from "./digest";
 import { signVc, signVcErrors } from "./sign";
 import {
   Override,
@@ -476,12 +476,8 @@ type DigestedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcP
     >
   : never;
 
-const { UnableToInterpretContextError } = wrapVcErrors;
-const { CouldNotSignVcError, VcProofNotEmptyError } = signVcErrors;
 export const VcBuilderErrors = {
+  ...signVcErrors,
   PropsValidationError,
   ShouldNotModifyAfterSettingError,
-  UnableToInterpretContextError,
-  CouldNotSignVcError,
-  VcProofNotEmptyError,
 };
