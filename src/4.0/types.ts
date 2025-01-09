@@ -256,7 +256,15 @@ export const OAVerifiableCredential = _W3cVerifiableCredential
   })
   .strict();
 
-export const ProoflessOAVerifiableCredential = OAVerifiableCredential.extend({ proof: z.undefined().optional() });
+const Proofless = z
+  .undefined({
+    message: "VC has to be unsigned",
+  })
+  .optional();
+
+export const ProoflessOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: Proofless,
+});
 export const OADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
   proof: OAProof,
 });
@@ -269,7 +277,9 @@ export const OASignedOAVerifiableCredential = OAVerifiableCredential.extend({
 
 // W3cVerifiableCredential should always allow extra root properties
 export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
-export const ProoflessW3cVerifiableCredential = W3cVerifiableCredential.extend({ proof: z.undefined().optional() });
+export const ProoflessW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: Proofless,
+});
 export const OADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
   proof: OAProof,
 });
