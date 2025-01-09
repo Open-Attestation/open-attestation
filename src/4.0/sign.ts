@@ -2,8 +2,8 @@ import { Signer } from "@ethersproject/abstract-signer";
 
 import { sign } from "../shared/signer";
 import { SigningKey } from "../shared/@types/sign";
-import { digestVc } from "./digest";
-import type { OADigested, ProoflessOAVerifiableCredential, ProoflessW3cVerifiableCredential, OASigned } from "./types";
+import { digestVc, digestVcErrors } from "./digest";
+import type { ProoflessOAVerifiableCredential, ProoflessW3cVerifiableCredential, OASigned } from "./types";
 
 export const signVc = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
   unsignedVc: T,
@@ -11,14 +11,8 @@ export const signVc = async <T extends ProoflessW3cVerifiableCredential = Proofl
   keyOrSigner: SigningKey | Signer
 ): Promise<OASigned<T>> => {
   /* 1. Input VC needs to be digested first */
-  let validatedProof: OADigested["proof"];
-  if (!unsignedVc.proof) {
-    const digestedVc = await digestVc(unsignedVc);
-    validatedProof = digestedVc.proof;
-  } else {
-    // Do not accept a VC that already has proof object defined
-    throw new VcProofNotEmptyError(new Error("Either an unsigned or undigested VC must be provided"));
-  }
+  const digestedVc = await digestVc(unsignedVc);
+  const validatedProof = digestedVc.proof;
 
   const merkleRoot = `0x${validatedProof.merkleRoot}`;
 
@@ -41,17 +35,6 @@ export const signVc = async <T extends ProoflessW3cVerifiableCredential = Proofl
   }
 };
 
-class VcProofNotEmptyError extends Error {
-  constructor(public error: unknown) {
-    super(
-      `VC has already has proof object defined:\n${
-        error instanceof Error ? error.message : JSON.stringify(error, null, 2)
-      }`
-    );
-    Object.setPrototypeOf(this, VcProofNotEmptyError.prototype);
-  }
-}
-
 /**
  * Cases where this can be thrown includes: network error, invalid keys or signer
  */
@@ -63,6 +46,6 @@ class CouldNotSignVcError extends Error {
 }
 
 export const signVcErrors = {
-  VcProofNotEmptyError,
+  ...digestVcErrors,
   CouldNotSignVcError,
 };
