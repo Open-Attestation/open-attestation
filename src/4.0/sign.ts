@@ -3,15 +3,15 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { sign } from "../shared/signer";
 import { SigningKey } from "../shared/@types/sign";
 import { digestVc } from "./digest";
-import { Digested, OAVerifiableCredential, W3cVerifiableCredential, Signed } from "./types";
+import type { OADigested, ProoflessOAVerifiableCredential, ProoflessW3cVerifiableCredential, OASigned } from "./types";
 
-export const signVc = async <T extends OAVerifiableCredential | W3cVerifiableCredential>(
+export const signVc = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
   unsignedVc: T,
   algorithm: "Secp256k1VerificationKey2018",
   keyOrSigner: SigningKey | Signer
-): Promise<Signed<T>> => {
+): Promise<OASigned<T>> => {
   /* 1. Input VC needs to be digested first */
-  let validatedProof: Digested["proof"];
+  let validatedProof: OADigested["proof"];
   if (!unsignedVc.proof) {
     const digestedVc = await digestVc(unsignedVc);
     validatedProof = digestedVc.proof;
@@ -30,12 +30,12 @@ export const signVc = async <T extends OAVerifiableCredential | W3cVerifiableCre
   /* 3. Perform signing */
   try {
     const signature = await sign(algorithm, merkleRoot, keyOrSigner);
-    const proof: Signed["proof"] = {
+    const proof: OASigned["proof"] = {
       ...validatedProof,
       key: "public" in keyOrSigner ? keyOrSigner.public : `did:ethr:${await keyOrSigner.getAddress()}#controller`,
       signature,
     };
-    return { ...unsignedVc, proof } as Signed<T>;
+    return { ...unsignedVc, proof } as OASigned<T>;
   } catch (error) {
     throw new CouldNotSignVcError(error);
   }
