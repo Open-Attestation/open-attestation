@@ -153,8 +153,8 @@ const _W3cVerifiableCredential = z.object({
 // W3cVerifiableCredential should always allow extra root properties
 export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
 
-const IdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
-const Salt = z.object({ value: z.string(), path: z.string() });
+const OAIdentityProofType = z.union([z.literal("DNS-TXT"), z.literal("DNS-DID"), z.literal("DID")]);
+const OASalt = z.object({ value: z.string(), path: z.string() });
 
 export const DecentralisedEmbeddedRenderer = z.object({
   // Must have id match url pattern
@@ -198,6 +198,21 @@ export const RevocationStoreRevocation = z.object({
   type: z.literal("OpenAttestationRevocationStore"),
 });
 
+const UnsignedOADigestedProof = z
+  .object({
+    type: z.literal("OpenAttestationHashProof2018"),
+    proofPurpose: z.literal("assertionMethod"),
+    targetHash: z.string(),
+    proofs: z.array(z.string()),
+    merkleRoot: z.string(),
+    salts: z.string(),
+    privacy: z.object({ obfuscated: z.array(z.string()) }),
+  })
+  .strict();
+
+const OASignedProof = UnsignedOADigestedProof.extend({ key: z.string(), signature: z.string() }).strict();
+const OAProof = z.union([UnsignedOADigestedProof, OASignedProof]);
+
 export const OAVerifiableCredential = _W3cVerifiableCredential
   .extend({
     "@context": z
@@ -219,7 +234,7 @@ export const OAVerifiableCredential = _W3cVerifiableCredential
       type: z.literal("OpenAttestationIssuer"),
       name: z.string(),
       identityProof: z.object({
-        identityProofType: IdentityProofType,
+        identityProofType: OAIdentityProofType,
         identifier: z.string(),
       }),
     }),
@@ -238,60 +253,56 @@ export const OAVerifiableCredential = _W3cVerifiableCredential
 
     // [Optional] Render Method
     renderMethod: z.array(z.discriminatedUnion("type", [DecentralisedEmbeddedRenderer, SvgRenderer])).optional(),
+
+    proof: OAProof.optional(),
   })
   .strict();
 
-const DigestedProof = z.object({
-  type: z.literal("OpenAttestationHashProof2018"),
-  proofPurpose: z.literal("assertionMethod"),
-  targetHash: z.string(),
-  proofs: z.array(z.string()),
-  merkleRoot: z.string(),
-  salts: z.string(),
-  privacy: z.object({ obfuscated: z.array(z.string()) }),
+export const ProoflessOAVerifiableCredential = OAVerifiableCredential.extend({ proof: z.undefined().optional() });
+export const OADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: OAProof,
 });
-const DigestedOAVerifiableCredentialExtrasShape = { proof: DigestedProof.passthrough() } as const;
-// DigestedOAVerifiableCredential should never allow extra root properties
-export const DigestedOAVerifiableCredential = OAVerifiableCredential.extend(
-  DigestedOAVerifiableCredentialExtrasShape
-).strict();
+export const UnsignedOADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: UnsignedOADigestedProof,
+});
+export const OASignedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: OASignedProof,
+});
 
-const SignedProof = DigestedProof.extend({ key: z.string(), signature: z.string() });
-const SignedOAVerifiableCredentialExtrasShape = { proof: SignedProof } as const;
-// SignedOAVerifiableCredential should never allow extra root properties
-export const SignedOAVerifiableCredential = OAVerifiableCredential.extend(
-  SignedOAVerifiableCredentialExtrasShape
-).strict();
+export const ProoflessW3cVerifiableCredential = W3cVerifiableCredential.extend({ proof: z.undefined().optional() });
+export const OADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: OAProof,
+});
+export const UnsignedOADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: UnsignedOADigestedProof,
+});
+export const OASignedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: OASignedProof,
+});
 
+// types
 export type W3cVerifiableCredential = z.infer<typeof _W3cVerifiableCredential>;
+export type ProoflessW3cVerifiableCredential = z.infer<typeof ProoflessW3cVerifiableCredential>;
 
-// AssertStricterOrEqual is used to ensure that we have zod extended from the base type while
-// still being assignable to the base type. For example, if we accidentally extend and
-// replaced '@context' to a boolean, this would fail the assertion.
-export type OAVerifiableCredential = AssertStricterOrEqual<
-  W3cVerifiableCredential,
-  z.infer<typeof OAVerifiableCredential>
->;
+export type OAVerifiableCredential = z.infer<typeof OAVerifiableCredential>;
+export type ProoflessOAVerifiableCredential = z.infer<typeof ProoflessOAVerifiableCredential>;
 
-// export type VC<T extends OAVerifiableCredential | W3cVerifiableCredential> = T extends OAVerifiableCredential
-//   ? OAVerifiableCredential
-//   : T extends W3cVerifiableCredential
-//   ? W3cVerifiableCredential
-//   : T;
-
-export type Digested<T extends OAVerifiableCredential | W3cVerifiableCredential = OAVerifiableCredential> = Override<
+export type UnsignedOADigested<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
   T,
-  Pick<z.infer<typeof DigestedOAVerifiableCredential>, keyof typeof DigestedOAVerifiableCredentialExtrasShape>
+  Pick<z.infer<typeof UnsignedOADigestedW3cVerifiableCredential>, "proof">
 >;
 
-export type Signed<T extends OAVerifiableCredential | W3cVerifiableCredential = OAVerifiableCredential> = Override<
+export type OADigested<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
   T,
-  Pick<z.infer<typeof SignedOAVerifiableCredential>, keyof typeof SignedOAVerifiableCredentialExtrasShape>
+  Pick<z.infer<typeof OADigestedW3cVerifiableCredential>, "proof">
 >;
 
-type IdentityProofType = z.infer<typeof IdentityProofType>;
+export type OASigned<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
+  T,
+  Pick<z.infer<typeof OASignedOAVerifiableCredential>, "proof">
+>;
 
-export type Salt = z.infer<typeof Salt>;
+export type OASalt = z.infer<typeof OASalt>;
 
 // Utility types
 /** Overrides properties in the Target (a & b does not override a props with b props) */
@@ -300,10 +311,6 @@ export type Override<Target extends Record<string, unknown>, OverrideWith extend
   keyof OverrideWith
 > &
   OverrideWith;
-
-/** Used to assert that StricterType is a stricter or equal version of LooserType, and most importantly, that
- *  StricterType is STILL assignable to LooserType. */
-type AssertStricterOrEqual<LooserType, StricterType> = StricterType extends LooserType ? StricterType : never;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type NoExtraProperties<Reference, NewObj> = NewObj extends Reference & infer _ExtraProps ? Reference : NewObj;
@@ -330,10 +337,10 @@ export const isOAVerifiableCredential = (vc: unknown): vc is OAVerifiableCredent
   return OAVerifiableCredential.safeParse(vc).success;
 };
 
-export const isDigestedOAVerifiableCredential = (vc: unknown): vc is Digested => {
-  return DigestedOAVerifiableCredential.safeParse(vc).success;
+export const isOADigestedOAVerifiableCredential = (vc: unknown): vc is OADigested<OAVerifiableCredential> => {
+  return OADigestedOAVerifiableCredential.safeParse(vc).success;
 };
 
-export const isSignedOAVerifiableCredential = (vc: unknown): vc is Signed => {
-  return SignedOAVerifiableCredential.safeParse(vc).success;
+export const isOASignedOAVerifiableCredential = (vc: unknown): vc is OASigned<OAVerifiableCredential> => {
+  return OASignedOAVerifiableCredential.safeParse(vc).success;
 };
