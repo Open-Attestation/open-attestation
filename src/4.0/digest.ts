@@ -154,7 +154,7 @@ class DataModelValidationError extends Error {
   }
 }
 
-export const wrapVcErrors = {
+export const digestVcErrors = {
   DataModelValidationError,
   UnableToInterpretContextError,
 };
