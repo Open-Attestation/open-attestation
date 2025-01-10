@@ -11,22 +11,24 @@ import { genTargetHash } from "./hash";
 import { encodeSalt, salt } from "./salt";
 import { ZodError } from "zod";
 
-export const digestVc = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
-  vc: T
-): Promise<OADigested<T>> => {
-  /* 1a. Try OpenAttestation VC validation, since most user will be issuing oa v4 */
-  const oav4context = await ProoflessOAVerifiableCredential.pick({ "@context": true }).passthrough().safeParseAsync(vc); // Superficial check on user intention
+export async function digestVc<T extends ProoflessOAVerifiableCredential>(vc: T): Promise<OADigested<T>>;
+export async function digestVc<T extends ProoflessW3cVerifiableCredential>(
+  vc: T,
+  isUseW3cDataModel: boolean
+): Promise<OADigested<T>>;
+export async function digestVc<T extends ProoflessW3cVerifiableCredential>(
+  vc: T,
+  isUseW3cDataModel?: boolean
+): Promise<OADigested<T>> {
+  // 1. Validate vc against OA or W3C data model
   let validatedUndigestedVc: ProoflessW3cVerifiableCredential | undefined;
-  if (oav4context.success) {
+  if (!isUseW3cDataModel) {
     const oav4 = await ProoflessOAVerifiableCredential.safeParseAsync(vc);
     if (!oav4.success) {
       throw new DataModelValidationError("Open Attestation v4.0", oav4.error);
     }
     validatedUndigestedVc = oav4.data;
-  }
-
-  /* 1b. Only if OA VC validation fail do we continue with W3C VC data model validation */
-  if (!validatedUndigestedVc) {
+  } else {
     const w3cVc = await ProoflessW3cVerifiableCredential.safeParseAsync(vc);
     if (!w3cVc.success) {
       throw new DataModelValidationError("Verifiable Credentials v2.0", w3cVc.error);
@@ -100,13 +102,19 @@ export const digestVc = async <T extends ProoflessW3cVerifiableCredential = Proo
   };
 
   return unsignedOADigestedVc as OADigested<T>;
-};
+}
 
-export const digestVcs = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
-  vcs: T[]
-): Promise<OADigested<T>[]> => {
+export async function digestVcs<T extends ProoflessOAVerifiableCredential>(vcs: T[]): Promise<OADigested<T>[]>;
+export async function digestVcs<T extends ProoflessW3cVerifiableCredential>(
+  vcs: T[],
+  isUseW3cDataModel: boolean
+): Promise<OADigested<T>[]>;
+export async function digestVcs<T extends ProoflessW3cVerifiableCredential>(
+  vcs: T[],
+  isUseW3cDataModel?: boolean
+): Promise<OADigested<T>[]> {
   // create individual verifiable credential
-  const verifiableCredentials = await Promise.all(vcs.map((vc) => digestVc(vc)));
+  const verifiableCredentials = await Promise.all(vcs.map((vc) => digestVc(vc, isUseW3cDataModel ?? false)));
 
   // get all the target hashes to compute the merkle tree and the merkle root
   const merkleTree = new MerkleTree(
@@ -128,7 +136,7 @@ export const digestVcs = async <T extends ProoflessW3cVerifiableCredential = Pro
       },
     };
   });
-};
+}
 
 /** Extract a set of properties from w3cVerifiableCredential but only include the ones
  * that are defined in the original VC. For example, if we extract
