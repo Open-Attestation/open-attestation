@@ -1,1 +1,1 @@
-export { signDocument, signDocumentErrors } from "../sign";
+export { signVc, signVcErrors } from "../sign";

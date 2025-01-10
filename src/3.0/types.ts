@@ -4,25 +4,25 @@ import { OpenAttestationHexString, ProofPurpose, SchemaId, SignatureAlgorithm } 
 import { Array as RunTypesArray, Record as RunTypesRecord, Static, String } from "runtypes";
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export interface Salt {
   value: string;
   path: string;
 }
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export const ObfuscationMetadata = RunTypesRecord({
   obfuscated: RunTypesArray(OpenAttestationHexString),
 });
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export type ObfuscationMetadata = Static<typeof ObfuscationMetadata>;
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export const VerifiableCredentialWrappedProof = RunTypesRecord({
   type: SignatureAlgorithm,
@@ -34,11 +34,11 @@ export const VerifiableCredentialWrappedProof = RunTypesRecord({
   proofPurpose: ProofPurpose,
 });
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export type VerifiableCredentialWrappedProof = Static<typeof VerifiableCredentialWrappedProof>;
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export const VerifiableCredentialWrappedProofStrict = VerifiableCredentialWrappedProof.And(
   RunTypesRecord({
@@ -48,12 +48,12 @@ export const VerifiableCredentialWrappedProofStrict = VerifiableCredentialWrappe
   })
 );
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export type VerifiableCredentialWrappedProofStrict = Static<typeof VerifiableCredentialWrappedProofStrict>;
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export const VerifiableCredentialSignedProof = VerifiableCredentialWrappedProof.And(
   RunTypesRecord({
@@ -62,14 +62,14 @@ export const VerifiableCredentialSignedProof = VerifiableCredentialWrappedProof.
   })
 );
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export type VerifiableCredentialSignedProof = Static<typeof VerifiableCredentialSignedProof>;
 
 // TODO rename to something else that is not proof to allow for did-signed documents
 // Also it makes sense to use `proof` to denote a document that has been issued
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export type WrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> = T & {
   version: SchemaId.v3;
@@ -78,7 +78,7 @@ export type WrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestatio
 };
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export type SignedWrappedDocument<T extends OpenAttestationDocumentV3 = OpenAttestationDocumentV3> =
   WrappedDocument<T> & {
@@ -86,6 +86,6 @@ export type SignedWrappedDocument<T extends OpenAttestationDocumentV3 = OpenAtte
   };
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export * from "../__generated__/schema.3.0";

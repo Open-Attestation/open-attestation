@@ -1,7 +1,7 @@
 {
-  "$ref": "#/definitions/v4WrappedDocument",
+  "$ref": "#/definitions/OADigestedOAVerifiableCredential",
   "definitions": {
-    "v4WrappedDocument": {
+    "OADigestedOAVerifiableCredential": {
       "type": "object",
       "properties": {
         "@context": {
@@ -59,7 +59,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4WrappedDocument/properties/id"
+                  "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -77,7 +77,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4WrappedDocument/properties/id"
+                    "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -96,7 +96,7 @@
           "type": "object",
           "properties": {
             "id": {
-              "$ref": "#/definitions/v4WrappedDocument/properties/id"
+              "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
             },
             "type": {
               "type": "string",
@@ -225,7 +225,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4WrappedDocument/properties/id"
+                  "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -242,7 +242,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4WrappedDocument/properties/id"
+                    "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -262,7 +262,7 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "$ref": "#/definitions/v4WrappedDocument/properties/id"
+                  "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
                 },
                 "type": {
                   "type": "string"
@@ -279,7 +279,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "$ref": "#/definitions/v4WrappedDocument/properties/id"
+                    "$ref": "#/definitions/OADigestedOAVerifiableCredential/properties/id"
                   },
                   "type": {
                     "type": "string"
@@ -344,7 +344,7 @@
             "salts",
             "privacy"
           ],
-          "additionalProperties": true
+          "additionalProperties": false
         },
         "renderMethod": {
           "type": "array",
@@ -356,7 +356,7 @@
                   "id": {
                     "type": "string",
                     "format": "uri",
-                    "description": "URL of a decentralised renderer to render this document"
+                    "description": "URL of a decentralised renderer to render this VC"
                   },
                   "type": {
                     "type": "string",

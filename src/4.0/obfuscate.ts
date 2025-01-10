@@ -1,10 +1,10 @@
 import { cloneDeep, get, unset, pick, toPath } from "lodash";
 import { decodeSalt, encodeSalt } from "./salt";
 import { traverseAndFlatten } from "./traverseAndFlatten";
-import { Override, PartialDeep, V4SignedWrappedDocument, V4WrappedDocument } from "./types";
-import { hashLeafNode } from "./digest";
+import { OADigested, OASigned, Override, PartialDeep, OADigestedOrSignedOAVerifiableCredential } from "./types";
+import { hashLeafNode } from "./hash";
 
-const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
+const obfuscate = (_data: OADigested | OASigned, fields: string[] | string) => {
   const data = cloneDeep(_data); // Prevents alteration of original data
   const fieldsAsArray = ([] as string[]).concat(fields);
 
@@ -37,7 +37,7 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
     const isRemoved = unset(data, path);
     if (isRemoved) {
       // assertions to ensure that obfuscation does not result in additional leaf nodes
-      // that would render the resultant document as invalid
+      // that would render the resultant vc as invalid
       path.pop();
       if (path.length > 0) {
         const parent = get(data, path);
@@ -73,7 +73,7 @@ const obfuscate = (_data: V4WrappedDocument, fields: string[] | string) => {
   };
 };
 
-export type ObfuscateVerifiableCredentialResult<T extends V4WrappedDocument> = Override<
+export type ObfuscateOAVerifiableCredentialResult<T extends OADigested | OASigned> = Override<
   T,
   {
     credentialSubject: Override<
@@ -86,16 +86,16 @@ export type ObfuscateVerifiableCredentialResult<T extends V4WrappedDocument> = O
     >;
   }
 >;
-export const obfuscateVerifiableCredential = <T extends V4WrappedDocument | V4SignedWrappedDocument>(
-  document: T,
+export const obfuscateOAVerifiableCredential = <T extends OADigested | OASigned>(
+  vc: T,
   fields: string[] | string
-): ObfuscateVerifiableCredentialResult<T> => {
-  const { data, obfuscatedData } = obfuscate(document, fields);
-  const currentObfuscatedData = document.proof.privacy.obfuscated;
+): ObfuscateOAVerifiableCredentialResult<T> => {
+  const { data, obfuscatedData } = obfuscate(vc, fields);
+  const currentObfuscatedData = vc.proof.privacy.obfuscated;
   const newObfuscatedData = currentObfuscatedData.concat(obfuscatedData);
 
   // assert that obfuscated is still compliant to our schema
-  const parsedResults = V4WrappedDocument.safeParse({
+  const parsedResults = OADigestedOrSignedOAVerifiableCredential.safeParse({
     ...data,
     proof: {
       ...data.proof,
@@ -109,13 +109,13 @@ export const obfuscateVerifiableCredential = <T extends V4WrappedDocument | V4Si
     const paths = parsedResults.error.errors.map(({ path }) => path.join("."));
     throw new CannotObfuscateProtectedPathsError(paths);
   }
-  return parsedResults.data as ObfuscateVerifiableCredentialResult<T>;
+  return parsedResults.data as ObfuscateOAVerifiableCredentialResult<T>;
 };
 
 class CannotObfuscateProtectedPathsError extends Error {
   constructor(public paths: string[]) {
     super(
-      `The resultant obfuscated document is not V4 Wrapped Document compliant, please ensure that the following path(s) are not obfuscated: ${paths
+      `The resultant obfuscated VC is not compliant with the OA v4 Verifiable Credential data model, please ensure that the following path(s) are not obfuscated: ${paths
         .map((val) => `"${val}"`)
         .join(", ")}`
     );

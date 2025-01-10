@@ -1,18 +1,22 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
-import { RAW_DOCUMENT_DID } from "../fixtures";
-import { signDocument } from "../sign";
+import { RAW_VC_DID } from "../fixtures";
+import { digestVc } from "../digest";
+import { signVc } from "../sign";
 import {
   W3cVerifiableCredential,
-  V4OpenAttestationDocument,
-  V4WrappedDocument,
-  V4SignedWrappedDocument,
+  OAVerifiableCredential,
+  OADigestedOAVerifiableCredential,
+  OASignedOAVerifiableCredential,
+  OADigested,
+  OASigned,
+  OADigestedW3cVerifiableCredential,
+  OASignedW3cVerifiableCredential,
 } from "../types";
-import { wrapDocument } from "../wrap";
 
-const RAW_DOCUMENT = {
-  ...RAW_DOCUMENT_DID,
+const RAW_VC = {
+  ...RAW_VC_DID,
   credentialSubject: {
-    ...RAW_DOCUMENT_DID.credentialSubject,
+    ...RAW_VC_DID.credentialSubject,
     attachments: [
       {
         mimeType: "image/png",
@@ -21,55 +25,51 @@ const RAW_DOCUMENT = {
       },
     ],
   },
-} satisfies V4OpenAttestationDocument;
+} satisfies OAVerifiableCredential;
 
 describe("V4.0 guard", () => {
-  let WRAPPED_DOCUMENT: V4WrappedDocument;
-  let SIGNED_WRAPPED_DOCUMENT: V4SignedWrappedDocument;
+  let DIGESTED_VC: OADigested;
+  let SIGNED_VC: OASigned;
   beforeAll(async () => {
-    WRAPPED_DOCUMENT = await wrapDocument(RAW_DOCUMENT);
-    SIGNED_WRAPPED_DOCUMENT = await signDocument(
-      WRAPPED_DOCUMENT,
-      SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
-      {
-        public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
-        private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
-      }
-    );
+    DIGESTED_VC = await digestVc(RAW_VC);
+    SIGNED_VC = await signVc(RAW_VC, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+      public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+      private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
+    });
   });
 
-  describe("given a raw document", () => {
-    test("should pass w3c vc validation without removal of any data", () => {
-      const w3cVerifiableCredential: W3cVerifiableCredential = RAW_DOCUMENT_DID;
+  describe("given a raw VC", () => {
+    test("should pass W3C VC validation without removal of any data", () => {
+      const w3cVerifiableCredential: W3cVerifiableCredential = RAW_VC_DID;
       const results = W3cVerifiableCredential.parse(w3cVerifiableCredential);
-      expect(results).toEqual(RAW_DOCUMENT_DID);
+      expect(results).toEqual(RAW_VC_DID);
     });
 
-    test("should pass document validation without removal of any data", () => {
-      const results = V4OpenAttestationDocument.parse(RAW_DOCUMENT_DID);
-      expect(results).toEqual(RAW_DOCUMENT_DID);
+    test("should pass VC validation without removal of any data", () => {
+      const results = OAVerifiableCredential.parse(RAW_VC_DID);
+      expect(results).toEqual(RAW_VC_DID);
     });
 
-    test("should fail wrapped document validation", () => {
-      const results = V4WrappedDocument.safeParse(RAW_DOCUMENT_DID);
+    test("should fail digested VC validation", () => {
+      const results = OADigestedOAVerifiableCredential.safeParse(RAW_VC_DID);
       expect(results.success).toBe(false);
       expect((results as { error: unknown }).error).toMatchInlineSnapshot(`
-          [ZodError: [
-            {
-              "code": "invalid_type",
-              "expected": "object",
-              "received": "undefined",
-              "path": [
-                "proof"
-              ],
-              "message": "Required"
-            }
-          ]]
-        `);
+        [ZodError: [
+          {
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
+            "path": [
+              "proof"
+            ],
+            "message": "Required"
+          }
+        ]]
+      `);
     });
 
-    test("should fail signed wrapped document validation", () => {
-      const results = V4SignedWrappedDocument.safeParse(RAW_DOCUMENT_DID);
+    test("should fail signed VC validation", () => {
+      const results = OASignedOAVerifiableCredential.safeParse(RAW_VC_DID);
       expect(results.success).toBe(false);
       expect((results as { error: unknown }).error).toMatchInlineSnapshot(`
         [ZodError: [
@@ -87,26 +87,26 @@ describe("V4.0 guard", () => {
     });
   });
 
-  describe("given a wrapped document", () => {
-    test("should pass w3c vc validation without removal of any data", () => {
-      const w3cVerifiableCredential: W3cVerifiableCredential = WRAPPED_DOCUMENT;
+  describe("given a digested VC", () => {
+    test("should pass W3C VC validation without removal of any data", () => {
+      const w3cVerifiableCredential: W3cVerifiableCredential = DIGESTED_VC;
       const results = W3cVerifiableCredential.parse(w3cVerifiableCredential);
-      expect(results).toEqual(WRAPPED_DOCUMENT);
+      expect(results).toEqual(DIGESTED_VC);
     });
 
-    test("should pass document validation without removal of any data", () => {
-      const v4Document: V4OpenAttestationDocument = WRAPPED_DOCUMENT;
-      const results = V4OpenAttestationDocument.parse(v4Document);
-      expect(results).toEqual(WRAPPED_DOCUMENT);
+    test("should pass VC validation without removal of any data", () => {
+      const oaVc: OAVerifiableCredential = DIGESTED_VC;
+      const results = OAVerifiableCredential.parse(oaVc);
+      expect(results).toEqual(DIGESTED_VC);
     });
 
-    test("should pass wrapped document validation without removal of any data", () => {
-      const results = V4WrappedDocument.parse(WRAPPED_DOCUMENT);
-      expect(results).toEqual(WRAPPED_DOCUMENT);
+    test("should pass digested VC validation without removal of any data", () => {
+      const results = OADigestedOAVerifiableCredential.parse(DIGESTED_VC);
+      expect(results).toEqual(DIGESTED_VC);
     });
 
-    test("should fail signed wrapped document validation", () => {
-      const results = V4SignedWrappedDocument.safeParse(WRAPPED_DOCUMENT);
+    test("should fail signed VC validation", () => {
+      const results = OASignedOAVerifiableCredential.safeParse(DIGESTED_VC);
       expect(results.success).toBe(false);
       expect((results as { error: unknown }).error).toMatchInlineSnapshot(`
         [ZodError: [
@@ -135,28 +135,28 @@ describe("V4.0 guard", () => {
     });
   });
 
-  describe("given a signed wrapped document", () => {
-    test("should pass w3c vc validation without removal of any data", () => {
-      const w3cVerifiableCredential: W3cVerifiableCredential = SIGNED_WRAPPED_DOCUMENT;
+  describe("given a signed VC", () => {
+    test("should pass W3C VC validation without removal of any data", () => {
+      const w3cVerifiableCredential: W3cVerifiableCredential = SIGNED_VC;
       const results = W3cVerifiableCredential.parse(w3cVerifiableCredential);
-      expect(results).toEqual(SIGNED_WRAPPED_DOCUMENT);
+      expect(results).toEqual(SIGNED_VC);
     });
 
-    test("should pass document validation without removal of any data", () => {
-      const v4Document: V4OpenAttestationDocument = SIGNED_WRAPPED_DOCUMENT;
-      const results = V4OpenAttestationDocument.parse(v4Document);
-      expect(results).toEqual(SIGNED_WRAPPED_DOCUMENT);
+    test("should pass VC validation without removal of any data", () => {
+      const oaVc: OAVerifiableCredential = SIGNED_VC;
+      const results = OAVerifiableCredential.parse(oaVc);
+      expect(results).toEqual(SIGNED_VC);
     });
 
-    test("should pass wrapped document validation without removal of any data", () => {
-      const v4WrappedDocument: V4WrappedDocument = SIGNED_WRAPPED_DOCUMENT;
-      const results = V4WrappedDocument.parse(v4WrappedDocument);
-      expect(results).toEqual(SIGNED_WRAPPED_DOCUMENT);
+    test("should fail digested VC validation without removal of any data", () => {
+      const oaDigestedVc: OASigned = SIGNED_VC;
+      const results = OADigestedW3cVerifiableCredential.safeParse(oaDigestedVc);
+      expect(results.success).toBe(false);
     });
 
-    test("should pass signed wrapped document validation without removal of any data", () => {
-      const results = V4SignedWrappedDocument.parse(SIGNED_WRAPPED_DOCUMENT);
-      expect(results).toEqual(SIGNED_WRAPPED_DOCUMENT);
+    test("should pass signed VC validation without removal of any data", () => {
+      const results = OASignedW3cVerifiableCredential.parse(SIGNED_VC);
+      expect(results).toEqual(SIGNED_VC);
     });
   });
 });

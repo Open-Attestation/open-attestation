@@ -13,7 +13,7 @@ import { getSchema } from "../shared/ajv";
 const getExternalSchema = (schema?: string) => (schema ? { schema } : {});
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export const wrapDocument = async <T extends OpenAttestationDocument>(
   credential: T,
@@ -71,7 +71,7 @@ export const wrapDocument = async <T extends OpenAttestationDocument>(
 };
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export const wrapDocuments = async <T extends OpenAttestationDocument>(
   documents: T[],

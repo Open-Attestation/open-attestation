@@ -1,1 +1,1 @@
-export { DocumentBuilder, DocumentBuilderErrors } from "../documentBuilder";
+export { VcBuilder, VcBuilderErrors } from "../vcBuilder";

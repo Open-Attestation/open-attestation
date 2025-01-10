@@ -24,13 +24,7 @@ import { digestCredential as digestCredentialV3 } from "./3.0/digest";
 import { obfuscateVerifiableCredential as obfuscateVerifiableCredentialV3 } from "./3.0/obfuscate";
 import { OpenAttestationDocument as OpenAttestationDocumentV3 } from "./__generated__/schema.3.0";
 
-import { verify as verifyV4 } from "./4.0/verify";
-import {
-  ObfuscateVerifiableCredentialResult,
-  obfuscateVerifiableCredential as obfuscateVerifiableCredentialV4,
-} from "./4.0/obfuscate";
-import { v4Diagnose } from "./4.0/diagnose";
-import { V4WrappedDocument, isV4WrappedDocument } from "./4.0/types";
+import * as v4 from "./4.0/exports";
 
 export function wrapDocument<T extends OpenAttestationDocumentV2>(
   data: T,
@@ -47,7 +41,7 @@ export function wrapDocuments<T extends OpenAttestationDocumentV2>(
 }
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends OpenAttestationDocumentV3>(
   data: T,
@@ -57,7 +51,7 @@ export function __unsafe__use__it__at__your__own__risks__wrapDocument<T extends 
 }
 
 /**
- * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/alpha)
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
  */
 export function __unsafe__use__it__at__your__own__risks__wrapDocuments<T extends OpenAttestationDocumentV3>(
   dataArray: T[],
@@ -71,9 +65,6 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
     return validate(document, getSchema(SchemaId.v2)).length === 0;
   else if (utils.isWrappedV3Document(document) || document?.version === SchemaId.v3)
     return validate(document, getSchema(SchemaId.v3)).length === 0;
-  else if (isV4WrappedDocument(document)) {
-    return v4Diagnose({ document, kind: "wrapped", debug: false, mode: "strict" }).length === 0;
-  }
 
   return validate(document, getSchema(`${document?.version || SchemaId.v2}`)).length === 0;
 };
@@ -81,11 +72,15 @@ export const validateSchema = (document: WrappedDocument<any>): boolean => {
 export function verifySignature<T extends WrappedDocument<OpenAttestationDocument>>(document: T) {
   if (utils.isWrappedV2Document(document)) return verify(document);
   else if (utils.isWrappedV3Document(document)) return verifyV3(document);
-  else if (isV4WrappedDocument(document)) return verifyV4(document);
 
-  throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be signature verified");
+  throw new Error(
+    "Unsupported document type: Only OpenAttestation v2 or v3 documents can be signature verified with this function"
+  );
 }
 
+/**
+ * @deprecated will be removed in the next major release in favour of OpenAttestation v4.0 (more info: https://github.com/Open-Attestation/open-attestation/tree/beta)
+ */
 export function digest(document: OpenAttestationDocumentV3, salts: v3.Salt[], obfuscatedData: string[]): string {
   if (utils.isRawV3Document(document)) return digestCredentialV3(document, salts, obfuscatedData);
   throw new Error(
@@ -93,18 +88,18 @@ export function digest(document: OpenAttestationDocumentV3, salts: v3.Salt[], ob
   );
 }
 
-type ObfuscateReturn<T> = T extends V4WrappedDocument ? ObfuscateVerifiableCredentialResult<T> : T;
 export function obfuscate<T extends WrappedDocument<OpenAttestationDocument>>(
   document: T,
   fields: string[] | string
-): ObfuscateReturn<T> {
-  if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields) as ObfuscateReturn<T>;
-  else if (utils.isWrappedV3Document(document))
-    return obfuscateVerifiableCredentialV3(document, fields) as ObfuscateReturn<T>;
-  else if (isV4WrappedDocument(document))
-    return obfuscateVerifiableCredentialV4(document, fields) as ObfuscateReturn<T>;
+): T {
+  if (utils.isWrappedV2Document(document)) return obfuscateDocumentV2(document, fields) as T;
+  else if (utils.isWrappedV3Document(document)) {
+    return obfuscateVerifiableCredentialV3(document, fields) as T;
+  }
 
-  throw new Error("Unsupported document type: Only OpenAttestation v2, v3 or v4 documents can be obfuscated");
+  throw new Error(
+    "Unsupported document type: Only OpenAttestation v2 or v3 documents can be obfuscated with this function"
+  );
 }
 
 export async function signDocument<T extends v2.OpenAttestationDocument | v3.OpenAttestationDocument>(
@@ -123,7 +118,9 @@ export async function signDocument<T extends v2.OpenAttestationDocument | v3.Ope
 
   if (results) return results as SignedWrappedDocument<T>;
 
-  throw new Error("Unsupported document type: Only OpenAttestation v2 or v3 documents can be signed");
+  throw new Error(
+    "Unsupported document type: Only OpenAttestation v2 or v3 documents can be signed with this function"
+  );
 }
 
 export { digestDocument } from "./2.0/digest";
@@ -137,4 +134,4 @@ export * from "./shared/signer";
 export { getData } from "./shared/utils"; // keep it to avoid breaking change, moved from privacy to utils
 export { v2 };
 export { v3 };
-export * as v4 from "./4.0/exports";
+export { v4 };
