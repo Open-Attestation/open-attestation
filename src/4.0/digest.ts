@@ -4,7 +4,7 @@ import { ContextUrl, ContextType, UnableToInterpretContextError, interpretContex
 import {
   ProoflessW3cVerifiableCredential,
   ProoflessOAVerifiableCredential,
-  UnsignedOADigested,
+  OADigested,
   W3cVerifiableCredential,
 } from "./types";
 import { genTargetHash } from "./hash";
@@ -13,7 +13,7 @@ import { ZodError } from "zod";
 
 export const digestVc = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
   vc: T
-): Promise<UnsignedOADigested<T>> => {
+): Promise<OADigested<T>> => {
   /* 1a. Try OpenAttestation VC validation, since most user will be issuing oa v4 */
   const oav4context = await ProoflessOAVerifiableCredential.pick({ "@context": true }).passthrough().safeParseAsync(vc); // Superficial check on user intention
   let validatedUndigestedVc: ProoflessW3cVerifiableCredential | undefined;
@@ -84,7 +84,7 @@ export const digestVc = async <T extends ProoflessW3cVerifiableCredential = Proo
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(targetHash)).map((buffer) => buffer.toString("hex"));
 
-  const unsignedOADigestedVc: UnsignedOADigested<W3cVerifiableCredential> = {
+  const unsignedOADigestedVc: OADigested<W3cVerifiableCredential> = {
     ...vcReadyForDigesting,
     proof: {
       type: "OpenAttestationHashProof2018",
@@ -99,12 +99,12 @@ export const digestVc = async <T extends ProoflessW3cVerifiableCredential = Proo
     },
   };
 
-  return unsignedOADigestedVc as UnsignedOADigested<T>;
+  return unsignedOADigestedVc as OADigested<T>;
 };
 
 export const digestVcs = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
   vcs: T[]
-): Promise<UnsignedOADigested<T>[]> => {
+): Promise<OADigested<T>[]> => {
   // create individual verifiable credential
   const verifiableCredentials = await Promise.all(vcs.map((vc) => digestVc(vc)));
 

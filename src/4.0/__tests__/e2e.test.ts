@@ -192,8 +192,8 @@ describe("V4.0 E2E Test Scenarios", () => {
       expect(isOADigestedOAVerifiableCredential(DIGESTED_VC_DID)).toStrictEqual(true);
     });
 
-    test("should return true when signed VC is a valid signed v4 VC and identityProof is DNS-DID", () => {
-      expect(isOADigestedOAVerifiableCredential(SIGNED_VC_DID)).toStrictEqual(true);
+    test("should return false when signed VC is a valid signed v4 VC and identityProof is DNS-DID", () => {
+      expect(isOADigestedOAVerifiableCredential(SIGNED_VC_DID)).toStrictEqual(false);
     });
 
     test("should return false when VC is invalid due to no DNS-DID identifier", () => {

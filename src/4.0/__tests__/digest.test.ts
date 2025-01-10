@@ -1,7 +1,7 @@
 import {
   OAVerifiableCredential,
   ProoflessOAVerifiableCredential,
-  UnsignedOADigestedOAVerifiableCredential,
+  OADigestedOAVerifiableCredential,
   W3cVerifiableCredential,
 } from "../types";
 import { digestVc } from "../digest";
@@ -26,7 +26,7 @@ describe("V4.0 digest", () => {
         identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
       },
     });
-    const parsedResults = UnsignedOADigestedOAVerifiableCredential.safeParse(digested);
+    const parsedResults = OADigestedOAVerifiableCredential.safeParse(digested);
     if (!parsedResults.success) {
       throw new Error("Parsing failed");
     }
@@ -124,7 +124,7 @@ describe("V4.0 digest", () => {
       },
     };
     const digested = await digestVc(genericW3cVc as unknown as ProoflessOAVerifiableCredential);
-    const parsedResults = UnsignedOADigestedOAVerifiableCredential.pick({ "@context": true, type: true })
+    const parsedResults = OADigestedOAVerifiableCredential.pick({ "@context": true, type: true })
       .passthrough()
       .safeParse(digested);
     expect(parsedResults.success).toBe(true);

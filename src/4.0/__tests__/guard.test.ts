@@ -56,41 +56,13 @@ describe("V4.0 guard", () => {
       expect((results as { error: unknown }).error).toMatchInlineSnapshot(`
         [ZodError: [
           {
-            "code": "invalid_union",
-            "unionErrors": [
-              {
-                "issues": [
-                  {
-                    "code": "invalid_type",
-                    "expected": "object",
-                    "received": "undefined",
-                    "path": [
-                      "proof"
-                    ],
-                    "message": "Required"
-                  }
-                ],
-                "name": "ZodError"
-              },
-              {
-                "issues": [
-                  {
-                    "code": "invalid_type",
-                    "expected": "object",
-                    "received": "undefined",
-                    "path": [
-                      "proof"
-                    ],
-                    "message": "Required"
-                  }
-                ],
-                "name": "ZodError"
-              }
-            ],
+            "code": "invalid_type",
+            "expected": "object",
+            "received": "undefined",
             "path": [
               "proof"
             ],
-            "message": "Invalid input"
+            "message": "Required"
           }
         ]]
       `);
@@ -176,10 +148,10 @@ describe("V4.0 guard", () => {
       expect(results).toEqual(SIGNED_VC);
     });
 
-    test("should pass digested VC validation without removal of any data", () => {
+    test("should fail digested VC validation without removal of any data", () => {
       const oaDigestedVc: OASigned = SIGNED_VC;
-      const results = OADigestedW3cVerifiableCredential.parse(oaDigestedVc);
-      expect(results).toEqual(SIGNED_VC);
+      const results = OADigestedW3cVerifiableCredential.safeParse(oaDigestedVc);
+      expect(results.success).toBe(false);
     });
 
     test("should pass signed VC validation without removal of any data", () => {

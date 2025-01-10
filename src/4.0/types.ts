@@ -196,7 +196,7 @@ export const RevocationStoreRevocation = z.object({
   type: z.literal("OpenAttestationRevocationStore"),
 });
 
-const UnsignedOADigestedProof = z
+const OADigestedProof = z
   .object({
     type: z.literal("OpenAttestationHashProof2018"),
     proofPurpose: z.literal("assertionMethod"),
@@ -208,8 +208,8 @@ const UnsignedOADigestedProof = z
   })
   .strict();
 
-const OASignedProof = UnsignedOADigestedProof.extend({ key: z.string(), signature: z.string() }).strict();
-const OAProof = z.union([UnsignedOADigestedProof, OASignedProof]);
+const OASignedProof = OADigestedProof.extend({ key: z.string(), signature: z.string() }).strict();
+const OAProof = z.union([OADigestedProof, OASignedProof]);
 
 export const OAVerifiableCredential = _W3cVerifiableCredential
   .extend({
@@ -265,11 +265,11 @@ const Proofless = z
 export const ProoflessOAVerifiableCredential = OAVerifiableCredential.extend({
   proof: Proofless,
 });
-export const OADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
+export const OADigestedOrSignedOAVerifiableCredential = OAVerifiableCredential.extend({
   proof: OAProof,
 });
-export const UnsignedOADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
-  proof: UnsignedOADigestedProof,
+export const OADigestedOAVerifiableCredential = OAVerifiableCredential.extend({
+  proof: OADigestedProof,
 });
 export const OASignedOAVerifiableCredential = OAVerifiableCredential.extend({
   proof: OASignedProof,
@@ -280,11 +280,11 @@ export const W3cVerifiableCredential = _W3cVerifiableCredential.passthrough();
 export const ProoflessW3cVerifiableCredential = W3cVerifiableCredential.extend({
   proof: Proofless,
 });
-export const OADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+export const OADigestedOrSignedW3cVerifiableCredential = W3cVerifiableCredential.extend({
   proof: OAProof,
 });
-export const UnsignedOADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
-  proof: UnsignedOADigestedProof,
+export const OADigestedW3cVerifiableCredential = W3cVerifiableCredential.extend({
+  proof: OADigestedProof,
 });
 export const OASignedW3cVerifiableCredential = W3cVerifiableCredential.extend({
   proof: OASignedProof,
@@ -296,11 +296,6 @@ export type ProoflessW3cVerifiableCredential = z.infer<typeof ProoflessW3cVerifi
 
 export type OAVerifiableCredential = z.infer<typeof OAVerifiableCredential>;
 export type ProoflessOAVerifiableCredential = z.infer<typeof ProoflessOAVerifiableCredential>;
-
-export type UnsignedOADigested<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
-  T,
-  Pick<z.infer<typeof UnsignedOADigestedW3cVerifiableCredential>, "proof">
->;
 
 export type OADigested<T extends W3cVerifiableCredential = OAVerifiableCredential> = Override<
   T,

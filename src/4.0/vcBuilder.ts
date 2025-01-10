@@ -8,7 +8,7 @@ import {
   RevocationStoreRevocation,
   OAVerifiableCredential,
   OASigned,
-  UnsignedOADigested,
+  OADigested,
 } from "./types";
 import { ContextType, ContextUrl } from "./context";
 
@@ -460,7 +460,7 @@ type SignedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcPro
 
 type DigestedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcProps>
   ? Override<
-      UnsignedOADigested,
+      OADigested,
       {
         name: Props[number]["name"];
         credentialSubject: Props[number]["credentialSubject"];
@@ -468,7 +468,7 @@ type DigestedReturn<Props extends VcProps | VcProps[]> = Props extends Array<VcP
     >[]
   : Props extends VcProps
   ? Override<
-      UnsignedOADigested,
+      OADigested,
       {
         name: Props["name"];
         credentialSubject: Props["credentialSubject"];
