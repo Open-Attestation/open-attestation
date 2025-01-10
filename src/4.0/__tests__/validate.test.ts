@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { SIGNED_BATCHED_VC_DID, SIGNED_VC_DID } from "../fixtures";
-import { Signed } from "../types";
+import { OASigned } from "../types";
 import { validateDigest } from "../validate";
 
 const TEST_VCS = {
@@ -40,7 +40,7 @@ describe("V4.0 validate", () => {
               issuer: {
                 ...issuerWithoutName,
                 fakename: name, // Key was originally "name"
-              } as unknown as Signed["issuer"],
+              } as unknown as OASigned["issuer"],
             })
           ).toBe(false);
         });

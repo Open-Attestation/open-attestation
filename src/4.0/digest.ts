@@ -1,19 +1,24 @@
 import { hashToBuffer } from "../shared/utils/hashing";
 import { MerkleTree } from "../shared/merkle";
 import { ContextUrl, ContextType, UnableToInterpretContextError, interpretContexts } from "./context";
-import { OAVerifiableCredential, Digested, W3cVerifiableCredential } from "./types";
+import {
+  ProoflessW3cVerifiableCredential,
+  ProoflessOAVerifiableCredential,
+  OADigested,
+  W3cVerifiableCredential,
+} from "./types";
 import { genTargetHash } from "./hash";
 import { encodeSalt, salt } from "./salt";
 import { ZodError } from "zod";
 
-export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableCredential>(
+export const digestVc = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
   vc: T
-): Promise<Digested<T>> => {
+): Promise<OADigested<T>> => {
   /* 1a. Try OpenAttestation VC validation, since most user will be issuing oa v4 */
-  const oav4context = await OAVerifiableCredential.pick({ "@context": true }).passthrough().safeParseAsync(vc); // Superficial check on user intention
-  let validatedUndigestedVc: W3cVerifiableCredential | undefined;
+  const oav4context = await ProoflessOAVerifiableCredential.pick({ "@context": true }).passthrough().safeParseAsync(vc); // Superficial check on user intention
+  let validatedUndigestedVc: ProoflessW3cVerifiableCredential | undefined;
   if (oav4context.success) {
-    const oav4 = await OAVerifiableCredential.safeParseAsync(vc);
+    const oav4 = await ProoflessOAVerifiableCredential.safeParseAsync(vc);
     if (!oav4.success) {
       throw new DataModelValidationError("Open Attestation v4.0", oav4.error);
     }
@@ -22,7 +27,7 @@ export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableC
 
   /* 1b. Only if OA VC validation fail do we continue with W3C VC data model validation */
   if (!validatedUndigestedVc) {
-    const w3cVc = await W3cVerifiableCredential.safeParseAsync(vc);
+    const w3cVc = await ProoflessW3cVerifiableCredential.safeParseAsync(vc);
     if (!w3cVc.success) {
       throw new DataModelValidationError("Verifiable Credentials v2.0", w3cVc.error);
     }
@@ -43,7 +48,7 @@ export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableC
     validatedUndigestedVc["@context"].forEach((context) => contexts.add(context));
   }
   REQUIRED_CONTEXTS.forEach((c) => contexts.delete(c));
-  const finalContexts: OAVerifiableCredential["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
+  const finalContexts: ProoflessOAVerifiableCredential["@context"] = [...REQUIRED_CONTEXTS, ...Array.from(contexts)];
 
   /* 4. Type validation */
   // Ensure that required types are present and in the correct order
@@ -56,7 +61,7 @@ export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableC
     types.forEach((type) => types.add(type));
   }
   REQUIRED_TYPES.forEach((t) => types.delete(t));
-  const finalTypes: OAVerifiableCredential["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
+  const finalTypes: ProoflessOAVerifiableCredential["type"] = [...REQUIRED_TYPES, ...Array.from(types)];
 
   const vcReadyForDigesting = {
     ...validatedUndigestedVc,
@@ -67,7 +72,7 @@ export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableC
     ]),
     "@context": finalContexts,
     type: finalTypes,
-  } satisfies W3cVerifiableCredential;
+  } satisfies ProoflessOAVerifiableCredential;
 
   /* 5. OA wrapping */
   const salts = salt(vcReadyForDigesting);
@@ -79,7 +84,7 @@ export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableC
   const merkleRoot = merkleTree.getRoot().toString("hex");
   const merkleProof = merkleTree.getProof(hashToBuffer(targetHash)).map((buffer) => buffer.toString("hex"));
 
-  return {
+  const unsignedOADigestedVc: OADigested<W3cVerifiableCredential> = {
     ...vcReadyForDigesting,
     proof: {
       type: "OpenAttestationHashProof2018",
@@ -89,15 +94,17 @@ export const digestVc = async <T extends OAVerifiableCredential | W3cVerifiableC
       merkleRoot,
       salts: encodeSalt(salts),
       privacy: {
-        obfuscated: [] as string[], // FIXME: Not sure why casting required here
+        obfuscated: [],
       },
     },
-  } as Digested<T>;
+  };
+
+  return unsignedOADigestedVc as OADigested<T>;
 };
 
-export const digestVcs = async <T extends OAVerifiableCredential | W3cVerifiableCredential>(
+export const digestVcs = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
   vcs: T[]
-): Promise<Digested<T>[]> => {
+): Promise<OADigested<T>[]> => {
   // create individual verifiable credential
   const verifiableCredentials = await Promise.all(vcs.map((vc) => digestVc(vc)));
 
@@ -129,15 +136,15 @@ export const digestVcs = async <T extends OAVerifiableCredential | W3cVerifiable
  * { a: undefined, b: "something" }. We also assert that the extracted properties
  * are of OAVerifiableCredential type.
  **/
-function extractAndAssertAsOAVerifiableCredentialProps<K extends keyof W3cVerifiableCredential>(
-  original: W3cVerifiableCredential,
+function extractAndAssertAsOAVerifiableCredentialProps<K extends keyof ProoflessOAVerifiableCredential>(
+  original: ProoflessW3cVerifiableCredential,
   keys: K[]
 ) {
   const temp: Record<string, unknown> = {};
   Object.entries(original).forEach(([k, v]) => {
     if (keys.includes(k as K)) temp[k] = v;
   });
-  return temp as { [key in K]: OAVerifiableCredential[key] };
+  return temp as { [key in K]: ProoflessOAVerifiableCredential[key] };
 }
 
 class DataModelValidationError extends Error {
@@ -147,7 +154,7 @@ class DataModelValidationError extends Error {
   }
 }
 
-export const wrapVcErrors = {
+export const digestVcErrors = {
   DataModelValidationError,
   UnableToInterpretContextError,
 };

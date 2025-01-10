@@ -1,10 +1,10 @@
 import { sortBy } from "lodash";
 import { keccak256 } from "js-sha3";
-import { W3cVerifiableCredential, Salt } from "./types";
+import { W3cVerifiableCredential, OASalt } from "./types";
 import { LeafValue, traverseAndFlatten } from "./traverseAndFlatten";
 import { hashToBuffer } from "../shared/utils/hashing";
 
-export const genTargetHash = (vc: W3cVerifiableCredential, salts: Salt[], obfuscatedData: string[]) => {
+export const genTargetHash = (vc: W3cVerifiableCredential, salts: OASalt[], obfuscatedData: string[]) => {
   // find all leaf nodes in the vc and hash them
   // proof is not part of the digest
   const { proof: _, ...vcWithoutProof } = vc;

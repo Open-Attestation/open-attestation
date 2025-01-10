@@ -1,7 +1,7 @@
 import { genTargetHash } from "../hash";
 import { decodeSalt } from "../salt";
 import { SIGNED_VC_DID as ROOT_CREDENTIAL } from "../fixtures";
-import { Signed } from "../types";
+import { OASigned } from "../types";
 import { obfuscateOAVerifiableCredential } from "../obfuscate";
 
 // All obfuscated VCs are generated from the ROOT_CREDENTIAL
@@ -163,7 +163,7 @@ describe("V4.0 hash", () => {
         signature:
           "0x949b76d8df493a56c1cf21303a74d6a54904461c1c10f4619b43ad7d339c64467c61eb4c0873f279cd21d5bdd044d3af5318f14d63f57acbd4cde30f271f3eb71c",
       },
-    } as unknown as Signed;
+    } as unknown as OASigned;
 
     const digest = genTargetHash(
       OBFUSCATED_DIGESTED_VC,

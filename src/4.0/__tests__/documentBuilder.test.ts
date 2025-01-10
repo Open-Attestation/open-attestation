@@ -1,7 +1,8 @@
 import { validateDigest } from "../validate";
 import { VcBuilder, VcBuilderErrors } from "../vcBuilder";
-import { isSignedOAVerifiableCredential, isDigestedOAVerifiableCredential, signVc } from "../exports";
+import { isOASignedOAVerifiableCredential, isOADigestedOAVerifiableCredential, signVc } from "../exports";
 import { SAMPLE_SIGNING_KEYS } from "../fixtures";
+import { ProoflessOAVerifiableCredential } from "../types";
 
 describe(`V4.0 VcBuilder`, () => {
   describe("given a single VC", () => {
@@ -52,7 +53,7 @@ describe(`V4.0 VcBuilder`, () => {
           "type": "OpenAttestationOcspResponder",
         }
       `);
-      expect(isSignedOAVerifiableCredential(signed)).toBe(true);
+      expect(isOASignedOAVerifiableCredential(signed)).toBe(true);
       expect(validateDigest(signed)).toBe(true);
     });
 
@@ -89,8 +90,8 @@ describe(`V4.0 VcBuilder`, () => {
           "type": "OpenAttestationOcspResponder",
         }
       `);
-      expect(isDigestedOAVerifiableCredential(digested)).toBe(true);
-      expect(isSignedOAVerifiableCredential(digested)).toBe(false);
+      expect(isOADigestedOAVerifiableCredential(digested)).toBe(true);
+      expect(isOASignedOAVerifiableCredential(digested)).toBe(false);
     });
   });
 
@@ -138,7 +139,7 @@ describe(`V4.0 VcBuilder`, () => {
         ]
       `);
       expect(signed[0].credentialStatus).toBeUndefined();
-      expect(isSignedOAVerifiableCredential(signed[0])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(signed[0])).toBe(true);
       expect(validateDigest(signed[0])).toBe(true);
 
       expect(signed[1].issuer).toMatchInlineSnapshot(`
@@ -167,7 +168,7 @@ describe(`V4.0 VcBuilder`, () => {
         ]
       `);
       expect(signed[1].credentialStatus).toBeUndefined();
-      expect(isSignedOAVerifiableCredential(signed[1])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(signed[1])).toBe(true);
       expect(validateDigest(signed[1])).toBe(true);
     });
 
@@ -198,8 +199,8 @@ describe(`V4.0 VcBuilder`, () => {
           },
         ]
       `);
-      expect(isDigestedOAVerifiableCredential(digested[0])).toBe(true);
-      expect(isSignedOAVerifiableCredential(digested[0])).toBe(false);
+      expect(isOADigestedOAVerifiableCredential(digested[0])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(digested[0])).toBe(false);
 
       expect(digested[1].issuer).toMatchInlineSnapshot(`
         {
@@ -226,8 +227,8 @@ describe(`V4.0 VcBuilder`, () => {
           },
         ]
       `);
-      expect(isDigestedOAVerifiableCredential(digested[1])).toBe(true);
-      expect(isSignedOAVerifiableCredential(digested[1])).toBe(false);
+      expect(isOADigestedOAVerifiableCredential(digested[1])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(digested[1])).toBe(false);
     });
   });
 
@@ -405,16 +406,27 @@ describe(`V4.0 VcBuilder`, () => {
     let error;
     await expect(async () => {
       try {
-        await signVc(digested, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
+        await signVc(
+          digested as unknown as ProoflessOAVerifiableCredential,
+          "Secp256k1VerificationKey2018",
+          SAMPLE_SIGNING_KEYS
+        );
       } catch (e) {
         error = e;
         throw e;
       }
     }).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "VC has already has proof object defined:
-      Either an unsigned or undigested VC must be provided"
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [],
+        "proof": {
+          "_errors": [
+            "VC has to be unsigned"
+          ]
+        }
+      }"
     `);
-    expect(error).toBeInstanceOf(VcBuilderErrors.VcProofNotEmptyError);
+    expect(error).toBeInstanceOf(VcBuilderErrors.DataModelValidationError);
   });
 
   test("given re-setting of values, should throw", async () => {

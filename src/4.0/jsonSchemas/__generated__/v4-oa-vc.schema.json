@@ -299,28 +299,98 @@
               "type": "object",
               "properties": {
                 "type": {
+                  "type": "string",
+                  "const": "OpenAttestationHashProof2018"
+                },
+                "proofPurpose": {
+                  "type": "string",
+                  "const": "assertionMethod"
+                },
+                "targetHash": {
+                  "type": "string"
+                },
+                "proofs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "merkleRoot": {
+                  "type": "string"
+                },
+                "salts": {
+                  "type": "string"
+                },
+                "privacy": {
+                  "type": "object",
+                  "properties": {
+                    "obfuscated": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "obfuscated"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "type",
+                "proofPurpose",
+                "targetHash",
+                "proofs",
+                "merkleRoot",
+                "salts",
+                "privacy"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/type"
+                },
+                "proofPurpose": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/proofPurpose"
+                },
+                "targetHash": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/targetHash"
+                },
+                "proofs": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/proofs"
+                },
+                "merkleRoot": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/merkleRoot"
+                },
+                "salts": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/salts"
+                },
+                "privacy": {
+                  "$ref": "#/definitions/OAVerifiableCredential/properties/proof/anyOf/0/properties/privacy"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "signature": {
                   "type": "string"
                 }
               },
               "required": [
-                "type"
+                "type",
+                "proofPurpose",
+                "targetHash",
+                "proofs",
+                "merkleRoot",
+                "salts",
+                "privacy",
+                "key",
+                "signature"
               ],
-              "additionalProperties": true
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": true
-              }
+              "additionalProperties": false
             }
           ]
         },

@@ -1,9 +1,9 @@
-import { Digested } from "./types";
 import { SaltNotFoundError, genTargetHash } from "./hash";
 import { checkProof } from "../shared/merkle";
 import { decodeSalt } from "./salt";
+import { OADigested, W3cVerifiableCredential } from "./types";
 
-export const validateDigest = <T extends Digested>(vc: T): vc is T => {
+export const validateDigest = <T extends W3cVerifiableCredential>(vc: OADigested<T>): vc is OADigested<T> => {
   if (!vc.proof) {
     return false;
   }

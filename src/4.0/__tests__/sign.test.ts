@@ -1,8 +1,8 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { Wallet } from "@ethersproject/wallet";
 import { RAW_VC_DID } from "../fixtures";
-import { SignedOAVerifiableCredential } from "../types";
 import { signVc, signVcErrors } from "../sign";
+import { OASignedOAVerifiableCredential, ProoflessOAVerifiableCredential } from "../types";
 
 describe("V4.0 sign", () => {
   it("should sign a VC", async () => {
@@ -10,7 +10,7 @@ describe("V4.0 sign", () => {
       public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
       private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
     });
-    const parsedResults = SignedOAVerifiableCredential.safeParse(signed);
+    const parsedResults = OASignedOAVerifiableCredential.safeParse(signed);
     if (!parsedResults.success) {
       throw new Error("Parsing failed");
     }
@@ -24,7 +24,7 @@ describe("V4.0 sign", () => {
       "tourist quality multiply denial diary height funny calm disease buddy speed gold"
     );
     const signed = await signVc(RAW_VC_DID, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, wallet);
-    const parsedResults = SignedOAVerifiableCredential.safeParse(signed);
+    const parsedResults = OASignedOAVerifiableCredential.safeParse(signed);
     if (!parsedResults.success) {
       throw new Error("Parsing failed");
     }
@@ -43,19 +43,30 @@ describe("V4.0 sign", () => {
     let error;
     await expect(async () => {
       try {
-        await signVc(signedVc, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
-          public: "did:ethr:0xb6De3744E1259e1aB692f5a277f053B79429c5a2#controller",
-          private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5",
-        });
+        await signVc(
+          signedVc as unknown as ProoflessOAVerifiableCredential,
+          SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
+          {
+            public: "did:ethr:0xb6De3744E1259e1aB692f5a277f053B79429c5a2#controller",
+            private: "0x812269266b34d2919f737daf22db95f02642f8cdc0ca673bf3f701599f4971f5",
+          }
+        );
       } catch (e) {
         error = e;
         throw e;
       }
     }).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "VC has already has proof object defined:
-      Either an unsigned or undigested VC must be provided"
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [],
+        "proof": {
+          "_errors": [
+            "VC has to be unsigned"
+          ]
+        }
+      }"
     `);
-    expect(error).toBeInstanceOf(signVcErrors.VcProofNotEmptyError);
+    expect(error).toBeInstanceOf(signVcErrors.DataModelValidationError);
   });
   it("should throw error if a key or signer is invalid", async () => {
     await expect(
