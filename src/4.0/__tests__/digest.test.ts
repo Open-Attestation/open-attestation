@@ -3,6 +3,7 @@ import {
   ProoflessOAVerifiableCredential,
   OADigestedOAVerifiableCredential,
   W3cVerifiableCredential,
+  ProoflessW3cVerifiableCredential,
 } from "../types";
 import { digestVc } from "../digest";
 
@@ -110,7 +111,7 @@ describe("V4.0 digest", () => {
     `);
   });
 
-  test("given a generic W3C VC, should digest with context and type corrected", async () => {
+  test("given a generic W3C VC and with validate with OA data model disabled, should digest with context and type corrected", async () => {
     const genericW3cVc: W3cVerifiableCredential = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential"],
@@ -123,7 +124,7 @@ describe("V4.0 digest", () => {
         id: "https://example.com/issuer/123",
       },
     };
-    const digested = await digestVc(genericW3cVc as unknown as ProoflessOAVerifiableCredential);
+    const digested = await digestVc(genericW3cVc as unknown as ProoflessW3cVerifiableCredential, true);
     const parsedResults = OADigestedOAVerifiableCredential.pick({ "@context": true, type: true })
       .passthrough()
       .safeParse(digested);

@@ -119,31 +119,28 @@ describe("V4.0 E2E Test Scenarios", () => {
           } as unknown as ProoflessOAVerifiableCredential,
         ];
         await expect(digestVcs(malformedDatum)).rejects.toThrowErrorMatchingInlineSnapshot(`
-          "Input VC does not conform to Verifiable Credentials v2.0 Data Model: 
+          "Input VC does not conform to Open Attestation v4.0 Data Model: 
            {
-            "_errors": [],
+            "_errors": [
+              "Unrecognized key(s) in object: 'laurent'"
+            ],
             "@context": {
               "_errors": [
-                "Required",
-                "Required",
-                "Required"
-              ]
-            },
-            "issuer": {
-              "_errors": [
-                "Required",
                 "Required"
               ]
             },
             "type": {
               "_errors": [
-                "Required",
+                "Required"
+              ]
+            },
+            "issuer": {
+              "_errors": [
                 "Required"
               ]
             },
             "credentialSubject": {
               "_errors": [
-                "Required",
                 "Required"
               ]
             }

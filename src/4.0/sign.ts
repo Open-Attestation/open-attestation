@@ -5,13 +5,25 @@ import { SigningKey } from "../shared/@types/sign";
 import { digestVc, digestVcErrors } from "./digest";
 import type { ProoflessOAVerifiableCredential, ProoflessW3cVerifiableCredential, OASigned } from "./types";
 
-export const signVc = async <T extends ProoflessW3cVerifiableCredential = ProoflessOAVerifiableCredential>(
+export async function signVc<T extends ProoflessOAVerifiableCredential>(
   unsignedVc: T,
   algorithm: "Secp256k1VerificationKey2018",
   keyOrSigner: SigningKey | Signer
-): Promise<OASigned<T>> => {
+): Promise<OASigned<T>>;
+export async function signVc<T extends ProoflessW3cVerifiableCredential>(
+  unsignedVc: T,
+  algorithm: "Secp256k1VerificationKey2018",
+  keyOrSigner: SigningKey | Signer,
+  isUseW3cDataModel: boolean
+): Promise<OASigned<T>>;
+export async function signVc<T extends ProoflessW3cVerifiableCredential>(
+  unsignedVc: T,
+  algorithm: "Secp256k1VerificationKey2018",
+  keyOrSigner: SigningKey | Signer,
+  isUseW3cDataModel?: boolean
+): Promise<OASigned<T>> {
   /* 1. Input VC needs to be digested first */
-  const digestedVc = await digestVc(unsignedVc);
+  const digestedVc = await digestVc(unsignedVc, isUseW3cDataModel ?? false);
   const validatedProof = digestedVc.proof;
 
   const merkleRoot = `0x${validatedProof.merkleRoot}`;
@@ -33,7 +45,7 @@ export const signVc = async <T extends ProoflessW3cVerifiableCredential = Proofl
   } catch (error) {
     throw new CouldNotSignVcError(error);
   }
-};
+}
 
 /**
  * Cases where this can be thrown includes: network error, invalid keys or signer
