@@ -23,7 +23,6 @@
     "lint": "eslint . --ext .ts,.json --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "publish:schema": "./scripts/publishSchema.sh",
-    "postinstall": "node scripts/postInstall",
     "prebuild": "node scripts/preBuild"
   },
   "files": [
@@ -85,7 +84,6 @@
     "js-base64": "^3.6.1",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.21",
-    "quicktype": "^15.1.0",
     "runtypes": "^6.3.2",
     "uuid": "^8.3.2",
     "validator": "^13.7.0"

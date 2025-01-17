@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - run: npm ci && npm run postinstall
+      - run: npm ci
       - run: npm run build
       - uses: codfish/semantic-release-action@v2
         id: semantic
