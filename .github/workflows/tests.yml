@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - run: npm ci && npm run postinstall
+      - run: npm ci
       - run: npm run prebuild
       - run: npm run test
 
@@ -27,5 +27,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - run: npm ci && npm run postinstall
+      - run: npm ci
       - run: npm run build
