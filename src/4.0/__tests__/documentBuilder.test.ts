@@ -1,11 +1,12 @@
-import { verify } from "../verify";
-import { DocumentBuilder, DocumentBuilderErrors } from "../documentBuilder";
-import { isSignedWrappedDocument, isWrappedDocument, signDocument } from "../exports";
+import { validateDigest } from "../validate";
+import { VcBuilder, VcBuilderErrors } from "../vcBuilder";
+import { isOASignedOAVerifiableCredential, isOADigestedOAVerifiableCredential, signVc } from "../exports";
 import { SAMPLE_SIGNING_KEYS } from "../fixtures";
+import { ProoflessOAVerifiableCredential } from "../types";
 
-describe(`DocumentBuilder`, () => {
-  describe("given a single document", () => {
-    const document = new DocumentBuilder({ credentialSubject: { name: "John Doe" }, name: "Diploma" })
+describe(`V4.0 VcBuilder`, () => {
+  describe("given a single VC", () => {
+    const vc = new VcBuilder({ credentialSubject: { name: "John Doe" }, name: "Diploma" })
       .embeddedRenderer({
         rendererUrl: "https://example.com",
         templateName: "example",
@@ -19,8 +20,8 @@ describe(`DocumentBuilder`, () => {
         issuerName: "Example University",
       });
 
-    test("given sign and wrap is called, return a single signed document", async () => {
-      const signed = await document.wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+    test("given sign is called, return a single signed VC", async () => {
+      const signed = await vc.sign({ signer: SAMPLE_SIGNING_KEYS });
       expect(signed.issuer).toMatchInlineSnapshot(`
         {
           "id": "did:example:123",
@@ -52,13 +53,13 @@ describe(`DocumentBuilder`, () => {
           "type": "OpenAttestationOcspResponder",
         }
       `);
-      expect(isSignedWrappedDocument(signed)).toBe(true);
-      expect(verify(signed)).toBe(true);
+      expect(isOASignedOAVerifiableCredential(signed)).toBe(true);
+      expect(validateDigest(signed)).toBe(true);
     });
 
-    test("given wrap is called, return a wrapped document", async () => {
-      const wrapped = await document.justWrapWithoutSigning();
-      expect(wrapped.issuer).toMatchInlineSnapshot(`
+    test("given digest is called, return a digested VC", async () => {
+      const digested = await vc.digest();
+      expect(digested.issuer).toMatchInlineSnapshot(`
         {
           "id": "did:example:123",
           "identityProof": {
@@ -69,12 +70,12 @@ describe(`DocumentBuilder`, () => {
           "type": "OpenAttestationIssuer",
         }
       `);
-      expect(wrapped.credentialSubject).toMatchInlineSnapshot(`
+      expect(digested.credentialSubject).toMatchInlineSnapshot(`
         {
           "name": "John Doe",
         }
       `);
-      expect(wrapped.renderMethod).toMatchInlineSnapshot(`
+      expect(digested.renderMethod).toMatchInlineSnapshot(`
         [
           {
             "id": "https://example.com",
@@ -83,19 +84,19 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
-      expect(wrapped.credentialStatus).toMatchInlineSnapshot(`
+      expect(digested.credentialStatus).toMatchInlineSnapshot(`
         {
           "id": "https://oscp.example.com",
           "type": "OpenAttestationOcspResponder",
         }
       `);
-      expect(isWrappedDocument(wrapped)).toBe(true);
-      expect(isSignedWrappedDocument(wrapped)).toBe(false);
+      expect(isOADigestedOAVerifiableCredential(digested)).toBe(true);
+      expect(isOASignedOAVerifiableCredential(digested)).toBe(false);
     });
   });
 
-  describe("given a multiple documents", () => {
-    const document = new DocumentBuilder([
+  describe("given multiple VCs", () => {
+    const vc = new VcBuilder([
       { credentialSubject: { name: "John Doe" }, name: "Diploma" },
       { credentialSubject: { name: "Jane Foster" }, name: "Degree" },
     ])
@@ -110,8 +111,8 @@ describe(`DocumentBuilder`, () => {
         issuerName: "Example University",
       });
 
-    test("given sign and wrap is called, return a list of signed document", async () => {
-      const signed = await document.wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+    test("given sign is called, return a list of signed VCs", async () => {
+      const signed = await vc.sign({ signer: SAMPLE_SIGNING_KEYS });
       expect(signed[0].issuer).toMatchInlineSnapshot(`
         {
           "id": "did:example:123",
@@ -138,8 +139,8 @@ describe(`DocumentBuilder`, () => {
         ]
       `);
       expect(signed[0].credentialStatus).toBeUndefined();
-      expect(isSignedWrappedDocument(signed[0])).toBe(true);
-      expect(verify(signed[0])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(signed[0])).toBe(true);
+      expect(validateDigest(signed[0])).toBe(true);
 
       expect(signed[1].issuer).toMatchInlineSnapshot(`
         {
@@ -167,13 +168,13 @@ describe(`DocumentBuilder`, () => {
         ]
       `);
       expect(signed[1].credentialStatus).toBeUndefined();
-      expect(isSignedWrappedDocument(signed[1])).toBe(true);
-      expect(verify(signed[1])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(signed[1])).toBe(true);
+      expect(validateDigest(signed[1])).toBe(true);
     });
 
-    test("given wrap is called, return a list of wrapped document", async () => {
-      const wrapped = await document.justWrapWithoutSigning();
-      expect(wrapped[0].issuer).toMatchInlineSnapshot(`
+    test("given digest is called, return a list of digested VCs", async () => {
+      const digested = await vc.digest();
+      expect(digested[0].issuer).toMatchInlineSnapshot(`
         {
           "id": "did:example:123",
           "identityProof": {
@@ -184,12 +185,12 @@ describe(`DocumentBuilder`, () => {
           "type": "OpenAttestationIssuer",
         }
       `);
-      expect(wrapped[0].credentialSubject).toMatchInlineSnapshot(`
+      expect(digested[0].credentialSubject).toMatchInlineSnapshot(`
         {
           "name": "John Doe",
         }
       `);
-      expect(wrapped[0].renderMethod).toMatchInlineSnapshot(`
+      expect(digested[0].renderMethod).toMatchInlineSnapshot(`
         [
           {
             "id": "https://example.com",
@@ -198,10 +199,10 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
-      expect(isWrappedDocument(wrapped[0])).toBe(true);
-      expect(isSignedWrappedDocument(wrapped[0])).toBe(false);
+      expect(isOADigestedOAVerifiableCredential(digested[0])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(digested[0])).toBe(false);
 
-      expect(wrapped[1].issuer).toMatchInlineSnapshot(`
+      expect(digested[1].issuer).toMatchInlineSnapshot(`
         {
           "id": "did:example:123",
           "identityProof": {
@@ -212,12 +213,12 @@ describe(`DocumentBuilder`, () => {
           "type": "OpenAttestationIssuer",
         }
       `);
-      expect(wrapped[1].credentialSubject).toMatchInlineSnapshot(`
+      expect(digested[1].credentialSubject).toMatchInlineSnapshot(`
         {
           "name": "Jane Foster",
         }
       `);
-      expect(wrapped[1].renderMethod).toMatchInlineSnapshot(`
+      expect(digested[1].renderMethod).toMatchInlineSnapshot(`
         [
           {
             "id": "https://example.com",
@@ -226,13 +227,13 @@ describe(`DocumentBuilder`, () => {
           },
         ]
       `);
-      expect(isWrappedDocument(wrapped[1])).toBe(true);
-      expect(isSignedWrappedDocument(wrapped[1])).toBe(false);
+      expect(isOADigestedOAVerifiableCredential(digested[1])).toBe(true);
+      expect(isOASignedOAVerifiableCredential(digested[1])).toBe(false);
     });
   });
 
-  test("given additional properties in constructor payload, should not be added into the document", async () => {
-    const signed = await new DocumentBuilder({
+  test("given additional properties in constructor payload, should not be added into the VC", async () => {
+    const signed = await new VcBuilder({
       credentialSubject: { name: "John Doe" },
       name: "Diploma",
       anotherProperty: "value",
@@ -247,13 +248,13 @@ describe(`DocumentBuilder`, () => {
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+      .sign({ signer: SAMPLE_SIGNING_KEYS });
 
     expect(signed).not.toHaveProperty("anotherProperty");
   });
 
-  test("given svg rendering method, should be added into the document", async () => {
-    const signed = await new DocumentBuilder({
+  test("given svg rendering method, should be added into the VC", async () => {
+    const signed = await new VcBuilder({
       credentialSubject: {
         name: "John Doe",
         attachments: [
@@ -276,7 +277,7 @@ describe(`DocumentBuilder`, () => {
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+      .sign({ signer: SAMPLE_SIGNING_KEYS });
 
     expect(signed.renderMethod).toMatchInlineSnapshot(`
       [
@@ -288,8 +289,8 @@ describe(`DocumentBuilder`, () => {
     `);
   });
 
-  test("given no rendering method, should reflect in the output document", async () => {
-    const signed = await new DocumentBuilder({
+  test("given no rendering method, should reflect in the output VC", async () => {
+    const signed = await new VcBuilder({
       credentialSubject: {
         name: "John Doe",
         attachments: [
@@ -309,13 +310,13 @@ describe(`DocumentBuilder`, () => {
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+      .sign({ signer: SAMPLE_SIGNING_KEYS });
 
     expect(signed.renderMethod).toMatchInlineSnapshot(`undefined`);
   });
 
-  test("given attachment is added, should be added into the document", async () => {
-    const signed = await new DocumentBuilder({
+  test("given attachment is added, should be added into the VC", async () => {
+    const signed = await new VcBuilder({
       credentialSubject: {
         name: "John Doe",
         attachments: [
@@ -338,7 +339,7 @@ describe(`DocumentBuilder`, () => {
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+      .sign({ signer: SAMPLE_SIGNING_KEYS });
 
     expect(signed.credentialSubject.attachments).toMatchInlineSnapshot(`
       [
@@ -351,8 +352,8 @@ describe(`DocumentBuilder`, () => {
     `);
   });
 
-  test("given revocation store revocation is added, should be added into credential status of the document", async () => {
-    const signed = await new DocumentBuilder({
+  test("given revocation store revocation is added, should be added into credential status of the VC", async () => {
+    const signed = await new VcBuilder({
       credentialSubject: { name: "John Doe" },
       name: "Diploma",
       attachments: [
@@ -375,7 +376,7 @@ describe(`DocumentBuilder`, () => {
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-      .wrapAndSign({ signer: SAMPLE_SIGNING_KEYS });
+      .sign({ signer: SAMPLE_SIGNING_KEYS });
 
     expect(signed.credentialStatus).toMatchInlineSnapshot(`
       {
@@ -385,8 +386,8 @@ describe(`DocumentBuilder`, () => {
     `);
   });
 
-  test("given wrap only is called, should be able to sign the wrapped document with the standalone sign fn", async () => {
-    const wrapped = await new DocumentBuilder({
+  test("given digest is first called, should not be able to sign the digested VC with the standalone sign fn", async () => {
+    const digested = await new VcBuilder({
       credentialSubject: { name: "John Doe" },
       name: "Diploma",
     })
@@ -400,21 +401,41 @@ describe(`DocumentBuilder`, () => {
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-      .justWrapWithoutSigning();
+      .digest();
 
-    const signed = await signDocument(wrapped, "Secp256k1VerificationKey2018", SAMPLE_SIGNING_KEYS);
-
-    expect(isSignedWrappedDocument(signed)).toBe(true);
-    expect(verify(signed)).toBe(true);
+    let error;
+    await expect(async () => {
+      try {
+        await signVc(
+          digested as unknown as ProoflessOAVerifiableCredential,
+          "Secp256k1VerificationKey2018",
+          SAMPLE_SIGNING_KEYS
+        );
+      } catch (e) {
+        error = e;
+        throw e;
+      }
+    }).rejects.toThrowErrorMatchingInlineSnapshot(`
+      "Input VC does not conform to Open Attestation v4.0 Data Model: 
+       {
+        "_errors": [],
+        "proof": {
+          "_errors": [
+            "VC has to be unsigned"
+          ]
+        }
+      }"
+    `);
+    expect(error).toBeInstanceOf(VcBuilderErrors.DataModelValidationError);
   });
 
   test("given re-setting of values, should throw", async () => {
-    const builder = await new DocumentBuilder({
+    const builder = await new VcBuilder({
       credentialSubject: { name: "John Doe" },
       name: "Diploma",
     });
 
-    const documentWithRenderMethod = builder.embeddedRenderer({
+    const vcWithRenderMethod = builder.embeddedRenderer({
       rendererUrl: "https://example.com",
       templateName: "example",
     });
@@ -424,26 +445,26 @@ describe(`DocumentBuilder`, () => {
         rendererUrl: "https://another.com",
         templateName: "another",
       })
-    ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
+    ).toThrowError(VcBuilderErrors.ShouldNotModifyAfterSettingError);
 
-    const documentWithNoRevocation = documentWithRenderMethod.noRevocation();
-    expect(() => documentWithRenderMethod.oscpRevocation({ oscpUrl: "https://oscp.example.com" })).toThrowError(
-      DocumentBuilderErrors.ShouldNotModifyAfterSettingError
+    const vcWithNoRevocation = vcWithRenderMethod.noRevocation();
+    expect(() => vcWithRenderMethod.oscpRevocation({ oscpUrl: "https://oscp.example.com" })).toThrowError(
+      VcBuilderErrors.ShouldNotModifyAfterSettingError
     );
 
-    documentWithNoRevocation.dnsTxtIssuance({
+    vcWithNoRevocation.dnsTxtIssuance({
       identityProofDomain: "example.com",
       issuerId: "did:example:123",
       issuerName: "Example University",
     });
 
     expect(() =>
-      documentWithNoRevocation.dnsTxtIssuance({
+      vcWithNoRevocation.dnsTxtIssuance({
         identityProofDomain: "another.com",
         issuerId: "did:example:123",
         issuerName: "Example University",
       })
-    ).toThrowError(DocumentBuilderErrors.ShouldNotModifyAfterSettingError);
+    ).toThrowError(VcBuilderErrors.ShouldNotModifyAfterSettingError);
   });
 
   describe("given invalid props", () => {
@@ -451,7 +472,7 @@ describe(`DocumentBuilder`, () => {
       let error;
       expect(() => {
         try {
-          new DocumentBuilder({
+          new VcBuilder({
             credentialSubject: {
               name: "John Doe",
               attachments: [
@@ -467,12 +488,12 @@ describe(`DocumentBuilder`, () => {
           error = e;
           throw e;
         }
-      }).toThrowError(DocumentBuilderErrors.PropsValidationError);
-      expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
+      }).toThrowError(VcBuilderErrors.PropsValidationError);
+      expect(error).toBeInstanceOf(VcBuilderErrors.PropsValidationError);
     });
 
     test("given an invalid identity identifier, should throw", () => {
-      const builder = new DocumentBuilder({
+      const builder = new VcBuilder({
         credentialSubject: { name: "John Doe" },
         name: "Diploma",
       })
@@ -504,11 +525,11 @@ describe(`DocumentBuilder`, () => {
                 }
               }"
           `);
-      expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
+      expect(error).toBeInstanceOf(VcBuilderErrors.PropsValidationError);
     });
 
     test("given an invalid ethereum address for revocation store, should throw", () => {
-      const builder = new DocumentBuilder({
+      const builder = new VcBuilder({
         credentialSubject: { name: "John Doe" },
         name: "Diploma",
       }).embeddedRenderer({
@@ -537,7 +558,7 @@ describe(`DocumentBuilder`, () => {
           }
         }"
       `);
-      expect(error).toBeInstanceOf(DocumentBuilderErrors.PropsValidationError);
+      expect(error).toBeInstanceOf(VcBuilderErrors.PropsValidationError);
     });
   });
 });
