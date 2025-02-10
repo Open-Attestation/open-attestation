@@ -48,7 +48,7 @@ npm i undici
 ### Via npm
 
 ```bash
-npm i @govtechsg/open-attestation@beta
+npm i @govtechsg/open-attestation
 ```
 
 ---
@@ -128,7 +128,7 @@ const credential = {
       },
     ],
   },
-};
+} satisfies v4.OAVerifiableCredential;
 ```
 
 </details>
@@ -138,10 +138,10 @@ const credential = {
 The `signVc()` function takes an unsigned OA Verifiable Credential, as well as a public/private key pair (or an [Ethers.js Signer](https://docs.ethers.io/v5/api/signer/)) and returns a signed Verifiable Credential. Signing will digest the input credential and generate a cryptographic signature, ensuring the credential's integrity and issuance status.
 
 ```typescript
-import { signVc } from "@govtechsg/open-attestation";
+import { v4 } from "@govtechsg/open-attestation";
 
 // Using a key pair
-const signedVC = await signVc(credential, "Secp256k1VerificationKey2018", {
+const signedVC = await v4.signVc(credential, "Secp256k1VerificationKey2018", {
   public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
   private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
 });
