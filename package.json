@@ -75,7 +75,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/logger": "^5.7.0",
-    "@ethersproject/wallet": "^5.7.0",
+    "@ethersproject/wallet": "^5.8.0",
     "@govtechsg/jsonld": "^0.1.0",
     "ajv-formats": "^2.1.1",
     "cross-fetch": "^3.1.5",
