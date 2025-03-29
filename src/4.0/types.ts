@@ -8,6 +8,16 @@ const Uri = z.string().regex(URI_REGEX, { message: "Invalid URI" });
 const ETHEREUM_ADDRESS_REGEX = /^(0x)?[0-9a-fA-F]{40}$/;
 const EthereumAddress = z.string().regex(ETHEREUM_ADDRESS_REGEX, { message: "Invalid Ethereum address" });
 
+const _CredentialStatus = z
+  .object({
+    // If id is present, id must match uri pattern (credentialStatus.id is optional and can be undefined)
+    id: Uri.optional(),
+    // Must have type defined
+    type: z.string(),
+  })
+  .passthrough()
+  .optional();
+
 const _W3cVerifiableCredential = z.object({
   "@context": z.union([
     z.record(z.any()),
@@ -79,14 +89,19 @@ const _W3cVerifiableCredential = z.object({
     ),
   ]),
 
-  credentialStatus: z
-    .object({
-      // If id is present, id must match uri pattern (credentialStatus.id is optional and can be undefined)
-      id: Uri.optional(),
-      // Must have type defined
-      type: z.string(),
-    })
-    .passthrough()
+  credentialStatus: z.array(_CredentialStatus).or(_CredentialStatus).optional(),
+
+  confidenceMethod: z.array(z.any()).optional(),
+
+  renderMethod: z
+    .array(
+      z
+        .object({
+          id: Uri.optional(),
+          type: z.string(),
+        })
+        .passthrough()
+    )
     .optional(),
 
   termsOfUse: z

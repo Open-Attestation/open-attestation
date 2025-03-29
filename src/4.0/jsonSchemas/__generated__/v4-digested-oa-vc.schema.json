@@ -219,6 +219,72 @@
             }
           ]
         },
+        "confidenceMethod": {
+          "type": "array"
+        },
+        "renderMethod": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL of a decentralised renderer to render this VC"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "OpenAttestationEmbeddedRenderer"
+                  },
+                  "templateName": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "templateName"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    ],
+                    "description": "A URL that dereferences to an SVG image [SVG] with an associated image/svg+xml media type. Or an embedded SVG image [SVG]"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "SvgRenderingTemplate2023"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "digestMultibase": {
+                    "type": "string",
+                    "description": "An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12)."
+                  }
+                },
+                "required": [
+                  "id",
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
         "termsOfUse": {
           "anyOf": [
             {
@@ -345,69 +411,6 @@
             "privacy"
           ],
           "additionalProperties": false
-        },
-        "renderMethod": {
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "URL of a decentralised renderer to render this VC"
-                  },
-                  "type": {
-                    "type": "string",
-                    "const": "OpenAttestationEmbeddedRenderer"
-                  },
-                  "templateName": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "id",
-                  "type",
-                  "templateName"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "string",
-                        "format": "uri"
-                      }
-                    ],
-                    "description": "A URL that dereferences to an SVG image [SVG] with an associated image/svg+xml media type. Or an embedded SVG image [SVG]"
-                  },
-                  "type": {
-                    "type": "string",
-                    "const": "SvgRenderingTemplate2023"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "digestMultibase": {
-                    "type": "string",
-                    "description": "An optional multibase-encoded multihash of the SVG image. The multibase value MUST be z and the multihash value MUST be SHA-2 with 256-bits of output (0x12)."
-                  }
-                },
-                "required": [
-                  "id",
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
-          }
         }
       },
       "required": [

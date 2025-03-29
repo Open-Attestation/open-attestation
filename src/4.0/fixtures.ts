@@ -1,4 +1,4 @@
-import { OAVerifiableCredential, OADigested, OASigned } from "./types";
+import { OAVerifiableCredential, OADigested, OASigned, W3cVerifiableCredential } from "./types";
 import { ContextUrl } from "./context";
 
 const ISSUER_ID = "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90" as const;
@@ -161,6 +161,105 @@ export const RAW_BATCHED_VC_DID = freezeObject([
     ],
   },
 ] satisfies OAVerifiableCredential[]);
+
+export const RAW_W3C_VC_TRADETRUST_TRANSFERABLE_RECORDS = freezeObject({
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    ContextUrl.oa_vc_v4,
+    "https://w3id.org/vc/status-list/2021/v1",
+    "https://trustvc.io/context/transferable-records-context.json",
+    "https://trustvc.io/context/attachments-context.json",
+  ],
+  credentialStatus: {
+    type: "TransferableRecords",
+    tokenNetwork: {
+      chain: "MATIC",
+      chainId: "80001",
+    },
+    tokenRegistry: "0xE0a94770B8e969B5D9179d6dA8730B01e19279e2",
+    tokenId: "398124e7f1ec797a3dea6322e5ce4ff5ee242ab6293c2acf41a95178dfb27dae",
+  },
+  id: "urn:uuid:0192d19c-d82c-7cc7-9431-cb495374f43b",
+  renderMethod: [
+    {
+      id: "https://demo-renderer.opencerts.io",
+      type: "OpenAttestationEmbeddedRenderer",
+      templateName: "GOVTECH_DEMO",
+    },
+  ],
+  credentialSubject: {
+    id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    type: ["DriversLicense"],
+    name: "John Doe",
+    licenses: [
+      {
+        class: "3",
+        description: "Motor cars with unladen weight <= 3000kg",
+        effectiveDate: "2013-05-16T00:00:00+08:00",
+      },
+      {
+        class: "3A",
+        description: "Motor cars with unladen weight <= 3000kg",
+        effectiveDate: "2013-05-16T00:00:00+08:00",
+      },
+    ],
+  },
+  issuer: "did:web:trustvc.github.io:did:1",
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
+}) satisfies W3cVerifiableCredential;
+
+export const RAW_W3C_VC_TRADETRUST_STATUS_LIST = freezeObject({
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    ContextUrl.oa_vc_v4,
+    "https://w3id.org/vc/status-list/2021/v1",
+    "https://trustvc.io/context/transferable-records-context.json",
+    "https://trustvc.io/context/attachments-context.json",
+  ],
+  credentialStatus: [
+    {
+      id: "https://trustvc.github.io/did/credentials/statuslist/1#1",
+      statusListCredential: "https://trustvc.github.io/did/credentials/statuslist/1",
+      statusListIndex: "1",
+      statusPurpose: "revocation",
+      type: "StatusList2021Entry",
+    },
+    {
+      id: "https://trustvc.github.io/did/credentials/statuslist/1#1",
+      statusListCredential: "https://trustvc.github.io/did/credentials/statuslist/1",
+      statusListIndex: "1",
+      statusPurpose: "suspension",
+      type: "StatusList2021Entry",
+    },
+  ],
+  id: "urn:uuid:0192d19c-d82c-7cc7-9431-cb495374f43b",
+  renderMethod: [
+    {
+      id: "https://demo-renderer.opencerts.io",
+      type: "OpenAttestationEmbeddedRenderer",
+      templateName: "GOVTECH_DEMO",
+    },
+  ],
+  credentialSubject: {
+    id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    type: ["DriversLicense"],
+    name: "John Doe",
+    licenses: [
+      {
+        class: "3",
+        description: "Motor cars with unladen weight <= 3000kg",
+        effectiveDate: "2013-05-16T00:00:00+08:00",
+      },
+      {
+        class: "3A",
+        description: "Motor cars with unladen weight <= 3000kg",
+        effectiveDate: "2013-05-16T00:00:00+08:00",
+      },
+    ],
+  },
+  issuer: "did:web:trustvc.github.io:did:1",
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
+}) satisfies W3cVerifiableCredential;
 
 /* Digested */
 export const DIGESTED_VC_DID = freezeObject({
@@ -598,6 +697,68 @@ export const SIGNED_BATCHED_VC_DID = freezeObject([
     },
   },
 ] satisfies OASigned<OAVerifiableCredential>[]);
+
+export const SIGNED_W3C_VC_TRADETRUST_STATUS_LIST = freezeObject({
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://schemata.openattestation.com/com/openattestation/4.0/context.json",
+    "https://w3id.org/vc/status-list/2021/v1",
+    "https://trustvc.io/context/transferable-records-context.json",
+    "https://trustvc.io/context/attachments-context.json",
+  ],
+  credentialStatus: [
+    {
+      id: "https://trustvc.github.io/did/credentials/statuslist/1#1",
+      statusListCredential: "https://trustvc.github.io/did/credentials/statuslist/1",
+      statusListIndex: "1",
+      statusPurpose: "revocation",
+      type: "StatusList2021Entry",
+    },
+    {
+      id: "https://trustvc.github.io/did/credentials/statuslist/1#1",
+      statusListCredential: "https://trustvc.github.io/did/credentials/statuslist/1",
+      statusListIndex: "1",
+      statusPurpose: "suspension",
+      type: "StatusList2021Entry",
+    },
+  ],
+  id: "urn:uuid:0192d19c-d82c-7cc7-9431-cb495374f43b",
+  renderMethod: [
+    { id: "https://demo-renderer.opencerts.io", type: "OpenAttestationEmbeddedRenderer", templateName: "GOVTECH_DEMO" },
+  ],
+  credentialSubject: {
+    id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    type: ["DriversLicense"],
+    name: "John Doe",
+    licenses: [
+      {
+        class: "3",
+        description: "Motor cars with unladen weight <= 3000kg",
+        effectiveDate: "2013-05-16T00:00:00+08:00",
+      },
+      {
+        class: "3A",
+        description: "Motor cars with unladen weight <= 3000kg",
+        effectiveDate: "2013-05-16T00:00:00+08:00",
+      },
+    ],
+  },
+  issuer: "did:web:trustvc.github.io:did:1",
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
+  proof: {
+    type: "OpenAttestationHashProof2018",
+    proofPurpose: "assertionMethod",
+    targetHash: "c347ab52080cb90b05ec53250a8c4605d5c5e42f73a318995f42cf96c9baf38f",
+    proofs: [],
+    merkleRoot: "c347ab52080cb90b05ec53250a8c4605d5c5e42f73a318995f42cf96c9baf38f",
+    salts:
+      "W3sidmFsdWUiOiIwMTk4YzhhZWQ4NDM2NzBlZTE3N2RmNzRkZWJiNTBhZjAwMmEwYmE0ZmY1Mzg0NDEyYzAyNTNmMDc1MGJjYTZlIiwicGF0aCI6IkBjb250ZXh0WzBdIn0seyJ2YWx1ZSI6ImU2NjY4YWYzYjQyMmY4ZjY4ZDM3YmI3N2ZiOTE4OGNmNzBhMDI0NTkyZGJjMjA0YzJiODRjZmU4YWU2N2FlZjAiLCJwYXRoIjoiQGNvbnRleHRbMV0ifSx7InZhbHVlIjoiNTJjZGRmY2JkY2MyNGI2Y2UyYjM2Mjk5NmJlZTllYzBiMDRiNmMwZjZhZjQ3NDYxNWJhZWEzNTViMTdkYTU5ZSIsInBhdGgiOiJAY29udGV4dFsyXSJ9LHsidmFsdWUiOiJlZTdiMDhjOTdjOGVlODEzNGJiNjFmYTM5NjM1ZGI5NWQzMTExY2U1YjQ5NjQ1OGYyY2JkZDg4MWUzNjk4NGI3IiwicGF0aCI6IkBjb250ZXh0WzNdIn0seyJ2YWx1ZSI6Ijc1NmIwNDFmYzI0Mjc5ZTczZDZhNWNjMzEyZTY0YWM5ZmFkOGJhMjUyYWRkYTg3YjU4MWFjYWExZWQzNDk2MDIiLCJwYXRoIjoiQGNvbnRleHRbNF0ifSx7InZhbHVlIjoiMjNhZGMyZjJiZmIzZjFhYjRkYzg1ZjA1NTQzMGJmZWJjMjNmZjBkNzNjYWFhN2I3N2MzZTM2Mzc1YzhhNGQyZCIsInBhdGgiOiJpZCJ9LHsidmFsdWUiOiI2NDdhODg4MDJlZDg1MzJkNGNlNGNmMTdkNmEzYjJhZjAzNWU5M2Y0NmEyMGMwNzA4NGYyNDQ5MGYxMDZiMzVkIiwicGF0aCI6InR5cGVbMF0ifSx7InZhbHVlIjoiNTBiZGUwNDkxMThlZWYwYTg0MjNiYmMyOGVkYTk1MTg0YjI0YTgxZmQ2NDI0MDNmOTdmZjk3NTdlNjk0N2IyMiIsInBhdGgiOiJ0eXBlWzFdIn0seyJ2YWx1ZSI6ImEwYjBkMTMwYzQ5ZTBlOTYwYTI0YzQ4NGI4ZGE2MDYxNTg5NTUxZDMwYWU1NDQ4OWE0YjkzYTQzYzk3MjM4NDIiLCJwYXRoIjoiaXNzdWVyIn0seyJ2YWx1ZSI6ImUwYTQ2NTFjZDMxMjk2ZjM5NjNmNzhhOGFkMjk3NDMxNzM1ZTMxZjZkM2RjMTVjYzdjYWI0MzdiNDQ2NzNjZGUiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QuaWQifSx7InZhbHVlIjoiMDU4ZGExYTUxYWIwOWQwNjU3MWM3YzZkYzA2NzMxYzk5MTFhZDkzODQ3ZmUzNzVkMDA2MGQzMjgwZGQ3ZDg2YyIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC50eXBlWzBdIn0seyJ2YWx1ZSI6IjBmOWU0M2YwMGMyNjkyYjBmNDE4YTk5ODc1MGFmMzgwNzdhMzc2MmVmNWI2ODUyZjA2MjAxMWVmNDMwNjc2ODUiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubmFtZSJ9LHsidmFsdWUiOiIzODI3M2UyMmViNjJiNDJhODVmY2E3YmUxYjAwOTVhMjU1ZjA1NDFkYzhmYTU3M2NkZjg0YTM5MjNmMzM5ZDY5IiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzBdLmNsYXNzIn0seyJ2YWx1ZSI6IjNiODgwZTM4YWMzODViYjM1ZGY1NmE4OTVhZTNhYmNmZGQ4MDMxNGJiMDQwOWVlMWQ4YWZlNzhlNTBkY2I2YWMiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMF0uZGVzY3JpcHRpb24ifSx7InZhbHVlIjoiODBkNTlhM2U1NmIwZmY5YTYwZDRjZjA4YWQ3NzU0NTNlMTVlOWFhNGFlNDZhNTNlODhlNjNiZTQyYzMyMjIzZSIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1swXS5lZmZlY3RpdmVEYXRlIn0seyJ2YWx1ZSI6IjIyMDMyNjUzZmY3NGFiOGJlZjg3M2Y0ZDVjYTQ2ZTA1YTI0NDg1ODhjOTVmMTYzNWFmN2Y2NjA1NzA5NTBlZTYiLCJwYXRoIjoiY3JlZGVudGlhbFN1YmplY3QubGljZW5zZXNbMV0uY2xhc3MifSx7InZhbHVlIjoiZmMzMGU1Yjg4M2E2YWVkZTJlZmE3Mzk0MDA3NzkyMTE3NDc3Mjc2YmFmM2MwMzJlMTVkYTI0NDdlMWQ2MjBlZCIsInBhdGgiOiJjcmVkZW50aWFsU3ViamVjdC5saWNlbnNlc1sxXS5kZXNjcmlwdGlvbiJ9LHsidmFsdWUiOiIxMTQzNDgzYzk0NmI0YTI0ZDFmNDgxYzE1Y2Y0YWQ1YmU1ZDk3MjRlYzBmYzEwMDAxOGY0NTFmNTBiNGU0MzNjIiwicGF0aCI6ImNyZWRlbnRpYWxTdWJqZWN0LmxpY2Vuc2VzWzFdLmVmZmVjdGl2ZURhdGUifSx7InZhbHVlIjoiNjAwMzEzYjZjZDBjOWE2OTAwY2RkNjQzMTc2MGM2OGFlNzk0YmZlNGFlZTZiN2QzN2M5NGExOTY5ZTc1MTJhOSIsInBhdGgiOiJjcmVkZW50aWFsU3RhdHVzWzBdLmlkIn0seyJ2YWx1ZSI6IjllZjc2MDNlYWMwNTcwMTJiYWRmZWFiYWE0OTE5ZDQ1ZDEwYjlhODNiNmYxMTAxZjY3YzAzMjc2YWVlMWQwZGQiLCJwYXRoIjoiY3JlZGVudGlhbFN0YXR1c1swXS50eXBlIn0seyJ2YWx1ZSI6IjU3MGM1ODFmZjliMjdhYTZhNjA1M2I4OTBiNmMwNzU5N2RmMzBiY2UzN2UzMDlmZTRkZmNjNDBhOWY5MTlhYTIiLCJwYXRoIjoiY3JlZGVudGlhbFN0YXR1c1swXS5zdGF0dXNMaXN0Q3JlZGVudGlhbCJ9LHsidmFsdWUiOiJiYjBkYzg0YjQ3YzkyMWMyYjUyMmM2YzY2NTE1MGZmMjM5ZDNjMDA3YmZiZmQ3ZWU1Yjk3OTZkYmIwOTdjMDVjIiwicGF0aCI6ImNyZWRlbnRpYWxTdGF0dXNbMF0uc3RhdHVzTGlzdEluZGV4In0seyJ2YWx1ZSI6IjA0YWU0OTg1MTgzNDdkYzgyZDg4ZjEyYzYxYjk2NTAyNTllN2RjN2UyMmFiZjJlOWY0YzgyM2I5NzUyZWFmMWQiLCJwYXRoIjoiY3JlZGVudGlhbFN0YXR1c1swXS5zdGF0dXNQdXJwb3NlIn0seyJ2YWx1ZSI6IjllMTY5N2M2NWE3MDM0MTQ0ZGE2YjJhMzA2YzRhZDUwNTA3YmU2MDA1MWFjZTcyMzc1MjJhZTEzYzQxZWI1YWQiLCJwYXRoIjoiY3JlZGVudGlhbFN0YXR1c1sxXS5pZCJ9LHsidmFsdWUiOiI2ZjE4YmU5M2EwZjYwMGQ5NzJlNGU0MTgzYjMyYmIxNTA0N2E2ZmU5NjI2ODQyZTNlOTE5MjY2ZGIwMzAxZGU5IiwicGF0aCI6ImNyZWRlbnRpYWxTdGF0dXNbMV0udHlwZSJ9LHsidmFsdWUiOiI4NzhhYmUwNmQ4MjUxMzg2ZmQ4NzY0ZTJlNGM0OGFjMTFjYWQ3OTg0YTJlY2Y3MmJlZDQwYWVhMDhhM2E3NjQ5IiwicGF0aCI6ImNyZWRlbnRpYWxTdGF0dXNbMV0uc3RhdHVzTGlzdENyZWRlbnRpYWwifSx7InZhbHVlIjoiY2E1NmVkN2MxOWMwZWMxZmY0NjI3YTQwNWFjMTJkZGQxMGMxM2RiZDkxYTMxMGE2NTVjNjE0NTA0ZmYwYTIwNyIsInBhdGgiOiJjcmVkZW50aWFsU3RhdHVzWzFdLnN0YXR1c0xpc3RJbmRleCJ9LHsidmFsdWUiOiI5NzcyMWU4OWE0MzUyNTVhNDk3OTZjNDFhYzhhNjk5MjQ3ZDZjNWIyZjVhNDZhMDhjYzE5Y2YxZDE1N2VjNGRkIiwicGF0aCI6ImNyZWRlbnRpYWxTdGF0dXNbMV0uc3RhdHVzUHVycG9zZSJ9LHsidmFsdWUiOiIyZDg0ODM5YTRkMTcxNjA2ODFmZWM0NWYwYmFjOWIyOWFjMjIxMjZkYmNiNTU4MDMzY2Q1MmE3NjlmNjM4MWFhIiwicGF0aCI6InJlbmRlck1ldGhvZFswXS5pZCJ9LHsidmFsdWUiOiJjNzE4ZGY4YTVmNzE2MWJhOGRkZWEyMGVlMGFjYjJjYjAxYTg1YmE4MGMxOGY3ZTAxODA4NTAxZDBiMDBjNjZlIiwicGF0aCI6InJlbmRlck1ldGhvZFswXS50eXBlIn0seyJ2YWx1ZSI6ImJkYTY2Y2RiNjNmZTY3ZDUxYmUzNzJhMjJjYWIzY2RjNDAyOTk1M2EzODBlYTI2ZDcyYTY5NzkyMjMyYmM2OWMiLCJwYXRoIjoicmVuZGVyTWV0aG9kWzBdLnRlbXBsYXRlTmFtZSJ9XQ==",
+    privacy: { obfuscated: [] },
+    key: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+    signature:
+      "0xc3a7b785be8825d38eaacf7a3fd16360bee29994dcbf14410d497780301005b65eee46c7aab7d66806421dbfaf384ec872bcdb611ce2728286878df60970d3a41c",
+  },
+}) satisfies OASigned<W3cVerifiableCredential>;
 
 // Freeze fixture to prevent accidental changes during tests
 function freezeObject<T>(obj: T): T {

@@ -71,6 +71,7 @@ export async function digestVc<T extends ProoflessW3cVerifiableCredential>(
       "issuer",
       "credentialStatus",
       "credentialSubject",
+      "renderMethod",
     ]),
     "@context": finalContexts,
     type: finalTypes,

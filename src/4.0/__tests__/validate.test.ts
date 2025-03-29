@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { SIGNED_BATCHED_VC_DID, SIGNED_VC_DID } from "../fixtures";
+import { SIGNED_BATCHED_VC_DID, SIGNED_VC_DID, SIGNED_W3C_VC_TRADETRUST_STATUS_LIST } from "../fixtures";
 import { OASigned } from "../types";
 import { validateDigest } from "../validate";
 
@@ -7,6 +7,7 @@ const TEST_VCS = {
   "VCs without proofs mean these VCs are digested individually (i.e. targetHash == merkleRoot)": SIGNED_VC_DID,
   "VCs with proofs mean these VCs are digested as a batch (i.e. proofs exist, and targetHash !== merkleRoot)":
     SIGNED_BATCHED_VC_DID[0],
+  "W3C VCs with proofs": SIGNED_W3C_VC_TRADETRUST_STATUS_LIST,
 } as const;
 
 describe("V4.0 validate", () => {
@@ -18,6 +19,8 @@ describe("V4.0 validate", () => {
 
       describe("tempering", () => {
         test("given a value of a key in object is changed, should return false", () => {
+          if (typeof vc.issuer === "string") return;
+
           const newName = "Fake Name";
           expect(vc.issuer.name).not.toBe(newName);
           expect(
@@ -32,6 +35,8 @@ describe("V4.0 validate", () => {
         });
 
         test("given a key in an object is altered (value kept the same), should return false", () => {
+          if (typeof vc.issuer === "string") return;
+
           const { name, ...issuerWithoutName } = vc.issuer;
 
           expect(

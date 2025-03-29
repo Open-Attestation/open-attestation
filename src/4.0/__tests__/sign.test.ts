@@ -1,8 +1,12 @@
 import { SUPPORTED_SIGNING_ALGORITHM } from "../../shared/@types/sign";
 import { Wallet } from "@ethersproject/wallet";
-import { RAW_VC_DID } from "../fixtures";
+import { RAW_VC_DID, RAW_W3C_VC_TRADETRUST_STATUS_LIST, RAW_W3C_VC_TRADETRUST_TRANSFERABLE_RECORDS } from "../fixtures";
 import { signVc, signVcErrors } from "../sign";
-import { OASignedOAVerifiableCredential, ProoflessOAVerifiableCredential } from "../types";
+import {
+  OASignedOAVerifiableCredential,
+  OASignedW3cVerifiableCredential,
+  ProoflessOAVerifiableCredential,
+} from "../types";
 
 describe("V4.0 sign", () => {
   it("should sign a VC", async () => {
@@ -72,5 +76,46 @@ describe("V4.0 sign", () => {
     await expect(
       signVc(RAW_VC_DID, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {} as any)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"Either a keypair or ethers.js Signer must be provided"`);
+  });
+
+  it("should sign a VC - TradeTrust - Token Registry", async () => {
+    const signed = await signVc(
+      RAW_W3C_VC_TRADETRUST_TRANSFERABLE_RECORDS,
+      SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
+      {
+        public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+        private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
+      },
+      true
+    );
+    const parsedResults = OASignedW3cVerifiableCredential.safeParse(signed);
+    if (!parsedResults.success) {
+      throw new Error("Parsing failed");
+    }
+    const { proof } = parsedResults.data;
+    expect(Object.keys(proof).length).toBe(9);
+    expect(proof.key).toBe("did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller");
+    expect(proof.signature).toBeDefined();
+  });
+
+  it("should sign a VC - TradeTrust - Status List", async () => {
+    const signed = await signVc(
+      RAW_W3C_VC_TRADETRUST_STATUS_LIST,
+      SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
+      {
+        public: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
+        private: "0x497c85ed89f1874ba37532d1e33519aba15bd533cdcb90774cc497bfe3cde655",
+      },
+      true
+    );
+    console.log("signed", JSON.stringify(signed));
+    const parsedResults = OASignedW3cVerifiableCredential.safeParse(signed);
+    if (!parsedResults.success) {
+      throw new Error("Parsing failed");
+    }
+    const { proof } = parsedResults.data;
+    expect(Object.keys(proof).length).toBe(9);
+    expect(proof.key).toBe("did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller");
+    expect(proof.signature).toBeDefined();
   });
 });

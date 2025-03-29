@@ -6,6 +6,7 @@ import {
   ProoflessW3cVerifiableCredential,
 } from "../types";
 import { digestVc } from "../digest";
+import { RAW_W3C_VC_TRADETRUST_STATUS_LIST, RAW_W3C_VC_TRADETRUST_TRANSFERABLE_RECORDS } from "../fixtures";
 
 describe("V4.0 digest", () => {
   test("given a valid v4 VC, should digest correctly", async () => {
@@ -137,4 +138,40 @@ describe("V4.0 digest", () => {
     expect(digested.proof.targetHash.length).toBe(64);
     expect(digested.proof.type).toBe("OpenAttestationHashProof2018");
   });
+
+  test("given a generic W3C VC and with validate with OA data model disabled, should digest with context and type corrected - TradeTrust - Token Registry", async () => {
+    const digested = await digestVc(
+      RAW_W3C_VC_TRADETRUST_TRANSFERABLE_RECORDS as unknown as ProoflessW3cVerifiableCredential,
+      true
+    );
+    const parsedResults = OADigestedOAVerifiableCredential.pick({ "@context": true, type: true })
+      .passthrough()
+      .safeParse(digested);
+    expect(parsedResults.success).toBe(true);
+    expect(digested.proof.merkleRoot.length).toBe(64);
+    expect(digested.proof.privacy.obfuscated).toEqual([]);
+    expect(digested.proof.proofPurpose).toBe("assertionMethod");
+    expect(digested.proof.proofs).toEqual([]);
+    expect(digested.proof.salts.length).toBeGreaterThan(0);
+    expect(digested.proof.targetHash.length).toBe(64);
+    expect(digested.proof.type).toBe("OpenAttestationHashProof2018");
+  }, 30_000);
+
+  test("given a generic W3C VC and with validate with OA data model disabled, should digest with context and type corrected - TradeTrust - Status List", async () => {
+    const digested = await digestVc(
+      RAW_W3C_VC_TRADETRUST_STATUS_LIST as unknown as ProoflessW3cVerifiableCredential,
+      true
+    );
+    const parsedResults = OADigestedOAVerifiableCredential.pick({ "@context": true, type: true })
+      .passthrough()
+      .safeParse(digested);
+    expect(parsedResults.success).toBe(true);
+    expect(digested.proof.merkleRoot.length).toBe(64);
+    expect(digested.proof.privacy.obfuscated).toEqual([]);
+    expect(digested.proof.proofPurpose).toBe("assertionMethod");
+    expect(digested.proof.proofs).toEqual([]);
+    expect(digested.proof.salts.length).toBeGreaterThan(0);
+    expect(digested.proof.targetHash.length).toBe(64);
+    expect(digested.proof.type).toBe("OpenAttestationHashProof2018");
+  }, 30_000);
 });
